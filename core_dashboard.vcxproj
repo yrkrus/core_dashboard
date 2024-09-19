@@ -50,6 +50,7 @@
     <RemoteRootDir>~/core_dashboards</RemoteRootDir>
     <RemoteCopyIncludeDirectories>
     </RemoteCopyIncludeDirectories>
+    <PlatformToolset>Remote_GCC_1_0</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -62,6 +63,7 @@
     <RemoteRootDir>~/core_dashboards</RemoteRootDir>
     <RemoteCopyIncludeDirectories>
     </RemoteCopyIncludeDirectories>
+    <PlatformToolset>Remote_GCC_1_0</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -74,6 +76,7 @@
     <RemoteRootDir>~/core_dashboards</RemoteRootDir>
     <RemoteCopyIncludeDirectories>
     </RemoteCopyIncludeDirectories>
+    <PlatformToolset>Remote_GCC_1_0</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
@@ -92,6 +95,7 @@
     <RemoteRootDir>~/core_dashboards</RemoteRootDir>
     <RemoteCopyIncludeDirectories>
     </RemoteCopyIncludeDirectories>
+    <PlatformToolset>Remote_GCC_1_0</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings" />

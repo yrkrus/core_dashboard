@@ -1516,6 +1516,7 @@ void SQL_REQUEST::SQL::execTaskQueue()
 	MYSQL_ROW row;
 
 	std::vector<HOUSEKEEPING::Queue> listQueue;
+	std::vector<HOUSEKEEPING::Queue> listQueueError;  // список с данными которые не удалось добавить в БД
 
 	while ((row = mysql_fetch_row(result)) != NULL)
 	{
@@ -1574,9 +1575,15 @@ void SQL_REQUEST::SQL::execTaskQueue()
 		for (auto &list : listQueue)
 		{
 			SQL_REQUEST::SQL base;
-			base.insertDataTaskQueue(list);
-
-
+			 
+			// если не удалось добавить данные в БД то занесем их в listQueueError
+			if (!base.insertDataTaskQueue(list)) {
+				listQueueError.emplace_back(list);
+			}
+			else {
+				// удаляем текущий добавленный
+				base.deleteDataTaskQueue(list.fileds.id);
+			}
 
 		}	
 	}
@@ -1638,5 +1645,27 @@ bool SQL_REQUEST::SQL::insertDataTaskQueue(HOUSEKEEPING::Queue &queue)
 
 	mysql_close(&this->mysql);
 	
+	return true;
+}
+
+
+bool SQL_REQUEST::SQL::deleteDataTaskQueue(int ID)
+{
+	if (!isConnectedBD())
+	{
+		showErrorBD("SQL_REQUEST::SQL::deleteDataTaskQueue");
+		return false;
+	}
+
+	std::string query = "delete from queue where id = '"+std::to_string(ID)+"'";
+
+	if (mysql_query(&this->mysql, query.c_str()) != 0)
+	{
+		showErrorBD("SQL_REQUEST::SQL::deleteDataTaskQueue -> Data (deleteDataTaskQueue) error -> query(" + query + ")", &this->mysql);
+		return false;
+	}
+
+	mysql_close(&this->mysql);
+
 	return true;
 }
