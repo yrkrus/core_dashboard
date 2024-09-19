@@ -1,0 +1,75 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="IVR.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Queue.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="ActiveSip.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="InternalFunction.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="SQLRequest.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="History.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="RemoteCommands.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Log.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="HouseKeeping.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="include_cpp">
+      <UniqueIdentifier>{5e4669d3-3602-4464-96f3-3e84b792606d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include_h">
+      <UniqueIdentifier>{34a51258-0f14-4d7e-b5cf-77b0edafe02e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="IVR.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="Queue.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="Constants.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="ActiveSip.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="InternalFunction.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="SQLRequest.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="History.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="RemoteCommands.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="Log.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="HouseKeeping.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
+    <None Include="ClassDiagram1.cd" />
+  </ItemGroup>
+</Project>
