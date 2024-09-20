@@ -93,6 +93,9 @@ namespace SQL_REQUEST
 		bool deleteDataTaskQueue(int ID);													// удаление данных из таблицы queue
 		bool insertDataTaskLogging(HOUSEKEEPING::Logging &logging);							// вставка данных для таблицы history_logging
 		bool deleteDataTaskLogging(int ID);													// удаление данных из таблицы logging
+		bool insertDataTaskIvr(HOUSEKEEPING::IVR &ivr);										// вставка данных из талицы history_ivr
+		bool deleteDataTaskIvr(int ID);														// удаление данных из таблицы ivr 
+
 
 	private:
 		MYSQL mysql;

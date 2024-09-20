@@ -61,6 +61,14 @@ void thread_RemoteCommands() {
     }
 }
 
+// запуск очистки БД перенос в history
+void thread_HouseKeeping() {
+    HOUSEKEEPING::HouseKeeping task;
+    task.createTask(HOUSEKEEPING::TASKS::TaskQueue);
+    task.createTask(HOUSEKEEPING::TASKS::TaskLogging);
+    task.createTask(HOUSEKEEPING::TASKS::TaskIvr);
+}
+
 void stat() {
     int TIK = 6000;
     // int avg{0};
@@ -114,15 +122,13 @@ void stat() {
 }
 
 void collect() {
-    int TIK = 6000;
-   // int avg{0};
-    size_t all{ 0 };
-    int min{ 1000 };
-    int max{ 0 };    
+     //int TIK = 3600;  
+    static size_t   all{ 0 };
+    static int      min{ 1000 };
+    static int      max{ 0 };    
 
     for (size_t i = 1; /*i <= TIK*/; ++i)
     {          
-
         showVersionCore();
 
         auto start = std::chrono::steady_clock::now();
@@ -132,6 +138,7 @@ void collect() {
         std::thread th_ivr(getIVR);
         std::thread th_Queue_ActiveSIP(thread_Queue_ActiveSIP);
         std::thread th_RemoteCommand(thread_RemoteCommands);
+        std::thread th_HouseKeeping(thread_HouseKeeping);
 
         if (th_ivr.joinable()) {
             th_ivr.join();
@@ -146,12 +153,12 @@ void collect() {
         // проверка удаленных команд
         if (th_RemoteCommand.joinable()) {
             th_RemoteCommand.join();
-        }
-        
+        }       
 
-        //getIVR();
-        //getQueue();
-        //getActiveSip();          
+        // очистка БД
+        if (th_HouseKeeping.joinable()) {
+            th_HouseKeeping.join();
+        }
 
         auto stop = std::chrono::steady_clock::now();
 
@@ -166,7 +173,7 @@ void collect() {
         std::cout  << "avg execute = " << all / i << " ms | min execute = " << min << " ms | max execute = " << max << " ms\n";
 
         if (execute_ms.count() < 1000) {        
-        sleep(1);       
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000-execute_ms.count()));
         } 
 
         system("clear");
@@ -175,8 +182,8 @@ void collect() {
         {
             all = 0;
             i = 1;
-            int min = 1000;
-            int max = 0;
+            min = 1000;
+            max = 0;
         }        
     }
 }
@@ -256,12 +263,20 @@ int main(int argc, char *argv[])
             //remote.chekNewCommand() ? std::cout << "New command EXIST\n" : std::cout << "New command NO EXIST\n";         
             break;
         }
-        case(housekeeping): {
-            // DEBUG дописать!
+        case(housekeeping): {   
             HOUSEKEEPING::HouseKeeping task;           
-            // task.createTask(HOUSEKEEPING::TASKS::TaskQueue); OK!
-            // task.createTask(HOUSEKEEPING::TASKS::TaskLogging); OK!
+            std::cout << "create Task and execute -> TaskQueue\n";
+            task.createTask(HOUSEKEEPING::TASKS::TaskQueue);
+            std::cout << "done -> TaskQueue\n";
+            
+            std::cout << "create Task and execute -> TaskLogging\n";
+            task.createTask(HOUSEKEEPING::TASKS::TaskLogging); 
+            std::cout << "done -> TaskLogging\n";
+
+            std::cout << "create Task and execute -> TaskIvr\n";
             task.createTask(HOUSEKEEPING::TASKS::TaskIvr);
+            std::cout << "done -> TaskIvr\n";
+
             break;
         }
         case(test): {

@@ -1663,6 +1663,82 @@ void SQL_REQUEST::SQL::execTaskLogging()
 
 void SQL_REQUEST::SQL::execTaskIvr()
 {
+	if (!isConnectedBD())
+	{
+		showErrorBD("SQL_REQUEST::SQL::execTaskIvr");
+		return;
+	}
+
+	// найдем все данные 
+	const std::string query = "select * from ivr where date_time < '" + getCurrentStartDay() + "'";
+
+	if (mysql_query(&this->mysql, query.c_str()) != 0)
+	{
+		// ошибка считаем что есть запись		
+		showErrorBD("SQL_REQUEST::SQL::execTaskIvr -> query(" + query + ")", &this->mysql);
+		return;
+	}
+
+	// результат
+	MYSQL_RES *result = mysql_store_result(&this->mysql);
+	MYSQL_ROW row;
+
+	std::vector<HOUSEKEEPING::IVR> listIvr;
+
+	while ((row = mysql_fetch_row(result)) != NULL)
+	{
+		HOUSEKEEPING::IVR ivr;
+
+		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
+		{
+			if (i == 0)			// id
+			{
+				ivr.fileds.id = std::atoi(row[i]);
+			}
+			else if (i == 1)	// phone
+			{
+				ivr.fileds.phone = row[i];
+			}
+			else if (i == 2)   // waiting_time
+			{
+				ivr.fileds.waiting_time = row[i];
+			}
+			else if (i == 3) // date_time
+			{
+				ivr.fileds.date_time = row[i];
+			}
+			else if (i == 4) // trunk
+			{
+				ivr.trunk = row[i];
+			}
+			else if (i == 5) // to_queue
+			{
+				ivr.to_queue = std::atoi(row[i]);
+			}
+			else if (i == 6)
+			{
+				ivr.to_robot = std::atoi(row[i]);
+			}
+		}
+
+		listIvr.emplace_back(ivr);
+	}
+
+
+	if (!listIvr.empty())
+	{
+		// перекидывание 1 транзакции хза раз ? \ или по 100 надо подумать..
+		SQL_REQUEST::SQL base;
+
+		for (auto &list : listIvr)
+		{
+			if (base.insertDataTaskIvr(list))
+			{
+				// удаляем текущий добавленный
+				base.deleteDataTaskIvr(list.fileds.id);
+			}
+		}
+	}
 
 }
 
@@ -1780,6 +1856,56 @@ bool SQL_REQUEST::SQL::deleteDataTaskLogging(int ID)
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		showErrorBD("SQL_REQUEST::SQL::deleteDataTaskLogging -> Data (deleteDataTaskLogging) error -> query(" + query + ")", &this->mysql);
+		return false;
+	}
+
+	mysql_close(&this->mysql);
+
+	return true;
+}
+
+bool SQL_REQUEST::SQL::insertDataTaskIvr(HOUSEKEEPING::IVR &ivr)
+{
+	if (!isConnectedBD())
+	{
+		showErrorBD("SQL_REQUEST::SQL::insertDataTaskIvr");
+		return false;
+	}
+
+	// устанавливаем данные в history_ivr
+	std::string	query_insert = "insert into history_ivr (id,phone,waiting_time,date_time,trunk,to_queue,to_robot) values ('" + std::to_string(ivr.fileds.id) +
+		"','" + ivr.fileds.phone +
+		"','" + ivr.fileds.waiting_time +
+		"','" + ivr.fileds.date_time +
+		"','" + ivr.trunk +
+		"','" + std::to_string(ivr.to_queue) +
+		"','" + std::to_string(ivr.to_robot) + "')";
+
+
+	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
+	{
+		showErrorBD("SQL_REQUEST::SQL::insertDataTaskIvr -> Data (insertDataTaskIvr) error -> query(" + query_insert + ")", &this->mysql);
+		return false;
+	}
+
+	mysql_close(&this->mysql);
+
+	return true;
+}
+
+bool SQL_REQUEST::SQL::deleteDataTaskIvr(int ID)
+{
+	if (!isConnectedBD())
+	{
+		showErrorBD("SQL_REQUEST::SQL::deleteDataTaskIvr");
+		return false;
+	}
+
+	std::string query = "delete from ivr where id = '" + std::to_string(ID) + "'";
+
+	if (mysql_query(&this->mysql, query.c_str()) != 0)
+	{
+		showErrorBD("SQL_REQUEST::SQL::deleteDataTaskIvr -> Data (deleteDataTaskIvr) error -> query(" + query + ")", &this->mysql);
 		return false;
 	}
 
