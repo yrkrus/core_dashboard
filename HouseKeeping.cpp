@@ -8,7 +8,8 @@ void HOUSEKEEPING::HouseKeeping::createTask(TASKS task)
 	switch (task)
 	{
 		case(TASKS::TaskQueue): {			
-			base.execTaskQueue();
+			
+		base.execTaskQueue();
 			break;
 		}
 		case(TASKS::TaskLogging): {

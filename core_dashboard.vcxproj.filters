@@ -66,10 +66,8 @@
     <ClInclude Include="Log.h">
       <Filter>include_h</Filter>
     </ClInclude>
-    <ClInclude Include="HouseKeeping.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
-    <None Include="ClassDiagram1.cd" />
+    <ClInclude Include="HouseKeeping.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

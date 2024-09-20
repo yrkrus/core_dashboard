@@ -40,7 +40,7 @@ Commands getCommand(char *ch) {
     if (commands == "start")             return start;
     if (commands == "statistics")        return statistics;
     if (commands == "remote")            return remote;
-    if (commands == "housekeeping")       return housekeeping;
+    if (commands == "housekeeping")      return housekeeping;
     if (commands == "test")              return test;
 
     return help;                         // default;
@@ -259,7 +259,9 @@ int main(int argc, char *argv[])
         case(housekeeping): {
             // DEBUG дописать!
             HOUSEKEEPING::HouseKeeping task;           
-            task.createTask(HOUSEKEEPING::TASKS::TaskQueue);
+            // task.createTask(HOUSEKEEPING::TASKS::TaskQueue); OK!
+            // task.createTask(HOUSEKEEPING::TASKS::TaskLogging); OK!
+            task.createTask(HOUSEKEEPING::TASKS::TaskIvr);
             break;
         }
         case(test): {

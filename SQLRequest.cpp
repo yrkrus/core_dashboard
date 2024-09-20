@@ -1577,20 +1577,94 @@ void SQL_REQUEST::SQL::execTaskQueue()
 			if (base.insertDataTaskQueue(list)) {
 				// удаляем текущий добавленный
 				base.deleteDataTaskQueue(list.fileds.id);
-			}		
-
+			}	
 		}	
 	}
 }
 
 void SQL_REQUEST::SQL::execTaskLogging()
 {
+	if (!isConnectedBD())
+	{
+		showErrorBD("SQL_REQUEST::SQL::execTaskLogging");
+		return;
+	}
+
+	// найдем все данные 
+	const std::string query = "select * from logging where date_time < '" + getCurrentStartDay() + "'";
+
+	if (mysql_query(&this->mysql, query.c_str()) != 0)
+	{
+		// ошибка считаем что есть запись		
+		showErrorBD("SQL_REQUEST::SQL::execTaskLogging -> query(" + query + ")", &this->mysql);
+		return;
+	}
+
+	// результат
+	MYSQL_RES *result = mysql_store_result(&this->mysql);
+	MYSQL_ROW row;
+
+	std::vector<HOUSEKEEPING::Logging> listLogging;
+
+	while ((row = mysql_fetch_row(result)) != NULL)
+	{
+		HOUSEKEEPING::Logging logging;
+
+		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
+		{
+			if (i == 0)			// id
+			{
+				logging.fileds.id = std::atoi(row[i]);
+			}
+			else if (i == 1)	// ip
+			{
+				logging.ip = row[i];
+			}
+			else if (i == 2)   // user_id
+			{
+				logging.user_id = std::atoi(row[i]);
+			}
+			else if (i == 3) // user_login_pc
+			{
+				logging.user_login_pc = row[i];
+			}
+			else if (i == 4) // pc
+			{
+				logging.pc = row[i];
+			}
+			else if (i == 5) // date_time
+			{
+				logging.fileds.date_time = row[i];
+			}
+			else if (i == 6)
+			{ 		
+				logging.action = std::atoi(row[i]);				
+			}			
+		}
+
+		listLogging.emplace_back(logging);
+	}
+
+	if (!listLogging.empty())
+	{
+		// перекидывание 1 транзакции хза раз ? \ или по 100 надо подумать..
+		SQL_REQUEST::SQL base;
+
+		for (auto &list : listLogging)
+		{
+			if (base.insertDataTaskLogging(list))
+			{
+				// удаляем текущий добавленный
+				base.deleteDataTaskLogging(list.fileds.id);
+			}
+		}
+	}
 }
 
 void SQL_REQUEST::SQL::execTaskIvr()
 {
-}
 
+}
 
 
 bool SQL_REQUEST::SQL::insertDataTaskQueue(HOUSEKEEPING::Queue &queue)
@@ -1656,6 +1730,56 @@ bool SQL_REQUEST::SQL::deleteDataTaskQueue(int ID)
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		showErrorBD("SQL_REQUEST::SQL::deleteDataTaskQueue -> Data (deleteDataTaskQueue) error -> query(" + query + ")", &this->mysql);
+		return false;
+	}
+
+	mysql_close(&this->mysql);
+
+	return true;
+}
+
+bool SQL_REQUEST::SQL::insertDataTaskLogging(HOUSEKEEPING::Logging &logging)
+{
+	if (!isConnectedBD())
+	{
+		showErrorBD("SQL_REQUEST::SQL::insertDataTaskLogging");
+		return false;
+	}	
+
+   // устанавливаем данные в history_logging
+	std::string	query_insert = "insert into history_logging (id,ip,user_id,user_login_pc,pc,date_time,action) values ('" + std::to_string(logging.fileds.id) +
+			"','" + logging.ip +
+			"','" + std::to_string(logging.user_id) +
+			"','" + logging.user_login_pc +
+			"','" + logging.pc +
+			"','" + logging.fileds.date_time +
+			"','" + std::to_string(logging.action) + "')";
+	
+
+	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
+	{
+		showErrorBD("SQL_REQUEST::SQL::insertDataTaskLogging -> Data (insertDataTaskLogging) error -> query(" + query_insert + ")", &this->mysql);
+		return false;
+	}
+
+	mysql_close(&this->mysql);
+
+	return true;
+}
+
+bool SQL_REQUEST::SQL::deleteDataTaskLogging(int ID)
+{
+	if (!isConnectedBD())
+	{
+		showErrorBD("SQL_REQUEST::SQL::deleteDataTaskLogging");
+		return false;
+	}
+
+	std::string query = "delete from logging where id = '" + std::to_string(ID) + "'";
+
+	if (mysql_query(&this->mysql, query.c_str()) != 0)
+	{
+		showErrorBD("SQL_REQUEST::SQL::deleteDataTaskLogging -> Data (deleteDataTaskLogging) error -> query(" + query + ")", &this->mysql);
 		return false;
 	}
 

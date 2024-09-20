@@ -89,9 +89,10 @@ namespace SQL_REQUEST
 		void execTaskQueue();																// выполнение задачи очистка таблицы queue
 		void execTaskLogging();																// выполнение задачи очистки таблицы Logging
 		void execTaskIvr();																	// выполнение задачи очистки таблицы Ivr
-		
 		bool insertDataTaskQueue(HOUSEKEEPING::Queue &queue);								// вставка данных для таблицы history_queue			
 		bool deleteDataTaskQueue(int ID);													// удаление данных из таблицы queue
+		bool insertDataTaskLogging(HOUSEKEEPING::Logging &logging);							// вставка данных для таблицы history_logging
+		bool deleteDataTaskLogging(int ID);													// удаление данных из таблицы logging
 
 	private:
 		MYSQL mysql;
