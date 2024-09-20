@@ -1508,15 +1508,13 @@ void SQL_REQUEST::SQL::execTaskQueue()
 		// ошибка считаем что есть запись		
 		showErrorBD("SQL_REQUEST::SQL::execTaskQueue -> query(" + query + ")", &this->mysql);
 		return;
-	}
-	
+	}	
 
 	// результат
 	MYSQL_RES *result = mysql_store_result(&this->mysql);
 	MYSQL_ROW row;
 
 	std::vector<HOUSEKEEPING::Queue> listQueue;
-	std::vector<HOUSEKEEPING::Queue> listQueueError;  // список с данными которые не удалось добавить в БД
 
 	while ((row = mysql_fetch_row(result)) != NULL)
 	{
@@ -1572,18 +1570,14 @@ void SQL_REQUEST::SQL::execTaskQueue()
 	if (!listQueue.empty()) { 
 		
 		// перекидывание 1 транзакции хза раз ? \ или по 100 надо подумать..
+		SQL_REQUEST::SQL base;
+
 		for (auto &list : listQueue)
-		{
-			SQL_REQUEST::SQL base;
-			 
-			// если не удалось добавить данные в БД то занесем их в listQueueError
-			if (!base.insertDataTaskQueue(list)) {
-				listQueueError.emplace_back(list);
-			}
-			else {
+		{		
+			if (base.insertDataTaskQueue(list)) {
 				// удаляем текущий добавленный
 				base.deleteDataTaskQueue(list.fileds.id);
-			}
+			}		
 
 		}	
 	}
