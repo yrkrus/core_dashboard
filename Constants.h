@@ -17,6 +17,14 @@ namespace CONSTANTS
     // WKroot#791  old
     // *v0@|48lg*se  new
    
+    /*
+    
+    valgrind --leak-check=full --show-leak-kinds=all --leak-resolution=med --log-file=./core.log ./core_dashboard.out start
+    valgrind --leak-check=full --leak-resolution=med --log-file=./core.log ./core_dashboard.out start
+    
+    */
+
+
 // для будущей интеграции с телефонами!!!    
 /*   
     // перезагрузка

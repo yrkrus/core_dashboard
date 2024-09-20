@@ -29,7 +29,7 @@ enum Commands
 };
 
 // получить команду
-Commands getCommand(char *ch) {
+Commands static getCommand(char *ch) {
     std::string commands = static_cast<std::string> (ch);
 
     if (commands == "help")              return help;
@@ -47,13 +47,13 @@ Commands getCommand(char *ch) {
 }
 
 
-void thread_Queue_ActiveSIP() {
+static void thread_Queue_ActiveSIP() {
     getQueue();
     getActiveSip();
 }
 
 // запуск проверки удаленных команд
-void thread_RemoteCommands() {
+static void thread_RemoteCommands() {
     REMOTE_COMMANDS::Remote remote;
     if (remote.getCountCommand())
     {
@@ -62,7 +62,7 @@ void thread_RemoteCommands() {
 }
 
 // запуск очистки БД перенос в history
-void thread_HouseKeeping() {
+static void thread_HouseKeeping() {
     HOUSEKEEPING::HouseKeeping task;
 
     task.createTask(HOUSEKEEPING::TASKS::TaskQueue);
@@ -70,7 +70,7 @@ void thread_HouseKeeping() {
     task.createTask(HOUSEKEEPING::TASKS::TaskIvr);
 }
 
-void stat() {
+static void stat() {
     int TIK = 6000;
     // int avg{0};
     size_t all{ 0 };
@@ -94,8 +94,7 @@ void stat() {
         if (remote.getCountCommand())
         {
             remote.startCommand();
-        }
-        
+        }        
 
         auto stop = std::chrono::steady_clock::now();
 
@@ -109,20 +108,24 @@ void stat() {
 
         std::cout << "avg execute = " << all / i << " ms | min execute = " << min << " ms | max execute = " << max << " ms\n";
                
-        sleep(1);
+        if (execute_ms.count() < 1000)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000 - execute_ms.count()));
+        }
+
         system("clear");
 
         if (i >= 10800)
         {
             all = 0;
             i = 1;
-            int min = 1000;
-            int max = 0;
+            min = 1000;
+            max = 0;
         }
     }
 }
 
-void collect() {
+static void collect() {
      //int TIK = 3600;  
     static size_t   all{ 0 };
     static int      min{ 1000 };
@@ -173,9 +176,15 @@ void collect() {
 
         std::cout  << "avg execute = " << all / i << " ms | min execute = " << min << " ms | max execute = " << max << " ms\n";
 
-        if (execute_ms.count() < 1000) {        
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000-execute_ms.count()));
-        } 
+        if (execute_ms.count() < 1000)
+        {
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000 - execute_ms.count()));
+        }
+        else
+        {
+            // Поток уже заблокирован на 1000 миллисекунд или более, поэтому разблокируем его немедленно.
+            std::this_thread::sleep_for(std::chrono::milliseconds(0));
+        }
 
         system("clear");
 
@@ -192,7 +201,6 @@ void collect() {
 int main(int argc, char *argv[])
 {
     setlocale(LC_ALL, "ru_RU.UTF-8"); 
-
 
     if (argc == 1)
     {

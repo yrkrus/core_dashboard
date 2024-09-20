@@ -566,12 +566,14 @@ bool SQL_REQUEST::SQL::isExistQueueAfter20hours()
 	// результат
 	MYSQL_RES *result = mysql_store_result(&this->mysql);
 	MYSQL_ROW row = mysql_fetch_row(result);
+	
+	bool existQueueAfter20hours;
+	(std::stoi(row[0]) == 0 ? existQueueAfter20hours = false : existQueueAfter20hours = true);
+
 	mysql_free_result(result);	
-
-	mysql_close(&this->mysql); // добавил! 01.06.2024
-
-	return (std::stoi(row[0]) == 0 ? false : true);
-
+	mysql_close(&this->mysql); 
+			
+	return existQueueAfter20hours;
 }
 
 // обновление поля hash когда успешно поговорили
@@ -686,13 +688,14 @@ bool SQL_REQUEST::SQL::isExistAnsweredAfter20hours()
 	// результат
 	MYSQL_RES *result = mysql_store_result(&this->mysql);
 	MYSQL_ROW row = mysql_fetch_row(result);
-	mysql_free_result(result);
+	
+	bool existAnsweredAfter20;
+	(std::stoi(row[0]) == 0 ? existAnsweredAfter20 = false : existAnsweredAfter20 = true);
 
+	mysql_free_result(result);
 	mysql_close(&this->mysql); 
 
-	return (std::stoi(row[0]) == 0 ? false : true);
-
-
+	return existAnsweredAfter20;
 }
 
 // обновление данных когда оператор поговорил и ушел из линии, а звонок все еще находится не обработанным
@@ -865,11 +868,14 @@ bool SQL_REQUEST::SQL::isExistOperatorsQueue()
 	// результат
 	MYSQL_RES *result = mysql_store_result(&this->mysql);
 	MYSQL_ROW row = mysql_fetch_row(result);
-	mysql_free_result(result);
+	
+	bool existOperatorsQueue;
+	(std::stoi(row[0]) == 0 ? existOperatorsQueue = false : existOperatorsQueue = true);
 
+	mysql_free_result(result);
 	mysql_close(&this->mysql);
 
-	return (std::stoi(row[0]) == 0 ? false : true);
+	return existOperatorsQueue;		
 }
 
 // удаление sip номера оператора из всех очередей
@@ -1164,12 +1170,15 @@ bool SQL_REQUEST::SQL::remoteCheckNewCommads()
 
 	// результат
 	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row = mysql_fetch_row(result);
+	MYSQL_ROW row = mysql_fetch_row(result);			
+
+	bool existNewCommand;
+	((std::stoi(row[0]) == 0) ? existNewCommand = false : existNewCommand = true);
+	
 	mysql_free_result(result);
-
 	mysql_close(&this->mysql);
-
-	return (std::stoi(row[0]) == 0 ? false : true);
+	
+	return existNewCommand;
 }
 
 
@@ -1580,9 +1589,11 @@ void SQL_REQUEST::SQL::execTaskQueue()
 			}	
 		}
 
+		mysql_free_result(result);
 		mysql_close(&this->mysql);
 	}
 	else {
+		mysql_free_result(result);
 		mysql_close(&this->mysql);
 	}
 }
@@ -1663,10 +1674,12 @@ void SQL_REQUEST::SQL::execTaskLogging()
 				base.deleteDataTaskLogging(list.fileds.id);
 			}
 		}
-
+		
+		mysql_free_result(result);
 		mysql_close(&this->mysql);
 	}
 	else {
+		mysql_free_result(result);
 		mysql_close(&this->mysql);
 	}
 }
@@ -1749,9 +1762,11 @@ void SQL_REQUEST::SQL::execTaskIvr()
 			}
 		}
 
+		mysql_free_result(result);
 		mysql_close(&this->mysql);
 	}
 	else {
+		mysql_free_result(result);
 		mysql_close(&this->mysql);
 	}
 
