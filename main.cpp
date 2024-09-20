@@ -64,6 +64,7 @@ void thread_RemoteCommands() {
 // запуск очистки БД перенос в history
 void thread_HouseKeeping() {
     HOUSEKEEPING::HouseKeeping task;
+
     task.createTask(HOUSEKEEPING::TASKS::TaskQueue);
     task.createTask(HOUSEKEEPING::TASKS::TaskLogging);
     task.createTask(HOUSEKEEPING::TASKS::TaskIvr);

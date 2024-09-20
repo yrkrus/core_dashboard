@@ -3,22 +3,27 @@
 
 void HOUSEKEEPING::HouseKeeping::createTask(TASKS task)
 {
-	SQL_REQUEST::SQL base;
-
 	switch (task)
 	{
 		case(TASKS::TaskQueue): {			
 			
-		base.execTaskQueue();
+			SQL_REQUEST::SQL base;
+			base.execTaskQueue();
+			
 			break;
 		}
 		case(TASKS::TaskLogging): {
 			
+			SQL_REQUEST::SQL base;
 			base.execTaskLogging();
+			
 			break;
 		}
 		case(TASKS::TaskIvr): {
+			
+			SQL_REQUEST::SQL base;
 			base.execTaskIvr();
+			
 			break;
 		}
 	}

@@ -1578,7 +1578,12 @@ void SQL_REQUEST::SQL::execTaskQueue()
 				// удаляем текущий добавленный
 				base.deleteDataTaskQueue(list.fileds.id);
 			}	
-		}	
+		}
+
+		mysql_close(&this->mysql);
+	}
+	else {
+		mysql_close(&this->mysql);
 	}
 }
 
@@ -1658,6 +1663,11 @@ void SQL_REQUEST::SQL::execTaskLogging()
 				base.deleteDataTaskLogging(list.fileds.id);
 			}
 		}
+
+		mysql_close(&this->mysql);
+	}
+	else {
+		mysql_close(&this->mysql);
 	}
 }
 
@@ -1738,6 +1748,11 @@ void SQL_REQUEST::SQL::execTaskIvr()
 				base.deleteDataTaskIvr(list.fileds.id);
 			}
 		}
+
+		mysql_close(&this->mysql);
+	}
+	else {
+		mysql_close(&this->mysql);
 	}
 
 }
