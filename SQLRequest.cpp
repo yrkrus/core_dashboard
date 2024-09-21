@@ -150,10 +150,13 @@ bool SQL_REQUEST::SQL::isExistIVRPhone(const char *phone)
 	// результат
 	MYSQL_RES *result = mysql_store_result(&this->mysql);
 	MYSQL_ROW row = mysql_fetch_row(result);	
+	
+	bool existIvrPhone;
+	std::stoi(row[0]) == 0 ? existIvrPhone = false : existIvrPhone = true;
+	
 	mysql_free_result(result);	
 
-
-	return ( std::stoi(row[0]) == 0 ? false : true);	
+	return existIvrPhone;	
 }
 
 // получение последнего ID актуального
@@ -178,9 +181,12 @@ int SQL_REQUEST::SQL::getLastIDphone(const char *phone)
 
 	MYSQL_RES *result = mysql_store_result(&this->mysql);
 	MYSQL_ROW row = mysql_fetch_row(result);
+	
+	int id = std::stoi(row[0]);
+
 	mysql_free_result(result);	
 
-	return std::stoi(row[0]);
+	return id;
 }
 
 // обновление данных в таблице IVR
@@ -264,9 +270,11 @@ bool SQL_REQUEST::SQL::isExistQUEUE(const char *queue, const char *phone)
 	// результат
 	MYSQL_RES *result = mysql_store_result(&this->mysql);
 	MYSQL_ROW row = mysql_fetch_row(result);
+	
+	int countPhone = std::stoi(row[0]);
 	mysql_free_result(result);
 
-	if (std::stoi(row[0]) >= 1)
+	if (countPhone >= 1)
 	{
 		return true;
 	}
@@ -289,9 +297,11 @@ bool SQL_REQUEST::SQL::isExistQUEUE(const char *queue, const char *phone)
 		// результат
 		MYSQL_RES *result = mysql_store_result(&this->mysql);
 		MYSQL_ROW row = mysql_fetch_row(result);
+		int countPhone = std::stoi(row[0]);
+		
 		mysql_free_result(result);
 
-		if (std::stoi(row[0]) >= 1)
+		if (countPhone >= 1)
 		{
 			return true; 
 		}
@@ -315,9 +325,11 @@ bool SQL_REQUEST::SQL::isExistQUEUE(const char *queue, const char *phone)
 			// результат
 			MYSQL_RES *result = mysql_store_result(&this->mysql);
 			MYSQL_ROW row = mysql_fetch_row(result);
+			int countPhone = std::stoi(row[0]);
+			
 			mysql_free_result(result);
 
-			if (std::stoi(row[0]) >= 1)
+			if (countPhone >= 1)
 			{
 				return false; // считаем как новый вызов!!!
 			}
@@ -339,14 +351,16 @@ bool SQL_REQUEST::SQL::isExistQUEUE(const char *queue, const char *phone)
 				// результат
 				MYSQL_RES *result = mysql_store_result(&this->mysql);
 				MYSQL_ROW row = mysql_fetch_row(result);
+				
+				int countPhone = std::stoi(row[0]);
 				mysql_free_result(result);
 
-				if (std::stoi(row[0]) >= 1)
+				if (countPhone >= 1)
 				{
 					return false;	// если есть запись, значит повторный звонок
 				}
 				
-				return (std::stoi(row[0]) == 0 ? false : true);			
+				return (countPhone == 0 ? false : true);
 			}		
 		}		
 	}	
@@ -393,9 +407,11 @@ int SQL_REQUEST::SQL::getLastIDQUEUE(const char *phone)
 
 	MYSQL_RES *result = mysql_store_result(&this->mysql);
 	MYSQL_ROW row = mysql_fetch_row(result);
+	int count = std::stoi(row[0]);
+	
 	mysql_free_result(result);	
 
-	return std::stoi(row[0]);
+	return count;
 }
 
 // обновление данных таблицы QUEUE о том с кем сейчас разговаривает оператор
@@ -446,9 +462,14 @@ bool SQL_REQUEST::SQL::isExistQUEUE_SIP(const char *phone)
 	// результат
 	MYSQL_RES *result = mysql_store_result(&this->mysql);
 	MYSQL_ROW row = mysql_fetch_row(result);
+	
+	bool existQueueSip;
+	(std::stoi(row[0]) == 0 ? existQueueSip = false : existQueueSip = true);
+	
 	mysql_free_result(result);
 
-	return (std::stoi(row[0]) == 0 ? false : true);
+	return existQueueSip;
+	
 }
 
 //обновление данных когда звонок не дождался своей очереди
@@ -837,12 +858,15 @@ bool SQL_REQUEST::SQL::isExistOperatorsQueue(const char *sip, const char *queue)
 
 	// результат
 	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row = mysql_fetch_row(result);
+	MYSQL_ROW row = mysql_fetch_row(result);	
+
+	bool existOperatos;
+	std::stoi(row[0]) == 0 ? existOperatos = false : existOperatos = true;
 	mysql_free_result(result);
 
 	mysql_close(&this->mysql); 
 
-	return (std::stoi(row[0]) == 0 ? false : true);
+	return existOperatos;
 
 }
 
