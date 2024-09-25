@@ -250,7 +250,15 @@ void showVersionCore()
 {
 	std::ostringstream buffer;
 	buffer << "==========================================================\n";
-	buffer << "\t"<<CONSTANTS::core_version<<"\n";
+	
+	if (CONSTANTS::DEBUG_MODE) // DEBUG
+	{
+		buffer << "###DEBUG### " + CONSTANTS::core_version << "\n";
+	}
+	else {					  // NO DEBUG
+		buffer << "\t" << CONSTANTS::core_version << "\n";
+	}	
+	
 	buffer << "==========================================================\n";
 	std::cout << buffer.str();
 }
@@ -377,6 +385,12 @@ bool remoteCommandChekedExecution(LOG::Log command)
 
 	fileRemoteCommand.close();
 	return false;	
+}
+
+
+bool to_bool(std::string str)
+{
+	return ((str == "true") ? true : false);
 }
 
 

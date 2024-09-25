@@ -22,6 +22,9 @@ namespace CONSTANTS
     valgrind --leak-check=full --show-leak-kinds=all --leak-resolution=med --log-file=./core.log ./core_dashboard.out start
     valgrind --leak-check=full --leak-resolution=med --log-file=./core.log ./core_dashboard.out start
     
+    mysqldump -uzabbix -pUFGq4kZMNIMwxTzV -h10.34.222.19 dashboard > /root/core_dashboards/backup_bd/dashboard_20240924.sql
+
+
     */
 
 
@@ -58,11 +61,11 @@ namespace CONSTANTS
 
     /*
     ВАЖНО! НЕ ЗАБЫТЬ
-    запуск на проде запускать из ./root/core_dashboard/core_dashboard
+    запуск на проде запускать из ./root/core_dashboard/core_dashboard/core_dashboard.out
     */
 
  // версия ядра
- static std::string core_version = {"CORE DASHBOARD | version 2.12 bild 4114bba "};
+ static std::string core_version = {"CORE DASHBOARD | version 2.13 bild a605736 "};
 
 
 // asterisk очереди  

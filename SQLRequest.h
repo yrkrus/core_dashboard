@@ -96,6 +96,12 @@ namespace SQL_REQUEST
 		bool insertDataTaskIvr(HOUSEKEEPING::IVR &ivr);										// вставка данных из талицы history_ivr
 		bool deleteDataTaskIvr(int ID);														// удаление данных из таблицы ivr 
 
+		// table operators_ohhold
+		void updateOperatorsOnHold(const ACTIVE_SIP::Parsing *list);						// обнление данных о статусе оператора OnHold
+		std::vector<ACTIVE_SIP::OnHold> *createOnHoldSip();								    // создание списка с sip оператоарми которые находятся в статусе OnHold по БД
+		void addOperatorsOnHold(std::string &sip);											// добавление sip номера орератора в таблицу operators_onhold
+		void updateOperatorsOnHold(int id);													// обновление данных что sip закончил быть в статусе onHold 
+
 
 	private:
 		MYSQL mysql;

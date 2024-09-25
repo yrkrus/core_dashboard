@@ -46,6 +46,8 @@ int getStatusOperators(REMOTE_COMMANDS::StatusOperators status); // преобразован
 
 bool remoteCommandChekedExecution(LOG::Log command);	// проверка успешно ли выполнили удаленную команду
 
+bool to_bool(std::string str);						// конвертер из std::string -> bool
+
 
 
 #endif //INTERNALFUNCTION_H
