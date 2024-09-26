@@ -1982,12 +1982,11 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(const ACTIVE_SIP::Parsing *list)
 	typedef std::vector<ACTIVE_SIP::Operators> operators;
 	typedef std::vector<ACTIVE_SIP::OnHold> operators_onhold;
 	
-	if (!isConnectedBD())
-	{
-		showErrorBD("SQL_REQUEST::SQL::updateOperatorsOnHold");
-
-		return;
-	}
+	//if (!isConnectedBD())
+	//{
+	//	showErrorBD("SQL_REQUEST::SQL::updateOperatorsOnHold");
+	//	return;
+	//}
 
 	// найдем все sip операторы которые числяться по БД в статусе onHold	
 	auto onHold = createOnHoldSip();
@@ -2115,7 +2114,8 @@ std::vector<ACTIVE_SIP::OnHold> *SQL_REQUEST::SQL::createOnHoldSip()
 		listHold->push_back(hold);
 	}
 	
-
+	mysql_free_result(result);
+	mysql_close(&this->mysql);
 	return listHold;
 }
 

@@ -349,12 +349,11 @@ bool ACTIVE_SIP::Parsing::isExistListActiveOperators()
 void ACTIVE_SIP::Parsing::updateData()
 {
 	if (this->isExistList())
-	{
-		SQL_REQUEST::SQL base;		
-
+	{			
+		
 		for (std::vector<ACTIVE_SIP::Pacients>::iterator it = active_sip_list.begin(); it != active_sip_list.end(); ++it)
 		{
-			
+			SQL_REQUEST::SQL base;
 			if (base.isConnectedBD())
 			{
 				base.updateQUEUE_SIP(it->phone.c_str(),it->internal_sip.c_str(),it->talk_time.c_str());				
@@ -362,12 +361,13 @@ void ACTIVE_SIP::Parsing::updateData()
 		}
 
 		// обновление данных по операторам находящимся в статусе onHold  DEBUG проверить!!!
+		SQL_REQUEST::SQL base;
 		if (base.isConnectedBD()) {
 			base.updateOperatorsOnHold(this);
 		}			
 
 	}
-	else {
+	/*else {
 		typedef std::vector<ACTIVE_SIP::OnHold> operators_onhold;
 		
 		// найдем все sip операторы которые числяться по БД в статусе onHold	
@@ -384,7 +384,7 @@ void ACTIVE_SIP::Parsing::updateData()
 		}
 
 		delete onHold;
-	}
+	}*/
 }
 
 std::vector<ACTIVE_SIP::Operators> ACTIVE_SIP::Parsing::getListOperators() const
