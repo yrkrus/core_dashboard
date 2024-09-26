@@ -6,6 +6,7 @@
 //////////////////////////////////////////////////////
 
 #include <string>
+#include <list>
 #include "Constants.h"
 #include "SQLRequest.h"
 #include "Queue.h"
@@ -16,6 +17,9 @@
 
 #ifndef INTERNALFUNCTION_H
 #define INTERNALFUNCTION_H
+
+typedef std::vector<ACTIVE_SIP::OnHold> OnHold;
+typedef std::vector<ACTIVE_SIP::Operators> Operators;
 
 std::string phoneParsing(std::string &phone);					// парсинг номера телефона в нормальный вид
 void getIVR();												    // создать + получить текущий IVR
@@ -41,7 +45,8 @@ void showErrorBD(const std::string str, MYSQL *mysql); // отображение инфо что п
 LOG::Log getRemoteCommand(int command);	// преобразование текущей удаленной комады из int -> LOG::Log
 int getRemoteCommand(LOG::Log command); // преобразование текущей удаленной комады из LOG::Log -> int
 int getStatusOperators(REMOTE_COMMANDS::StatusOperators status); // преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
-
+bool isExistNewOnHoldOperators(const OnHold *onHold, const Operators &operators); // проверка есть ли разница между onHold по БД и active_sip->onHold
+std::list<std::string> *createNewOnHoldOperators(const OnHold &onHold, const Operators &operators);			// создание списка с новыми операторами в OnHold
 
 
 bool remoteCommandChekedExecution(LOG::Log command);	// проверка успешно ли выполнили удаленную команду

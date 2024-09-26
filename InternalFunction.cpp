@@ -334,6 +334,40 @@ int getStatusOperators(REMOTE_COMMANDS::StatusOperators status)
 	return static_cast<int>(status);
 }
 
+
+bool isExistNewOnHoldOperators(const OnHold *onHold, const Operators &operators)
+{
+	int count_operators_active_sip{ 0 };
+	for (const auto &list : operators) {
+		if (list.isOnHold) {
+			++count_operators_active_sip;
+		}
+	}
+	
+	return ( onHold->size() == count_operators_active_sip ? true : false );
+
+}
+
+std::list<std::string> *createNewOnHoldOperators(const OnHold &onHold, const Operators &operators)
+{
+	auto *new_lists = new std::list<std::string>;
+
+	for (const auto &operators_list : operators) {
+		
+		if (operators_list.isOnHold) {
+			
+			for (size_t i = 0; i != onHold.size(); ++i)
+			{
+				if (operators_list.sip_number != onHold[i].sip_number) {
+					new_lists->emplace_back(operators_list.sip_number);
+				}
+			}			
+		}
+	}
+	
+	return new_lists;
+}
+
 // проверка успешно ли выполнили удаленную команду
 bool remoteCommandChekedExecution(LOG::Log command)
 {	

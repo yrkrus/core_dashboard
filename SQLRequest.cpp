@@ -1990,6 +1990,7 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(const ACTIVE_SIP::Parsing *list)
 
 	// найдем все sip операторы которые числяться по БД в статусе onHold	
 	auto onHold = createOnHoldSip();
+	
 
 	// проверяем
 	if (!onHold->empty()) {
@@ -1998,7 +1999,21 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(const ACTIVE_SIP::Parsing *list)
 		
 		// проверяем сначало текущие которые уже были в onHold добавлены		
 		if (!curr_list_operators.empty())
-		{
+		{			
+			// вдруг новые onHold появились, добавляем в БД
+			if (!isExistNewOnHoldOperators(onHold, curr_list_operators))
+			{
+				auto new_list = createNewOnHoldOperators(*onHold, curr_list_operators);
+				
+				for (auto iter = new_list->begin(); iter != new_list->end(); ++iter)
+				{
+					SQL base;
+					base.addOperatorsOnHold(*iter);
+				}			
+				
+				delete new_list;
+			}
+			
 			// проверим оператор еще разговаривает в onHold или уже нет
 			for (operators_onhold::iterator operators_hold = onHold->begin(); operators_hold != onHold->end(); ++operators_hold)
 			{
@@ -2019,16 +2034,16 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(const ACTIVE_SIP::Parsing *list)
 						
 						continue;
 					}
-					else {
-						isExistOnHold = false;
-					}
+					//else {
+					//	isExistOnHold = false;
+					//}
 				}
 					
 				// не нашли в активных, значит закончили onHold
-				if (!isExistOnHold) {
-					SQL base;
-					base.updateOperatorsOnHold(operators_hold->id);
-				}
+				//if (!isExistOnHold) {
+				//	SQL base;
+				//	base.updateOperatorsOnHold(operators_hold->id);
+				//}
 			}
 		}
 		else

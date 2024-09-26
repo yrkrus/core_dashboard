@@ -121,7 +121,7 @@ void ACTIVE_SIP::Parsing::show(bool silent)
 					buffer << list.internal_sip << "\t >> \t" << list.phone << "\t (" << getTalkTime(list.talk_time) << ")\n";
 				}
 				else {
-					buffer << list.internal_sip << " (OnHold)\t >> \t" << list.phone << "\t (" << getTalkTime(list.talk_time) << ")\n";
+					buffer << list.internal_sip << " (OnHold) \t" << list.phone << "\t (" << getTalkTime(list.talk_time) << ")\n";
 				}				
 			}
 		}		
