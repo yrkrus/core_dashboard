@@ -70,6 +70,8 @@ static void thread_HouseKeeping() {
     task.createTask(HOUSEKEEPING::TASKS::TaskLogging);   
 
     task.createTask(HOUSEKEEPING::TASKS::TaskIvr);
+
+    task.createTask(HOUSEKEEPING::TASKS::TaskOnHold);
     
 }
 

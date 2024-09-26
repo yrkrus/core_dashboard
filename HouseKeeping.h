@@ -12,6 +12,7 @@ namespace HOUSEKEEPING {
 		TaskQueue,
 		TaskLogging,
 		TaskIvr,
+		TaskOnHold,
 	};
 
 	class HouseKeeping
@@ -77,6 +78,19 @@ namespace HOUSEKEEPING {
 			std::string		user_login_pc{ "" };
 			std::string		pc{""};
 			int				action{ 0 };
+	};
+
+	class OnHold
+	{
+	public:
+		OnHold() = default;
+		~OnHold() = default;
+
+		int				id{ 0 };
+		int				sip{ 0 };
+		std::string		date_time_start{ "" };
+		std::string		date_time_stop{ "" };
+
 	};
 }
 

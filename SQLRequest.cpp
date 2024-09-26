@@ -1805,6 +1805,83 @@ void SQL_REQUEST::SQL::execTaskIvr()
 
 }
 
+void SQL_REQUEST::SQL::execTaskOnHold()
+{
+	if (!isConnectedBD())
+	{
+		showErrorBD("SQL_REQUEST::SQL::execTaskOnHold");
+		return;
+	}
+
+	// найдем все данные 
+	const std::string query = "select * from operators_ohhold where date_time_start < '" + getCurrentStartDay() + "'";
+
+	if (mysql_query(&this->mysql, query.c_str()) != 0)
+	{
+		// ошибка считаем что есть запись		
+		showErrorBD("SQL_REQUEST::SQL::execTaskOnHold -> query(" + query + ")", &this->mysql);
+		return;
+	}
+
+	// результат
+	MYSQL_RES *result = mysql_store_result(&this->mysql);
+	MYSQL_ROW row;
+
+	std::vector<HOUSEKEEPING::OnHold> listOnHold;
+
+	while ((row = mysql_fetch_row(result)) != NULL)
+	{
+		HOUSEKEEPING::OnHold onHold;
+
+		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
+		{
+			if (i == 0)			// id
+			{
+				onHold.id = std::atoi(row[i]);				
+			}
+			else if (i == 1)	// sip
+			{
+				onHold.sip = std::atoi(row[i]);
+			}
+			else if (i == 2)   // date_time_start
+			{
+				onHold.date_time_start = row[i];
+			}
+			else if (i == 3) // date_time_stop
+			{
+				onHold.date_time_stop = row[i];
+			}			
+		}
+
+		listOnHold.emplace_back(onHold);
+	}
+
+	if (!listOnHold.empty())
+	{
+		std::cout << "HouseKeeping.OnHold work...\n";
+		// перекидывание 1 транзакции хза раз ? \ или по 100 надо подумать..
+		SQL_REQUEST::SQL base;
+
+		for (auto &list : listOnHold)
+		{
+			if (base.insertDataTaskOnHold(list))
+			{
+				// удаляем текущий добавленный
+				base.deleteDataTaskOnHold(list.id);
+			}
+		}
+		std::cout << "HouseKeeping.OnHold work DONE!\n";
+
+		mysql_free_result(result);
+		mysql_close(&this->mysql);
+	}
+	else
+	{
+		mysql_free_result(result);
+		mysql_close(&this->mysql);
+	}
+}
+
 
 bool SQL_REQUEST::SQL::insertDataTaskQueue(HOUSEKEEPING::Queue &queue)
 {
@@ -1969,6 +2046,53 @@ bool SQL_REQUEST::SQL::deleteDataTaskIvr(int ID)
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		showErrorBD("SQL_REQUEST::SQL::deleteDataTaskIvr -> Data (deleteDataTaskIvr) error -> query(" + query + ")", &this->mysql);
+		return false;
+	}
+
+	mysql_close(&this->mysql);
+
+	return true;
+}
+
+bool SQL_REQUEST::SQL::insertDataTaskOnHold(HOUSEKEEPING::OnHold &onHold)
+{
+	if (!isConnectedBD())
+	{
+		showErrorBD("SQL_REQUEST::SQL::insertDataTaskOnHold");
+		return false;
+	}
+
+	// устанавливаем данные в history_ivr
+	std::string	query_insert = "insert into history_onhold (id,sip,date_time_start,date_time_stop) values ('" + std::to_string(onHold.id) +
+		"','" + std::to_string(onHold.sip) +
+		"','" + onHold.date_time_start +
+		"','" + onHold.date_time_stop + "')";
+
+
+	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
+	{
+		showErrorBD("SQL_REQUEST::SQL::insertDataTaskOnHold -> Data (insertDataTaskOnHold) error -> query(" + query_insert + ")", &this->mysql);
+		return false;
+	}
+
+	mysql_close(&this->mysql);
+
+	return true;
+}
+
+bool SQL_REQUEST::SQL::deleteDataTaskOnHold(int ID)
+{
+	if (!isConnectedBD())
+	{
+		showErrorBD("SQL_REQUEST::SQL::deleteDataTaskOnHold");
+		return false;
+	}
+
+	std::string query = "delete from operators_ohhold where id = '" + std::to_string(ID) + "'";
+
+	if (mysql_query(&this->mysql, query.c_str()) != 0)
+	{
+		showErrorBD("SQL_REQUEST::SQL::deleteDataTaskOnHold -> Data (deleteDataTaskOnHold) error -> query(" + query + ")", &this->mysql);
 		return false;
 	}
 

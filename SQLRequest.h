@@ -89,12 +89,15 @@ namespace SQL_REQUEST
 		void execTaskQueue();																// выполнение задачи очистка таблицы queue
 		void execTaskLogging();																// выполнение задачи очистки таблицы Logging
 		void execTaskIvr();																	// выполнение задачи очистки таблицы Ivr
+		void execTaskOnHold();																// выполнение задачи очистки таблицы operators_onhold
 		bool insertDataTaskQueue(HOUSEKEEPING::Queue &queue);								// вставка данных для таблицы history_queue			
 		bool deleteDataTaskQueue(int ID);													// удаление данных из таблицы queue
 		bool insertDataTaskLogging(HOUSEKEEPING::Logging &logging);							// вставка данных для таблицы history_logging
 		bool deleteDataTaskLogging(int ID);													// удаление данных из таблицы logging
 		bool insertDataTaskIvr(HOUSEKEEPING::IVR &ivr);										// вставка данных из талицы history_ivr
 		bool deleteDataTaskIvr(int ID);														// удаление данных из таблицы ivr 
+		bool insertDataTaskOnHold(HOUSEKEEPING::OnHold &onHold);							// вставка данных для таблицы history_onhold
+		bool deleteDataTaskOnHold(int ID);													// удаление данных из таблицы operatorsd_onhold
 
 		// table operators_ohhold
 		void updateOperatorsOnHold(const ACTIVE_SIP::Parsing *list);						// обнление данных о статусе оператора OnHold

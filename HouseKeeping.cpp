@@ -26,5 +26,14 @@ void HOUSEKEEPING::HouseKeeping::createTask(TASKS task)
 			
 			break;
 		}
+		case(TASKS::TaskOnHold):
+		{
+
+			SQL_REQUEST::SQL base;
+			base.execTaskOnHold();
+
+			break;
+		}
+
 	}
 }
