@@ -107,6 +107,7 @@
     <LibraryPath>Z:\;$(LibraryPath)</LibraryPath>
     <RemoteCopySourceMethod />
     <ProjectPublicIncludePath>$(ProjectPublicIncludePath)</ProjectPublicIncludePath>
+    <EnableIncrementalBuild>No</EnableIncrementalBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <IncludePath>Z:\;$(IncludePath)</IncludePath>
@@ -119,6 +120,7 @@
     <LibraryPath>Z:\;$(LibraryPath)</LibraryPath>
     <RemoteCopySourceMethod />
     <ProjectPublicIncludePath>$(ProjectPublicIncludePath)</ProjectPublicIncludePath>
+    <EnableIncrementalBuild>No</EnableIncrementalBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <IncludePath>Z:\;$(IncludePath)</IncludePath>
@@ -131,6 +133,7 @@
     <LibraryPath>Z:\;$(LibraryPath)</LibraryPath>
     <RemoteCopySourceMethod />
     <ProjectPublicIncludePath>$(ProjectPublicIncludePath)</ProjectPublicIncludePath>
+    <EnableIncrementalBuild>No</EnableIncrementalBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <IncludePath>Z:\;$(IncludePath)</IncludePath>
@@ -143,6 +146,7 @@
     <LibraryPath>Z:\;$(LibraryPath)</LibraryPath>
     <RemoteCopySourceMethod />
     <ProjectPublicIncludePath>$(ProjectPublicIncludePath)</ProjectPublicIncludePath>
+    <EnableIncrementalBuild>No</EnableIncrementalBuild>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
     <IncludePath>Z:\;$(IncludePath)</IncludePath>

@@ -427,6 +427,15 @@ bool to_bool(std::string str)
 	return ((str == "true") ? true : false);
 }
 
+size_t string_to_size_t(const std::string &str)
+{
+	std::stringstream stream(str);
+	size_t output;
+	stream >> output;
+
+	return output;
+}
+
 
 
 

@@ -121,7 +121,7 @@ void REMOTE_COMMANDS::Remote::startCommand()
 }
 
 // кол-во команд которые на данный момент есть в памяти
-int REMOTE_COMMANDS::Remote::getCountCommand() const
+unsigned REMOTE_COMMANDS::Remote::getCountCommand() const
 {
 	return list_commads.size();
 }

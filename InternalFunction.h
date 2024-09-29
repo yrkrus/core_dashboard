@@ -53,6 +53,6 @@ bool remoteCommandChekedExecution(LOG::Log command);	// проверка успешно ли выпо
 
 bool to_bool(std::string str);						// конвертер из std::string -> bool
 
-
+size_t string_to_size_t(const std::string &str);	// конвертер std::string->size_t
 
 #endif //INTERNALFUNCTION_H

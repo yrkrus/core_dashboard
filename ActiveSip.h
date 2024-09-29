@@ -87,6 +87,7 @@ namespace ACTIVE_SIP
 		int id{ 0 };
 		std::string date_time_start{ "null" };
 		std::string date_time_stop{ "null" };
+		size_t hash{ 0 };
 	};
 }
 

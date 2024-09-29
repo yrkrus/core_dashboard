@@ -65,7 +65,7 @@ namespace CONSTANTS
     */
 
  // версия ядра
- static std::string core_version = {"CORE DASHBOARD | version 2.13 bild 174265e "};
+ static std::string core_version = {"CORE DASHBOARD | version 2.14 bild 7803a1f "};
  
 
 // asterisk очереди  

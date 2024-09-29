@@ -76,11 +76,11 @@ static void thread_HouseKeeping() {
 }
 
 static void stat() {
-    int TIK = 6000;
+    uint64_t TIK = 6000;
     // int avg{0};
     size_t all{ 0 };
-    int min{ 1000 };
-    int max{ 0 };
+    uint64_t min{ 1000 };
+    uint64_t max{ 0 };
 
     for (size_t i = 1; /*i <= TIK*/; ++i)
     {

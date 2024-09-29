@@ -44,7 +44,7 @@ namespace REMOTE_COMMANDS {
 		Remote();
 		~Remote()	= default;		
 
-		int getCountCommand() const;		// кол-во команд которые на данный момент есть в памяти	
+		unsigned getCountCommand() const;		// кол-во команд которые на данный момент есть в памяти	
 		std::vector<R_Commands> list_commads;
 		void startCommand();		// отработка команд
 

@@ -359,8 +359,8 @@ void ACTIVE_SIP::Parsing::updateData()
 				base.updateQUEUE_SIP(it->phone.c_str(),it->internal_sip.c_str(),it->talk_time.c_str());				
 			}
 		}
-
-		// обновление данных по операторам находящимся в статусе onHold  DEBUG проверить!!!
+		
+		// обновление данных по операторам находящимся в статусе onHold
 		SQL_REQUEST::SQL base;
 		if (base.isConnectedBD()) {
 			base.updateOperatorsOnHold(this);

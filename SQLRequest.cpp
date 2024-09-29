@@ -7,8 +7,9 @@
 #include <iterator>
 #include <string>
 #include <memory>
+#include <list>
 
-
+static unsigned int count_add_hold{ 0 };
 
 SQL_REQUEST::SQL::SQL()
 {	
@@ -1850,7 +1851,11 @@ void SQL_REQUEST::SQL::execTaskOnHold()
 			else if (i == 3) // date_time_stop
 			{
 				onHold.date_time_stop = row[i];
-			}			
+			}
+			else if (i == 4) // hash
+			{
+				onHold.hash = std::atoi(row[i]);
+			}
 		}
 
 		listOnHold.emplace_back(onHold);
@@ -2063,10 +2068,11 @@ bool SQL_REQUEST::SQL::insertDataTaskOnHold(HOUSEKEEPING::OnHold &onHold)
 	}
 
 	// устанавливаем данные в history_ivr
-	std::string	query_insert = "insert into history_onhold (id,sip,date_time_start,date_time_stop) values ('" + std::to_string(onHold.id) +
+	std::string	query_insert = "insert into history_onhold (id,sip,date_time_start,date_time_stop,hash) values ('" + std::to_string(onHold.id) +
 		"','" + std::to_string(onHold.sip) +
 		"','" + onHold.date_time_start +
-		"','" + onHold.date_time_stop + "')";
+		"','" + onHold.date_time_stop +
+		"','" + std::to_string(onHold.hash) +"')";
 
 
 	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
@@ -2103,14 +2109,14 @@ bool SQL_REQUEST::SQL::deleteDataTaskOnHold(int ID)
 
 void SQL_REQUEST::SQL::updateOperatorsOnHold(const ACTIVE_SIP::Parsing *list)
 {
-	typedef std::vector<ACTIVE_SIP::Operators> operators;
-	typedef std::vector<ACTIVE_SIP::OnHold> operators_onhold;
+	typedef std::vector<ACTIVE_SIP::Operators>	operators;
+	typedef std::vector<ACTIVE_SIP::OnHold>		operators_onhold;
 	
-	//if (!isConnectedBD())
-	//{
-	//	showErrorBD("SQL_REQUEST::SQL::updateOperatorsOnHold");
-	//	return;
-	//}
+	if (!isConnectedBD())
+	{
+		showErrorBD("SQL_REQUEST::SQL::updateOperatorsOnHold");
+		return;
+	}
 
 	// найдем все sip операторы которые числяться по БД в статусе onHold	
 	auto onHold = createOnHoldSip();
@@ -2121,23 +2127,12 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(const ACTIVE_SIP::Parsing *list)
 		// проверяем есть ли сейчас операторы с onHold
 		operators curr_list_operators = list->getListOperators();
 		
+		// переменная на случай когда надо убрать из onHold значения, т.к. отключили onHold, а в памяти он еще остался
+		bool needCheckOnHold{ false };
+
 		// проверяем сначало текущие которые уже были в onHold добавлены		
 		if (!curr_list_operators.empty())
-		{			
-			// вдруг новые onHold появились, добавляем в БД
-			if (!isExistNewOnHoldOperators(onHold, curr_list_operators))
-			{
-				auto new_list = createNewOnHoldOperators(*onHold, curr_list_operators);
-				
-				for (auto iter = new_list->begin(); iter != new_list->end(); ++iter)
-				{
-					SQL base;
-					base.addOperatorsOnHold(*iter);
-				}			
-				
-				delete new_list;
-			}
-			
+		{				
 			// проверим оператор еще разговаривает в onHold или уже нет
 			for (operators_onhold::iterator operators_hold = onHold->begin(); operators_hold != onHold->end(); ++operators_hold)
 			{
@@ -2153,21 +2148,59 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(const ACTIVE_SIP::Parsing *list)
 						if (!isExistOnHold)
 						{
 							SQL base;
-							base.updateOperatorsOnHold(operators_hold->id);
-						} 
-						
-						continue;
+							base.disableOperatorsOnHold(*operators_hold);
+							
+							// занесем в базу что нужно убрать из onHold
+							needCheckOnHold = true;
+						} 				
+					}					
+				}				
+			}
+
+			// вдруг новые onHold появились, добавляем в БД, но сначало проверим delOnHold
+			if (needCheckOnHold) {
+				auto onHoldNeedCheck = createOnHoldSip();
+
+				if (!isExistNewOnHoldOperators(onHoldNeedCheck, curr_list_operators))
+				{					
+					auto new_list = createNewOnHoldOperators(*onHoldNeedCheck, curr_list_operators);
+
+					for (auto iter = new_list->begin(); iter != new_list->end(); ++iter)
+					{
+						SQL base;
+						base.addOperatorsOnHold(*iter);
 					}
-					//else {
-					//	isExistOnHold = false;
-					//}
+
+					delete new_list;
 				}
-					
-				// не нашли в активных, значит закончили onHold
-				//if (!isExistOnHold) {
-				//	SQL base;
-				//	base.updateOperatorsOnHold(operators_hold->id);
-				//}
+
+				delete onHoldNeedCheck;
+			}
+			else {
+				if (!isExistNewOnHoldOperators(onHold, curr_list_operators))
+				{
+					/*uint32_t count_hold;
+
+					for (const auto &list : curr_list_operators)
+					{
+						if (list.isOnHold) ++count_hold;
+					}
+
+					if (count_hold >= 2)
+					{
+						std::cout << "catch\n";
+					}
+					*/
+					auto new_list = createNewOnHoldOperators(*onHold, curr_list_operators);
+
+					for (auto iter = new_list->begin(); iter != new_list->end(); ++iter)
+					{
+						SQL base;
+						base.addOperatorsOnHold(*iter);
+					}
+
+					delete new_list;
+				}
 			}
 		}
 		else
@@ -2175,7 +2208,7 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(const ACTIVE_SIP::Parsing *list)
 			for (operators_onhold::iterator operators_hold = onHold->begin(); operators_hold != onHold->end(); ++operators_hold)
 			{
 				SQL base;
-				base.updateOperatorsOnHold(operators_hold->id);
+				base.disableOperatorsOnHold(*operators_hold);
 			}
 		}				
 		
@@ -2227,7 +2260,7 @@ std::vector<ACTIVE_SIP::OnHold> *SQL_REQUEST::SQL::createOnHoldSip()
 	{
 		ACTIVE_SIP::OnHold hold;
 
-		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
+		for (size_t i = 0; i < mysql_num_fields(result); ++i)
 		{
 			if (i == 0)			// id
 			{
@@ -2247,7 +2280,11 @@ std::vector<ACTIVE_SIP::OnHold> *SQL_REQUEST::SQL::createOnHoldSip()
 				if (row[i])	{
 					hold.date_time_stop = row[i];
 				}
-			}			
+			}
+			else if (i == 4) // hash
+			{
+				hold.hash = string_to_size_t(row[i]);
+			}
 		}
 
 		listHold->push_back(hold);
@@ -2265,9 +2302,25 @@ void SQL_REQUEST::SQL::addOperatorsOnHold(std::string &sip)
 		showErrorBD("SQL_REQUEST::SQL::addOperatorsOnHold");
 		return;
 	}
+	
+	std::string curr_date = getCurrentDateTime();
+	size_t hash = std::hash<std::string>()(sip + "_" + curr_date);
+	
+
+	if (isExistOnHold(sip,std::to_string(hash))) 
+	{
+		return;
+	}
+
+	// нужна еще одна проверка т.к. коннект сбрасывается
+	if (!isConnectedBD())
+	{
+		showErrorBD("SQL_REQUEST::SQL::addOperatorsOnHold");
+		return;
+	}
 
 	// устанавливаем данные в operators_onhold
-	std::string	query_insert = "insert into operators_ohhold (sip) values ('" + sip + "')";
+	std::string	query_insert = "insert into operators_ohhold (sip,hash,date_time_start) values ('" + sip + "','"+ std::to_string(hash) + "','"+curr_date+"')";
 
 
 	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
@@ -2276,25 +2329,65 @@ void SQL_REQUEST::SQL::addOperatorsOnHold(std::string &sip)
 		return;
 	}
 
+	++count_add_hold;
+
+	if (count_add_hold > 200) {
+		std::cout << "=== ALERT! ALERT! ALERT! ALERT! ALERT! === --> count_add_hold = " + count_add_hold <<std::endl;
+	}
+
 	mysql_close(&this->mysql);
 }
 
 
-void SQL_REQUEST::SQL::updateOperatorsOnHold(int id)
+void SQL_REQUEST::SQL::disableOperatorsOnHold(const ACTIVE_SIP::OnHold &onhold)
 {
 	if (!isConnectedBD())
 	{
-		showErrorBD("SQL_REQUEST::SQL::updateOperatorsOnHold");
+		showErrorBD("SQL_REQUEST::SQL::disableOperatorsOnHold");
 		return;
 	}
 
-	std::string query = "update operators_ohhold set date_time_stop = '" + getCurrentDateTime() + "' where id = '" + std::to_string(id) + "'";
+	std::string query = "update operators_ohhold set date_time_stop = '" + getCurrentDateTime() + "' where id = '" + std::to_string(onhold.id) 
+																	  + "' and hash = '"+std::to_string(onhold.hash)+"'"
+																	  + " and sip = '"+onhold.sip_number+"'";
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
-		showErrorBD("SQL_REQUEST::SQL::updateOperatorsOnHold -> Data (updateOperatorsOnHold) error -> query(" + query + ")", &this->mysql);
+		showErrorBD("SQL_REQUEST::SQL::disableOperatorsOnHold -> Data (disableOperatorsOnHold) error -> query(" + query + ")", &this->mysql);
+		return;
 	};
 
 
 	mysql_close(&this->mysql);
+}
+
+bool SQL_REQUEST::SQL::isExistOnHold(std::string &sip, std::string hash)
+{
+	if (!isConnectedBD())
+	{
+		showErrorBD("SQL_REQUEST::SQL::isExistOnHold");
+		return true;
+	}
+
+	const std::string query = "select count(id) from operators_ohhold where sip = '" + sip + "' and hash = '" + hash+"'";
+
+
+	if (mysql_query(&this->mysql, query.c_str()) != 0)
+	{
+		// ошибка считаем что есть запись		
+		showErrorBD("SQL_REQUEST::SQL::isExistOnHold -> query(" + query + ")", &this->mysql);
+		return true;
+	}
+
+	// результат
+	MYSQL_RES *result = mysql_store_result(&this->mysql);
+	MYSQL_ROW row = mysql_fetch_row(result);
+
+	bool existOnHold;
+	((std::stoi(row[0]) == 0) ? existOnHold = false : existOnHold = true);
+
+	mysql_free_result(result);
+	mysql_close(&this->mysql);
+
+	return existOnHold;
 }

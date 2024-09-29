@@ -90,6 +90,7 @@ namespace HOUSEKEEPING {
 		int				sip{ 0 };
 		std::string		date_time_start{ "" };
 		std::string		date_time_stop{ "" };
+		size_t			hash { 0 };
 
 	};
 }
