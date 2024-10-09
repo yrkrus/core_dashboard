@@ -13,6 +13,7 @@
 #include <time.h>
 #include <chrono>
 
+using namespace INTERNALFUNCTION;
 
 enum Commands
 {
@@ -86,11 +87,11 @@ static void stat() {
     for (size_t i = 1; /*i <= TIK*/; ++i)
     {
 
-        showVersionCore();
+        showVersionCore(i);
         
         auto start = std::chrono::steady_clock::now();
-
-        std::cout << getCurrentDateTime() + "\t\titeration: \t" << i << "\n\n";
+        std::cout << "\n\n";
+       // std::cout << getCurrentDateTime() + "\t\titeration: \t" << i << "\n\n";
 
         getStatistics();
 
@@ -139,12 +140,13 @@ static void collect() {
 
     for (size_t i = 1; /*i <= TIK*/; ++i)
     {          
-        showVersionCore();
+        showVersionCore(i);
 
         auto start = std::chrono::steady_clock::now();
 
-        std::cout << getCurrentDateTime() + "\t\titeration: \t" << i << "\n\n";
+        //std::cout << getCurrentDateTime() + "\t\titeration: \t" << i << "\n\n";       
 
+        std::cout << "\n\n";
         std::thread th_ivr(getIVR);
         std::thread th_Queue_ActiveSIP(thread_Queue_ActiveSIP);
         std::thread th_RemoteCommand(thread_RemoteCommands);
@@ -174,13 +176,14 @@ static void collect() {
 
         auto execute_ms = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
 
-        std::cout  << "\ntime execute code: " << execute_ms.count() << " ms\n";
+        std::cout  << "\ntime execute code: " << execute_ms.count() << " ms\n";       
+
         all += execute_ms.count();
 
         if (execute_ms.count() < min) { min = execute_ms.count(); }
         if (execute_ms.count() > max) { max = execute_ms.count(); }
 
-        std::cout  << "avg execute = " << all / i << " ms | min execute = " << min << " ms | max execute = " << max << " ms\n";
+        std::cout  << "avg execute = " << all / i << " ms | min execute = " << min << " ms | max execute = " << max << " ms\n";       
 
         if (execute_ms.count() < 1000)
         {

@@ -22,7 +22,7 @@
 
 
 // парсинг номера телефона в нормальный вид
-std::string phoneParsing(std::string &phone)
+std::string INTERNALFUNCTION::phoneParsing(std::string &phone)
 {
 	if (phone.length() < 6)
 	{
@@ -45,7 +45,7 @@ std::string phoneParsing(std::string &phone)
 
 
 // создать + получить текущий IVR
-void getIVR()
+void INTERNALFUNCTION::getIVR()
 {   
 	if (!CONSTANTS::DEBUG_MODE) {
 		system(CONSTANTS::cIVRResponse.c_str());
@@ -60,7 +60,7 @@ void getIVR()
 }
 
 // создать + получить текущую очередь
-void getQueue(void)
+void INTERNALFUNCTION::getQueue(void)
 {
 	if (!CONSTANTS::DEBUG_MODE)	{
 		system(CONSTANTS::cQueueResponse.c_str());
@@ -87,7 +87,7 @@ void getQueue(void)
 }
 
 // создать + получить кто с кем разговаривает
-void getActiveSip(void)
+void INTERNALFUNCTION::getActiveSip(void)
 {
 	if (!CONSTANTS::DEBUG_MODE)	{
 		system(CONSTANTS::cActiveSipResponse.c_str());
@@ -101,7 +101,7 @@ void getActiveSip(void)
 }
 
 // получение номера очереди
-std::string getNumberQueue(CONSTANTS::AsteriskQueue queue)
+std::string INTERNALFUNCTION::getNumberQueue(CONSTANTS::AsteriskQueue queue)
 {
 	switch (queue)
 	{
@@ -121,7 +121,7 @@ std::string getNumberQueue(CONSTANTS::AsteriskQueue queue)
 }
 
 // перевод общего кол-ва секунда в 00:00:00 формат
-std::string getTalkTime(std::string talk)
+std::string INTERNALFUNCTION::getTalkTime(std::string talk)
 {
 	const unsigned int daysCount	= 24 * 3600;
 	const unsigned short hourCount	= 3600;
@@ -150,7 +150,7 @@ std::string getTalkTime(std::string talk)
 }
 
 // текущее время 
-std::string getCurrentDateTime()
+std::string INTERNALFUNCTION::getCurrentDateTime()
 {	
 	auto now = std::chrono::system_clock::now();
 	std::time_t now_c = std::chrono::system_clock::to_time_t(now);
@@ -178,7 +178,7 @@ std::string getCurrentDateTime()
 }
 
 // текущее начало дня
-std::string getCurrentStartDay()
+std::string INTERNALFUNCTION::getCurrentStartDay()
 {
 	auto now = std::chrono::system_clock::now();
 	std::time_t now_c = std::chrono::system_clock::to_time_t(now);
@@ -197,7 +197,7 @@ std::string getCurrentStartDay()
 }
 
 // текущее время - 2 минута 
-std::string getCurrentDateTimeAfterMinutes(int minutes)
+std::string INTERNALFUNCTION::getCurrentDateTimeAfterMinutes(int minutes)
 {
 	auto now = std::chrono::system_clock::now();
 	auto minute = std::chrono::minutes(minutes);
@@ -227,7 +227,7 @@ std::string getCurrentDateTimeAfterMinutes(int minutes)
 }
 
 // текущее время после 20:00 
-std::string getCurrentDateTimeAfter20hours()
+std::string INTERNALFUNCTION::getCurrentDateTimeAfter20hours()
 {
 	auto now = std::chrono::system_clock::now();
 	std::time_t now_c = std::chrono::system_clock::to_time_t(now);
@@ -246,7 +246,7 @@ std::string getCurrentDateTimeAfter20hours()
 }
 
 // показ версии ядра
-void showVersionCore()
+void INTERNALFUNCTION::showVersionCore(unsigned int iter)
 {
 	std::ostringstream buffer;
 	buffer << "==========================================================\n";
@@ -267,12 +267,15 @@ void showVersionCore()
 		buffer << "ERROR: " << (to_string(CONSTANTS::LOG_MODE_ERROR) == "true" ? "ON" : "OFF") << "\n";
 	}
 
+	// итерация какая по счету пошла
+	buffer << "\t"+getCurrentDateTime() + "\t\titeration: " << iter <<"\n";
+
 	buffer << "==========================================================\n";
 	std::cout << buffer.str();
 }
 
 // статистика // пока без класса, может потом в отдельный класс сделать
-void getStatistics()
+void INTERNALFUNCTION::getStatistics()
 {
 	SQL_REQUEST::SQL base;
 
@@ -313,7 +316,7 @@ void getStatistics()
 }
 
 // отображжение инфо что не возможно подключиться к бд
-void showErrorBD(const std::string str)
+void INTERNALFUNCTION::showErrorBD(const std::string str)
 {
 	std::cerr << str << " -> Error: can't connect to database " << CONSTANTS::cHOST << ":" << CONSTANTS::cBD << "\n";
 	if (CONSTANTS::SAFE_LOG) {
@@ -325,7 +328,7 @@ void showErrorBD(const std::string str)
 }
 
 // отображение инфо что пошла какая то ошибка
-void showErrorBD(const std::string str, MYSQL *mysql)
+void INTERNALFUNCTION::showErrorBD(const std::string str, MYSQL *mysql)
 {
 	std::cerr << str <<" " << mysql_error(mysql) <<"\n";
 	if (CONSTANTS::SAFE_LOG) {
@@ -337,25 +340,25 @@ void showErrorBD(const std::string str, MYSQL *mysql)
 }
 
 // преобразование текущей удаленной комады из int -> REMOTE_COMMANDS::Command 
-LOG::Log getRemoteCommand(int command)
+LOG::Log INTERNALFUNCTION::getRemoteCommand(int command)
 {
 	return static_cast<LOG::Log>(command);
 }
 
 // преобразование текущей удаленной комады из LOG::Log -> int
-int getRemoteCommand(LOG::Log command)
+int INTERNALFUNCTION::getRemoteCommand(LOG::Log command)
 {
 	return static_cast<int>(command);
 }
 
 // преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
-int getStatusOperators(REMOTE_COMMANDS::StatusOperators status)
+int INTERNALFUNCTION::getStatusOperators(REMOTE_COMMANDS::StatusOperators status)
 {
 	return static_cast<int>(status);
 }
 
 
-bool isExistNewOnHoldOperators(const OnHold *onHold, const Operators &operators)
+bool INTERNALFUNCTION::isExistNewOnHoldOperators(const OnHold *onHold, const Operators &operators)
 {
 	int count_operators_active_sip{ 0 };
 	for (const auto &list : operators) {
@@ -368,7 +371,7 @@ bool isExistNewOnHoldOperators(const OnHold *onHold, const Operators &operators)
 
 }
 
-std::unordered_map <std::string, std::string> *createNewOnHoldOperators(const OnHold &onHold, const Operators &operators)
+std::unordered_map <std::string, std::string> *INTERNALFUNCTION::createNewOnHoldOperators(const OnHold &onHold, const Operators &operators)
 {
 	auto *new_lists = new std::unordered_map<std::string, std::string>;
 
@@ -378,8 +381,7 @@ std::unordered_map <std::string, std::string> *createNewOnHoldOperators(const On
 			
 			for (size_t i = 0; i != onHold.size(); ++i)
 			{
-				if (operators_list.sip_number != onHold[i].sip_number) {
-					//new_lists->emplace_back(operators_list.sip_number);
+				if (operators_list.sip_number != onHold[i].sip_number) {					
 					new_lists->insert({ operators_list.sip_number, operators_list.phoneOnHold});
 				}
 			}			
@@ -390,7 +392,7 @@ std::unordered_map <std::string, std::string> *createNewOnHoldOperators(const On
 }
 
 // проверка успешно ли выполнили удаленную команду
-bool remoteCommandChekedExecution(LOG::Log command)
+bool INTERNALFUNCTION::remoteCommandChekedExecution(LOG::Log command)
 {	
 	
 	std::ifstream fileRemoteCommand;
@@ -443,17 +445,17 @@ bool remoteCommandChekedExecution(LOG::Log command)
 }
 
 
-bool to_bool(std::string str)
+bool INTERNALFUNCTION::to_bool(std::string str)
 {
 	return ((str == "true") ? true : false);
 }
 
-std::string to_string(bool value)
+std::string INTERNALFUNCTION::to_string(bool value)
 {
 	return (value ? "true" : "false");
 }
 
-size_t string_to_size_t(const std::string &str)
+size_t INTERNALFUNCTION::string_to_size_t(const std::string &str)
 {
 	std::stringstream stream(str);
 	size_t output;

@@ -7,6 +7,7 @@
 #include "SQLRequest.h"
 #include <iterator>
 
+using namespace INTERNALFUNCTION;
 
 // коструктор
 IVR::Parsing::Parsing(const char *fileIVR)

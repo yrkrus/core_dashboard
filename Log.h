@@ -11,6 +11,9 @@
 #include <mutex>
 #include <iostream>
 #include <fstream>
+#include <vector>
+#include "ActiveSip.h"
+
 
 
 namespace LOG {
@@ -64,16 +67,16 @@ namespace LOG {
         ~LogToFile();
             
         void add(std::string message);  // сохранение лога в файл 
-    
+        void add(const std::vector<ACTIVE_SIP::OnHold> *onhold, const std::vector<ACTIVE_SIP::Operators> *operators);
+        void add(const std::vector<ACTIVE_SIP::OnHold> *onhold);
+
     private:        
         mutable std::mutex mutex;
         std::ofstream *file_log = nullptr;
         ELogType current_type;
 
-        std::string ELogType_to_string(const ELogType &elogtype);   
-    
-    };
-   
+        std::string ELogType_to_string(const ELogType &elogtype);    
+    };   
 }
 
 

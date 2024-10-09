@@ -16,8 +16,8 @@ namespace CONSTANTS
     static bool DEBUG_MODE      { false };      // при этом режиме не создаются запросы до астериска
     
     static bool SAFE_LOG        { true };       // записывать ли в лог работу ядра
-    static bool LOG_MODE_INFO   { false };      // режим записи лога INFO (при этой записи записываются отладочные ) 
-    static bool LOG_MODE_DEBUG  { false };       // режим записи лога DEBUG (при этой записи записываются запросы от и на сервер) 
+    static bool LOG_MODE_INFO   { true };       // режим записи лога INFO (при этой записи записываются отладочные ) 
+    static bool LOG_MODE_DEBUG  { false };      // режим записи лога DEBUG (при этой записи записываются запросы от и на сервер) 
     static bool LOG_MODE_ERROR  { true };       // режим записи лога ERROR (включен постоянно, фиксируются все ошибки)
 
     // WKroot#791  old
@@ -71,7 +71,7 @@ namespace CONSTANTS
     */
 
  // версия ядра
- static std::string core_version = {"CORE DASHBOARD | version 2.15 bild bd22101 "};
+ static std::string core_version = {"CORE DASHBOARD | version 2.16 bild 20241009"};
  
 
 // asterisk очереди  

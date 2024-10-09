@@ -2,6 +2,7 @@
 #include "SQLRequest.h"
 #include "InternalFunction.h"
 
+using namespace INTERNALFUNCTION;
 
 // construct
 REMOTE_COMMANDS::Remote::Remote()

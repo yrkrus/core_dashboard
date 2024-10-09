@@ -59,7 +59,7 @@ namespace ACTIVE_SIP
 		void createListActiveOperators();
 
 		void updateData();										// добавление данных в БД	
-		std::vector<Operators> getListOperators();	    // получение текущего значения со списком активных операторов		
+		std::vector<Operators> getListOperators();				// получение текущего значения со списком активных операторов		
 
 	private:
 		std::string findParsing(std::string str, Currentfind find, const std::string number_operator);		// парсинг
@@ -85,7 +85,7 @@ namespace ACTIVE_SIP
 	class OnHold : public Operators
 	{
 	public:
-		OnHold()	= default;
+		OnHold()			= default;
 		virtual ~OnHold()	= default;
 
 		int id{ 0 };

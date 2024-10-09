@@ -4,7 +4,7 @@
 #include "Constants.h"
 #include "InternalFunction.h"
 
-
+using namespace INTERNALFUNCTION;
 
 // создание лога
 void LOG::Logging::createLog(Log command, int base_id)
@@ -22,14 +22,61 @@ void LOG::Logging::createLog(Log command, int base_id)
 
 void LOG::LogToFile::add(std::string message)
 {
-	std::lock_guard<std::mutex> lock(mutex);
+	std::lock_guard<std::mutex> lock(mutex);	
 	std::string mess = getCurrentDateTime() + "\t" + ELogType_to_string(current_type) + "\t" + message + "\n";
 
 	if (file_log->is_open()) 
 	{		
 		*file_log << mess;
+	}	
+}
+
+
+void LOG::LogToFile::add(const std::vector<ACTIVE_SIP::OnHold> *onhold, const std::vector<ACTIVE_SIP::Operators> *operators)
+{
+	std::lock_guard<std::mutex> lock(mutex);
+
+	std::ostringstream buffer;
+
+	buffer << "========================   " + getCurrentDateTime() + "   ==========================\n";
+
+	unsigned int countHoldBase{ 0 };
+	unsigned int countOperatorsOnHoldAsterisk{ 0 };
+
+	countHoldBase = onhold->size();
+
+	for (const auto &list : *operators)
+	{
+		if (list.isOnHold) ++countOperatorsOnHoldAsterisk;
 	}
+	buffer << "count OnHold Operators Base -> \t"			<< std::to_string(countHoldBase) << "\n";
+	buffer << "count OnHold Asterisk -> \t"					<< std::to_string(countOperatorsOnHoldAsterisk) << "\n";
+
+	if (file_log->is_open())
+	{
+		*file_log << buffer.str();
+	}
+}
+
+void LOG::LogToFile::add(const std::vector<ACTIVE_SIP::OnHold> *onhold)
+{
+	std::lock_guard<std::mutex> lock(mutex);
 	
+	std::ostringstream buffer;
+
+	buffer << "========================" + getCurrentDateTime() + "   ==========================\n";
+	
+	unsigned int countHold{ 0 };
+
+	for (const auto &list : *onhold) {
+		if (list.isOnHold) ++countHold;		
+	}
+	buffer << "count OnHold -> " << std::to_string(countHold) << "\n";
+
+	if (file_log->is_open())
+	{
+		*file_log << buffer.str();
+	}
 }
 
 LOG::LogToFile::LogToFile(ELogType type)

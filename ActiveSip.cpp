@@ -10,6 +10,8 @@
 #include <algorithm>
 #include <sstream>
 
+using namespace INTERNALFUNCTION;
+
 // коструктор
 ACTIVE_SIP::Parsing::Parsing(const char *fileActiveSip)
 {
@@ -407,7 +409,7 @@ std::vector<ACTIVE_SIP::Operators> ACTIVE_SIP::Parsing::getListOperators()
 			{
 				if (list_active.internal_sip == operators.sip_number) {
 					operators.phoneOnHold = list_active.phone;
-					break;
+					//break;
 				}
 			}
 		}

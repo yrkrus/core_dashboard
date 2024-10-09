@@ -3,12 +3,13 @@
 #include "InternalFunction.h"
 #include "IVR.h"
 #include "HouseKeeping.h"
-#
 #include <mysql/mysql.h>
 #include <iterator>
 #include <string>
 #include <memory>
 #include <list>
+
+using namespace INTERNALFUNCTION;
 
 SQL_REQUEST::SQL::SQL()
 {	
@@ -2553,12 +2554,7 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(ACTIVE_SIP::Parsing *list)
 	}
 
 	// найдем все sip операторы которые числяться по БД в статусе onHold	
-	auto onHold = createOnHoldSip();
-	
-	
-	
-
-		
+	auto onHold = createOnHoldSip();	
 
 	if (onHold->size() >= 3) {
 		std::cout << "test";
@@ -2569,6 +2565,15 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(ACTIVE_SIP::Parsing *list)
 		// проверяем есть ли сейчас операторы с onHold
 		operators curr_list_operators = list->getListOperators();
 		
+		
+		// TODO чисто для бага чтобы понять какая же херня происходит почему идет задвоение
+		if (CONSTANTS::LOG_MODE_INFO)
+		{
+			LOG::LogToFile log(LOG::eLogType_INFO);
+			log.add(onHold, &curr_list_operators);
+		}
+
+
 		// переменная на случай когда надо убрать из onHold значения, т.к. отключили onHold, а в памяти он еще остался
 		bool needCheckOnHold{ false };
 
@@ -2604,7 +2609,8 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(ACTIVE_SIP::Parsing *list)
 						} 				
 					}					
 				}				
-			}
+			}			
+
 
 			// вдруг новые onHold появились, добавляем в БД, но сначало проверим delOnHold
 			if (needCheckOnHold) {
@@ -2680,7 +2686,6 @@ std::vector<ACTIVE_SIP::OnHold> *SQL_REQUEST::SQL::createOnHoldSip()
 	}
 
 	// найдем все данные 
-	//const std::string query = "select * from operators_ohhold where date_time_start > '" + getCurrentStartDay() + "' and date_time_stop is NULL";
 	const std::string query = "select operators_ohhold.id, operators_ohhold.sip, operators_ohhold.date_time_start, operators_ohhold.date_time_stop, operators_ohhold.hash, queue.phone from queue inner join operators_ohhold on queue.sip = operators_ohhold.sip where queue.hash is NULL and operators_ohhold.date_time_stop is NULL";
 
 	if (CONSTANTS::SAFE_LOG)

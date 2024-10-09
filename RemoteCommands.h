@@ -29,11 +29,11 @@ namespace REMOTE_COMMANDS {
 	
 	struct R_Commands
 	{
-		int id;						// id команды (дл€ удобного поиска в запросе)
+		int			id;						// id команды (дл€ удобного поиска в запросе)
 		std::string sip;			// sip инициализировавший команду
-		LOG::Log command;			// сама команда (int)
+		LOG::Log	command;			// сама команда (int)
 		std::string ip;				// ip с которого пришла команда
-		int user_id;				// id пользовател€ по Ѕƒ
+		int			user_id;				// id пользовател€ по Ѕƒ
 		std::string user_login_pc;	// логин зареган на пк с которого пришла команда
 		std::string pc;				// им€ пк с которого отправили коиманду
 	};

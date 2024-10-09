@@ -8,6 +8,7 @@
 #include "SQLRequest.h"
 #include <sstream>
 
+using namespace INTERNALFUNCTION;
 
 // коструктор
 QUEUE::Parsing::Parsing(const char *fileQueue)
