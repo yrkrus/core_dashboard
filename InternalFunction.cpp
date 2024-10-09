@@ -259,6 +259,14 @@ void showVersionCore()
 		buffer << "\t" << CONSTANTS::core_version << "\n";
 	}	
 	
+	// логирование
+	if (CONSTANTS::SAFE_LOG) {
+		buffer << "\n";
+		buffer << "\tLOGGER: ON" << "\t";
+		buffer << "DEBUG: " << (to_string(CONSTANTS::LOG_MODE_DEBUG) == "true" ? "ON" : "OFF") << "\t";
+		buffer << "ERROR: " << (to_string(CONSTANTS::LOG_MODE_ERROR) == "true" ? "ON" : "OFF") << "\n";
+	}
+
 	buffer << "==========================================================\n";
 	std::cout << buffer.str();
 }
@@ -308,12 +316,24 @@ void getStatistics()
 void showErrorBD(const std::string str)
 {
 	std::cerr << str << " -> Error: can't connect to database " << CONSTANTS::cHOST << ":" << CONSTANTS::cBD << "\n";
+	if (CONSTANTS::SAFE_LOG) {
+		if (CONSTANTS::LOG_MODE_ERROR) {
+			LOG::LogToFile log(LOG::eLogType_ERROR);
+			log.add(str +" -> Error: can't connect to database " + CONSTANTS::cHOST + ":" + CONSTANTS::cBD);
+		}
+	}
 }
 
 // отображение инфо что пошла какая то ошибка
 void showErrorBD(const std::string str, MYSQL *mysql)
 {
 	std::cerr << str <<" " << mysql_error(mysql) <<"\n";
+	if (CONSTANTS::SAFE_LOG) {
+		if (CONSTANTS::LOG_MODE_ERROR)	{
+			LOG::LogToFile log(LOG::eLogType_ERROR);
+			log.add(str + " " + mysql_error(mysql));
+		}
+	}
 }
 
 // преобразование текущей удаленной комады из int -> REMOTE_COMMANDS::Command 
@@ -348,9 +368,9 @@ bool isExistNewOnHoldOperators(const OnHold *onHold, const Operators &operators)
 
 }
 
-std::list<std::string> *createNewOnHoldOperators(const OnHold &onHold, const Operators &operators)
+std::unordered_map <std::string, std::string> *createNewOnHoldOperators(const OnHold &onHold, const Operators &operators)
 {
-	auto *new_lists = new std::list<std::string>;
+	auto *new_lists = new std::unordered_map<std::string, std::string>;
 
 	for (const auto &operators_list : operators) {
 		
@@ -359,7 +379,8 @@ std::list<std::string> *createNewOnHoldOperators(const OnHold &onHold, const Ope
 			for (size_t i = 0; i != onHold.size(); ++i)
 			{
 				if (operators_list.sip_number != onHold[i].sip_number) {
-					new_lists->emplace_back(operators_list.sip_number);
+					//new_lists->emplace_back(operators_list.sip_number);
+					new_lists->insert({ operators_list.sip_number, operators_list.phoneOnHold});
 				}
 			}			
 		}
@@ -425,6 +446,11 @@ bool remoteCommandChekedExecution(LOG::Log command)
 bool to_bool(std::string str)
 {
 	return ((str == "true") ? true : false);
+}
+
+std::string to_string(bool value)
+{
+	return (value ? "true" : "false");
 }
 
 size_t string_to_size_t(const std::string &str)

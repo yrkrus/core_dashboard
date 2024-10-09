@@ -13,7 +13,13 @@
 namespace CONSTANTS 
 {
     // DEBUG MODE 
-    static bool DEBUG_MODE{ false };
+    static bool DEBUG_MODE      { false };      // при этом режиме не создаются запросы до астериска
+    
+    static bool SAFE_LOG        { true };       // записывать ли в лог работу ядра
+    static bool LOG_MODE_INFO   { false };      // режим записи лога INFO (при этой записи записываются отладочные ) 
+    static bool LOG_MODE_DEBUG  { false };       // режим записи лога DEBUG (при этой записи записываются запросы от и на сервер) 
+    static bool LOG_MODE_ERROR  { true };       // режим записи лога ERROR (включен постоянно, фиксируются все ошибки)
+
     // WKroot#791  old
     // *v0@|48lg*se  new
    
@@ -65,7 +71,7 @@ namespace CONSTANTS
     */
 
  // версия ядра
- static std::string core_version = {"CORE DASHBOARD | version 2.14 bild 7803a1f "};
+ static std::string core_version = {"CORE DASHBOARD | version 2.15 bild bd22101 "};
  
 
 // asterisk очереди  
@@ -111,6 +117,11 @@ static std::string cPASSWORD   = "UFGq4kZMNIMwxTzV";
 static std::string cRemoteCommandName           = "RemoteCommand.txt";
 static std::string cRemoteCommandResponseAdd    = "asterisk -rx \"queue add member Local/%sip@from-queue/n to %queue penalty 0 as %sip state_interface hint:%sip@ext-local\" > " + cRemoteCommandName;
 static std::string cRemoteCommandResponseDel    = "asterisk -rx \"queue remove member Local/%sip@from-queue/n from %queue\" > " + cRemoteCommandName;
+
+// for FileLog (типы логов)
+static std::string cFileLogDEBUG    = "Log_DEBUG.log";
+static std::string cFileLogINFO     = "Log_INFO.log";
+static std::string cFileLogERROR    = "Log_ERROR.log";
 
 };
 

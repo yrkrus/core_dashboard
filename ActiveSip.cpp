@@ -329,6 +329,13 @@ void ACTIVE_SIP::Parsing::clearQueueNumberOperators()
 	}
 }
 
+void ACTIVE_SIP::Parsing::clearListOperatorsPhoneOnHold()
+{
+	for (auto &list : list_operators) {
+		list.phoneOnHold = "null";
+	}
+}
+
 bool ACTIVE_SIP::Parsing::getSipIsOnHold(std::string sip)
 {
 	for (auto &list : list_operators) {
@@ -361,10 +368,10 @@ void ACTIVE_SIP::Parsing::updateData()
 		}
 		
 		// обновление данных по операторам находящимся в статусе onHold
-		SQL_REQUEST::SQL base;
-		if (base.isConnectedBD()) {
-			base.updateOperatorsOnHold(this);
-		}			
+	//	SQL_REQUEST::SQL base;
+	//	if (base.isConnectedBD()) {
+	//		base.updateOperatorsOnHold(this);
+	//	}			
 
 	}
 	/*else {
@@ -387,8 +394,25 @@ void ACTIVE_SIP::Parsing::updateData()
 	}*/
 }
 
-std::vector<ACTIVE_SIP::Operators> ACTIVE_SIP::Parsing::getListOperators() const
+std::vector<ACTIVE_SIP::Operators> ACTIVE_SIP::Parsing::getListOperators()
 {
+	// очищаем лист phoneOnHold
+	clearListOperatorsPhoneOnHold();	
+	
+	// обновим данные по phoneOnHold
+	for (auto &operators : list_operators) {
+		if (operators.isOnHold) {
+				
+			for (auto &list_active : active_sip_list)
+			{
+				if (list_active.internal_sip == operators.sip_number) {
+					operators.phoneOnHold = list_active.phone;
+					break;
+				}
+			}
+		}
+	}	
+	
 	return this->list_operators;
 }
 

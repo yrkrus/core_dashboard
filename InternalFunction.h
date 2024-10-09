@@ -7,6 +7,7 @@
 
 #include <string>
 #include <list>
+#include <unordered_map>
 #include "Constants.h"
 #include "SQLRequest.h"
 #include "Queue.h"
@@ -46,12 +47,13 @@ LOG::Log getRemoteCommand(int command);	// преобразование текущей удаленной кома
 int getRemoteCommand(LOG::Log command); // преобразование текущей удаленной комады из LOG::Log -> int
 int getStatusOperators(REMOTE_COMMANDS::StatusOperators status); // преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
 bool isExistNewOnHoldOperators(const OnHold *onHold, const Operators &operators); // проверка есть ли разница между onHold по БД и active_sip->onHold
-std::list<std::string> *createNewOnHoldOperators(const OnHold &onHold, const Operators &operators);			// создание списка с новыми операторами в OnHold
+std::unordered_map <std::string, std::string> *createNewOnHoldOperators(const OnHold &onHold, const Operators &operators);			// создание списка с новыми операторами в OnHold
 
 
 bool remoteCommandChekedExecution(LOG::Log command);	// проверка успешно ли выполнили удаленную команду
 
 bool to_bool(std::string str);						// конвертер из std::string -> bool
+std::string to_string(bool value);					// конвертер из bool -> std::string 
 
 size_t string_to_size_t(const std::string &str);	// конвертер std::string->size_t
 

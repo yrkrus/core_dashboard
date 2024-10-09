@@ -3,13 +3,12 @@
 #include "InternalFunction.h"
 #include "IVR.h"
 #include "HouseKeeping.h"
+#
 #include <mysql/mysql.h>
 #include <iterator>
 #include <string>
 #include <memory>
 #include <list>
-
-static unsigned int count_add_hold{ 0 };
 
 SQL_REQUEST::SQL::SQL()
 {	
@@ -19,15 +18,22 @@ SQL_REQUEST::SQL::SQL()
 void SQL_REQUEST::SQL::createMySQLConnect(MYSQL &mysql)
 {
 
-	const char *host = CONSTANTS::cHOST.c_str();
-	const char *login = CONSTANTS::cLOGIN.c_str();
-	const char *pwd = CONSTANTS::cPASSWORD.c_str();
-	const char *bd = CONSTANTS::cBD.c_str();
+	const char *host	= CONSTANTS::cHOST.c_str();
+	const char *login	= CONSTANTS::cLOGIN.c_str();
+	const char *pwd		= CONSTANTS::cPASSWORD.c_str();
+	const char *bd		= CONSTANTS::cBD.c_str();
 
 	if (mysql_init(&mysql) == nullptr)
 	{
 		// Если дескриптор не получен — выводим сообщение об ошибке
 		std::cerr << "Error: can't create MySQL-descriptor\n";
+		
+		if (CONSTANTS::SAFE_LOG) {
+			if (CONSTANTS::LOG_MODE_ERROR) {
+				LOG::LogToFile log(LOG::eLogType_ERROR);
+				log.add("Error: can't create MySQL-descriptor");
+			}
+		}
 		return;
 	}
 
@@ -120,6 +126,13 @@ void SQL_REQUEST::SQL::insertIVR(const char *phone, const char *time, std::strin
 	else {		
 		std::string query = "insert into ivr (phone,waiting_time,trunk) values ('" + std::string(phone) + "','" + std::string(time) + "','" + callerid + "')";
 		
+		if (CONSTANTS::SAFE_LOG) {
+			if (CONSTANTS::LOG_MODE_DEBUG) {
+				LOG::LogToFile log(LOG::eLogType_DEBUG);
+				log.add("SQL_REQUEST::SQL::insertIVR(const char *phone, const char *time, std::string callerid) -> "+ query);
+			}
+		}
+
 		if (mysql_query(&this->mysql, query.c_str()) != 0)
 		{
 			showErrorBD("SQL_REQUEST::SQL::insertIVR -> Data (insertIVR) error -> query("+query+")", &this->mysql);
@@ -141,6 +154,15 @@ bool SQL_REQUEST::SQL::isExistIVRPhone(const char *phone)
 	const std::string query = "select count(phone) from ivr where phone = '" 
 							  + std::string(phone) +"' and  date_time > '"
 							  + getCurrentDateTimeAfterMinutes(2)+"' and to_queue = '0' order by date_time desc";
+
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::isExistIVRPhone(const char *phone) -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str() ) != 0)	{
 		// ошибка считаем что есть запись		
@@ -173,6 +195,15 @@ int SQL_REQUEST::SQL::getLastIDphone(const char *phone)
 		+ std::string(phone) + " and date_time > '"
 		+ getCurrentStartDay() + "' order by date_time desc limit 1";
 
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::getLastIDphone(const char *phone) -> " + query);
+		}
+	}
+
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что нет записи		
@@ -201,6 +232,15 @@ void SQL_REQUEST::SQL::updateIVR(const char *id,const char *phone, const char *t
 
 	std::string query = "update ivr set waiting_time = '" + std::string(time) + "' where phone = '" + std::string(phone) + "' and id ='"+std::string(id)+"'";
 	
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::updateIVR(const char *id,const char *phone, const char *time) -> " + query);
+		}
+	}
+
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		showErrorBD("SQL_REQUEST::SQL::updateIVR -> Data (updateIVR) error -> query(" + query + ")",&this->mysql);
@@ -235,6 +275,15 @@ void SQL_REQUEST::SQL::insertQUEUE(const char *queue, const char *phone, const c
 							+ std::string(phone) + "','" 
 							+ std::string(time) + "')";
 
+		if (CONSTANTS::SAFE_LOG)
+		{
+			if (CONSTANTS::LOG_MODE_DEBUG)
+			{
+				LOG::LogToFile log(LOG::eLogType_DEBUG);
+				log.add("SQL_REQUEST::SQL::insertQUEUE(const char *queue, const char *phone, const char *time) -> " + query);
+			}
+		}
+
 		if (mysql_query(&this->mysql, query.c_str()) != 0)
 		{
 			showErrorBD("SQL_REQUEST::SQL::insertQUEUE -> Data (insertQUEUE) error -> query(" + query + ")", &this->mysql);
@@ -260,6 +309,15 @@ bool SQL_REQUEST::SQL::isExistQUEUE(const char *queue, const char *phone)
 		+ "' and phone = '" + std::string(phone) + "'"
 		+ " and date_time > '" + getCurrentDateTimeAfterMinutes(60) + "'"
 		+ " and answered ='1' and fail='0' and sip<>'-1' and hash is NULL order by date_time desc limit 1";
+
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::isExistQUEUE(const char *queue, const char *phone) -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -287,6 +345,14 @@ bool SQL_REQUEST::SQL::isExistQUEUE(const char *queue, const char *phone)
 			//+ " and date_time > '" + getCurrentDateTime() + "'"
 			+ " and answered ='0' and fail='0' and hash is NULL order by date_time desc limit 1";
 
+		if (CONSTANTS::SAFE_LOG)
+		{
+			if (CONSTANTS::LOG_MODE_DEBUG)
+			{
+				LOG::LogToFile log(LOG::eLogType_DEBUG);
+				log.add("SQL_REQUEST::SQL::isExistQUEUE(const char *queue, const char *phone) -> " + query);
+			}
+		}
 
 		if (mysql_query(&this->mysql, query.c_str()) != 0)
 		{
@@ -315,6 +381,14 @@ bool SQL_REQUEST::SQL::isExistQUEUE(const char *queue, const char *phone)
 				//+ " and date_time > '" + getCurrentDateTime() + "'"
 				+ " and answered ='0' and fail='1' and hash is NULL order by date_time desc limit 1";
 
+			if (CONSTANTS::SAFE_LOG)
+			{
+				if (CONSTANTS::LOG_MODE_DEBUG)
+				{
+					LOG::LogToFile log(LOG::eLogType_DEBUG);
+					log.add("SQL_REQUEST::SQL::isExistQUEUE(const char *queue, const char *phone) -> " + query);
+				}
+			}
 
 			if (mysql_query(&this->mysql, query.c_str()) != 0)
 			{
@@ -342,6 +416,15 @@ bool SQL_REQUEST::SQL::isExistQUEUE(const char *queue, const char *phone)
 					+ " and date_time > '" + getCurrentDateTimeAfterMinutes(60) + "'"
 					+ " and answered = '1' and fail = '0' and sip <>'-1'"
 					+ " and hash is not NULL order by date_time desc limit 1";
+
+				if (CONSTANTS::SAFE_LOG)
+				{
+					if (CONSTANTS::LOG_MODE_DEBUG)
+					{
+						LOG::LogToFile log(LOG::eLogType_DEBUG);
+						log.add("SQL_REQUEST::SQL::isExistQUEUE(const char *queue, const char *phone) -> " + query);
+					}
+				}
 
 				if (mysql_query(&this->mysql, query.c_str()) != 0)
 				{
@@ -378,6 +461,15 @@ void SQL_REQUEST::SQL::updateQUEUE(const char *id, const char *phone, const char
 
 	std::string query = "update queue set waiting_time = '" + std::string(time) + "' where phone = '" + std::string(phone) + "' and id ='" + std::string(id) + "'";;
 
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::updateQUEUE(const char *id, const char *phone, const char *time) -> " + query);
+		}
+	}
+
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		showErrorBD("SQL_REQUEST::SQL::updateQUEUE -> Data (updateQUEUE) error -> query(" + query + ")", &this->mysql);
@@ -398,6 +490,15 @@ int SQL_REQUEST::SQL::getLastIDQUEUE(const char *phone)
 	const std::string query = "select id from queue where phone = "
 		+ std::string(phone) + " and date_time > '"
 		+ getCurrentStartDay() + "' order by date_time desc limit 1";
+
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::getLastIDQUEUE(const char *phone) -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -431,6 +532,15 @@ void SQL_REQUEST::SQL::updateQUEUE_SIP(const char *phone, const char *sip, const
 
 		std::string query = "update queue set sip = '" + std::string(sip) + "', talk_time = '"+ getTalkTime(talk_time) + "', answered ='1' where phone = '" + std::string(phone) + "' and id ='" + std::string(id) + "'";
 
+		if (CONSTANTS::SAFE_LOG)
+		{
+			if (CONSTANTS::LOG_MODE_DEBUG)
+			{
+				LOG::LogToFile log(LOG::eLogType_DEBUG);
+				log.add("SQL_REQUEST::SQL::updateQUEUE_SIP(const char *phone, const char *sip, const char *talk_time) -> " + query);
+			}
+		}
+
 		if (mysql_query(&this->mysql, query.c_str()) != 0)
 		{
 			showErrorBD("SQL_REQUEST::SQL::updateQUEUE_SIP -> Data (updateQUEUE_SIP) error -> query("+query+")", &this->mysql);
@@ -452,6 +562,15 @@ bool SQL_REQUEST::SQL::isExistQUEUE_SIP(const char *phone)
 	const std::string query = "select count(phone) from queue where phone = '" + std::string(phone)
 							+ "' and date_time > '" + getCurrentStartDay() 
 							+ "' order by date_time desc limit 1";
+
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::isExistQUEUE_SIP(const char *phone) -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -500,7 +619,15 @@ void SQL_REQUEST::SQL::updateQUEUE_fail(const std::vector<QUEUE::Pacients> &paci
 	std::string query = "update queue set fail = '1' where date_time > '" + getCurrentStartDay() + "' and answered = '0'"
 		+ " and sip = '-1' and phone not in ("+ list_phone +")";
 
-	
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::updateQUEUE_fail(const std::vector<QUEUE::Pacients> &pacient_list) -> " + query);
+		}
+	}
+
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		showErrorBD("SQL_REQUEST::SQL::updateQUEUE_fail -> Data (updateQUEUE_fail) error -> query(" + query + ")", &this->mysql);
@@ -514,6 +641,15 @@ void SQL_REQUEST::SQL::updateQUEUE_fail()
 {
 	// обновляем данные
 	std::string query = "update queue set fail = '1' where date_time > '" + getCurrentDateTimeAfter20hours() + "' and answered = '0' and sip = '-1' ";
+
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::updateQUEUE_fail() -> " + query);
+		}
+	}
 
 	if (!isConnectedBD())
 	{
@@ -550,6 +686,15 @@ void SQL_REQUEST::SQL::updateIVR_to_queue(const std::vector<QUEUE::Pacients> &pa
 	// обновляем данные
 	std::string query = "update ivr set to_queue = '1' where date_time > '" + getCurrentDateTimeAfterMinutes(5)+"' and phone in(" + list_phone + ") and to_queue = '0'";
 
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::updateIVR_to_queue(const std::vector<QUEUE::Pacients> &pacient_list) -> " + query);
+		}
+	}
+
 	if (!isConnectedBD())
 	{
 		showErrorBD("SQL_REQUEST::SQL::updateIVR_to_queue");
@@ -577,6 +722,14 @@ bool SQL_REQUEST::SQL::isExistQueueAfter20hours()
 	const std::string query = "select count(phone) from queue where date_time > '"
 		+ getCurrentDateTimeAfter20hours() + "' and sip = '-1' and answered = '0' and fail = '0' order by date_time desc ";
 	
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::isExistQueueAfter20hours() -> " + query);
+		}
+	}
 	
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -628,7 +781,15 @@ void SQL_REQUEST::SQL::updateQUEUE_hash(const std::vector<QUEUE::Pacients> &paci
 	const std::string query = "select id,phone,date_time from queue where date_time > '"
 		+ getCurrentStartDay() + "' and answered = '1' and fail = '0' and hash is NULL and phone not in("+ list_phone+")";
 
-	
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::updateQUEUE_hash(const std::vector<QUEUE::Pacients> &pacient_list) -> " + query);
+		}
+	}
+
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
@@ -671,6 +832,15 @@ void SQL_REQUEST::SQL::updateQUEUE_hash(const std::vector<QUEUE::Pacients> &paci
 			+ "' and phone ='" + list.phone
 			+ "' and date_time = '" + list.date_time + "'";
 
+		if (CONSTANTS::SAFE_LOG)
+		{
+			if (CONSTANTS::LOG_MODE_DEBUG)
+			{
+				LOG::LogToFile log(LOG::eLogType_DEBUG);
+				log.add("SQL_REQUEST::SQL::updateQUEUE_hash(const std::vector<QUEUE::Pacients> &pacient_list) -> " + query);
+			}
+		}
+
 		if (!isConnectedBD())
 		{
 			showErrorBD("SQL_REQUEST::SQL::updateQUEUE_hash");
@@ -699,6 +869,15 @@ bool SQL_REQUEST::SQL::isExistAnsweredAfter20hours()
 	const std::string query = "select count(id) from queue where date_time > '"
 		+ getCurrentStartDay() + "' and answered = '1' and fail = '0' and hash is NULL";
 
+
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::isExistAnsweredAfter20hours() -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -734,6 +913,14 @@ void SQL_REQUEST::SQL::updateAnswered_fail()
 	const std::string query = "select id,phone,date_time from queue where date_time > '"
 		+ getCurrentStartDay() + "' and answered = '1' and fail = '0' and hash is NULL";
 
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::updateAnswered_fail() -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -781,6 +968,15 @@ void SQL_REQUEST::SQL::updateAnswered_fail()
 			+ "' and phone ='" + list.phone
 			+ "' and date_time = '" + list.date_time + "'";
 
+		if (CONSTANTS::SAFE_LOG)
+		{
+			if (CONSTANTS::LOG_MODE_DEBUG)
+			{
+				LOG::LogToFile log(LOG::eLogType_DEBUG);
+				log.add("SQL_REQUEST::SQL::updateAnswered_fail() -> " + query);
+			}
+		}
+
 		if (!isConnectedBD())
 		{
 			showErrorBD("SQL_REQUEST::SQL::updateAnswered_fail");
@@ -810,6 +1006,15 @@ void SQL_REQUEST::SQL::insertOperatorsQueue(const char *sip, const char *queue)
 		+ std::string(sip) + "','"
 		+ std::string(queue) + "')";
 
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::insertOperatorsQueue(const char *sip, const char *queue) -> " + query);
+		}
+	}
+
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		showErrorBD("SQL_REQUEST::SQL::insertOperatorsQueue -> Data (insertOperatorsQueue) error -> query(" + query + ")", &this->mysql);
@@ -830,6 +1035,15 @@ void SQL_REQUEST::SQL::clearOperatorsQueue()
 	
 	std::string query = "delete from operators_queue";
 
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::clearOperatorsQueue() -> " + query);
+		}
+	}
+
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		showErrorBD("SQL_REQUEST::SQL::clearOperatorsQueue -> Data (insertOperatorsQueue) error -> query(" + query + ")", &this->mysql);
@@ -849,6 +1063,14 @@ bool SQL_REQUEST::SQL::isExistOperatorsQueue(const char *sip, const char *queue)
 
 	const std::string query = "select count(id) from operators_queue where sip = '"+ std::string(sip) + "' and queue = '"+std::string(queue)+"'";
 
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::isExistOperatorsQueue(const char *sip, const char *queue) -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -882,6 +1104,14 @@ bool SQL_REQUEST::SQL::isExistOperatorsQueue()
 
 	const std::string query = "select count(id) from operators_queue";
 
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::isExistOperatorsQueue() -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -904,7 +1134,7 @@ bool SQL_REQUEST::SQL::isExistOperatorsQueue()
 }
 
 // удаление sip номера оператора из всех очередей
-void SQL_REQUEST::SQL::deleteOperatorsQueue(std::string sip)
+void SQL_REQUEST::SQL::deleteOperatorsQueue(const std::string &sip)
 {
 	if (!isConnectedBD())
 	{
@@ -913,6 +1143,16 @@ void SQL_REQUEST::SQL::deleteOperatorsQueue(std::string sip)
 	}
 
 	std::string query = "delete from operators_queue where sip = '" + sip + "'";
+
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::deleteOperatorsQueue(const std::string &sip) -> " + query);
+		}
+	}
+	
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -923,7 +1163,7 @@ void SQL_REQUEST::SQL::deleteOperatorsQueue(std::string sip)
 }
 
 // удаление sip номера оператора и конкретной очереди
-void SQL_REQUEST::SQL::deleteOperatorsQueue(std::string sip, std::string queue)
+void SQL_REQUEST::SQL::deleteOperatorsQueue(const std::string &sip, const std::string &queue)
 {
 	if (!isConnectedBD())
 	{
@@ -932,6 +1172,15 @@ void SQL_REQUEST::SQL::deleteOperatorsQueue(std::string sip, std::string queue)
 	}
 
 	std::string query = "delete from operators_queue where sip = '" + sip + "' and queue = '" + queue + "'";
+
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::deleteOperatorsQueue(const std::string &sip, const std::string &queue) -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -958,6 +1207,14 @@ void SQL_REQUEST::SQL::checkOperatorsQueue(const std::vector<ACTIVE_SIP::Operato
 
 	const std::string query = "select sip,queue from operators_queue";
 
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::checkOperatorsQueue(const std::vector<ACTIVE_SIP::Operators> &list_operators) -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -1060,6 +1317,15 @@ int SQL_REQUEST::SQL::getIVR_totalCalls()
 
 	const std::string query = "select count(phone) from ivr where date_time > '" + getCurrentStartDay() + "'";
 
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::getIVR_totalCalls() -> " + query);
+		}
+	}
+
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
@@ -1087,6 +1353,15 @@ int SQL_REQUEST::SQL::getIVR_totalCalls(const IVR::CallerID &trunk)
 	}
 
 	const std::string query = "select count(phone) from ivr where trunk ='" + IVR::getCallerID(trunk) + "'  and date_time > '" + getCurrentStartDay() + "'";
+
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::getIVR_totalCalls(const IVR::CallerID &trunk) -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -1130,6 +1405,15 @@ int SQL_REQUEST::SQL::getQUEUE_Calls(bool answered)
 		}
 	}
 	
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::getQUEUE_Calls(bool answered) -> " + query);
+		}
+	}
+
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
@@ -1185,6 +1469,14 @@ bool SQL_REQUEST::SQL::remoteCheckNewCommads()
 
 	const std::string query = "select count(id) from remote_commands";
 
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::remoteCheckNewCommads() -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -1219,6 +1511,14 @@ void SQL_REQUEST::SQL::createListRemoteCommands(std::vector<REMOTE_COMMANDS::R_C
 	// формируем лист 
 	const std::string query = "select id,sip,command,ip,user_id,user_login_pc,pc from remote_commands";
 
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::createListRemoteCommands(std::vector<REMOTE_COMMANDS::R_Commands> &list) -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -1357,11 +1657,7 @@ void SQL_REQUEST::SQL::startRemoteCommand(int id, std::string sip, LOG::Log comm
 
 			size_t position = responce.find(repl_sip);
 			
-			responce.replace(position, repl_sip.length(), sip);
-			//position = responce.find(repl_sip);
-			
-			//while (position != std::string::npos)
-			//{}
+			responce.replace(position, repl_sip.length(), sip);			
 
 			std::string repl_queue = "%queue";
 			position = responce.find(repl_queue);
@@ -1422,6 +1718,15 @@ void SQL_REQUEST::SQL::deleteRemoteCommand(int id)
 
 	std::string query = "delete from remote_commands where id = '"+std::to_string(id)+"'";
 
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::deleteRemoteCommand(int id) -> " + query);
+		}
+	}
+
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		showErrorBD("SQL_REQUEST::SQL::deleteRemoteCommand -> Data (deleteRemoteCommand) error -> query(" + query + ")", &this->mysql);
@@ -1440,6 +1745,15 @@ void SQL_REQUEST::SQL::updateStatusOperators(int user_id, REMOTE_COMMANDS::Statu
 	}
 	
 	std::string query = "update operators set status = '" + std::to_string(getStatusOperators(status)) + "' where user_id = '" + std::to_string(user_id) + "'";
+
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::updateStatusOperators(int user_id, REMOTE_COMMANDS::StatusOperators status) -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -1463,6 +1777,15 @@ void SQL_REQUEST::SQL::addLog(LOG::Log command, int base_id)
 
 	// найдем все данные по пользователю для логирования
 	const std::string query = "select sip,ip,user_id,user_login_pc,pc from remote_commands where id = '"+ std::to_string(base_id)+"' limit 1";
+
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::addLog(LOG::Log command, int base_id) -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -1516,6 +1839,14 @@ void SQL_REQUEST::SQL::addLog(LOG::Log command, int base_id)
 																								"','" + user_login_pc + 
 																								"','" + pc + 
 																								"','" + std::to_string(getRemoteCommand(command)) + "')";
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::addLog(LOG::Log command, int base_id) -> " + query_insert);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
 	{
@@ -1536,6 +1867,15 @@ void SQL_REQUEST::SQL::execTaskQueue()
 
 	// найдем все данные 
 	const std::string query = "select * from queue where date_time < '" + getCurrentStartDay() + "'";
+
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::execTaskQueue() -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -1593,7 +1933,7 @@ void SQL_REQUEST::SQL::execTaskQueue()
 			}
 			else if (i == 9) { // hash (может быть NULL!)
 				if (row[i]) {
-					queue.hash = std::atoi(row[i]);
+					queue.hash = string_to_size_t(row[i]);
 				}			
 			}
 		}
@@ -1636,6 +1976,15 @@ void SQL_REQUEST::SQL::execTaskLogging()
 
 	// найдем все данные 
 	const std::string query = "select * from logging where date_time < '" + getCurrentStartDay() + "'";
+
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::execTaskLogging() -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -1724,6 +2073,15 @@ void SQL_REQUEST::SQL::execTaskIvr()
 
 	// найдем все данные 
 	const std::string query = "select * from ivr where date_time < '" + getCurrentStartDay() + "'";
+
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::execTaskIvr() -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -1817,6 +2175,15 @@ void SQL_REQUEST::SQL::execTaskOnHold()
 	// найдем все данные 
 	const std::string query = "select * from operators_ohhold where date_time_start < '" + getCurrentStartDay() + "'";
 
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::execTaskOnHold() -> " + query);
+		}
+	}
+
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
@@ -1854,7 +2221,7 @@ void SQL_REQUEST::SQL::execTaskOnHold()
 			}
 			else if (i == 4) // hash
 			{
-				onHold.hash = std::atoi(row[i]);
+				onHold.hash = string_to_size_t(row[i]);
 			}
 		}
 
@@ -1924,7 +2291,14 @@ bool SQL_REQUEST::SQL::insertDataTaskQueue(HOUSEKEEPING::Queue &queue)
 			"','" + std::to_string(queue.fail) + "')";
 	}
 
-	
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::insertDataTaskQueue(HOUSEKEEPING::Queue &queue) -> " + query_insert);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
 	{
@@ -1947,6 +2321,15 @@ bool SQL_REQUEST::SQL::deleteDataTaskQueue(int ID)
 	}
 
 	std::string query = "delete from queue where id = '"+std::to_string(ID)+"'";
+
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::deleteDataTaskQueue(int ID) -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -1976,6 +2359,14 @@ bool SQL_REQUEST::SQL::insertDataTaskLogging(HOUSEKEEPING::Logging &logging)
 			"','" + logging.fileds.date_time +
 			"','" + std::to_string(logging.action) + "')";
 	
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::insertDataTaskLogging(HOUSEKEEPING::Logging &logging) -> " + query_insert);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
 	{
@@ -1997,6 +2388,15 @@ bool SQL_REQUEST::SQL::deleteDataTaskLogging(int ID)
 	}
 
 	std::string query = "delete from logging where id = '" + std::to_string(ID) + "'";
+
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::deleteDataTaskLogging(int ID) -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -2026,6 +2426,14 @@ bool SQL_REQUEST::SQL::insertDataTaskIvr(HOUSEKEEPING::IVR &ivr)
 		"','" + std::to_string(ivr.to_queue) +
 		"','" + std::to_string(ivr.to_robot) + "')";
 
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::insertDataTaskIvr(HOUSEKEEPING::IVR &ivr) -> " + query_insert);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
 	{
@@ -2047,6 +2455,15 @@ bool SQL_REQUEST::SQL::deleteDataTaskIvr(int ID)
 	}
 
 	std::string query = "delete from ivr where id = '" + std::to_string(ID) + "'";
+
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::deleteDataTaskIvr(int ID) -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -2074,6 +2491,14 @@ bool SQL_REQUEST::SQL::insertDataTaskOnHold(HOUSEKEEPING::OnHold &onHold)
 		"','" + onHold.date_time_stop +
 		"','" + std::to_string(onHold.hash) +"')";
 
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::insertDataTaskOnHold(HOUSEKEEPING::OnHold &onHold) -> " + query_insert);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
 	{
@@ -2096,6 +2521,15 @@ bool SQL_REQUEST::SQL::deleteDataTaskOnHold(int ID)
 
 	std::string query = "delete from operators_ohhold where id = '" + std::to_string(ID) + "'";
 
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::deleteDataTaskOnHold(int ID) -> " + query);
+		}
+	}
+
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		showErrorBD("SQL_REQUEST::SQL::deleteDataTaskOnHold -> Data (deleteDataTaskOnHold) error -> query(" + query + ")", &this->mysql);
@@ -2107,7 +2541,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskOnHold(int ID)
 	return true;
 }
 
-void SQL_REQUEST::SQL::updateOperatorsOnHold(const ACTIVE_SIP::Parsing *list)
+void SQL_REQUEST::SQL::updateOperatorsOnHold(ACTIVE_SIP::Parsing *list)
 {
 	typedef std::vector<ACTIVE_SIP::Operators>	operators;
 	typedef std::vector<ACTIVE_SIP::OnHold>		operators_onhold;
@@ -2121,6 +2555,14 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(const ACTIVE_SIP::Parsing *list)
 	// найдем все sip операторы которые числяться по БД в статусе onHold	
 	auto onHold = createOnHoldSip();
 	
+	
+	
+
+		
+
+	if (onHold->size() >= 3) {
+		std::cout << "test";
+	}
 
 	// проверяем
 	if (!onHold->empty()) {
@@ -2133,10 +2575,17 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(const ACTIVE_SIP::Parsing *list)
 		// проверяем сначало текущие которые уже были в onHold добавлены		
 		if (!curr_list_operators.empty())
 		{				
+			bool isExistOnHold{ true };
+
 			// проверим оператор еще разговаривает в onHold или уже нет
 			for (operators_onhold::iterator operators_hold = onHold->begin(); operators_hold != onHold->end(); ++operators_hold)
 			{
 				bool isExistOnHold{ true };
+				
+				if (needCheckOnHold) 
+				{
+					break;
+				}
 
 				for (operators::iterator list_operators = curr_list_operators.begin(); list_operators != curr_list_operators.end(); ++list_operators)
 				{
@@ -2151,7 +2600,7 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(const ACTIVE_SIP::Parsing *list)
 							base.disableOperatorsOnHold(*operators_hold);
 							
 							// занесем в базу что нужно убрать из onHold
-							needCheckOnHold = true;
+							needCheckOnHold = true;							
 						} 				
 					}					
 				}				
@@ -2168,7 +2617,7 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(const ACTIVE_SIP::Parsing *list)
 					for (auto iter = new_list->begin(); iter != new_list->end(); ++iter)
 					{
 						SQL base;
-						base.addOperatorsOnHold(*iter);
+						base.addOperatorsOnHold(iter->first, iter->second);
 					}
 
 					delete new_list;
@@ -2178,25 +2627,13 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(const ACTIVE_SIP::Parsing *list)
 			}
 			else {
 				if (!isExistNewOnHoldOperators(onHold, curr_list_operators))
-				{
-					/*uint32_t count_hold;
-
-					for (const auto &list : curr_list_operators)
-					{
-						if (list.isOnHold) ++count_hold;
-					}
-
-					if (count_hold >= 2)
-					{
-						std::cout << "catch\n";
-					}
-					*/
+				{				
 					auto new_list = createNewOnHoldOperators(*onHold, curr_list_operators);
 
 					for (auto iter = new_list->begin(); iter != new_list->end(); ++iter)
 					{
 						SQL base;
-						base.addOperatorsOnHold(*iter);
+						base.addOperatorsOnHold(iter->first,iter->second);
 					}
 
 					delete new_list;
@@ -2221,7 +2658,7 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(const ACTIVE_SIP::Parsing *list)
 				if (it->isOnHold) {
 
 					SQL base;
-					base.addOperatorsOnHold(it->sip_number);
+					base.addOperatorsOnHold(it->sip_number,it->phoneOnHold);
 
 				}
 			}
@@ -2243,7 +2680,17 @@ std::vector<ACTIVE_SIP::OnHold> *SQL_REQUEST::SQL::createOnHoldSip()
 	}
 
 	// найдем все данные 
-	const std::string query = "select * from operators_ohhold where date_time_start > '" + getCurrentStartDay() + "' and date_time_stop is NULL";
+	//const std::string query = "select * from operators_ohhold where date_time_start > '" + getCurrentStartDay() + "' and date_time_stop is NULL";
+	const std::string query = "select operators_ohhold.id, operators_ohhold.sip, operators_ohhold.date_time_start, operators_ohhold.date_time_stop, operators_ohhold.hash, queue.phone from queue inner join operators_ohhold on queue.sip = operators_ohhold.sip where queue.hash is NULL and operators_ohhold.date_time_stop is NULL";
+
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("*SQL_REQUEST::SQL::createOnHoldSip() -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -2285,6 +2732,10 @@ std::vector<ACTIVE_SIP::OnHold> *SQL_REQUEST::SQL::createOnHoldSip()
 			{
 				hold.hash = string_to_size_t(row[i]);
 			}
+			else if (i == 5) // phone
+			{
+				hold.phone = row[i];
+			}
 		}
 
 		listHold->push_back(hold);
@@ -2295,7 +2746,7 @@ std::vector<ACTIVE_SIP::OnHold> *SQL_REQUEST::SQL::createOnHoldSip()
 	return listHold;
 }
 
-void SQL_REQUEST::SQL::addOperatorsOnHold(std::string &sip)
+void SQL_REQUEST::SQL::addOperatorsOnHold(const std::string &sip, const std::string &phone)
 {
 	if (!isConnectedBD())
 	{
@@ -2320,20 +2771,22 @@ void SQL_REQUEST::SQL::addOperatorsOnHold(std::string &sip)
 	}
 
 	// устанавливаем данные в operators_onhold
-	std::string	query_insert = "insert into operators_ohhold (sip,hash,date_time_start) values ('" + sip + "','"+ std::to_string(hash) + "','"+curr_date+"')";
+	std::string	query_insert = "insert into operators_ohhold (sip,hash,date_time_start,phone) values ('" + sip + "','"+ std::to_string(hash) + "','"+curr_date+ "','" + phone +"')";
 
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::addOperatorsOnHold(const std::string &sip, const std::string &phone) -> " + query_insert);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
 	{
 		showErrorBD("SQL_REQUEST::SQL::addOperatorsOnHold -> Data (addOperatorsOnHold) error -> query(" + query_insert + ")", &this->mysql);
 		return;
-	}
-
-	++count_add_hold;
-
-	if (count_add_hold > 200) {
-		std::cout << "=== ALERT! ALERT! ALERT! ALERT! ALERT! === --> count_add_hold = " + count_add_hold <<std::endl;
-	}
+	}	
 
 	mysql_close(&this->mysql);
 }
@@ -2351,6 +2804,15 @@ void SQL_REQUEST::SQL::disableOperatorsOnHold(const ACTIVE_SIP::OnHold &onhold)
 																	  + "' and hash = '"+std::to_string(onhold.hash)+"'"
 																	  + " and sip = '"+onhold.sip_number+"'";
 
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::disableOperatorsOnHold(const ACTIVE_SIP::OnHold &onhold) -> " + query);
+		}
+	}
+
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		showErrorBD("SQL_REQUEST::SQL::disableOperatorsOnHold -> Data (disableOperatorsOnHold) error -> query(" + query + ")", &this->mysql);
@@ -2361,7 +2823,7 @@ void SQL_REQUEST::SQL::disableOperatorsOnHold(const ACTIVE_SIP::OnHold &onhold)
 	mysql_close(&this->mysql);
 }
 
-bool SQL_REQUEST::SQL::isExistOnHold(std::string &sip, std::string hash)
+bool SQL_REQUEST::SQL::isExistOnHold(const std::string &sip, std::string hash)
 {
 	if (!isConnectedBD())
 	{
@@ -2371,6 +2833,14 @@ bool SQL_REQUEST::SQL::isExistOnHold(std::string &sip, std::string hash)
 
 	const std::string query = "select count(id) from operators_ohhold where sip = '" + sip + "' and hash = '" + hash+"'";
 
+	if (CONSTANTS::SAFE_LOG)
+	{
+		if (CONSTANTS::LOG_MODE_DEBUG)
+		{
+			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			log.add("SQL_REQUEST::SQL::isExistOnHold(const std::string &sip, std::string hash) -> " + query);
+		}
+	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{

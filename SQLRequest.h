@@ -15,6 +15,7 @@
 #include "HouseKeeping.h"
 #include <vector>
 #include <memory>
+#include <unordered_map>
 
 
 #ifndef SQLREQUEST_H
@@ -63,8 +64,8 @@ namespace SQL_REQUEST
 		bool isExistOperatorsQueue(const char *sip, const char *queue);						// проверка существует ли такой sip+очередь в БД
 		bool isExistOperatorsQueue();														// проверка существует ли хоть 1 запись в БД sip+очередь
 		void checkOperatorsQueue(const std::vector<ACTIVE_SIP::Operators> &list_operators);	// проверка текущих sip + очередь 
-		void deleteOperatorsQueue(std::string sip);											// удаление sip номера оператора из всех очередей
-		void deleteOperatorsQueue(std::string sip, std::string queue);						// удаление sip номера оператора и конкретной очереди
+		void deleteOperatorsQueue(const std::string &sip);											// удаление sip номера оператора из всех очередей
+		void deleteOperatorsQueue(const std::string &sip, const std::string &queue);						// удаление sip номера оператора и конкретной очереди
 
 
 		// Статистика
@@ -100,11 +101,11 @@ namespace SQL_REQUEST
 		bool deleteDataTaskOnHold(int ID);													// удаление данных из таблицы operatorsd_onhold
 
 		// table operators_ohhold
-		void updateOperatorsOnHold(const ACTIVE_SIP::Parsing *list);						// обнление данных о статусе оператора OnHold
+		void updateOperatorsOnHold(ACTIVE_SIP::Parsing *list);						// обнление данных о статусе оператора OnHold
 		std::vector<ACTIVE_SIP::OnHold> *createOnHoldSip();								    // создание списка с sip оператоарми которые находятся в статусе OnHold по БД
-		void addOperatorsOnHold(std::string &sip);											// добавление sip номера орератора в таблицу operators_onhold
+		void addOperatorsOnHold(const std::string &sip, const std::string &phone);				// добавление sip номера орератора в таблицу operators_onhold
 		void disableOperatorsOnHold(const ACTIVE_SIP::OnHold &onhold);						// обновление данных что sip закончил быть в статусе onHold 
-		bool isExistOnHold(std::string &sip, std::string hash);							// проверка существует ли такой уже onHold (что бы обезопаситься от дубля)											
+		bool isExistOnHold(const std::string &sip, std::string hash);							// проверка существует ли такой уже onHold (что бы обезопаситься от дубля)											
 
 
 	private:

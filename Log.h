@@ -7,6 +7,10 @@
 
 #pragma once
 #include <string>
+#include <shared_mutex>
+#include <mutex>
+#include <iostream>
+#include <fstream>
 
 
 namespace LOG {
@@ -43,6 +47,33 @@ namespace LOG {
     
         void createLog(Log command, int base_id);       // создание лога
 	};
+
+    
+    enum ELogType
+    {
+        eLogType_DEBUG  = 1,
+        eLogType_INFO   = 2,
+        eLogType_ERROR  = 3,
+    };
+
+
+    class LogToFile
+    {
+    public:
+        LogToFile(ELogType type);
+        ~LogToFile();
+            
+        void add(std::string message);  // сохранение лога в файл 
+    
+    private:        
+        mutable std::mutex mutex;
+        std::ofstream *file_log = nullptr;
+        ELogType current_type;
+
+        std::string ELogType_to_string(const ELogType &elogtype);   
+    
+    };
+   
 }
 
 

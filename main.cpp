@@ -71,9 +71,10 @@ static void thread_HouseKeeping() {
 
     task.createTask(HOUSEKEEPING::TASKS::TaskIvr);
 
-    task.createTask(HOUSEKEEPING::TASKS::TaskOnHold);
+   // task.createTask(HOUSEKEEPING::TASKS::TaskOnHold);
     
 }
+
 
 static void stat() {
     uint64_t TIK = 6000;
@@ -294,11 +295,27 @@ int main(int argc, char *argv[])
             break;
         }
         case(test): {
-            REMOTE_COMMANDS::Remote remote;
-            if (remote.getCountCommand())
+            LOG::LogToFile log(LOG::eLogType_DEBUG);
+            
+            for (size_t i = 0; i < 5; ++i) {
+                log.add(std::to_string(i)+" номер debug");
+            }
+            
+            LOG::LogToFile log2(LOG::eLogType_INFO);
+
+            for (size_t i = 0; i < 5; ++i)
             {
-                remote.startCommand();
-            }            
+                log2.add(std::to_string(i) + " номер info");
+            }
+
+            LOG::LogToFile log3(LOG::eLogType_ERROR);
+
+            for (size_t i = 0; i < 5; ++i)
+            {
+                log3.add(std::to_string(i) + " номер error");
+            }
+
+            break;
         }
     }
      return 0;
