@@ -67,7 +67,7 @@ namespace LOG {
         ~LogToFile();
             
         void add(std::string message);  // сохранение лога в файл 
-        void add(const std::vector<ACTIVE_SIP::OnHold> *onhold, const std::vector<ACTIVE_SIP::Operators> *operators);
+        void add(const std::shared_ptr<std::vector<ACTIVE_SIP::OnHold>> onhold, const std::vector<ACTIVE_SIP::Operators> *operators);
         void add(const std::vector<ACTIVE_SIP::OnHold> *onhold);
 
     private:        

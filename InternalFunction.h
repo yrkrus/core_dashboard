@@ -14,6 +14,7 @@
 #include "RemoteCommands.h"
 #include "Log.h"
 #include <mysql/mysql.h>
+#include <map>
 
 
 #ifndef INTERNALFUNCTION_H
@@ -21,8 +22,9 @@
 
 namespace INTERNALFUNCTION {
 	
-	typedef std::vector<ACTIVE_SIP::OnHold> OnHold;
+	typedef std::shared_ptr<std::vector<ACTIVE_SIP::OnHold>> OnHold;
 	typedef std::vector<ACTIVE_SIP::Operators> Operators;
+	typedef std::shared_ptr<std::map<std::string, std::string>> SP_NewOnHoldOperators;
 
 	std::string phoneParsing(std::string &phone);					// парсинг номера телефона в нормальный вид
 	void getIVR();												    // создать + получить текущий IVR
@@ -48,8 +50,8 @@ namespace INTERNALFUNCTION {
 	LOG::Log getRemoteCommand(int command);	// преобразование текущей удаленной комады из int -> LOG::Log
 	int getRemoteCommand(LOG::Log command); // преобразование текущей удаленной комады из LOG::Log -> int
 	int getStatusOperators(REMOTE_COMMANDS::StatusOperators status); // преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
-	bool isExistNewOnHoldOperators(const OnHold *onHold, const Operators &operators); // проверка есть ли разница между onHold по Ѕƒ и active_sip->onHold
-	std::unordered_map <std::string, std::string> *createNewOnHoldOperators(const OnHold &onHold, const Operators &operators);			// создание списка с новыми операторами в OnHold
+	bool isExistNewOnHoldOperators(const OnHold onHold, const Operators &operators); // проверка есть ли разница между onHold по Ѕƒ и active_sip->onHold
+	SP_NewOnHoldOperators createNewOnHoldOperators(const OnHold &onHold, const Operators &operators);			// создание списка с новыми операторами в OnHold
 
 
 	bool remoteCommandChekedExecution(LOG::Log command);	// проверка успешно ли выполнили удаленную команду
@@ -58,6 +60,8 @@ namespace INTERNALFUNCTION {
 	std::string to_string(bool value);					// конвертер из bool -> std::string 
 
 	size_t string_to_size_t(const std::string &str);	// конвертер std::string->size_t
+
+	void showHelpInfo();						// отображение хелп справки, когда не корректную команду ввесли
 }
 	
 

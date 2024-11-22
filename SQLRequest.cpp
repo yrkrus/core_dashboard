@@ -9,6 +9,7 @@
 #include <memory>
 #include <list>
 
+
 using namespace INTERNALFUNCTION;
 
 SQL_REQUEST::SQL::SQL()
@@ -2487,10 +2488,10 @@ bool SQL_REQUEST::SQL::insertDataTaskOnHold(HOUSEKEEPING::OnHold &onHold)
 
 	// устанавливаем данные в history_ivr
 	std::string	query_insert = "insert into history_onhold (id,sip,date_time_start,date_time_stop,hash) values ('" + std::to_string(onHold.id) +
-		"','" + std::to_string(onHold.sip) +
-		"','" + onHold.date_time_start +
-		"','" + onHold.date_time_stop +
-		"','" + std::to_string(onHold.hash) +"')";
+																												"','" + std::to_string(onHold.sip) +
+																												"','" + onHold.date_time_start +
+																												"','" + onHold.date_time_stop +
+																												"','" + std::to_string(onHold.hash) +"')";
 
 	if (CONSTANTS::SAFE_LOG)
 	{
@@ -2554,10 +2555,53 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(ACTIVE_SIP::Parsing *list)
 	}
 
 	// найдем все sip операторы которые числяться по БД в статусе onHold	
-	auto onHold = createOnHoldSip();	
+	auto onHold = createOnHoldSip();
+	//auto onHold = createOnHoldSip();	
 
-	if (onHold->size() >= 3) {
+	if (onHold->size() >= 4) {
 		std::cout << "test";
+		/*
+		
+		id |sip|date_time_start    |date_time_stop     |hash                |phone       |
+		---+---+-------------------+-------------------+--------------------+------------+
+		416|508|2024-11-22 14:55:35|                   |11337464765379681510|+79093910402|
+		417|514|2024-11-22 14:57:33|2024-11-22 14:58:14|13031441188243052791|+79064103692|
+		418|507|2024-11-22 14:58:53|                   |7060977062918673759 |+79608957997|
+		419|508|2024-11-22 14:58:58|                   |12630799220711158958|+79093910402|
+		420|507|2024-11-22 14:58:58|                   |12077553184312573086|+79608957997|
+
+			Line QUEUE is (9)
+			queue           phone            wait time
+			5000     >>     +79610731199     (00:01:05)
+			5000     >>     +79618438788     (00:04:08)
+			5000     >>     +79093910402     (00:05:01)
+			5000     >>     +79064103692     (00:02:42)
+			5000     >>     +79889863771     (00:04:00)
+			5000     >>     +79377052662     (00:00:49)
+			5000     >>     +79610758571     (00:03:39)
+			5000     >>     +79608957997     (00:03:26)
+			5000     >>     +78443420118     (00:01:50)
+			Line IVR is (5)
+			trunk           phone            wait time
+			COMAGIC  >>     +79093941546     (00:00:33)
+			COMAGIC  >>     +79696522569     (00:00:45)
+			STS      >>     +78443385708     (00:00:05)
+			220220   >>     +79275018420     (00:00:04)
+			220220   >>     +79951343146     (00:00:33)
+			Line Active SIP is (9)
+			sip             phone            talk time
+			507 (OnHold)    +79608957997     (00:02:38)
+			502      >>     +79889863771     (00:03:12)
+			526      >>     +79377052662     (00:00:01)
+			514      >>     +79064103692     (00:01:55)
+			506      >>     +79610758571     (00:02:51)
+			512 (OnHold)    +79618438788     (00:03:20)
+			519      >>     +78443420118     (00:01:03)
+			544      >>     +79610731199     (00:00:17)
+			508 (OnHold)    +79093910402     (00:04:07)
+
+		*/
+
 	}
 
 	// проверяем
@@ -2613,12 +2657,13 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(ACTIVE_SIP::Parsing *list)
 
 
 			// вдруг новые onHold появились, добавляем в БД, но сначало проверим delOnHold
-			if (needCheckOnHold) {
+			if (needCheckOnHold) 
+			{
 				auto onHoldNeedCheck = createOnHoldSip();
 
 				if (!isExistNewOnHoldOperators(onHoldNeedCheck, curr_list_operators))
 				{					
-					auto new_list = createNewOnHoldOperators(*onHoldNeedCheck, curr_list_operators);
+					auto new_list = createNewOnHoldOperators(onHoldNeedCheck, curr_list_operators);
 
 					for (auto iter = new_list->begin(); iter != new_list->end(); ++iter)
 					{
@@ -2626,15 +2671,15 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(ACTIVE_SIP::Parsing *list)
 						base.addOperatorsOnHold(iter->first, iter->second);
 					}
 
-					delete new_list;
+					//delete new_list;
 				}
 
-				delete onHoldNeedCheck;
+				//delete onHoldNeedCheck;
 			}
 			else {
 				if (!isExistNewOnHoldOperators(onHold, curr_list_operators))
 				{				
-					auto new_list = createNewOnHoldOperators(*onHold, curr_list_operators);
+					auto new_list = createNewOnHoldOperators(onHold, curr_list_operators);
 
 					for (auto iter = new_list->begin(); iter != new_list->end(); ++iter)
 					{
@@ -2642,7 +2687,7 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(ACTIVE_SIP::Parsing *list)
 						base.addOperatorsOnHold(iter->first,iter->second);
 					}
 
-					delete new_list;
+					//delete new_list;
 				}
 			}
 		}
@@ -2671,18 +2716,18 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(ACTIVE_SIP::Parsing *list)
 		}		
 	}
 
-	delete onHold;
+	// delete onHold;
 }
 
-std::vector<ACTIVE_SIP::OnHold> *SQL_REQUEST::SQL::createOnHoldSip()
+std::shared_ptr<std::vector<ACTIVE_SIP::OnHold>> SQL_REQUEST::SQL::createOnHoldSip()
 {
-	auto *listHold = new std::vector<ACTIVE_SIP::OnHold>;
+	auto listHold = std::make_shared<std::vector<ACTIVE_SIP::OnHold>>();
 
 	
 	if (!isConnectedBD())
 	{
 		showErrorBD(METHOD_NAME());
-		return listHold;
+		return nullptr;
 	}
 
 	// найдем все данные 
@@ -2701,7 +2746,7 @@ std::vector<ACTIVE_SIP::OnHold> *SQL_REQUEST::SQL::createOnHoldSip()
 	{
 		// ошибка		
 		showErrorBD(METHOD_NAME()+" -> query(" + query + ")", &this->mysql);
-		return listHold;
+		return nullptr;
 	}
 
 	// результат

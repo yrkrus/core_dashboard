@@ -188,7 +188,8 @@
     <ClCompile>
       <AdditionalIncludeDirectories>Z:\mysql;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CppLanguageStandard>c++14</CppLanguageStandard>
-      <Verbose>true</Verbose>
+      <Verbose>false</Verbose>
+      <AdditionalOptions>-g %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>~/core_dashboards/core_dashboard/mysql;C:\c++\РАБОЧЕ ПРОГРАММЫ\dashboard_for_astrerisk\core_dashboard\mysql;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -214,7 +215,8 @@
     <ClCompile>
       <AdditionalIncludeDirectories>Z:\mysql;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CppLanguageStandard>c++14</CppLanguageStandard>
-      <Verbose>true</Verbose>
+      <Verbose>false</Verbose>
+      <AdditionalOptions>-g %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>~/core_dashboards/core_dashboard/mysql;C:\c++\РАБОЧЕ ПРОГРАММЫ\dashboard_for_astrerisk\core_dashboard\mysql;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -240,7 +242,8 @@
     <ClCompile>
       <AdditionalIncludeDirectories>Z:\mysql;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CppLanguageStandard>c++14</CppLanguageStandard>
-      <Verbose>true</Verbose>
+      <Verbose>false</Verbose>
+      <AdditionalOptions>-g %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>~/core_dashboards/core_dashboard/mysql;C:\c++\РАБОЧЕ ПРОГРАММЫ\dashboard_for_astrerisk\core_dashboard\mysql;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
@@ -266,7 +269,8 @@
     <ClCompile>
       <AdditionalIncludeDirectories>Z:\mysql;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CppLanguageStandard>c++14</CppLanguageStandard>
-      <Verbose>true</Verbose>
+      <Verbose>false</Verbose>
+      <AdditionalOptions>-g %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>~/core_dashboards/core_dashboard/mysql;C:\c++\РАБОЧЕ ПРОГРАММЫ\dashboard_for_astrerisk\core_dashboard\mysql;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>

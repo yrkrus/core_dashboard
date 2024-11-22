@@ -23,7 +23,7 @@ namespace CONSTANTS
     
     static bool SAFE_LOG        { true };       // записывать ли в лог работу ядра
     static bool LOG_MODE_INFO   { true };       // режим записи лога INFO (при этой записи записываются отладочные ) 
-    static bool LOG_MODE_DEBUG  { false };      // режим записи лога DEBUG (при этой записи записываются запросы от и на сервер) 
+    static bool LOG_MODE_DEBUG  { true };      // режим записи лога DEBUG (при этой записи записываются запросы от и на сервер) 
     static bool LOG_MODE_ERROR  { true };       // режим записи лога ERROR (включен постоянно, фиксируются все ошибки)
 
     // WKroot#791  old
@@ -38,6 +38,10 @@ namespace CONSTANTS
 
 
     asterisk -rx "core show channels verbose" | grep to-atsaero5005  кто сейчас разговаривает с бабой железной
+
+    // запуск gdbserver
+    scl enable gcc-toolset-10 bash
+    gdbserver :7777 ./core_dashboard start
 
     */
 
@@ -75,7 +79,7 @@ namespace CONSTANTS
 
     /*
     ВАЖНО! НЕ ЗАБЫТЬ
-    запуск на проде запускать из ./root/core_dashboard/core_dashboard/core_dashboard.out
+    запуск на проде запускать из ./root/core_dashboard/core_dashboard/core_dashboard
 
     когда через активные сессия сброс, если оператор в очереди то убираем его из нее!!!
 
@@ -99,24 +103,24 @@ enum AsteriskQueue
 // после IVREXT -> Spasibo - уход на спасибо что оценили
 
 // for IVR
-const std::string cIVRCommands	    = "Playback|lukoil|ivr-3";
-const std::string cIVRCommandsEx1   = "IVREXT";
-const std::string cIVRCommandsEx2   = "Spasibo";
-const std::string cIVRName		    = "IVR.txt";
-const std::string cIVRResponse	    = "asterisk -rx \"core show channels verbose\" | grep -E \"" + cIVRCommands + "\" " + " | grep -v \"" + cIVRCommandsEx1 + "\" " + " | grep -v \"" + cIVRCommandsEx2 + "\" > " + cIVRName;
+static std::string cIVRCommands	    = "Playback|lukoil|ivr-3";
+static std::string cIVRCommandsEx1   = "IVREXT";
+static std::string cIVRCommandsEx2   = "Spasibo";
+static std::string cIVRName		    = "IVR.txt";
+static std::string cIVRResponse	    = "asterisk -rx \"core show channels verbose\" | grep -E \"" + cIVRCommands + "\" " + " | grep -v \"" + cIVRCommandsEx1 + "\" " + " | grep -v \"" + cIVRCommandsEx2 + "\" > " + cIVRName;
 
 
 // for QUEUE
-const std::string cQueueCommands	= "Queue";
-const std::string cQueueCommandsEx	= "App";
-const std::string cQueueName		= "Queue.txt";
-const std::string cQueueResponse	= "asterisk -rx \"core show channels verbose\" | grep -E \"" + cQueueCommands + "\" " + " | grep -v \"" + cQueueCommandsEx + "\" > " + cQueueName;
+static std::string cQueueCommands	= "Queue";
+static std::string cQueueCommandsEx	= "App";
+static std::string cQueueName		= "Queue.txt";
+static std::string cQueueResponse	= "asterisk -rx \"core show channels verbose\" | grep -E \"" + cQueueCommands + "\" " + " | grep -v \"" + cQueueCommandsEx + "\" > " + cQueueName;
 
 // for ActiveSIP
-const std::string cActiveSipName				= "ActiveSip.txt";
-const std::string cActiveSipResponse			= "asterisk -rx \"core show channels concise\" > " + cActiveSipName;
-const std::string cActiveSipOperatorsName		= "ActiveSipOperators.txt";
-const std::string cActiveSipOperatorsResponse	= "asterisk -rx \"queue show %queue\" > " + cActiveSipOperatorsName;
+static std::string cActiveSipName				= "ActiveSip.txt";
+static std::string cActiveSipResponse			= "asterisk -rx \"core show channels concise\" > " + cActiveSipName;
+static std::string cActiveSipOperatorsName		= "ActiveSipOperators.txt";
+static std::string cActiveSipOperatorsResponse	= "asterisk -rx \"queue show %queue\" > " + cActiveSipOperatorsName;
 
 //for MySQL Connect
 static std::string cHOST       = "10.34.222.19";

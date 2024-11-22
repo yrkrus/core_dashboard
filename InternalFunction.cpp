@@ -321,8 +321,10 @@ void INTERNALFUNCTION::getStatistics()
 void INTERNALFUNCTION::showErrorBD(const std::string str)
 {
 	std::cerr << str << " -> Error: can't connect to database " << CONSTANTS::cHOST << ":" << CONSTANTS::cBD << "\n";
-	if (CONSTANTS::SAFE_LOG) {
-		if (CONSTANTS::LOG_MODE_ERROR) {
+	if (CONSTANTS::SAFE_LOG) 
+	{
+		if (CONSTANTS::LOG_MODE_ERROR) 
+		{
 			LOG::LogToFile log(LOG::eLogType_ERROR);
 			log.add(str +" -> Error: can't connect to database " + CONSTANTS::cHOST + ":" + CONSTANTS::cBD);
 		}
@@ -333,8 +335,10 @@ void INTERNALFUNCTION::showErrorBD(const std::string str)
 void INTERNALFUNCTION::showErrorBD(const std::string str, MYSQL *mysql)
 {
 	std::cerr << str <<" " << mysql_error(mysql) <<"\n";
-	if (CONSTANTS::SAFE_LOG) {
-		if (CONSTANTS::LOG_MODE_ERROR)	{
+	if (CONSTANTS::SAFE_LOG) 
+	{
+		if (CONSTANTS::LOG_MODE_ERROR)	
+		{
 			LOG::LogToFile log(LOG::eLogType_ERROR);
 			log.add(str + " " + mysql_error(mysql));
 		}
@@ -360,31 +364,37 @@ int INTERNALFUNCTION::getStatusOperators(REMOTE_COMMANDS::StatusOperators status
 }
 
 
-bool INTERNALFUNCTION::isExistNewOnHoldOperators(const OnHold *onHold, const Operators &operators)
+bool INTERNALFUNCTION::isExistNewOnHoldOperators(const OnHold onHold, const Operators &operators)
 {
 	int count_operators_active_sip{ 0 };
-	for (const auto &list : operators) {
-		if (list.isOnHold) {
+	for (const auto &list : operators) 
+	{
+		if (list.isOnHold) 
+		{
 			++count_operators_active_sip;
 		}
 	}
 	
-	return ( onHold->size() == count_operators_active_sip ? true : false );
+	return (onHold->size() == count_operators_active_sip ? true : false );
 
 }
 
-std::unordered_map <std::string, std::string> *INTERNALFUNCTION::createNewOnHoldOperators(const OnHold &onHold, const Operators &operators)
+INTERNALFUNCTION::SP_NewOnHoldOperators INTERNALFUNCTION::createNewOnHoldOperators(const OnHold &onHold, const Operators &operators)
 {
-	auto *new_lists = new std::unordered_map<std::string, std::string>;
+	SP_NewOnHoldOperators new_lists = std::make_shared<std::map<std::string, std::string>>();
 
-	for (const auto &operators_list : operators) {
-		
-		if (operators_list.isOnHold) {
+	for (const auto &operators_list : operators) 
+	{		
+		if (operators_list.isOnHold) 
+		{		
 			
-			for (size_t i = 0; i != onHold.size(); ++i)
+			const auto &onHoldVec = *onHold; // разыменуем указатель
+			
+			for (size_t i = 0; i != onHoldVec.size(); ++i)
 			{
-				if (operators_list.sip_number != onHold[i].sip_number) {					
-					new_lists->insert({ operators_list.sip_number, operators_list.phoneOnHold});
+				if (operators_list.sip_number != onHoldVec[i].sip_number)
+				{					
+					new_lists.get()->insert(std::make_pair(operators_list.sip_number, operators_list.phoneOnHold));
 				}
 			}			
 		}
@@ -464,6 +474,22 @@ size_t INTERNALFUNCTION::string_to_size_t(const std::string &str)
 	stream >> output;
 
 	return output;
+}
+
+void INTERNALFUNCTION::showHelpInfo()
+{
+	system("clear");
+	std::cout << "\n\t" << CONSTANTS::core_version << "\n";
+	std::cout << "\t\t\tList of commands: \n\n";
+	std::cout << " ivr \t\t\t - кто в IVR \n";
+	std::cout << " queue \t\t\t - текущая очередь \n";
+	std::cout << " active_sip \t\t - какие активные sip зарегистрированы в очереди \n";
+	std::cout << " connect_bd \t\t - проверка соединения с БД\n";
+	std::cout << " start \t\t\t - сбор данных в БД (самая главная команда для полноценной работы)\n";
+	std::cout << " statistics \t\t - отобразить статистику\n";
+	std::cout << " housekeeping \t\t - внутренния задания на очистку БД таблиц (queue, logging, ivr)\n\n";
+
+	std::cout << "\t\t\t\t\t\t\t\t === by Petrov Yuri @2024 === \n\n";
 }
 
 

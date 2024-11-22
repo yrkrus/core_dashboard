@@ -39,7 +39,8 @@ namespace ACTIVE_SIP
 		std::string phoneOnHold{ "null" };	// телефон с которым идет onHold
 
 	//public:
-		void clear() {
+		void clear() 
+		{
 			this->sip_number = "null";
 			this->queue.clear();
 			this->isOnHold = false;

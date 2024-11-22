@@ -102,7 +102,7 @@ namespace SQL_REQUEST
 
 		// table operators_ohhold
 		void updateOperatorsOnHold(ACTIVE_SIP::Parsing *list);						// обнление данных о статусе оператора OnHold
-		std::vector<ACTIVE_SIP::OnHold> *createOnHoldSip();								    // создание списка с sip оператоарми которые наход€тс€ в статусе OnHold по Ѕƒ
+		std::shared_ptr<std::vector<ACTIVE_SIP::OnHold>> createOnHoldSip();								    // создание списка с sip оператоарми которые наход€тс€ в статусе OnHold по Ѕƒ
 		void addOperatorsOnHold(const std::string &sip, const std::string &phone);				// добавление sip номера орератора в таблицу operators_onhold
 		void disableOperatorsOnHold(const ACTIVE_SIP::OnHold &onhold);						// обновление данных что sip закончил быть в статусе onHold 
 		bool isExistOnHold(const std::string &sip, std::string hash);							// проверка существует ли такой уже onHold (что бы обезопаситьс€ от дубл€)											

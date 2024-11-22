@@ -228,20 +228,7 @@ int main(int argc, char *argv[])
     switch (ch)
     {
         case(help): {
-            system("clear");
-            
-
-            std::cout << "\n\t" << CONSTANTS::core_version << "\n";
-            std::cout << "\t\t\tList of commands: \n\n";
-            std::cout << " ivr \t\t\t - кто в IVR \n";
-            std::cout << " queue \t\t\t - текущая очередь \n";
-            std::cout << " active_sip \t\t - какие активные sip зарегистрированы в очереди \n";
-            std::cout << " connect_bd \t\t - проверка соединения с БД\n";
-            std::cout << " start \t\t\t - сбор данных в БД (самая главная команда для полноценной работы)\n";   
-            std::cout << " statistics \t\t - отобразить статистику\n";
-            std::cout << " housekeeping \t\t - внутренния задания на очистку БД таблиц (queue, logging, ivr)\n\n";
-            
-            std::cout << "\t\t\t\t\t\t\t\t === by Petrov Yuri @2024 === \n\n";
+            showHelpInfo();
             break;
         }
         case(ivr): {                // запись в БД кто сейчас слушает IVR 

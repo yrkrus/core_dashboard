@@ -402,7 +402,8 @@ std::vector<ACTIVE_SIP::Operators> ACTIVE_SIP::Parsing::getListOperators()
 	
 	// обновим данные по phoneOnHold
 	for (auto &operators : list_operators) {
-		if (operators.isOnHold) {
+		if (operators.isOnHold) 
+		{
 				
 			for (auto &list_active : active_sip_list)
 			{
