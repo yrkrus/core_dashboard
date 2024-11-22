@@ -89,12 +89,14 @@ void INTERNALFUNCTION::getQueue(void)
 // создать + получить кто с кем разговаривает
 void INTERNALFUNCTION::getActiveSip(void)
 {
-	if (!CONSTANTS::DEBUG_MODE)	{
+	if (!CONSTANTS::DEBUG_MODE)	
+	{
 		system(CONSTANTS::cActiveSipResponse.c_str());
 	}
 
     ACTIVE_SIP::Parsing sip(CONSTANTS::cActiveSipName.c_str());
-	if (sip.isExistList()) { 
+	if (sip.isExistList()) 
+	{ 
 		sip.show(); 
 		sip.updateData();
 	}	

@@ -64,7 +64,7 @@ namespace ACTIVE_SIP
 	private:
 		std::string findParsing(std::string str, Currentfind find, const std::string number_operator);		// парсинг
 		std::string findNumberSip(std::string &str);														// парсинг нахождения активного sip оператора
-		bool findOnHold(std::string &str);																	// парсинг нахождения статуса onHold 
+		bool findOnHold(const std::string &str);																	// парсинг нахождения статуса onHold 
 
 
 		void findActiveOperators(const char *fileOperators, std::string queue);  							// парсинг #2 (для activeoperaots) 

@@ -10,7 +10,6 @@
 #include <algorithm>
 #include <sstream>
 
-using namespace INTERNALFUNCTION;
 
 // коструктор
 ACTIVE_SIP::Parsing::Parsing(const char *fileActiveSip)
@@ -92,13 +91,13 @@ void ACTIVE_SIP::Parsing::createListActiveOperators()
 		// заменяем %queue на номер очереди
 		std::string repl = "%queue";
 		size_t position = responce.find(repl);
-		responce.replace(position, repl.length(), getNumberQueue(static_cast<CONSTANTS::AsteriskQueue>(i)));
+		responce.replace(position, repl.length(), INTERNALFUNCTION::getNumberQueue(static_cast<CONSTANTS::AsteriskQueue>(i)));
 
 		if (!CONSTANTS::DEBUG_MODE) {
 			system(responce.c_str());
 		}			
 
-		findActiveOperators(CONSTANTS::cActiveSipOperatorsName.c_str(), getNumberQueue(static_cast<CONSTANTS::AsteriskQueue>(i)));
+		findActiveOperators(CONSTANTS::cActiveSipOperatorsName.c_str(), INTERNALFUNCTION::getNumberQueue(static_cast<CONSTANTS::AsteriskQueue>(i)));
 	}
 
 	// добавим\обновим очереди 
@@ -120,10 +119,10 @@ void ACTIVE_SIP::Parsing::show(bool silent)
 			for (const auto &list : active_sip_list)
 			{
 				if (!getSipIsOnHold(list.internal_sip)) {
-					buffer << list.internal_sip << "\t >> \t" << list.phone << "\t (" << getTalkTime(list.talk_time) << ")\n";
+					buffer << list.internal_sip << "\t >> \t" << list.phone << "\t (" << INTERNALFUNCTION::getTalkTime(list.talk_time) << ")\n";
 				}
 				else {
-					buffer << list.internal_sip << " (OnHold) \t" << list.phone << "\t (" << getTalkTime(list.talk_time) << ")\n";
+					buffer << list.internal_sip << " (OnHold) \t" << list.phone << "\t (" << INTERNALFUNCTION::getTalkTime(list.talk_time) << ")\n";
 				}				
 			}
 		}		
@@ -177,7 +176,7 @@ std::string ACTIVE_SIP::Parsing::findParsing(std::string str, ACTIVE_SIP::Curren
 		{
 			case ACTIVE_SIP::Currentfind::phone_find:
 			{
-				return phoneParsing(lines[7]);
+				return INTERNALFUNCTION::phoneParsing(lines[7]);
 				break;
 			}
 			case ACTIVE_SIP::Currentfind::internal_sip_find:	// внутренний номер SIP (мы его и так знаем из функции)
@@ -211,7 +210,7 @@ std::string ACTIVE_SIP::Parsing::findNumberSip(std::string &str)
 }
 
 
-bool ACTIVE_SIP::Parsing::findOnHold(std::string &str)
+bool ACTIVE_SIP::Parsing::findOnHold(const std::string &str)
 {
 	return ((str.find("On Hold") != std::string::npos) ? true : false);	
 }
@@ -370,10 +369,10 @@ void ACTIVE_SIP::Parsing::updateData()
 		}
 		
 		// обновление данных по операторам находящимся в статусе onHold
-	//	SQL_REQUEST::SQL base;
-	//	if (base.isConnectedBD()) {
-	//		base.updateOperatorsOnHold(this);
-	//	}			
+		SQL_REQUEST::SQL base;
+		if (base.isConnectedBD()) {
+			base.updateOperatorsOnHold(this);
+		}			
 
 	}
 	/*else {

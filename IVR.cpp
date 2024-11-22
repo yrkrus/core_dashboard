@@ -12,6 +12,7 @@ using namespace INTERNALFUNCTION;
 // коструктор
 IVR::Parsing::Parsing(const char *fileIVR)
 {
+	
 	std::ifstream fileivr;
 	
 	fileivr.open(fileIVR);
@@ -45,12 +46,14 @@ IVR::Parsing::Parsing(const char *fileIVR)
 IVR::CallerID IVR::getCallerID(std::string str)
 {
 	if (str.find("ivr-13")				!= std::string::npos)	return domru_220000;
+	if (str.find("druOUT_220220")		!= std::string::npos)	return domru_220220;
 	if (str.find("Dru_220000")			!= std::string::npos)	return domru_220220;	
 	if (str.find("sts_")				!= std::string::npos)	return sts;
 	if (str.find("221122")				!= std::string::npos)	return comagic;
 	if (str.find("camaa")				!= std::string::npos)	return comagic;
 	return null_caller;
 }
+
 
 std::string IVR::getCallerID(const CallerID &callerID)
 {

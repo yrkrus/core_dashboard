@@ -4,11 +4,17 @@
 //			    константные значения				//
 //													//	
 //////////////////////////////////////////////////////
-
 #include <string>
 
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
+
+#if defined(_MSC_VER)
+    #define METHOD_NAME() std::string(__FUNCSIG__)
+#else
+    #define METHOD_NAME() std::string(__PRETTY_FUNCTION__)
+#endif
+
 
 namespace CONSTANTS 
 {
@@ -25,11 +31,13 @@ namespace CONSTANTS
    
     /*
     
-    valgrind --leak-check=full --show-leak-kinds=all --leak-resolution=med --log-file=./core.log ./core_dashboard.out start
-    valgrind --leak-check=full --leak-resolution=med --log-file=./core.log ./core_dashboard.out start
+    valgrind --leak-check=full --show-leak-kinds=all --leak-resolution=med --log-file=./core.log ./core_dashboard start
+    valgrind --leak-check=full --leak-resolution=med --log-file=./core.log ./core_dashboard start
     
     mysqldump -uzabbix -pUFGq4kZMNIMwxTzV -h10.34.222.19 dashboard > /root/core_dashboards/backup_bd/dashboard_20240924.sql
 
+
+    asterisk -rx "core show channels verbose" | grep to-atsaero5005  кто сейчас разговаривает с бабой железной
 
     */
 
@@ -68,6 +76,9 @@ namespace CONSTANTS
     /*
     ВАЖНО! НЕ ЗАБЫТЬ
     запуск на проде запускать из ./root/core_dashboard/core_dashboard/core_dashboard.out
+
+    когда через активные сессия сброс, если оператор в очереди то убираем его из нее!!!
+
     */
 
  // версия ядра

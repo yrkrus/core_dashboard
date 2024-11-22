@@ -229,6 +229,7 @@ int main(int argc, char *argv[])
     {
         case(help): {
             system("clear");
+            
 
             std::cout << "\n\t" << CONSTANTS::core_version << "\n";
             std::cout << "\t\t\tList of commands: \n\n";
