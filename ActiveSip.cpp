@@ -18,7 +18,8 @@ ACTIVE_SIP::Parsing::Parsing(const char *fileActiveSip)
 	createListActiveOperators();
 	
 	// есть ли активные SIP операторы в линии 
-	if (!isExistListActiveOperators()) {
+	if (!isExistListActiveOperators()) 
+	{
 		std::cout << "\nActive SIP operators is empty!\n";
 		return;
 	}
@@ -118,16 +119,19 @@ void ACTIVE_SIP::Parsing::show(bool silent)
 
 			for (const auto &list : active_sip_list)
 			{
-				if (!getSipIsOnHold(list.internal_sip)) {
+				if (!getSipIsOnHold(list.internal_sip)) 
+				{
 					buffer << list.internal_sip << "\t >> \t" << list.phone << "\t (" << INTERNALFUNCTION::getTalkTime(list.talk_time) << ")\n";
 				}
-				else {
+				else 
+				{
 					buffer << list.internal_sip << " (OnHold) \t" << list.phone << "\t (" << INTERNALFUNCTION::getTalkTime(list.talk_time) << ")\n";
 				}				
 			}
 		}		
 	}	
-	else {
+	else 
+	{
 		buffer << "Active SIP is empty!\n";
 	}
 
@@ -135,7 +139,7 @@ void ACTIVE_SIP::Parsing::show(bool silent)
 }
 
 // парсинг строки
-std::string ACTIVE_SIP::Parsing::findParsing(std::string str, ACTIVE_SIP::Currentfind find, const std::string number_operator)
+std::string ACTIVE_SIP::Parsing::findParsing(std::string str, ACTIVE_SIP::Currentfind find, const std::string &number_operator)
 {
 	std::vector<std::string> lines;
 	std::string current_str;
@@ -282,7 +286,8 @@ void ACTIVE_SIP::Parsing::insert_updateQueueNumberOperators()
 	SQL_REQUEST::SQL base;	
 
 	// проверим вдруг из очереди оператор убежал, тогда надо удалить sip из БД
-	if (base.isConnectedBD()) {
+	if (base.isConnectedBD()) 
+	{
 		base.checkOperatorsQueue(list_operators);
 	}		
 
@@ -369,10 +374,10 @@ void ACTIVE_SIP::Parsing::updateData()
 		}
 		
 		// обновление данных по операторам находящимся в статусе onHold
-		SQL_REQUEST::SQL base;
+		/*SQL_REQUEST::SQL base;		TODO починить
 		if (base.isConnectedBD()) {
 			base.updateOperatorsOnHold(this);
-		}			
+		}	*/		
 
 	}
 	/*else {

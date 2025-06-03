@@ -40,6 +40,7 @@ namespace LOG {
         Log_IT                      = 17,        // ИТ
         Log_transfer                = 18,        // переносы
         Log_reserve                 = 19,        // резерв
+        Log_callback                = 20,        // callback
 	};
 	
 	class Logging

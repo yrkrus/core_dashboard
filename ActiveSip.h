@@ -1,11 +1,3 @@
-//////////////////////////////////////////////////////
-//													//	        
-//			by Petrov Yuri 14.05.2024				//
-//    парсинг активных звонков которые в реалтайм	//
-//                  ведут разговор					//
-//													//	
-//////////////////////////////////////////////////////
-
 #include <string>
 #include <vector>
 #include <iostream>
@@ -63,7 +55,7 @@ namespace ACTIVE_SIP
 		std::vector<Operators> getListOperators();				// получение текущего значения со списком активных операторов		
 
 	private:
-		std::string findParsing(std::string str, Currentfind find, const std::string number_operator);		// парсинг
+		std::string findParsing(std::string str, Currentfind find, const std::string &number_operator);		// парсинг
 		std::string findNumberSip(std::string &str);														// парсинг нахождения активного sip оператора
 		bool findOnHold(const std::string &str);																	// парсинг нахождения статуса onHold 
 

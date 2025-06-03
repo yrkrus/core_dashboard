@@ -12,7 +12,7 @@
 
 namespace REMOTE_COMMANDS {
 
-	enum class StatusOperators
+	enum class ecStatusOperators
 	{
 		status_available		= 1,        // доступен
 		status_home				= 2,        // домой		
@@ -24,16 +24,17 @@ namespace REMOTE_COMMANDS {
 		status_IT				= 8,        // ИТ
 		status_transfer			= 9,        // переносы
 		status_reserve			= 10,		// резерв
+		status_callback			= 11,		// callback
 	};
 
 	
 	struct R_Commands
 	{
-		int			id;						// id команды (для удобного поиска в запросе)
+		int			id;				// id команды (для удобного поиска в запросе)
 		std::string sip;			// sip инициализировавший команду
-		LOG::Log	command;			// сама команда (int)
+		LOG::Log	command;		// сама команда (int)
 		std::string ip;				// ip с которого пришла команда
-		int			user_id;				// id пользователя по БД
+		int			user_id;		// id пользователя по БД
 		std::string user_login_pc;	// логин зареган на пк с которого пришла команда
 		std::string pc;				// имя пк с которого отправили коиманду
 	};

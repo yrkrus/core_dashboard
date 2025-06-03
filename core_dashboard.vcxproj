@@ -160,26 +160,38 @@
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="ActiveSip.cpp" />
-    <ClCompile Include="History.cpp" />
+    <ClCompile Include="CreateFiles.cpp" />
+    <ClCompile Include="DashboardCore.cpp" />
+    <ClCompile Include="IFile.cpp" />
+    <ClCompile Include="IResponseFileHandler.cpp" />
     <ClCompile Include="HouseKeeping.cpp" />
     <ClCompile Include="InternalFunction.cpp" />
+    <ClCompile Include="ISQLConnect.cpp" />
     <ClCompile Include="IVR.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Queue.cpp" />
     <ClCompile Include="RemoteCommands.cpp" />
+    <ClCompile Include="RemoteCommandsCallback.cpp" />
     <ClCompile Include="SQLRequest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActiveSip.h" />
+    <ClInclude Include="AUTH.h" />
     <ClInclude Include="Constants.h" />
-    <ClInclude Include="History.h" />
+    <ClInclude Include="CreateFiles.h" />
+    <ClInclude Include="DashboardCore.h" />
+    <ClInclude Include="DEBUG.h" />
+    <ClInclude Include="IFile.h" />
+    <ClInclude Include="IResponseFileHandler.h" />
     <ClInclude Include="HouseKeeping.h" />
     <ClInclude Include="InternalFunction.h" />
+    <ClInclude Include="ISQLConnect.h" />
     <ClInclude Include="IVR.h" />
     <ClInclude Include="Log.h" />
     <ClInclude Include="Queue.h" />
     <ClInclude Include="RemoteCommands.h" />
+    <ClInclude Include="RemoteCommandsCallback.h" />
     <ClInclude Include="SQLRequest.h" />
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -187,13 +199,13 @@
     <ClCompile />
     <ClCompile>
       <AdditionalIncludeDirectories>Z:\mysql;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <CppLanguageStandard>c++14</CppLanguageStandard>
+      <CppLanguageStandard>c++17</CppLanguageStandard>
       <Verbose>false</Verbose>
       <AdditionalOptions>-g %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>~/core_dashboards/core_dashboard/mysql;C:\c++\РАБОЧЕ ПРОГРАММЫ\dashboard_for_astrerisk\core_dashboard\mysql;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>-lmysqlclient;-pthread;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>-lmysqlclient;-pthread;-lstdc++fs;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -214,13 +226,13 @@
     <ClCompile />
     <ClCompile>
       <AdditionalIncludeDirectories>Z:\mysql;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <CppLanguageStandard>c++14</CppLanguageStandard>
+      <CppLanguageStandard>c++17</CppLanguageStandard>
       <Verbose>false</Verbose>
       <AdditionalOptions>-g %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>~/core_dashboards/core_dashboard/mysql;C:\c++\РАБОЧЕ ПРОГРАММЫ\dashboard_for_astrerisk\core_dashboard\mysql;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>-lmysqlclient;-pthread;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>-lmysqlclient;-pthread;-lstdc++fs;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -241,13 +253,13 @@
     <ClCompile />
     <ClCompile>
       <AdditionalIncludeDirectories>Z:\mysql;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <CppLanguageStandard>c++14</CppLanguageStandard>
+      <CppLanguageStandard>c++17</CppLanguageStandard>
       <Verbose>false</Verbose>
       <AdditionalOptions>-g %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>~/core_dashboards/core_dashboard/mysql;C:\c++\РАБОЧЕ ПРОГРАММЫ\dashboard_for_astrerisk\core_dashboard\mysql;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>-lmysqlclient;-pthread;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>-lmysqlclient;-pthread;-lstdc++fs;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -268,13 +280,13 @@
     <ClCompile />
     <ClCompile>
       <AdditionalIncludeDirectories>Z:\mysql;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <CppLanguageStandard>c++14</CppLanguageStandard>
+      <CppLanguageStandard>c++17</CppLanguageStandard>
       <Verbose>false</Verbose>
       <AdditionalOptions>-g %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>~/core_dashboards/core_dashboard/mysql;C:\c++\РАБОЧЕ ПРОГРАММЫ\dashboard_for_astrerisk\core_dashboard\mysql;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>-lmysqlclient;-pthread;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>-lmysqlclient;-pthread;-lstdc++fs;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">

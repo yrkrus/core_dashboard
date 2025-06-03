@@ -79,7 +79,7 @@ namespace SQL_REQUEST
 		void createListRemoteCommands(std::vector<REMOTE_COMMANDS::R_Commands> &list);	    // генерация текущиъ найденных команд
 		void startRemoteCommand(int id, std::string sip, LOG::Log command, int user_id);	// запуск удаленной команды
 		void deleteRemoteCommand(int id);													// удаление успешно выполненной команды
-		void updateStatusOperators(int user_id, REMOTE_COMMANDS::StatusOperators status);	// обновление текущего статуса оператора
+		void updateStatusOperators(int user_id, REMOTE_COMMANDS::ecStatusOperators status);	// обновление текущего статуса оператора
 
 
 		// Логирование 
@@ -91,6 +91,7 @@ namespace SQL_REQUEST
 		void execTaskLogging();																// выполнение задачи очистки таблицы Logging
 		void execTaskIvr();																	// выполнение задачи очистки таблицы Ivr
 		void execTaskOnHold();																// выполнение задачи очистки таблицы operators_onhold
+		void execTaskSmsSending();															// выполнение задачи очистки таблицы sms_sending	
 		bool insertDataTaskQueue(HOUSEKEEPING::Queue &queue);								// вставка данных для таблицы history_queue			
 		bool deleteDataTaskQueue(int ID);													// удаление данных из таблицы queue
 		bool insertDataTaskLogging(HOUSEKEEPING::Logging &logging);							// вставка данных для таблицы history_logging
@@ -99,6 +100,9 @@ namespace SQL_REQUEST
 		bool deleteDataTaskIvr(int ID);														// удаление данных из таблицы ivr 
 		bool insertDataTaskOnHold(HOUSEKEEPING::OnHold &onHold);							// вставка данных для таблицы history_onhold
 		bool deleteDataTaskOnHold(int ID);													// удаление данных из таблицы operatorsd_onhold
+		bool insertDataTaskSmsSending(const HOUSEKEEPING::SmsSending &_smsSending);		    // вставка данных для таблицы history_sms_sending
+		bool deleteDataTaskSmsSending(int _id);	  											// удаление данных из таблицы sms_sending
+
 
 		// table operators_ohhold
 		void updateOperatorsOnHold(ACTIVE_SIP::Parsing *list);						// обнление данных о статусе оператора OnHold

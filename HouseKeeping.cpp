@@ -34,6 +34,13 @@ void HOUSEKEEPING::HouseKeeping::createTask(TASKS task)
 
 			break;
 		}
+		case(TASKS::TaskSmsSending):
+		{
 
+			SQL_REQUEST::SQL base;
+			base.execTaskSmsSending();
+
+			break;
+		}
 	}
 }

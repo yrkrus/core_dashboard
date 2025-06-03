@@ -17,9 +17,6 @@
     <ClCompile Include="SQLRequest.cpp">
       <Filter>include_cpp</Filter>
     </ClCompile>
-    <ClCompile Include="History.cpp">
-      <Filter>include_cpp</Filter>
-    </ClCompile>
     <ClCompile Include="RemoteCommands.cpp">
       <Filter>include_cpp</Filter>
     </ClCompile>
@@ -27,6 +24,22 @@
       <Filter>include_cpp</Filter>
     </ClCompile>
     <ClCompile Include="HouseKeeping.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="ISQLConnect.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="IResponseFileHandler.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="CreateFiles.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="DashboardCore.cpp" />
+    <ClCompile Include="RemoteCommandsCallback.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="IFile.cpp">
       <Filter>include_cpp</Filter>
     </ClCompile>
   </ItemGroup>
@@ -57,9 +70,6 @@
     <ClInclude Include="SQLRequest.h">
       <Filter>include_h</Filter>
     </ClInclude>
-    <ClInclude Include="History.h">
-      <Filter>include_h</Filter>
-    </ClInclude>
     <ClInclude Include="RemoteCommands.h">
       <Filter>include_h</Filter>
     </ClInclude>
@@ -67,6 +77,30 @@
       <Filter>include_h</Filter>
     </ClInclude>
     <ClInclude Include="HouseKeeping.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="ISQLConnect.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="AUTH.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="IResponseFileHandler.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="CreateFiles.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="DEBUG.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="DashboardCore.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="RemoteCommandsCallback.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="IFile.h">
       <Filter>include_h</Filter>
     </ClInclude>
   </ItemGroup>

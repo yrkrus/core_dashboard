@@ -8,6 +8,12 @@
 #include "HouseKeeping.h"
 #include <thread>
 
+#include "ISQLConnect.h"
+#include "CreateFiles.h"
+
+#include "DashboardCore.h"
+#include "IFile.h"
+
 // эти include потом убрать, они нужны для отладки только
 #include <stdio.h>
 #include <time.h>
@@ -73,6 +79,8 @@ static void thread_HouseKeeping() {
     task.createTask(HOUSEKEEPING::TASKS::TaskIvr);
 
    // task.createTask(HOUSEKEEPING::TASKS::TaskOnHold);
+
+   task.createTask(HOUSEKEEPING::TASKS::TaskSmsSending);
     
 }
 
@@ -213,14 +221,44 @@ int main(int argc, char *argv[])
 
     if (argc == 1)
     {
-        std::cout << "no arguments!\nUse command: help\n";
+        printf("no arguments!\nUse command : help\n");       
         return -1;
     }
     else if (argc > 2)
-    {
-        std::cout << "too mony arguments\nUse command: help\n";
+    {       
+        printf("too mony arguments\nUse command: help\n");
         return -1;
     }
+     
+    {
+        std::string error;
+       
+        IFile file("IVR");
+
+        for (size_t i = 0; i < 10; ++i)
+        {
+            std::string test0(CONSTANTS::cIVRResponse2);
+            file.CreateFile(test0, error);
+            std::this_thread::sleep_for(std::chrono::seconds(1));
+        }
+
+        return 0;
+    }
+   
+
+  /*  std::string error;
+    DashboardCore core;
+    core.StartResponeAsteriskFile(ecFilesTypes::IVR, error);
+    
+    bool run = true;
+    while(run) 
+    {
+        printf("core run \n");
+        std::this_thread::sleep_for(std::chrono::seconds(1));
+    }*/
+
+
+
 
     Commands ch = getCommand(argv[1]);
 
@@ -247,13 +285,9 @@ int main(int argc, char *argv[])
             break;
         }
         case(connect_bd): {      
-            SQL_REQUEST::SQL base;
-            if (base.isConnectedBD()) {
-                std::cout << "Connect UP\n";
-            }
-            else {
-                std::cout << "Connect DOWN!\n";                
-            }             
+            SQL_REQUEST::SQL base;            
+            std::cout << (base.isConnectedBD()) ? "Connect UP\n" : "Connect DOWN!\n";            
+                 
             break;
         }        
         case(start):      {         
@@ -265,9 +299,9 @@ int main(int argc, char *argv[])
             break;
         }
         case(remote): {
-           //REMOTE_COMMANDS::Remote remote;            
-            //remote.chekNewCommand() ? std::cout << "New command EXIST\n" : std::cout << "New command NO EXIST\n";         
-            break;
+          /* REMOTE_COMMANDS::Remote remote;            
+            remote.chekNewCommand() ? std::cout << "New command EXIST\n" : std::cout << "New command NO EXIST\n";         
+            break;*/
         }
         case(housekeeping): {   
             HOUSEKEEPING::HouseKeeping task;           
@@ -283,27 +317,20 @@ int main(int argc, char *argv[])
             task.createTask(HOUSEKEEPING::TASKS::TaskIvr);
             std::cout << "done -> TaskIvr\n";
 
+            // TODO тут еще onHold, но там баг есть с задвоением данным, так что пока отключен
+
+            std::cout << "create Task and execute -> TaskSms\n";
+            task.createTask(HOUSEKEEPING::TASKS::TaskSmsSending);
+            std::cout << "done -> TaskSMS\n";
+
             break;
         }
         case(test): {
-            LOG::LogToFile log(LOG::eLogType_DEBUG);
             
-            for (size_t i = 0; i < 5; ++i) {
-                log.add(std::to_string(i)+" номер debug");
-            }
-            
-            LOG::LogToFile log2(LOG::eLogType_INFO);
-
-            for (size_t i = 0; i < 5; ++i)
+            SQL_REQUEST::SQL base;
+            if (base.isConnectedBD())
             {
-                log2.add(std::to_string(i) + " номер info");
-            }
-
-            LOG::LogToFile log3(LOG::eLogType_ERROR);
-
-            for (size_t i = 0; i < 5; ++i)
-            {
-                log3.add(std::to_string(i) + " номер error");
+               // base.updateOperatorsOnHold(&this);
             }
 
             break;

@@ -13,6 +13,7 @@ namespace HOUSEKEEPING {
 		TaskLogging,
 		TaskIvr,
 		TaskOnHold,
+		TaskSmsSending,
 	};
 
 	class HouseKeeping
@@ -42,7 +43,7 @@ namespace HOUSEKEEPING {
 			FieldsTable fileds;
 	};
 
-	class Queue : public ExportTable
+	class Queue final : public ExportTable
 	{
 		public:
 			Queue()  = default;
@@ -56,7 +57,7 @@ namespace HOUSEKEEPING {
 			size_t		hash{ 0 };
 	};
 
-	class IVR : public ExportTable
+	class IVR final: public ExportTable
 	{
 		public:
 			IVR()	= default;
@@ -67,7 +68,7 @@ namespace HOUSEKEEPING {
 			int			to_robot{ 0 };
 	};
 
-	class Logging : public ExportTable
+	class Logging final: public ExportTable
 	{
 		public:
 			Logging()	= default;
@@ -91,6 +92,26 @@ namespace HOUSEKEEPING {
 		std::string		date_time_start{ "" };
 		std::string		date_time_stop{ "" };
 		size_t			hash { 0 };
+
+	};
+
+	class SmsSending
+	{
+	public:
+		SmsSending() = default;
+		~SmsSending() = default;
+
+		int				id = 0;
+		int				user_id = 0;
+		std::string		date_time = "";
+		std::string		phone = "";
+		std::string		message = "";
+		size_t			sms_id = 0;
+		std::string		status = "";
+		std::string		user_login_pc = "";
+		int				count_real_sms = 0;
+		int				sms_type = -1;
+		
 
 	};
 }

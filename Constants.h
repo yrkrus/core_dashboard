@@ -10,20 +10,22 @@
 #define CONSTANTS_H
 
 #if defined(_MSC_VER)
-    #define METHOD_NAME() std::string(__FUNCSIG__)
+    #define METHOD_NAME std::string(__FUNCSIG__)
 #else
-    #define METHOD_NAME() std::string(__PRETTY_FUNCTION__)
+    #define METHOD_NAME std::string(__PRETTY_FUNCTION__)
 #endif
 
 
-namespace CONSTANTS 
+#define BUILD __DATE__ " " __TIME__
+
+namespace CONSTANTS
 {
     // DEBUG MODE 
     static bool DEBUG_MODE      { false };      // при этом режиме не создаются запросы до астериска
     
     static bool SAFE_LOG        { true };       // записывать ли в лог работу ядра
     static bool LOG_MODE_INFO   { true };       // режим записи лога INFO (при этой записи записываются отладочные ) 
-    static bool LOG_MODE_DEBUG  { true };      // режим записи лога DEBUG (при этой записи записываются запросы от и на сервер) 
+    static bool LOG_MODE_DEBUG  { false };       // режим записи лога DEBUG (при этой записи записываются запросы от и на сервер) 
     static bool LOG_MODE_ERROR  { true };       // режим записи лога ERROR (включен постоянно, фиксируются все ошибки)
 
     // WKroot#791  old
@@ -70,7 +72,7 @@ namespace CONSTANTS
 
 	*.call
 	Channel: SIP/druOUT_220220/79275052333
-	CallerID: "Outgoing caller" <79275052333>
+	CallerID: "Dasboard Missed Call" <79275052333>
 	WaitTime: 20
 	Extension: 64197
 	Priority: 1 
@@ -86,7 +88,12 @@ namespace CONSTANTS
     */
 
  // версия ядра
- static std::string core_version = {"CORE DASHBOARD | version 2.16 bild 20241009"};
+/**
+* 
+* 
+*   @param
+*/
+ static std::string core_version = "CORE DASHBOARD | version 2.17 " BUILD;
  
 
 // asterisk очереди  
@@ -104,10 +111,11 @@ enum AsteriskQueue
 
 // for IVR
 static std::string cIVRCommands	    = "Playback|lukoil|ivr-3";
-static std::string cIVRCommandsEx1   = "IVREXT";
-static std::string cIVRCommandsEx2   = "Spasibo";
+static std::string cIVRCommandsEx1  = "IVREXT";
+static std::string cIVRCommandsEx2  = "Spasibo";
 static std::string cIVRName		    = "IVR.txt";
 static std::string cIVRResponse	    = "asterisk -rx \"core show channels verbose\" | grep -E \"" + cIVRCommands + "\" " + " | grep -v \"" + cIVRCommandsEx1 + "\" " + " | grep -v \"" + cIVRCommandsEx2 + "\" > " + cIVRName;
+static std::string cIVRResponse2    = "asterisk -rx \"core show channels verbose\" | grep -E \"" + cIVRCommands + "\" " + " | grep -v \"" + cIVRCommandsEx1 + "\" " + " | grep -v \"" + cIVRCommandsEx2 + "\" ";
 
 
 // for QUEUE

@@ -59,56 +59,60 @@ void REMOTE_COMMANDS::Remote::startCommand()
 					// обновляем текущий статус оператора					
 				
 					// новый статус оператора
-					REMOTE_COMMANDS::StatusOperators status;										
+					REMOTE_COMMANDS::ecStatusOperators status;										
 					
 					// ВАЖНО!! адекватно работает только if else .. т.к. в кострукции swith case не находится почему то параметр!!!
 					if (list.command == LOG::Log::Log_add_queue_5000) {
-						status = REMOTE_COMMANDS::StatusOperators::status_available;
+						status = REMOTE_COMMANDS::ecStatusOperators::status_available;
 					}
 					else if (list.command == LOG::Log::Log_add_queue_5050) {
-						status = REMOTE_COMMANDS::StatusOperators::status_available;
+						status = REMOTE_COMMANDS::ecStatusOperators::status_available;
 					}
 					else if (list.command == LOG::Log::Log_add_queue_5000_5050) {
-						status = REMOTE_COMMANDS::StatusOperators::status_available;
+						status = REMOTE_COMMANDS::ecStatusOperators::status_available;
 					}
 					else if (list.command == LOG::Log::Log_del_queue_5000) {
-						status = REMOTE_COMMANDS::StatusOperators::status_available;
+						status = REMOTE_COMMANDS::ecStatusOperators::status_available;
 					} 
 					else if (list.command == LOG::Log::Log_del_queue_5050)	{
-						status = REMOTE_COMMANDS::StatusOperators::status_available;
+						status = REMOTE_COMMANDS::ecStatusOperators::status_available;
 					}
 					else if (list.command == LOG::Log::Log_del_queue_5000_5050)	{
-						status = REMOTE_COMMANDS::StatusOperators::status_available;
+						status = REMOTE_COMMANDS::ecStatusOperators::status_available;
 					}
 					else if (list.command == LOG::Log::Log_home)	{
-						status = REMOTE_COMMANDS::StatusOperators::status_home;
+						status = REMOTE_COMMANDS::ecStatusOperators::status_home;
 					}
 					else if (list.command == LOG::Log::Log_exodus)	{
-						status = REMOTE_COMMANDS::StatusOperators::status_exodus;
+						status = REMOTE_COMMANDS::ecStatusOperators::status_exodus;
 					}
 					else if (list.command == LOG::Log::Log_break)	{
-						status = REMOTE_COMMANDS::StatusOperators::status_break;
+						status = REMOTE_COMMANDS::ecStatusOperators::status_break;
 					}
 					else if (list.command == LOG::Log::Log_dinner)	{
-						status = REMOTE_COMMANDS::StatusOperators::status_dinner;
+						status = REMOTE_COMMANDS::ecStatusOperators::status_dinner;
 					}
 					else if (list.command == LOG::Log::Log_postvyzov)	{
-						status = REMOTE_COMMANDS::StatusOperators::status_postvyzov;
+						status = REMOTE_COMMANDS::ecStatusOperators::status_postvyzov;
 					}
 					else if (list.command == LOG::Log::Log_studies)	{
-						status = REMOTE_COMMANDS::StatusOperators::status_studies;
+						status = REMOTE_COMMANDS::ecStatusOperators::status_studies;
 					}
 					else if (list.command == LOG::Log::Log_IT)
 					{
-						status = REMOTE_COMMANDS::StatusOperators::status_IT;
+						status = REMOTE_COMMANDS::ecStatusOperators::status_IT;
 					}
 					else if (list.command == LOG::Log::Log_transfer)
 					{
-						status = REMOTE_COMMANDS::StatusOperators::status_transfer;
+						status = REMOTE_COMMANDS::ecStatusOperators::status_transfer;
 					}
 					else if (list.command == LOG::Log::Log_reserve)
 					{
-						status = REMOTE_COMMANDS::StatusOperators::status_reserve;
+						status = REMOTE_COMMANDS::ecStatusOperators::status_reserve;
+					}
+					else if (list.command == LOG::Log::Log_callback)
+					{
+						status = REMOTE_COMMANDS::ecStatusOperators::status_callback;
 					}
 					
 					base.updateStatusOperators(list.user_id, status); 

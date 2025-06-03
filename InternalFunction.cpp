@@ -21,6 +21,57 @@
 //#endif
 
 
+std::string INTERNALFUNCTION::StringFormat(const char *format, ...)
+{
+	// Создаем объект ostringstream для форматирования строки
+	std::ostringstream oss;
+
+	// Инициализируем список аргументов
+	va_list args;
+	va_start(args, format);
+
+	while (*format)
+	{
+		if (*format == '%')
+		{
+			format++;
+			switch (*format)
+			{
+			case 'd':
+			{  // Для целых чисел
+				int i = va_arg(args, int);
+				oss << i;
+				break;
+			}
+			case 'f':
+			{ // Для чисел с плавающей точкой
+				double d = va_arg(args, double);
+				oss << d;
+				break;
+			}
+			case 's':
+			{ // Для строк
+				char *s = va_arg(args, char *);
+				oss << s;
+				break;
+			}
+			default: // Обработка неизвестных спецификаторов
+				oss << '%' << *format;
+				break;
+			}
+		}
+		else
+		{
+			oss << *format; // Просто добавляем символ
+		}
+		format++;
+	}
+
+	va_end(args);
+
+	return oss.str();
+}
+
 // парсинг номера телефона в нормальный вид
 std::string INTERNALFUNCTION::phoneParsing(std::string &phone)
 {
@@ -358,13 +409,13 @@ int INTERNALFUNCTION::getRemoteCommand(LOG::Log command)
 }
 
 // преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
-int INTERNALFUNCTION::getStatusOperators(REMOTE_COMMANDS::StatusOperators status)
+int INTERNALFUNCTION::getStatusOperators(REMOTE_COMMANDS::ecStatusOperators status)
 {
 	return static_cast<int>(status);
 }
 
 
-bool INTERNALFUNCTION::isExistNewOnHoldOperators(const OnHold onHold, const Operators &operators)
+bool INTERNALFUNCTION::isExistNewOnHoldOperators(const SP_OnHold &onHold, const Operators &operators)
 {
 	int count_operators_active_sip{ 0 };
 	for (const auto &list : operators) 
@@ -375,11 +426,11 @@ bool INTERNALFUNCTION::isExistNewOnHoldOperators(const OnHold onHold, const Oper
 		}
 	}
 	
-	return (onHold->size() == count_operators_active_sip ? true : false );
+	return (onHold->size() == count_operators_active_sip);
 
 }
 
-INTERNALFUNCTION::SP_NewOnHoldOperators INTERNALFUNCTION::createNewOnHoldOperators(const OnHold &onHold, const Operators &operators)
+INTERNALFUNCTION::SP_NewOnHoldOperators INTERNALFUNCTION::createNewOnHoldOperators(const SP_OnHold &onHold, const Operators &operators)
 {
 	SP_NewOnHoldOperators new_lists = std::make_shared<std::map<std::string, std::string>>();
 
@@ -430,18 +481,19 @@ bool INTERNALFUNCTION::remoteCommandChekedExecution(LOG::Log command)
 				return true;				
 			}
 		}
-		else if (command == LOG::Log::Log_del_queue_5000 ||
-				 command == LOG::Log::Log_del_queue_5050 ||
-				 command == LOG::Log::Log_del_queue_5000_5050 ||
-				 command == LOG::Log::Log_home ||
-				 command == LOG::Log::Log_exodus ||
-				 command == LOG::Log::Log_break ||
-				 command == LOG::Log::Log_dinner ||
-				 command == LOG::Log::Log_postvyzov ||
-				 command == LOG::Log::Log_studies ||
-				 command == LOG::Log::Log_IT ||
-				 command == LOG::Log::Log_transfer ||
-				 command == LOG::Log::Log_reserve) 
+		else if (command == LOG::Log::Log_del_queue_5000		||
+				 command == LOG::Log::Log_del_queue_5050		||
+				 command == LOG::Log::Log_del_queue_5000_5050	||
+				 command == LOG::Log::Log_home					||
+				 command == LOG::Log::Log_exodus				||
+				 command == LOG::Log::Log_break					||
+				 command == LOG::Log::Log_dinner				||
+				 command == LOG::Log::Log_postvyzov				||
+				 command == LOG::Log::Log_studies				||
+				 command == LOG::Log::Log_IT					||
+				 command == LOG::Log::Log_transfer				||
+				 command == LOG::Log::Log_reserve				||
+				 command == LOG::Log::Log_callback) 
 		{
 			if ((line.find("Removed") != std::string::npos) || (line.find("Not there") != std::string::npos))
 			{
@@ -457,7 +509,7 @@ bool INTERNALFUNCTION::remoteCommandChekedExecution(LOG::Log command)
 }
 
 
-bool INTERNALFUNCTION::to_bool(std::string str)
+bool INTERNALFUNCTION::to_bool(const std::string &str)
 {
 	return ((str == "true") ? true : false);
 }
@@ -479,6 +531,7 @@ size_t INTERNALFUNCTION::string_to_size_t(const std::string &str)
 void INTERNALFUNCTION::showHelpInfo()
 {
 	system("clear");
+	//printf("\n\t%s\n", CONSTANTS::core_version);
 	std::cout << "\n\t" << CONSTANTS::core_version << "\n";
 	std::cout << "\t\t\tList of commands: \n\n";
 	std::cout << " ivr \t\t\t - кто в IVR \n";
