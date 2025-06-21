@@ -42,6 +42,12 @@
     <ClCompile Include="IFile.cpp">
       <Filter>include_cpp</Filter>
     </ClCompile>
+    <ClCompile Include="PotokDispether.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="IAsteriskData.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include_cpp">
@@ -103,5 +109,14 @@
     <ClInclude Include="IFile.h">
       <Filter>include_h</Filter>
     </ClInclude>
+    <ClInclude Include="PotokDispether.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="IAsteriskData.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
 </Project>

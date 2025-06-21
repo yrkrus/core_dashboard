@@ -1,9 +1,6 @@
-//////////////////////////////////////////////////////
-//													//	        
-//			by Petrov Yuri 19.09.2024				//
-//			    константные значения				//
-//													//	
-//////////////////////////////////////////////////////
+//  CONSTANTS VALUE
+
+
 #include <string>
 
 #ifndef CONSTANTS_H
@@ -15,13 +12,24 @@
     #define METHOD_NAME std::string(__PRETTY_FUNCTION__)
 #endif
 
-
 #define BUILD __DATE__ " " __TIME__
 
+
+
+
+
 namespace CONSTANTS
-{
+{   
+    namespace TIMEOUT
+    {
+        static const unsigned int IVR = 1000;       // timeout для проверки новых данных для ivr
+    }
+    
+    
+    
+    
     // DEBUG MODE 
-    static bool DEBUG_MODE      { false };      // при этом режиме не создаются запросы до астериска
+    static bool DEBUG_MODE = false;      // при этом режиме не создаются запросы до астериска
     
     static bool SAFE_LOG        { true };       // записывать ли в лог работу ядра
     static bool LOG_MODE_INFO   { true };       // режим записи лога INFO (при этой записи записываются отладочные ) 
@@ -110,13 +118,11 @@ enum AsteriskQueue
 // после IVREXT -> Spasibo - уход на спасибо что оценили
 
 // for IVR
-static std::string cIVRCommands	    = "Playback|lukoil|ivr-3";
-static std::string cIVRCommandsEx1  = "IVREXT";
-static std::string cIVRCommandsEx2  = "Spasibo";
-static std::string cIVRName		    = "IVR.txt";
-static std::string cIVRResponse	    = "asterisk -rx \"core show channels verbose\" | grep -E \"" + cIVRCommands + "\" " + " | grep -v \"" + cIVRCommandsEx1 + "\" " + " | grep -v \"" + cIVRCommandsEx2 + "\" > " + cIVRName;
-static std::string cIVRResponse2    = "asterisk -rx \"core show channels verbose\" | grep -E \"" + cIVRCommands + "\" " + " | grep -v \"" + cIVRCommandsEx1 + "\" " + " | grep -v \"" + cIVRCommandsEx2 + "\" ";
-
+static std::string cIVRCommands_old	    = "Playback|lukoil|ivr-3";
+static std::string cIVRCommandsEx1_old  = "IVREXT";
+static std::string cIVRCommandsEx2_old  = "Spasibo";
+static std::string cIVRName_old         = "IVR.txt";
+static std::string cIVRResponse_old     = "asterisk -rx \"core show channels verbose\" | grep -E \"" + cIVRCommands_old + "\" " + " | grep -v \"" + cIVRCommandsEx1_old + "\" " + " | grep -v \"" + cIVRCommandsEx2_old + "\" > " + cIVRName_old;
 
 // for QUEUE
 static std::string cQueueCommands	= "Queue";

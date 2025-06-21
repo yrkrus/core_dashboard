@@ -1,5 +1,6 @@
 //#include "SQLRequest.h"
 #include <string>
+#include "IVR.h"
 
 #ifndef HOUSEKEEPING_H 
 #define HOUSEKEEPING_H
@@ -57,11 +58,11 @@ namespace HOUSEKEEPING {
 			size_t		hash{ 0 };
 	};
 
-	class IVR final: public ExportTable
+	class IVR_ final: public ExportTable
 	{
 		public:
-			IVR()	= default;
-			~IVR()	= default;
+			IVR_()	= default;			
+			~IVR_()	= default;
 
 			std::string trunk{ "" };
 			int			to_queue{ 0 };

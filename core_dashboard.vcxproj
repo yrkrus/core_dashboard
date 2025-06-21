@@ -162,6 +162,7 @@
     <ClCompile Include="ActiveSip.cpp" />
     <ClCompile Include="CreateFiles.cpp" />
     <ClCompile Include="DashboardCore.cpp" />
+    <ClCompile Include="IAsteriskData.cpp" />
     <ClCompile Include="IFile.cpp" />
     <ClCompile Include="IResponseFileHandler.cpp" />
     <ClCompile Include="HouseKeeping.cpp" />
@@ -170,6 +171,7 @@
     <ClCompile Include="IVR.cpp" />
     <ClCompile Include="Log.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="PotokDispether.cpp" />
     <ClCompile Include="Queue.cpp" />
     <ClCompile Include="RemoteCommands.cpp" />
     <ClCompile Include="RemoteCommandsCallback.cpp" />
@@ -182,6 +184,7 @@
     <ClInclude Include="CreateFiles.h" />
     <ClInclude Include="DashboardCore.h" />
     <ClInclude Include="DEBUG.h" />
+    <ClInclude Include="IAsteriskData.h" />
     <ClInclude Include="IFile.h" />
     <ClInclude Include="IResponseFileHandler.h" />
     <ClInclude Include="HouseKeeping.h" />
@@ -189,10 +192,14 @@
     <ClInclude Include="ISQLConnect.h" />
     <ClInclude Include="IVR.h" />
     <ClInclude Include="Log.h" />
+    <ClInclude Include="PotokDispether.h" />
     <ClInclude Include="Queue.h" />
     <ClInclude Include="RemoteCommands.h" />
     <ClInclude Include="RemoteCommandsCallback.h" />
     <ClInclude Include="SQLRequest.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ClassDiagram.cd" />
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile />

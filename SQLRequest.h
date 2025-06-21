@@ -35,10 +35,10 @@ namespace SQL_REQUEST
 		void insertData_test();
 
 		//table IVR
-		void insertIVR(const char *phone, const char *time, std::string callerid );			// добавление данных в таблицу IVR
-		bool isExistIVRPhone(const char *phone);											// существует ли такой уже номер в таблице IVR
-		int getLastIDphone(const char *phone);												// получение последнего ID актуального
-		void updateIVR(const char *id, const char *phone, const char *time);				// обновление данных в таблице IVR
+	//	void insertIVR(const char *phone, const char *time, std::string callerid );			// добавление данных в таблицу IVR
+	//	bool isExistIVRPhone(const char *phone);											// существует ли такой уже номер в таблице IVR
+	//	int getLastIDphone(const char *phone);												// получение последнего ID актуального
+	//	void updateIVR(const char *id, const char *phone, const char *time);				// обновление данных в таблице IVR
 		
 
 
@@ -70,7 +70,7 @@ namespace SQL_REQUEST
 
 		// Статистика
 		int getIVR_totalCalls();															// сколько всего позвонило на линию IVR
-		int getIVR_totalCalls(const IVR::CallerID &trunk);									// сколько всего позвонило на линию IVR (поиск по trunk)
+		//int getIVR_totalCalls(const IVR_OLD::CallerID &trunk);									// сколько всего позвонило на линию IVR (поиск по trunk)
 		int getQUEUE_Calls(bool answered);													// сколько всего ответило и сколько пропущенных
 		int getQUEUE_Calls();																// сколько всего было в очереди
 
@@ -96,7 +96,7 @@ namespace SQL_REQUEST
 		bool deleteDataTaskQueue(int ID);													// удаление данных из таблицы queue
 		bool insertDataTaskLogging(HOUSEKEEPING::Logging &logging);							// вставка данных для таблицы history_logging
 		bool deleteDataTaskLogging(int ID);													// удаление данных из таблицы logging
-		bool insertDataTaskIvr(HOUSEKEEPING::IVR &ivr);										// вставка данных из талицы history_ivr
+		bool insertDataTaskIvr(HOUSEKEEPING::IVR_ &ivr);										// вставка данных из талицы history_ivr
 		bool deleteDataTaskIvr(int ID);														// удаление данных из таблицы ivr 
 		bool insertDataTaskOnHold(HOUSEKEEPING::OnHold &onHold);							// вставка данных для таблицы history_onhold
 		bool deleteDataTaskOnHold(int ID);													// удаление данных из таблицы operatorsd_onhold

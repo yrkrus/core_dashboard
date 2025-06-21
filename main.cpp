@@ -11,8 +11,7 @@
 #include "ISQLConnect.h"
 #include "CreateFiles.h"
 
-#include "DashboardCore.h"
-#include "IFile.h"
+#include "IVR.h"
 
 // эти include потом убрать, они нужны для отладки только
 #include <stdio.h>
@@ -21,10 +20,15 @@
 
 using namespace INTERNALFUNCTION;
 
+
+
+
+
+
 enum Commands
 {
     help,           // хелп справка
-    ivr,            // кто в IVR
+  //  ivr,            // кто в IVR
     queue,          // текущая очередь
     active_sip,     // какие активные sip зарегистрированы в очереди
     connect_bd,     // убрать потом, это для теста
@@ -40,7 +44,7 @@ Commands static getCommand(char *ch) {
     std::string commands = static_cast<std::string> (ch);
 
     if (commands == "help")              return help;
-    if (commands == "ivr")               return ivr;
+   // if (commands == "ivr")               return ivr;
     if (commands == "queue")             return queue;
     if (commands == "active_sip")        return active_sip;
     if (commands == "connect_bd")        return connect_bd;
@@ -155,15 +159,15 @@ static void collect() {
         //std::cout << getCurrentDateTime() + "\t\titeration: \t" << i << "\n\n";       
 
         std::cout << "\n\n";
-        std::thread th_ivr(getIVR);
+        //std::thread th_ivr(getIVR);
         std::thread th_Queue_ActiveSIP(thread_Queue_ActiveSIP);
         std::thread th_RemoteCommand(thread_RemoteCommands);
         std::thread th_HouseKeeping(thread_HouseKeeping);
 
-        if (th_ivr.joinable()) {
-            th_ivr.join();
-            //th_ivr.detach();
-        } 
+        //if (th_ivr.joinable()) {
+        //    th_ivr.join();
+        //    //th_ivr.detach();
+        //} 
         
         if (th_Queue_ActiveSIP.joinable()) {
             th_Queue_ActiveSIP.join();
@@ -217,7 +221,45 @@ static void collect() {
 
 int main(int argc, char *argv[])
 {
-    setlocale(LC_ALL, "ru_RU.UTF-8"); 
+    {        
+        IVR ivr;
+        
+        
+        ivr.Start();    // запускаем поток
+
+        
+        static int _val = 0;
+
+        while (1) 
+        {
+            
+            if (ivr.GetRawAllData().empty()) 
+            {
+                std::cout << "null value " << _val << "\n";
+            }
+            else 
+            {
+                printf("All RawData = %u\n  %s\n", ivr.GetRawAllData().size(),  ivr.GetRawFirstData().c_str());
+                ivr.Parsing();
+            }
+            
+            ++_val;
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+           
+        }
+       
+        
+        
+        return 0;
+
+    }
+
+
+
+    
+    
+    /*setlocale(LC_ALL, "ru_RU.UTF-8"); 
 
     if (argc == 1)
     {
@@ -228,34 +270,12 @@ int main(int argc, char *argv[])
     {       
         printf("too mony arguments\nUse command: help\n");
         return -1;
-    }
+    }*/
      
-    {
-        std::string error;
-       
-        IFile file("IVR");
-
-        for (size_t i = 0; i < 10; ++i)
-        {
-            std::string test0(CONSTANTS::cIVRResponse2);
-            file.CreateFile(test0, error);
-            std::this_thread::sleep_for(std::chrono::seconds(1));
-        }
-
-        return 0;
-    }
+   
    
 
-  /*  std::string error;
-    DashboardCore core;
-    core.StartResponeAsteriskFile(ecFilesTypes::IVR, error);
-    
-    bool run = true;
-    while(run) 
-    {
-        printf("core run \n");
-        std::this_thread::sleep_for(std::chrono::seconds(1));
-    }*/
+ 
 
 
 
@@ -269,11 +289,11 @@ int main(int argc, char *argv[])
             showHelpInfo();
             break;
         }
-        case(ivr): {                // запись в БД кто сейчас слушает IVR 
-            // запрос
-            getIVR();   
-            break;
-        }
+        //case(ivr): {                // запись в БД кто сейчас слушает IVR 
+        //    // запрос
+        //    getIVR();   
+        //    break;
+        //}
         case(queue): {              // запись в БД кто ушел из IVR в очередь
             // запрос
             getQueue();

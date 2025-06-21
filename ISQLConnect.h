@@ -8,7 +8,6 @@
 #include "AUTH.h"
 
 
-
 #ifndef ISQLCONNECT_H
 #define ISQLCONNECT_H
 
@@ -22,10 +21,18 @@ class ISQLConnect
 {
 
 public:
-	ISQLConnect();
-	virtual ~ISQLConnect();
+	ISQLConnect(bool _connected = false);
 
+	virtual ~ISQLConnect();	
 	bool IsConnected() const;
+
+	bool Connect(std::string &_errorDescription);
+	void Disconnect();
+
+	bool Request(const std::string &_request, std::string &_errorDescription);
+	bool Request(const std::string &_request);
+
+	MYSQL *Get();
 
 private:
 	MYSQL m_mysql;	
@@ -33,11 +40,6 @@ private:
 
 	// подключаемся к БД MySQL
 	bool Connect(MYSQL &mysql, std::string &_errorDescription);
-
-	virtual void Update() = 0;
-	virtual void Delete() = 0;
-	virtual void Select() = 0;
-	virtual void Insert() = 0;
 };
 
 

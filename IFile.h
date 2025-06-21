@@ -1,31 +1,34 @@
-﻿// Базовый класс для файла
+﻿// Базовый класс для полочуния данных из запроса
+
 #include <string>
-#include <set>
+#include <deque>
+#include <shared_mutex>
 
 #ifndef IFILE_H
 #define	IFILE_H
-
 
 using std::string;
 
 class IFile 
 {
-private:			
-		string m_directory;				// директория с 		
-		string	m_fileName;				// название файла
-		uint m_counter;					// счетчик
-
-		std::set<string> m_list;		// список с созданными файлами		
+private:
+		std::deque<string>	m_listRaw;			// сырой список не разобранный (который еще в БД не попал)			
+		mutable std::shared_mutex	m_mutex;	// мьютекс для защиты (в момент записи\удаления)
+		
+		bool GetRequest(const char *_request, string &_response, string &_errorDescription);
 
 public:
-	IFile(const string &_fileName);
-	~IFile();
+	IFile();
+	virtual ~IFile();
+	
+	bool CreateData(string &_request, string &_errorDescription);
 
-	//std::set<string> *GetList() const;			// получение списканазвание файла
-	bool CreateFile(string &_response, string &_errorDescription);
+	std::deque<string> GetRawAll() const;	// получение всего списка 
+	std::string GetRawLast() const;			// получение только последнейй записи
+	std::string GetRawFirst() const;		// получение только первой записи
 
-
-
+	void DeleteRawLast();					// удаление последней записи
+	void DeleteRawAll();					// удаление всех сырых записей
 };
 
 

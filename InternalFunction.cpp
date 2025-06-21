@@ -96,19 +96,19 @@ std::string INTERNALFUNCTION::phoneParsing(std::string &phone)
 
 
 // создать + получить текущий IVR
-void INTERNALFUNCTION::getIVR()
-{   
-	if (!CONSTANTS::DEBUG_MODE) {
-		system(CONSTANTS::cIVRResponse.c_str());
-	};	  
-
-    // разбираем
-    IVR::Parsing ivr(CONSTANTS::cIVRName.c_str());
-	if (ivr.isExistList()) {
-		ivr.show();		
-		ivr.insertData();
-	}
-}
+//void INTERNALFUNCTION::getIVR()
+//{   
+//	if (!CONSTANTS::DEBUG_MODE) {
+//		system(CONSTANTS::cIVRResponse_old.c_str());
+//	};	  
+//
+//    // разбираем
+//	IVR_OLD::Parsing ivr(CONSTANTS::cIVRName_old.c_str());
+//	if (ivr.isExistList()) {
+//		ivr.show();		
+//		ivr.insertData();
+//	}
+//}
 
 // создать + получить текущую очередь
 void INTERNALFUNCTION::getQueue(void)
@@ -340,11 +340,11 @@ void INTERNALFUNCTION::getStatistics()
 	int totalqueue_no_answered	= base.getQUEUE_Calls(false);
 
 	
-	int totalComagic = base.getIVR_totalCalls(IVR::comagic);
-	int total220220	 = base.getIVR_totalCalls(IVR::domru_220220);
-	int total220000  = base.getIVR_totalCalls(IVR::domru_220000);
-	int totalSts	 = base.getIVR_totalCalls(IVR::sts);
-	int totalNull	 = base.getIVR_totalCalls(IVR::null_caller);
+	//int totalComagic = base.getIVR_totalCalls(IVR_OLD::comagic);
+	//int total220220	 = base.getIVR_totalCalls(IVR_OLD::domru_220220);
+	//int total220000  = base.getIVR_totalCalls(IVR_OLD::domru_220000);
+	//int totalSts	 = base.getIVR_totalCalls(IVR_OLD::sts);
+	//int totalNull	 = base.getIVR_totalCalls(IVR_OLD::null_caller);
 
 
 	buffer << "\n\tStatistics QUEUE\n";
@@ -359,11 +359,11 @@ void INTERNALFUNCTION::getStatistics()
 	buffer << "no answered rate\t\t" << std::setprecision(4) << (totalqueue_answered != 0 ? (totalqueue_no_answered * 100 / static_cast<double>(totalqueue_answered)) : 0) << "%\n";
 
 	buffer << "\n\n\tStatistics CALLERS\n";
-	buffer << "220-220 \t\t\t" << total220220 << "(" << std::setprecision(4) << (totalcalls != 0 ? (total220220 * 100 / static_cast<double>(totalcalls)) : 0) << "%)\n";
-	buffer << "Comagic \t\t\t"<< totalComagic <<"("<< std::setprecision(4) << (totalcalls != 0 ? (totalComagic * 100 / static_cast<double>(totalcalls)) : 0) << "%)\n";
-	buffer << "Sts \t\t\t\t" << totalSts << "(" << std::setprecision(4) << (totalcalls != 0 ? (totalSts * 100 / static_cast<double>(totalcalls)) : 0) << "%)\n";
-	buffer << "220-000 \t\t\t" << total220000 << "(" << std::setprecision(4) << (totalcalls != 0 ? (total220000 * 100 / static_cast<double>(totalcalls)) : 0) << "%)\n";
-	buffer << "null callers \t\t\t" << totalNull << "(" << std::setprecision(4) << (totalcalls != 0 ? (totalNull * 100 / static_cast<double>(totalcalls)) : 0) << "%)\n";
+	//buffer << "220-220 \t\t\t" << total220220 << "(" << std::setprecision(4) << (totalcalls != 0 ? (total220220 * 100 / static_cast<double>(totalcalls)) : 0) << "%)\n";
+	//buffer << "Comagic \t\t\t"<< totalComagic <<"("<< std::setprecision(4) << (totalcalls != 0 ? (totalComagic * 100 / static_cast<double>(totalcalls)) : 0) << "%)\n";
+	//buffer << "Sts \t\t\t\t" << totalSts << "(" << std::setprecision(4) << (totalcalls != 0 ? (totalSts * 100 / static_cast<double>(totalcalls)) : 0) << "%)\n";
+	//buffer << "220-000 \t\t\t" << total220000 << "(" << std::setprecision(4) << (totalcalls != 0 ? (total220000 * 100 / static_cast<double>(totalcalls)) : 0) << "%)\n";
+	//buffer << "null callers \t\t\t" << totalNull << "(" << std::setprecision(4) << (totalcalls != 0 ? (totalNull * 100 / static_cast<double>(totalcalls)) : 0) << "%)\n";
 
 	std::cout << buffer.str();
 }

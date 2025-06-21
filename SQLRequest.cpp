@@ -110,148 +110,148 @@ void SQL_REQUEST::SQL::insertData_test()
 
 
 // добавление данных в таблицу IVR
-void SQL_REQUEST::SQL::insertIVR(const char *phone, const char *time, std::string callerid)
-{	
-	if (!isConnectedBD()) {
-		showErrorBD(METHOD_NAME);
-		return;
-	}	
-	
-	// проверим есть ли такой номер 	
-	if (isExistIVRPhone(phone))	{ // номер существует, обновляем данные
-		
-		std::string id = std::to_string(getLastIDphone(phone));
-		
-		updateIVR(id.c_str(), phone, time);
-		return;
-	}
-	else {		
-		std::string query = "insert into ivr (phone,waiting_time,trunk) values ('" + std::string(phone) + "','" + std::string(time) + "','" + callerid + "')";
-		
-		if (CONSTANTS::SAFE_LOG) {
-			if (CONSTANTS::LOG_MODE_DEBUG) 
-			{
-				LOG::LogToFile log(LOG::eLogType_DEBUG);
-				log.add(METHOD_NAME +" -> " + query);
-			}
-		}
-
-		if (mysql_query(&this->mysql, query.c_str()) != 0)
-		{
-			showErrorBD(METHOD_NAME+" -> Data (insertIVR) error -> query("+query+")", &this->mysql);
-		}	
-	}	
-
-	mysql_close(&this->mysql);
-}
+//void SQL_REQUEST::SQL::insertIVR(const char *phone, const char *time, std::string callerid)
+//{	
+//	if (!isConnectedBD()) {
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}	
+//	
+//	// проверим есть ли такой номер 	
+//	if (isExistIVRPhone(phone))	{ // номер существует, обновляем данные
+//		
+//		std::string id = std::to_string(getLastIDphone(phone));
+//		
+//		updateIVR(id.c_str(), phone, time);
+//		return;
+//	}
+//	else {		
+//		std::string query = "insert into ivr (phone,waiting_time,trunk) values ('" + std::string(phone) + "','" + std::string(time) + "','" + callerid + "')";
+//		
+//		if (CONSTANTS::SAFE_LOG) {
+//			if (CONSTANTS::LOG_MODE_DEBUG) 
+//			{
+//				LOG::LogToFile log(LOG::eLogType_DEBUG);
+//				log.add(METHOD_NAME +" -> " + query);
+//			}
+//		}
+//
+//		if (mysql_query(&this->mysql, query.c_str()) != 0)
+//		{
+//			showErrorBD(METHOD_NAME+" -> Data (insertIVR) error -> query("+query+")", &this->mysql);
+//		}	
+//	}	
+//
+//	mysql_close(&this->mysql);
+//}
 
 // существует ли такой уже номер в таблице IVR
-bool SQL_REQUEST::SQL::isExistIVRPhone(const char *phone)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return true;
-	}
-	
-	const std::string query = "select count(phone) from ivr where phone = '" 
-							  + std::string(phone) +"' and  date_time > '"
-							  + getCurrentDateTimeAfterMinutes(2)+"' and to_queue = '0' order by date_time desc";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str() ) != 0)	{
-		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
-		return true;
-	}
-
-	// результат
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row = mysql_fetch_row(result);	
-	
-	bool existIvrPhone;
-	std::stoi(row[0]) == 0 ? existIvrPhone = false : existIvrPhone = true;
-	
-	mysql_free_result(result);	
-
-	return existIvrPhone;	
-}
+//bool SQL_REQUEST::SQL::isExistIVRPhone(const char *phone)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return true;
+//	}
+//	
+//	const std::string query = "select count(phone) from ivr where phone = '" 
+//							  + std::string(phone) +"' and  date_time > '"
+//							  + getCurrentDateTimeAfterMinutes(2)+"' and to_queue = '0' order by date_time desc";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str() ) != 0)	{
+//		// ошибка считаем что есть запись		
+//		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+//		return true;
+//	}
+//
+//	// результат
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row = mysql_fetch_row(result);	
+//	
+//	bool existIvrPhone;
+//	std::stoi(row[0]) == 0 ? existIvrPhone = false : existIvrPhone = true;
+//	
+//	mysql_free_result(result);	
+//
+//	return existIvrPhone;	
+//}
 
 // получение последнего ID актуального
-int SQL_REQUEST::SQL::getLastIDphone(const char *phone)
-{	
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return -1;
-	}
-
-	const std::string query = "select id from ivr where phone = "
-		+ std::string(phone) + " and date_time > '"
-		+ getCurrentStartDay() + "' order by date_time desc limit 1";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		// ошибка считаем что нет записи		
-		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
-		return -1;
-	}
-
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row = mysql_fetch_row(result);
-	
-	int id = std::stoi(row[0]);
-
-	mysql_free_result(result);	
-
-	return id;
-}
+//int SQL_REQUEST::SQL::getLastIDphone(const char *phone)
+//{	
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return -1;
+//	}
+//
+//	const std::string query = "select id from ivr where phone = "
+//		+ std::string(phone) + " and date_time > '"
+//		+ getCurrentStartDay() + "' order by date_time desc limit 1";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		// ошибка считаем что нет записи		
+//		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+//		return -1;
+//	}
+//
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row = mysql_fetch_row(result);
+//	
+//	int id = std::stoi(row[0]);
+//
+//	mysql_free_result(result);	
+//
+//	return id;
+//}
 
 // обновление данных в таблице IVR
-void SQL_REQUEST::SQL::updateIVR(const char *id,const char *phone, const char *time)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
-
-	std::string query = "update ivr set waiting_time = '" + std::string(time) + "' where phone = '" + std::string(phone) + "' and id ='"+std::string(id)+"'";
-	
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		showErrorBD(METHOD_NAME+" -> Data (updateIVR) error -> query(" + query + ")",&this->mysql);
-	};
-	
-
-	mysql_close(&this->mysql);
-}
+//void SQL_REQUEST::SQL::updateIVR(const char *id,const char *phone, const char *time)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//
+//	std::string query = "update ivr set waiting_time = '" + std::string(time) + "' where phone = '" + std::string(phone) + "' and id ='"+std::string(id)+"'";
+//	
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		showErrorBD(METHOD_NAME+" -> Data (updateIVR) error -> query(" + query + ")",&this->mysql);
+//	};
+//	
+//
+//	mysql_close(&this->mysql);
+//}
 
 // добавление данных в таблицу QUEUE
 void SQL_REQUEST::SQL::insertQUEUE(const char *queue, const char *phone, const char *time)
@@ -1347,41 +1347,41 @@ int SQL_REQUEST::SQL::getIVR_totalCalls()
 }
 
 // сколько всего позвонило на линию IVR (поиск по trunk)
-int SQL_REQUEST::SQL::getIVR_totalCalls(const IVR::CallerID &trunk)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return 0;
-	}
-
-	const std::string query = "select count(phone) from ivr where trunk ='" + IVR::getCallerID(trunk) + "'  and date_time > '" + getCurrentStartDay() + "'";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
-		return 0;
-	}
-
-	// результат
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row = mysql_fetch_row(result);
-	mysql_free_result(result);
-
-	mysql_close(&this->mysql); // под вопросом?
-
-	return std::stoi(row[0]);;
-}
+//int SQL_REQUEST::SQL::getIVR_totalCalls(const IVR_OLD::CallerID &trunk)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return 0;
+//	}
+//
+//	const std::string query = "select count(phone) from ivr where trunk ='" + IVR_OLD::getCallerID(trunk) + "'  and date_time > '" + getCurrentStartDay() + "'";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		// ошибка считаем что есть запись		
+//		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+//		return 0;
+//	}
+//
+//	// результат
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row = mysql_fetch_row(result);
+//	mysql_free_result(result);
+//
+//	mysql_close(&this->mysql); // под вопросом?
+//
+//	return std::stoi(row[0]);;
+//}
 
 // сколько всего ответило и сколько пропущенных
 int SQL_REQUEST::SQL::getQUEUE_Calls(bool answered)
@@ -2100,11 +2100,11 @@ void SQL_REQUEST::SQL::execTaskIvr()
 	MYSQL_RES *result = mysql_store_result(&this->mysql);
 	MYSQL_ROW row;
 
-	std::vector<HOUSEKEEPING::IVR> listIvr;
+	std::vector<HOUSEKEEPING::IVR_> listIvr;
 
 	while ((row = mysql_fetch_row(result)) != NULL)
 	{
-		HOUSEKEEPING::IVR ivr;
+		HOUSEKEEPING::IVR_ ivr;
 
 		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
 		{
@@ -2528,7 +2528,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskLogging(int ID)
 	return true;
 }
 
-bool SQL_REQUEST::SQL::insertDataTaskIvr(HOUSEKEEPING::IVR &ivr)
+bool SQL_REQUEST::SQL::insertDataTaskIvr(HOUSEKEEPING::IVR_ &ivr)
 {
 	if (!isConnectedBD())
 	{
