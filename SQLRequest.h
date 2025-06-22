@@ -49,11 +49,11 @@ namespace SQL_REQUEST
 		int getLastIDQUEUE(const char *phone);												// получение последнего ID актуального
 		void updateQUEUE_SIP(const char *phone, const char *sip, const char *talk_time);	// обновление данных таблицы QUEUE о том с кем сейчас разговаривает оператор
 		bool isExistQUEUE_SIP(const char *phone);											// существует ли такой номер в таблице QUEUE чтобы добавить sip оператора который с разговор ведет
-		void updateQUEUE_fail(const std::vector<QUEUE::Pacients> &pacient_list);			// обновление данных когда звонок не дождался своей очереди 
+		void updateQUEUE_fail(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list);			// обновление данных когда звонок не дождался своей очереди 
 		void updateQUEUE_fail();															// обновление данных когда звонок не дождался своей очереди 
-		void updateIVR_to_queue(const std::vector<QUEUE::Pacients> &pacient_list);			// обновление данных когда у нас звонок из IVR попал в очередь
+		void updateIVR_to_queue(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list);			// обновление данных когда у нас звонок из IVR попал в очередь
 		bool isExistQueueAfter20hours();													// проверка есть ли номера которые позвонили после 20:00
-		void updateQUEUE_hash(const std::vector<QUEUE::Pacients> &pacient_list);			// обновление поля hash когда успешно поговорили
+		void updateQUEUE_hash(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list);			// обновление поля hash когда успешно поговорили
 		bool isExistAnsweredAfter20hours();													// проверка есть ли номера которым нужно проставить статус отвечено после того как оператор ушел из линии		
 		void updateAnswered_fail();															// обновление данных когда оператор поговорил и ушел из линии, а звонок все еще находится не обработанным
 
@@ -92,7 +92,7 @@ namespace SQL_REQUEST
 		void execTaskIvr();																	// выполнение задачи очистки таблицы Ivr
 		void execTaskOnHold();																// выполнение задачи очистки таблицы operators_onhold
 		void execTaskSmsSending();															// выполнение задачи очистки таблицы sms_sending	
-		bool insertDataTaskQueue(HOUSEKEEPING::Queue &queue);								// вставка данных для таблицы history_queue			
+		bool insertDataTaskQueue(HOUSEKEEPING::Queue_old &queue);								// вставка данных для таблицы history_queue			
 		bool deleteDataTaskQueue(int ID);													// удаление данных из таблицы queue
 		bool insertDataTaskLogging(HOUSEKEEPING::Logging &logging);							// вставка данных для таблицы history_logging
 		bool deleteDataTaskLogging(int ID);													// удаление данных из таблицы logging

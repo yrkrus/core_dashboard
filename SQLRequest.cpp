@@ -596,7 +596,7 @@ bool SQL_REQUEST::SQL::isExistQUEUE_SIP(const char *phone)
 }
 
 //обновление данных когда звонок не дождался своей очереди
-void SQL_REQUEST::SQL::updateQUEUE_fail(const std::vector<QUEUE::Pacients> &pacient_list)
+void SQL_REQUEST::SQL::updateQUEUE_fail(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list)
 {
 	
 	// найдем текущие номера которые мы не будет трогать при обновлении
@@ -669,7 +669,7 @@ void SQL_REQUEST::SQL::updateQUEUE_fail()
 }
 
 // обновление данных когда у нас звонок из IVR попал в очередь
-void SQL_REQUEST::SQL::updateIVR_to_queue(const std::vector<QUEUE::Pacients> &pacient_list)
+void SQL_REQUEST::SQL::updateIVR_to_queue(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list)
 {
 	// найдем текущие номера которые будем трогать при обновлении
 	std::string list_phone;
@@ -755,7 +755,7 @@ bool SQL_REQUEST::SQL::isExistQueueAfter20hours()
 }
 
 // обновление поля hash когда успешно поговорили
-void SQL_REQUEST::SQL::updateQUEUE_hash(const std::vector<QUEUE::Pacients> &pacient_list)
+void SQL_REQUEST::SQL::updateQUEUE_hash(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list)
 {
 	if (!isConnectedBD())
 	{
@@ -778,7 +778,7 @@ void SQL_REQUEST::SQL::updateQUEUE_hash(const std::vector<QUEUE::Pacients> &paci
 		}
 	} 
 
-	QUEUE::QueueBD queuebd;
+	QUEUE_OLD::QueueBD_old queuebd;
 	
 	
 	const std::string query = "select id,phone,date_time from queue where date_time > '"
@@ -806,7 +806,7 @@ void SQL_REQUEST::SQL::updateQUEUE_hash(const std::vector<QUEUE::Pacients> &paci
 	
 	while ((row = mysql_fetch_row(result)) != NULL)
 	{
-		QUEUE::BD bd;
+		QUEUE_OLD::BD bd;
 		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
 		{
 			
@@ -911,7 +911,7 @@ void SQL_REQUEST::SQL::updateAnswered_fail()
 		return;
 	}	
 
-	QUEUE::QueueBD queuebd;
+	QUEUE_OLD::QueueBD_old queuebd;
 
 	const std::string query = "select id,phone,date_time from queue where date_time > '"
 		+ getCurrentStartDay() + "' and answered = '1' and fail = '0' and hash is NULL";
@@ -938,7 +938,7 @@ void SQL_REQUEST::SQL::updateAnswered_fail()
 
 	while ((row = mysql_fetch_row(result)) != NULL)
 	{
-		QUEUE::BD bd;
+		QUEUE_OLD::BD bd;
 		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
 		{
 
@@ -1894,11 +1894,11 @@ void SQL_REQUEST::SQL::execTaskQueue()
 	MYSQL_RES *result = mysql_store_result(&this->mysql);
 	MYSQL_ROW row;
 
-	std::vector<HOUSEKEEPING::Queue> listQueue;
+	std::vector<HOUSEKEEPING::Queue_old> listQueue;
 
 	while ((row = mysql_fetch_row(result)) != NULL)
 	{
-		HOUSEKEEPING::Queue queue;
+		HOUSEKEEPING::Queue_old queue;
 		
 		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
 		{
@@ -2374,7 +2374,7 @@ void SQL_REQUEST::SQL::execTaskSmsSending()
 	}
 }
 
-bool SQL_REQUEST::SQL::insertDataTaskQueue(HOUSEKEEPING::Queue &queue)
+bool SQL_REQUEST::SQL::insertDataTaskQueue(HOUSEKEEPING::Queue_old &queue)
 {
 	if (!isConnectedBD())
 	{

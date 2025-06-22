@@ -221,26 +221,31 @@ static void collect() {
 
 int main(int argc, char *argv[])
 {
+    
+   // getQueue();
     {        
         IVR ivr;
+        Queue queue;
         
         
         ivr.Start();    // запускаем поток
+        queue.Start();  // запускаем поток
 
         
         static int _val = 0;
 
         while (1) 
         {
-            
-            if (ivr.GetRawAllData().empty()) 
+            ivr.Parsing();
+
+            if (queue.GetRawAllData().empty())
             {
                 std::cout << "null value " << _val << "\n";
             }
             else 
             {
-                printf("All RawData = %u\n  %s\n", ivr.GetRawAllData().size(),  ivr.GetRawFirstData().c_str());
-                ivr.Parsing();
+                printf("All RawData = %u\n  %s\n", queue.GetRawAllData().size(), queue.GetRawFirstData().c_str());
+                queue.Parsing();
             }
             
             ++_val;

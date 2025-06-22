@@ -9,9 +9,6 @@
 #ifndef IVR_H
 #define IVR_H
 
-class IVR;
-typedef std::shared_ptr<ISQLConnect> SP_SQL;
-
 static std::string IVR_COMMANDS			= "Playback|lukoil|ivr-3";
 static std::string IVR_COMMANDS_EXT1	= "IVREXT";
 static std::string IVR_COMMANDS_EXT2	= "Spasibo";
@@ -28,6 +25,7 @@ public:
 		eDomru_220000,		// 220-000
 		eSts,				// STS
 		eComagic,			// COMAGIC
+		eBeelineMih,		// MIH (михайловка)
 	};
 
 	struct IvrCalls
@@ -44,7 +42,6 @@ public:
 	void Start() override;
 	void Stop() override;
 	void Parsing() override;							// разбор сырых данных
-
 	
 
 private:
@@ -53,6 +50,7 @@ private:
 
 
 	bool CreateCallers(const std::string&, IvrCalls&);
+	bool CheckCallers(const IvrCalls &);												// проверка корреткности стуктуры звонка
 	bool IsExistListIvr();
 	ecCallerId StringToEnum(const std::string &_str);
 	std::string EnumToString(ecCallerId _caller);
@@ -63,6 +61,8 @@ private:
 	unsigned int GetPhoneIDIvr(const std::string &_phone);								// id phone по БД
 
 };
+
+//template<> TODO сделать на EnumToString
 
 
 //namespace IVR_OLD 

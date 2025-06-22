@@ -1,4 +1,4 @@
-#include "InternalFunction.h"
+п»ї#include "InternalFunction.h"
 #include "Constants.h"
 #include "IVR.h"
 #include "Queue.h"
@@ -23,10 +23,10 @@
 
 std::string INTERNALFUNCTION::StringFormat(const char *format, ...)
 {
-	// Создаем объект ostringstream для форматирования строки
+	// РЎРѕР·РґР°РµРј РѕР±СЉРµРєС‚ ostringstream РґР»СЏ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёСЏ СЃС‚СЂРѕРєРё
 	std::ostringstream oss;
 
-	// Инициализируем список аргументов
+	// РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј СЃРїРёСЃРѕРє Р°СЂРіСѓРјРµРЅС‚РѕРІ
 	va_list args;
 	va_start(args, format);
 
@@ -38,31 +38,31 @@ std::string INTERNALFUNCTION::StringFormat(const char *format, ...)
 			switch (*format)
 			{
 			case 'd':
-			{  // Для целых чисел
+			{  // Р”Р»СЏ С†РµР»С‹С… С‡РёСЃРµР»
 				int i = va_arg(args, int);
 				oss << i;
 				break;
 			}
 			case 'f':
-			{ // Для чисел с плавающей точкой
+			{ // Р”Р»СЏ С‡РёСЃРµР» СЃ РїР»Р°РІР°СЋС‰РµР№ С‚РѕС‡РєРѕР№
 				double d = va_arg(args, double);
 				oss << d;
 				break;
 			}
 			case 's':
-			{ // Для строк
+			{ // Р”Р»СЏ СЃС‚СЂРѕРє
 				char *s = va_arg(args, char *);
 				oss << s;
 				break;
 			}
-			default: // Обработка неизвестных спецификаторов
+			default: // РћР±СЂР°Р±РѕС‚РєР° РЅРµРёР·РІРµСЃС‚РЅС‹С… СЃРїРµС†РёС„РёРєР°С‚РѕСЂРѕРІ
 				oss << '%' << *format;
 				break;
 			}
 		}
 		else
 		{
-			oss << *format; // Просто добавляем символ
+			oss << *format; // РџСЂРѕСЃС‚Рѕ РґРѕР±Р°РІР»СЏРµРј СЃРёРјРІРѕР»
 		}
 		format++;
 	}
@@ -72,37 +72,39 @@ std::string INTERNALFUNCTION::StringFormat(const char *format, ...)
 	return oss.str();
 }
 
-// парсинг номера телефона в нормальный вид
+// РїР°СЂСЃРёРЅРі РЅРѕРјРµСЂР° С‚РµР»РµС„РѕРЅР° РІ РЅРѕСЂРјР°Р»СЊРЅС‹Р№ РІРёРґ
 std::string INTERNALFUNCTION::phoneParsing(std::string &phone)
 {
-	if (phone.length() < 6)
+	const auto n = phone.size();
+
+	if (n == 10) 
 	{
-		return "null";	// для номеров которые не сотовые и не городские
-	}
-	else if (phone.length() == 10)
+		return "+7" + phone;  // 10 С†РёС„СЂ в†’ РґРѕР±Р°РІР»СЏРµРј +7
+	}                                   
+		
+	if (n == 11) 
 	{
-		return "+7" + phone;
-	}
-	else if (phone.length() == 11)
+		return "+" + phone; // 11 С†РёС„СЂ в†’ РїСЂРѕСЃС‚Рѕ + РїРµСЂРµРґ РЅРѕРјРµСЂРѕРј
+	}                                   
+		
+	if (n == 12 && phone.rfind("+7", 0) == 0) // 12 СЃРёРјРІРѕР»РѕРІ Рё РЅР°С‡РёРЅР°РµС‚СЃСЏ СЃ "+7" в†’ СѓР¶Рµ РІ РЅРѕСЂРјРµ
 	{
-		return "+" + phone;
-	}
-	else
-	{
-		return "null";	// ничего не нашли возращаем null
-	}
+		return phone;
+	}		
+	
+	return "null";	// РІСЃС‘ РѕСЃС‚Р°Р»СЊРЅРѕРµ вЂ” В«nullВ»
 };
 
 
 
-// создать + получить текущий IVR
+// СЃРѕР·РґР°С‚СЊ + РїРѕР»СѓС‡РёС‚СЊ С‚РµРєСѓС‰РёР№ IVR
 //void INTERNALFUNCTION::getIVR()
 //{   
 //	if (!CONSTANTS::DEBUG_MODE) {
 //		system(CONSTANTS::cIVRResponse_old.c_str());
 //	};	  
 //
-//    // разбираем
+//    // СЂР°Р·Р±РёСЂР°РµРј
 //	IVR_OLD::Parsing ivr(CONSTANTS::cIVRName_old.c_str());
 //	if (ivr.isExistList()) {
 //		ivr.show();		
@@ -110,26 +112,26 @@ std::string INTERNALFUNCTION::phoneParsing(std::string &phone)
 //	}
 //}
 
-// создать + получить текущую очередь
+// СЃРѕР·РґР°С‚СЊ + РїРѕР»СѓС‡РёС‚СЊ С‚РµРєСѓС‰СѓСЋ РѕС‡РµСЂРµРґСЊ
 void INTERNALFUNCTION::getQueue(void)
 {
 	if (!CONSTANTS::DEBUG_MODE)	{
 		system(CONSTANTS::cQueueResponse.c_str());
 	}
 
-    QUEUE::Parsing queue(CONSTANTS::cQueueName.c_str());
+	QUEUE_OLD::Parsing queue(CONSTANTS::cQueueName.c_str());
     
 	if (queue.isExistList()) {
 		queue.show();
 		queue.insertData();
 	}
 	else {
-		// проверим время вдруг кто то позвонил после 20:00:00 и был в очереди, тогда надо пройтись 1 раз по БД
+		// РїСЂРѕРІРµСЂРёРј РІСЂРµРјСЏ РІРґСЂСѓРі РєС‚Рѕ С‚Рѕ РїРѕР·РІРѕРЅРёР» РїРѕСЃР»Рµ 20:00:00 Рё Р±С‹Р» РІ РѕС‡РµСЂРµРґРё, С‚РѕРіРґР° РЅР°РґРѕ РїСЂРѕР№С‚РёСЃСЊ 1 СЂР°Р· РїРѕ Р‘Р”
 		if (queue.isExistQueueAfter20hours()) {
-			// есть потеряшки, обновляем данные по ним
+			// РµСЃС‚СЊ РїРѕС‚РµСЂСЏС€РєРё, РѕР±РЅРѕРІР»СЏРµРј РґР°РЅРЅС‹Рµ РїРѕ РЅРёРј
 			queue.updateQueueAfter20hours();			
 		}
-		// проверим есть ли не про hash'нные номера, когда оператор уже закончил разговор и ушел из линии
+		// РїСЂРѕРІРµСЂРёРј РµСЃС‚СЊ Р»Рё РЅРµ РїСЂРѕ hash'РЅРЅС‹Рµ РЅРѕРјРµСЂР°, РєРѕРіРґР° РѕРїРµСЂР°С‚РѕСЂ СѓР¶Рµ Р·Р°РєРѕРЅС‡РёР» СЂР°Р·РіРѕРІРѕСЂ Рё СѓС€РµР» РёР· Р»РёРЅРёРё
 		if (queue.isExistAnsweredAfter20hours()) {
 			queue.updateAnsweredAfter20hours();
 		}
@@ -137,7 +139,7 @@ void INTERNALFUNCTION::getQueue(void)
 	}
 }
 
-// создать + получить кто с кем разговаривает
+// СЃРѕР·РґР°С‚СЊ + РїРѕР»СѓС‡РёС‚СЊ РєС‚Рѕ СЃ РєРµРј СЂР°Р·РіРѕРІР°СЂРёРІР°РµС‚
 void INTERNALFUNCTION::getActiveSip(void)
 {
 	if (!CONSTANTS::DEBUG_MODE)	
@@ -153,7 +155,7 @@ void INTERNALFUNCTION::getActiveSip(void)
 	}	
 }
 
-// получение номера очереди
+// РїРѕР»СѓС‡РµРЅРёРµ РЅРѕРјРµСЂР° РѕС‡РµСЂРµРґРё
 std::string INTERNALFUNCTION::getNumberQueue(CONSTANTS::AsteriskQueue queue)
 {
 	switch (queue)
@@ -173,7 +175,7 @@ std::string INTERNALFUNCTION::getNumberQueue(CONSTANTS::AsteriskQueue queue)
 	}
 }
 
-// перевод общего кол-ва секунда в 00:00:00 формат
+// РїРµСЂРµРІРѕРґ РѕР±С‰РµРіРѕ РєРѕР»-РІР° СЃРµРєСѓРЅРґР° РІ 00:00:00 С„РѕСЂРјР°С‚
 std::string INTERNALFUNCTION::getTalkTime(std::string talk)
 {
 	const unsigned int daysCount	= 24 * 3600;
@@ -202,14 +204,14 @@ std::string INTERNALFUNCTION::getTalkTime(std::string talk)
 	return ((days == 0) ? resultat : resultat += std::to_string(days)+"d "+ resultat);	
 }
 
-// текущее время 
+// С‚РµРєСѓС‰РµРµ РІСЂРµРјСЏ 
 std::string INTERNALFUNCTION::getCurrentDateTime()
 {	
 	auto now = std::chrono::system_clock::now();
 	std::time_t now_c = std::chrono::system_clock::to_time_t(now);
 	struct std::tm *now_tm = std::localtime(&now_c);		
 
-	//формат год-месяц-день 00:00:00
+	//С„РѕСЂРјР°С‚ РіРѕРґ-РјРµСЃСЏС†-РґРµРЅСЊ 00:00:00
 	std::string year = std::to_string((now_tm->tm_year + 1900));
 
 	std::string mon = std::to_string((now_tm->tm_mon + 1));
@@ -230,14 +232,14 @@ std::string INTERNALFUNCTION::getCurrentDateTime()
 	return year + "-" + mon + "-" + day + " " + hour + ":" + min + ":" + sec;
 }
 
-// текущее начало дня
+// С‚РµРєСѓС‰РµРµ РЅР°С‡Р°Р»Рѕ РґРЅСЏ
 std::string INTERNALFUNCTION::getCurrentStartDay()
 {
 	auto now = std::chrono::system_clock::now();
 	std::time_t now_c = std::chrono::system_clock::to_time_t(now);
 	struct std::tm *now_tm = std::localtime(&now_c);
 
-	//формат год-месяц-день 00:00:00
+	//С„РѕСЂРјР°С‚ РіРѕРґ-РјРµСЃСЏС†-РґРµРЅСЊ 00:00:00
 	std::string year = std::to_string((now_tm->tm_year + 1900));
 
 	std::string mon = std::to_string((now_tm->tm_mon + 1));
@@ -249,7 +251,7 @@ std::string INTERNALFUNCTION::getCurrentStartDay()
 	return year + "-" + mon + "-" + day + " 00:00:00" ;
 }
 
-// текущее время - 2 минута 
+// С‚РµРєСѓС‰РµРµ РІСЂРµРјСЏ - 2 РјРёРЅСѓС‚Р° 
 std::string INTERNALFUNCTION::getCurrentDateTimeAfterMinutes(int minutes)
 {
 	auto now = std::chrono::system_clock::now();
@@ -258,7 +260,7 @@ std::string INTERNALFUNCTION::getCurrentDateTimeAfterMinutes(int minutes)
 	std::time_t now_c = std::chrono::system_clock::to_time_t(now-minute);
 	struct std::tm *now_tm = std::localtime(&now_c);
 
-	//формат год-месяц-день 00:00:00
+	//С„РѕСЂРјР°С‚ РіРѕРґ-РјРµСЃСЏС†-РґРµРЅСЊ 00:00:00
 	std::string year = std::to_string((now_tm->tm_year + 1900));
 
 	std::string mon = std::to_string((now_tm->tm_mon + 1));
@@ -279,14 +281,14 @@ std::string INTERNALFUNCTION::getCurrentDateTimeAfterMinutes(int minutes)
 	return year + "-" + mon + "-" + day + " " + hour + ":" + min + ":" + sec;
 }
 
-// текущее время после 20:00 
+// С‚РµРєСѓС‰РµРµ РІСЂРµРјСЏ РїРѕСЃР»Рµ 20:00 
 std::string INTERNALFUNCTION::getCurrentDateTimeAfter20hours()
 {
 	auto now = std::chrono::system_clock::now();
 	std::time_t now_c = std::chrono::system_clock::to_time_t(now);
 	struct std::tm *now_tm = std::localtime(&now_c);
 
-	//формат год-месяц-день 00:00:00
+	//С„РѕСЂРјР°С‚ РіРѕРґ-РјРµСЃСЏС†-РґРµРЅСЊ 00:00:00
 	std::string year = std::to_string((now_tm->tm_year + 1900));
 
 	std::string mon = std::to_string((now_tm->tm_mon + 1));
@@ -298,7 +300,7 @@ std::string INTERNALFUNCTION::getCurrentDateTimeAfter20hours()
 	return year + "-" + mon + "-" + day + " 20:00:00";
 }
 
-// показ версии ядра
+// РїРѕРєР°Р· РІРµСЂСЃРёРё СЏРґСЂР°
 void INTERNALFUNCTION::showVersionCore(unsigned int iter)
 {
 	std::ostringstream buffer;
@@ -312,7 +314,7 @@ void INTERNALFUNCTION::showVersionCore(unsigned int iter)
 		buffer << "\t" << CONSTANTS::core_version << "\n";
 	}	
 	
-	// логирование
+	// Р»РѕРіРёСЂРѕРІР°РЅРёРµ
 	if (CONSTANTS::SAFE_LOG) {
 		buffer << "\n";
 		buffer << "\tLOGGER: ON" << "\t";
@@ -320,14 +322,14 @@ void INTERNALFUNCTION::showVersionCore(unsigned int iter)
 		buffer << "ERROR: " << (to_string(CONSTANTS::LOG_MODE_ERROR) == "true" ? "ON" : "OFF") << "\n";
 	}
 
-	// итерация какая по счету пошла
+	// РёС‚РµСЂР°С†РёСЏ РєР°РєР°СЏ РїРѕ СЃС‡РµС‚Сѓ РїРѕС€Р»Р°
 	buffer << "\t"+getCurrentDateTime() + "\t\titeration: " << iter <<"\n";
 
 	buffer << "==========================================================\n";
 	std::cout << buffer.str();
 }
 
-// статистика // пока без класса, может потом в отдельный класс сделать
+// СЃС‚Р°С‚РёСЃС‚РёРєР° // РїРѕРєР° Р±РµР· РєР»Р°СЃСЃР°, РјРѕР¶РµС‚ РїРѕС‚РѕРј РІ РѕС‚РґРµР»СЊРЅС‹Р№ РєР»Р°СЃСЃ СЃРґРµР»Р°С‚СЊ
 void INTERNALFUNCTION::getStatistics()
 {
 	SQL_REQUEST::SQL base;
@@ -368,7 +370,7 @@ void INTERNALFUNCTION::getStatistics()
 	std::cout << buffer.str();
 }
 
-// отображжение инфо что не возможно подключиться к бд
+// РѕС‚РѕР±СЂР°Р¶Р¶РµРЅРёРµ РёРЅС„Рѕ С‡С‚Рѕ РЅРµ РІРѕР·РјРѕР¶РЅРѕ РїРѕРґРєР»СЋС‡РёС‚СЊСЃСЏ Рє Р±Рґ
 void INTERNALFUNCTION::showErrorBD(const std::string str)
 {
 	std::cerr << str << " -> Error: can't connect to database " << CONSTANTS::cHOST << ":" << CONSTANTS::cBD << "\n";
@@ -382,7 +384,7 @@ void INTERNALFUNCTION::showErrorBD(const std::string str)
 	}
 }
 
-// отображение инфо что пошла какая то ошибка
+// РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ РёРЅС„Рѕ С‡С‚Рѕ РїРѕС€Р»Р° РєР°РєР°СЏ С‚Рѕ РѕС€РёР±РєР°
 void INTERNALFUNCTION::showErrorBD(const std::string str, MYSQL *mysql)
 {
 	std::cerr << str <<" " << mysql_error(mysql) <<"\n";
@@ -396,19 +398,19 @@ void INTERNALFUNCTION::showErrorBD(const std::string str, MYSQL *mysql)
 	}
 }
 
-// преобразование текущей удаленной комады из int -> REMOTE_COMMANDS::Command 
+// РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ С‚РµРєСѓС‰РµР№ СѓРґР°Р»РµРЅРЅРѕР№ РєРѕРјР°РґС‹ РёР· int -> REMOTE_COMMANDS::Command 
 LOG::Log INTERNALFUNCTION::getRemoteCommand(int command)
 {
 	return static_cast<LOG::Log>(command);
 }
 
-// преобразование текущей удаленной комады из LOG::Log -> int
+// РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ С‚РµРєСѓС‰РµР№ СѓРґР°Р»РµРЅРЅРѕР№ РєРѕРјР°РґС‹ РёР· LOG::Log -> int
 int INTERNALFUNCTION::getRemoteCommand(LOG::Log command)
 {
 	return static_cast<int>(command);
 }
 
-// преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
+// РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ С‚РµРєСѓС‰РµР№ СѓРґР°Р»РµРЅРЅРѕР№ РєРѕРјР°РґС‹ РёР· REMOTE_COMMANDS::StatusOperators -> int
 int INTERNALFUNCTION::getStatusOperators(REMOTE_COMMANDS::ecStatusOperators status)
 {
 	return static_cast<int>(status);
@@ -439,7 +441,7 @@ INTERNALFUNCTION::SP_NewOnHoldOperators INTERNALFUNCTION::createNewOnHoldOperato
 		if (operators_list.isOnHold) 
 		{		
 			
-			const auto &onHoldVec = *onHold; // разыменуем указатель
+			const auto &onHoldVec = *onHold; // СЂР°Р·С‹РјРµРЅСѓРµРј СѓРєР°Р·Р°С‚РµР»СЊ
 			
 			for (size_t i = 0; i != onHoldVec.size(); ++i)
 			{
@@ -454,23 +456,23 @@ INTERNALFUNCTION::SP_NewOnHoldOperators INTERNALFUNCTION::createNewOnHoldOperato
 	return new_lists;
 }
 
-// проверка успешно ли выполнили удаленную команду
+// РїСЂРѕРІРµСЂРєР° СѓСЃРїРµС€РЅРѕ Р»Рё РІС‹РїРѕР»РЅРёР»Рё СѓРґР°Р»РµРЅРЅСѓСЋ РєРѕРјР°РЅРґСѓ
 bool INTERNALFUNCTION::remoteCommandChekedExecution(LOG::Log command)
 {	
 	
 	std::ifstream fileRemoteCommand;
 	fileRemoteCommand.open(CONSTANTS::cRemoteCommandName);
 
-	// не удается открыть файл
+	// РЅРµ СѓРґР°РµС‚СЃСЏ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р»
 	if (!fileRemoteCommand.is_open()) return false;
 
-	// находим и разбираем команду 
+	// РЅР°С…РѕРґРёРј Рё СЂР°Р·Р±РёСЂР°РµРј РєРѕРјР°РЅРґСѓ 
 	std::string line;
 	
 
 	while (std::getline(fileRemoteCommand, line)) {		
 		
-		// какую именно команду ищем
+		// РєР°РєСѓСЋ РёРјРµРЅРЅРѕ РєРѕРјР°РЅРґСѓ РёС‰РµРј
 		if (command == LOG::Log::Log_add_queue_5000 ||
 			command == LOG::Log::Log_add_queue_5050 ||
 			command == LOG::Log::Log_add_queue_5000_5050)
@@ -534,13 +536,13 @@ void INTERNALFUNCTION::showHelpInfo()
 	//printf("\n\t%s\n", CONSTANTS::core_version);
 	std::cout << "\n\t" << CONSTANTS::core_version << "\n";
 	std::cout << "\t\t\tList of commands: \n\n";
-	std::cout << " ivr \t\t\t - кто в IVR \n";
-	std::cout << " queue \t\t\t - текущая очередь \n";
-	std::cout << " active_sip \t\t - какие активные sip зарегистрированы в очереди \n";
-	std::cout << " connect_bd \t\t - проверка соединения с БД\n";
-	std::cout << " start \t\t\t - сбор данных в БД (самая главная команда для полноценной работы)\n";
-	std::cout << " statistics \t\t - отобразить статистику\n";
-	std::cout << " housekeeping \t\t - внутренния задания на очистку БД таблиц (queue, logging, ivr)\n\n";
+	std::cout << " ivr \t\t\t - РєС‚Рѕ РІ IVR \n";
+	std::cout << " queue \t\t\t - С‚РµРєСѓС‰Р°СЏ РѕС‡РµСЂРµРґСЊ \n";
+	std::cout << " active_sip \t\t - РєР°РєРёРµ Р°РєС‚РёРІРЅС‹Рµ sip Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅС‹ РІ РѕС‡РµСЂРµРґРё \n";
+	std::cout << " connect_bd \t\t - РїСЂРѕРІРµСЂРєР° СЃРѕРµРґРёРЅРµРЅРёСЏ СЃ Р‘Р”\n";
+	std::cout << " start \t\t\t - СЃР±РѕСЂ РґР°РЅРЅС‹С… РІ Р‘Р” (СЃР°РјР°СЏ РіР»Р°РІРЅР°СЏ РєРѕРјР°РЅРґР° РґР»СЏ РїРѕР»РЅРѕС†РµРЅРЅРѕР№ СЂР°Р±РѕС‚С‹)\n";
+	std::cout << " statistics \t\t - РѕС‚РѕР±СЂР°Р·РёС‚СЊ СЃС‚Р°С‚РёСЃС‚РёРєСѓ\n";
+	std::cout << " housekeeping \t\t - РІРЅСѓС‚СЂРµРЅРЅРёСЏ Р·Р°РґР°РЅРёСЏ РЅР° РѕС‡РёСЃС‚РєСѓ Р‘Р” С‚Р°Р±Р»РёС† (queue, logging, ivr)\n\n";
 
 	std::cout << "\t\t\t\t\t\t\t\t === by Petrov Yuri @2024 === \n\n";
 }

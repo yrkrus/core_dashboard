@@ -22,7 +22,8 @@ namespace CONSTANTS
 {   
     namespace TIMEOUT
     {
-        static const unsigned int IVR = 1000;       // timeout для проверки новых данных для ivr
+        static const unsigned int IVR   = 1000;     // timeout для проверки новых данных для ivr
+        static const unsigned int QUEUE = 1000;     // timeout для проверки новых данных для queue
     }
     
     
@@ -117,7 +118,7 @@ enum AsteriskQueue
 // IVREXT - уход на оцените обслуживание
 // после IVREXT -> Spasibo - уход на спасибо что оценили
 
-// for IVR
+// for IVR // TODO удалиьт потом
 static std::string cIVRCommands_old	    = "Playback|lukoil|ivr-3";
 static std::string cIVRCommandsEx1_old  = "IVREXT";
 static std::string cIVRCommandsEx2_old  = "Spasibo";

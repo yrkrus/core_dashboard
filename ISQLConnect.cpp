@@ -22,10 +22,12 @@ ISQLConnect::ISQLConnect(bool _connected)
 
 ISQLConnect::~ISQLConnect()
 {
-	if (m_connected)
+	if (&m_mysql)
 	{
-		mysql_close(&m_mysql);
+		mysql_close(&m_mysql);		
 	}
+
+	m_connected = false;
 }
 
 bool ISQLConnect::Connect(MYSQL &mysql, std::string &_errorDescription)

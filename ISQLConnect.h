@@ -3,8 +3,9 @@
 // *************************************************************
 
 #include <mysql/mysql.h>
-#include "DEBUG.h"
 #include <string>
+#include <memory>
+#include "DEBUG.h"
 #include "AUTH.h"
 
 
@@ -15,6 +16,7 @@
 #define BASE cBD.c_str();
 #define LOGIN cLOGIN.c_str();
 #define PWD cPASSWORD.c_str();
+
 
 
 class ISQLConnect 
@@ -42,5 +44,6 @@ private:
 	bool Connect(MYSQL &mysql, std::string &_errorDescription);
 };
 
+typedef std::shared_ptr<ISQLConnect> SP_SQL;
 
 #endif //ISQLCONNECT_H

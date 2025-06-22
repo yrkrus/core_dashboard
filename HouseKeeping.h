@@ -44,11 +44,11 @@ namespace HOUSEKEEPING {
 			FieldsTable fileds;
 	};
 
-	class Queue final : public ExportTable
+	class Queue_old final : public ExportTable
 	{
 		public:
-			Queue()  = default;
-			~Queue() = default;
+			Queue_old()  = default;
+			~Queue_old() = default;
 	
 			int			number_queue{ 0 };
 			int			sip{ 0 };

@@ -270,13 +270,13 @@ void IVR::Stop()
 
 void IVR::Parsing()
 {
+	m_listIvr.clear(); // обнулим текущий список	
+	
 	std::string rawLines = GetRawLastData();
 	if (rawLines.empty()) 
 	{
 		return;
-	}
-	
-	m_listIvr.clear(); // обнулим текущий список	
+	}	
 
 	std::istringstream ss(rawLines);
 	std::string line;
@@ -338,10 +338,23 @@ bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 		_caller.waiting = lines[8];
 		_caller.callerID = StringToEnum(lines[0] + "," + lines[1]);
 		
+		// TODO тут в лог запись если не прошел по какой то причине 
+		if (!CheckCallers(_caller)) 
+		{
+			return false;
+		}		
+
 		status = true;
 	}
 
 	return status;
+}
+
+bool IVR::CheckCallers(const IvrCalls &_caller)
+{
+	return !((_caller.phone		== "null") &&
+			 (_caller.waiting	== "null") &&
+			 (_caller.callerID	== ecCallerId::eUnknown));
 }
 
 bool IVR::IsExistListIvr()
@@ -357,6 +370,7 @@ IVR::ecCallerId IVR::StringToEnum(const std::string &_str)
 	if (_str.find("sts_") != std::string::npos)				return ecCallerId::eSts;
 	if (_str.find("221122") != std::string::npos)			return ecCallerId::eComagic;
 	if (_str.find("camaa") != std::string::npos)			return ecCallerId::eComagic;
+	if (_str.find("BeeIn") != std::string::npos)			return ecCallerId::eBeelineMih;
 	
 	return ecCallerId::eUnknown;
 }
@@ -369,7 +383,8 @@ std::string IVR::EnumToString(ecCallerId _caller)
 		{ecCallerId::eDomru_220220, "220220"},
 		{ecCallerId::eDomru_220000, "220000"},
 		{ecCallerId::eSts,			"STS"},
-		{ecCallerId::eComagic,		"COMAGIC"}
+		{ecCallerId::eComagic,		"COMAGIC"},
+		{ecCallerId::eBeelineMih,	"MIH" }
 	};
 
 	auto it = callers.find(_caller);
