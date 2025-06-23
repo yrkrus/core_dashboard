@@ -12,40 +12,40 @@
 using namespace INTERNALFUNCTION;
 
 // коструктор
-QUEUE_OLD::Parsing::Parsing(const char *fileQueue)
-{
-	std::ifstream filequeue;
-
-	filequeue.open(fileQueue);
-
-	if (filequeue.is_open())
-	{
-		//std::cout << "open file... OK\n";
-
-		std::string line;
-
-		// разберем
-		while (std::getline(filequeue, line))
-		{
-			Pacients_old pacient;
-
-			pacient.phone	= findParsing(line, QUEUE_OLD::Currentfind::phone_find);
-			pacient.waiting = findParsing(line, QUEUE_OLD::Currentfind::waiting_find);
-			pacient.queue	= findParsing(line, QUEUE_OLD::Currentfind::queue_find);
-
-			// добавляем
-			if (pacient.phone	!= "null" && 
-				pacient.waiting != "null" && 
-				pacient.queue	!= "null")
-			{
-				pacient_list.push_back(pacient);
-			}
-		}
-	}
-
-	filequeue.close();
-	
-}
+//QUEUE_OLD::Parsing::Parsing(const char *fileQueue)
+//{
+//	std::ifstream filequeue;
+//
+//	filequeue.open(fileQueue);
+//
+//	if (filequeue.is_open())
+//	{
+//		//std::cout << "open file... OK\n";
+//
+//		std::string line;
+//
+//		// разберем
+//		while (std::getline(filequeue, line))
+//		{
+//			Pacients_old pacient;
+//
+//			pacient.phone	= findParsing(line, QUEUE_OLD::Currentfind::phone_find);
+//			pacient.waiting = findParsing(line, QUEUE_OLD::Currentfind::waiting_find);
+//			pacient.queue	= findParsing(line, QUEUE_OLD::Currentfind::queue_find);
+//
+//			// добавляем
+//			if (pacient.phone	!= "null" && 
+//				pacient.waiting != "null" && 
+//				pacient.queue	!= "null")
+//			{
+//				pacient_list.push_back(pacient);
+//			}
+//		}
+//	}
+//
+//	filequeue.close();
+//	
+//}
 
 // деструткор
 //QUEUE::Parsing::~Parsing()
@@ -57,185 +57,185 @@ QUEUE_OLD::Parsing::Parsing(const char *fileQueue)
 //}
 
 // проверка пустой ли список в номерами
-bool QUEUE_OLD::Parsing::isExistList()
-{
-	return (pacient_list.empty() ? false : true);
-}
+//bool QUEUE_OLD::Parsing::isExistList()
+//{
+//	return (pacient_list.empty() ? false : true);
+//}
 
-void QUEUE_OLD::Parsing::show(bool silent)
-{
-	std::ostringstream buffer;
-	
-	if (isExistList())
-	{
-		buffer << "Line QUEUE is (" << pacient_list.size() << ")\n";
-		
-		if (!silent) {
-			buffer << "queue" << "\t    \t" << "phone" << "\t \t" << " wait time" << "\n";
-
-			for (std::vector<QUEUE_OLD::Pacients_old>::iterator it = pacient_list.begin(); it != pacient_list.end(); ++it)
-			{
-				buffer << it->queue << "\t >> \t" << it->phone << "\t (" << it->waiting << ")\n";
-			}
-		}	
-			
-	}
-	else
-	{
-		buffer << "QUEUE is empty!\n";
-	}
-
-	 std::cout << buffer.str();
-}
+//void QUEUE_OLD::Parsing::show(bool silent)
+//{
+//	std::ostringstream buffer;
+//	
+//	if (isExistList())
+//	{
+//		buffer << "Line QUEUE is (" << pacient_list.size() << ")\n";
+//		
+//		if (!silent) {
+//			buffer << "queue" << "\t    \t" << "phone" << "\t \t" << " wait time" << "\n";
+//
+//			for (std::vector<QUEUE_OLD::Pacients_old>::iterator it = pacient_list.begin(); it != pacient_list.end(); ++it)
+//			{
+//				buffer << it->queue << "\t >> \t" << it->phone << "\t (" << it->waiting << ")\n";
+//			}
+//		}	
+//			
+//	}
+//	else
+//	{
+//		buffer << "QUEUE is empty!\n";
+//	}
+//
+//	 std::cout << buffer.str();
+//}
 
 
 //добавление данных в БД
-void QUEUE_OLD::Parsing::insertData()
-{
-	if (this->isExistList())
-	{
-		SQL_REQUEST::SQL base;
-
-		for (std::vector<QUEUE_OLD::Pacients_old>::iterator it = pacient_list.begin(); it != pacient_list.end(); ++it)
-		{
-			if (base.isConnectedBD())
-			{
-				base.insertQUEUE(it->queue.c_str(), it->phone.c_str(), it->waiting.c_str());
-			}
-		}
-		
-		
-		// находим и обновляем данные если звонок был в очереди, но не дождался ответа от оператора
-		if (base.isConnectedBD()) 
-		{ 
-			base.updateQUEUE_fail(pacient_list);			
-		}	
-
-		// находим и обновляем данные когда у нас звонок из IVR попал в очередь
-		if (base.isConnectedBD())
-		{
-			base.updateIVR_to_queue(pacient_list);
-		}
-
-		// находим и обновляем данные когда разговор успешно состоялся 
-		if (base.isConnectedBD()) 
-		{
-			base.updateQUEUE_hash(pacient_list);
-		}
-
-	}	
-}
+//void QUEUE_OLD::Parsing::insertData()
+//{
+//	if (this->isExistList())
+//	{
+//		SQL_REQUEST::SQL base;
+//
+//		for (std::vector<QUEUE_OLD::Pacients_old>::iterator it = pacient_list.begin(); it != pacient_list.end(); ++it)
+//		{
+//			if (base.isConnectedBD())
+//			{
+//				base.insertQUEUE(it->queue.c_str(), it->phone.c_str(), it->waiting.c_str());
+//			}
+//		}
+//		
+//		
+//		// находим и обновляем данные если звонок был в очереди, но не дождался ответа от оператора
+//		if (base.isConnectedBD()) 
+//		{ 
+//			base.updateQUEUE_fail(pacient_list);			
+//		}	
+//
+//		// находим и обновляем данные когда у нас звонок из IVR попал в очередь
+//		if (base.isConnectedBD())
+//		{
+//			base.updateIVR_to_queue(pacient_list);
+//		}
+//
+//		// находим и обновляем данные когда разговор успешно состоялся 
+//		if (base.isConnectedBD()) 
+//		{
+//			base.updateQUEUE_hash(pacient_list);
+//		}
+//
+//	}	
+//}
 
 // проверка есть ли не отвеченные записи после 20:00
-bool QUEUE_OLD::Parsing::isExistQueueAfter20hours()
-{
-	SQL_REQUEST::SQL base;
-
-	if (base.isConnectedBD()) {
-		return base.isExistQueueAfter20hours();
-	}
-
-	return false;
-}
+//bool QUEUE_OLD::Parsing::isExistQueueAfter20hours()
+//{
+//	SQL_REQUEST::SQL base;
+//
+//	if (base.isConnectedBD()) {
+//		return base.isExistQueueAfter20hours();
+//	}
+//
+//	return false;
+//}
 
 // обновление данных если звонок пришел того как нет активных операторов на линии
-void QUEUE_OLD::Parsing::updateQueueAfter20hours()
-{
-	SQL_REQUEST::SQL base;
-
-	if (base.isConnectedBD())
-	{
-		base.updateQUEUE_fail();
-	}
-}
+//void QUEUE_OLD::Parsing::updateQueueAfter20hours()
+//{
+//	SQL_REQUEST::SQL base;
+//
+//	if (base.isConnectedBD())
+//	{
+//		base.updateQUEUE_fail();
+//	}
+//}
 
 
 // проверка если ли номера по которым закончили разгвоаривать, но не успели обработать
-bool QUEUE_OLD::Parsing::isExistAnsweredAfter20hours()
-{
-	SQL_REQUEST::SQL base;
-
-	if (base.isConnectedBD())
-	{
-		return base.isExistAnsweredAfter20hours();
-	}
-
-	return false;
-}
+//bool QUEUE_OLD::Parsing::isExistAnsweredAfter20hours()
+//{
+//	SQL_REQUEST::SQL base;
+//
+//	if (base.isConnectedBD())
+//	{
+//		return base.isExistAnsweredAfter20hours();
+//	}
+//
+//	return false;
+//}
 
 // обновление данных когда закончили разговаривать и ушли с линии
-void QUEUE_OLD::Parsing::updateAnsweredAfter20hours()
-{
-	SQL_REQUEST::SQL base;
-
-	if (base.isConnectedBD())
-	{
-		base.updateAnswered_fail();
-	}
-}
+//void QUEUE_OLD::Parsing::updateAnsweredAfter20hours()
+//{
+//	SQL_REQUEST::SQL base;
+//
+//	if (base.isConnectedBD())
+//	{
+//		base.updateAnswered_fail();
+//	}
+//}
 
 
 
 // парсинг строки
-std::string QUEUE_OLD::Parsing::findParsing(std::string str, Currentfind find)
-{
-	std::vector<std::string> lines;
-	std::string current_str;
-
-	bool isNewLine{ false };
-
-	for (size_t i = 0; i != str.length(); ++i)
-	{
-
-		if (isNewLine)
-		{
-			if (!current_str.empty())
-			{
-				lines.push_back(current_str);
-				current_str.clear();
-			}
-		}
-
-		if (str[i] != ' ') // ищем разделить (разделить пустая строка)
-		{
-			current_str += str[i];
-			isNewLine = false;
-		}
-		else
-		{
-			isNewLine = true;
-		}
-	}
-
-	if (!lines.empty())
-	{
-		switch (find)
-		{
-		case QUEUE_OLD::Currentfind::phone_find:
-		{
-			return phoneParsing(lines[7]);	
-			break;
-		}
-		case QUEUE_OLD::Currentfind::waiting_find:
-		{
-			return lines[8];
-			break;
-		}
-		case QUEUE_OLD::Currentfind::queue_find: {
-			return lines[2];
-			break;
-		}
-		default:
-		{
-			return "null";
-			break;
-		}
-		}
-	}
-	else {
-		return "null";
-	}
-}
+//std::string QUEUE_OLD::Parsing::findParsing(std::string str, Currentfind find)
+//{
+//	std::vector<std::string> lines;
+//	std::string current_str;
+//
+//	bool isNewLine{ false };
+//
+//	for (size_t i = 0; i != str.length(); ++i)
+//	{
+//
+//		if (isNewLine)
+//		{
+//			if (!current_str.empty())
+//			{
+//				lines.push_back(current_str);
+//				current_str.clear();
+//			}
+//		}
+//
+//		if (str[i] != ' ') // ищем разделить (разделить пустая строка)
+//		{
+//			current_str += str[i];
+//			isNewLine = false;
+//		}
+//		else
+//		{
+//			isNewLine = true;
+//		}
+//	}
+//
+//	if (!lines.empty())
+//	{
+//		switch (find)
+//		{
+//		case QUEUE_OLD::Currentfind::phone_find:
+//		{
+//			return phoneParsing(lines[7]);	
+//			break;
+//		}
+//		case QUEUE_OLD::Currentfind::waiting_find:
+//		{
+//			return lines[8];
+//			break;
+//		}
+//		case QUEUE_OLD::Currentfind::queue_find: {
+//			return lines[2];
+//			break;
+//		}
+//		default:
+//		{
+//			return "null";
+//			break;
+//		}
+//		}
+//	}
+//	else {
+//		return "null";
+//	}
+//}
 
 Queue::Queue()
 	:IAsteriskData(CONSTANTS::TIMEOUT::QUEUE)
@@ -265,18 +265,15 @@ void Queue::Stop()
 
 void Queue::Parsing()
 {
-	std::string error;
-
 	if (FindQueueCallers())	// ждем сырые данные 
 	{		
-		// есть данные добавляем в БД
-		InsertQueueCalls();
-
-		// удаляем из сырых данных
-		DeleteRawLastData();		
+		// есть данные добавляем\обновляем в БД
+		InsertQueueCalls();			
 	}
 	else 
 	{		
+		std::string error;
+
 		// проверим время вдруг кто то позвонил после 20:00:00 и был в очереди, тогда надо пройтись 1 раз по БД
 		if (IsExistCallAfter20Hours(error))
 		{
@@ -289,6 +286,9 @@ void Queue::Parsing()
 			UpdateCallAnsweredAfter20hours();
 		}
 	}
+
+	// удаляем из сырых данных
+	DeleteRawLastData();
 }
 
 bool Queue::FindQueueCallers()
@@ -352,7 +352,7 @@ bool Queue::CreateQueueCallers(const std::string &_lines, QueueCalls &_queueCall
 	{
 		_queueCaller.phone = INTERNALFUNCTION::phoneParsing(lines[7]);
 		_queueCaller.waiting = lines[8];
-		_queueCaller.queue = StringToEnum(lines[2]);
+		_queueCaller.queue = StringToEnum<ecQueueNumber>(lines[2]);
 
 		// TODO тут в лог запись если не прошел по какой то причине 
 		if (!CheckCallers(_queueCaller))
@@ -376,34 +376,6 @@ bool Queue::CheckCallers(const QueueCalls &_caller)
 bool Queue::IsExistQueueCalls()
 {
 	return !m_listQueue.empty() ? true : false;
-}
-
-Queue::ecQueueNumber Queue::StringToEnum(const std::string &_str)
-{
-	if (_str.find("5000") != std::string::npos)		return ecQueueNumber::e5000;
-	if (_str.find("5050") != std::string::npos)		return ecQueueNumber::e5050;
-	if (_str.find("5100") != std::string::npos)		return ecQueueNumber::e5100;	
-
-	return ecQueueNumber::eUnknown;
-}
-
-std::string Queue::EnumToString(ecQueueNumber _number)
-{
-	static std::map<ecQueueNumber, std::string> queueNumber =
-	{
-		{ecQueueNumber::eUnknown,	"Unknown"},
-		{ecQueueNumber::e5000,		"5000"},
-		{ecQueueNumber::e5050,		"5050"},
-		{ecQueueNumber::e5100,		"5100"},		
-	};
-
-	auto it = queueNumber.find(_number);
-	if (it != queueNumber.end())
-	{
-		return it->second;
-	}
-
-	return "Unknown";
 }
 
 void Queue::InsertQueueCalls()
@@ -843,6 +815,7 @@ bool Queue::GetCallsInBase(CallsInBaseList &_vcalls, std::string &_errorDescript
 	}
 
 	m_sql->Disconnect();
+	return true;
 }
 
 bool Queue::IsExistCallAfter20Hours(std::string &_errorDescription)

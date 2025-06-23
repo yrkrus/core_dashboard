@@ -41,8 +41,7 @@ public:
 
 	void Start() override;
 	void Stop() override;
-	void Parsing() override;							// разбор сырых данных
-	
+	void Parsing() override;							// разбор сырых данных	
 
 private:
 	std::vector<IvrCalls>			m_listIvr;	

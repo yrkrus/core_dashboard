@@ -113,31 +113,31 @@ std::string INTERNALFUNCTION::phoneParsing(std::string &phone)
 //}
 
 // создать + получить текущую очередь
-void INTERNALFUNCTION::getQueue(void)
-{
-	if (!CONSTANTS::DEBUG_MODE)	{
-		system(CONSTANTS::cQueueResponse.c_str());
-	}
-
-	QUEUE_OLD::Parsing queue(CONSTANTS::cQueueName.c_str());
-    
-	if (queue.isExistList()) {
-		queue.show();
-		queue.insertData();
-	}
-	else {
-		// проверим время вдруг кто то позвонил после 20:00:00 и был в очереди, тогда надо пройтись 1 раз по БД
-		if (queue.isExistQueueAfter20hours()) {
-			// есть потеряшки, обновляем данные по ним
-			queue.updateQueueAfter20hours();			
-		}
-		// проверим есть ли не про hash'нные номера, когда оператор уже закончил разговор и ушел из линии
-		if (queue.isExistAnsweredAfter20hours()) {
-			queue.updateAnsweredAfter20hours();
-		}
-
-	}
-}
+//void INTERNALFUNCTION::getQueue(void)
+//{
+//	if (!CONSTANTS::DEBUG_MODE)	{
+//		system(CONSTANTS::cQueueResponse.c_str());
+//	}
+//
+//	QUEUE_OLD::Parsing queue(CONSTANTS::cQueueName.c_str());
+//    
+//	if (queue.isExistList()) {
+//		queue.show();
+//		queue.insertData();
+//	}
+//	else {
+//		// проверим время вдруг кто то позвонил после 20:00:00 и был в очереди, тогда надо пройтись 1 раз по БД
+//		if (queue.isExistQueueAfter20hours()) {
+//			// есть потеряшки, обновляем данные по ним
+//			queue.updateQueueAfter20hours();			
+//		}
+//		// проверим есть ли не про hash'нные номера, когда оператор уже закончил разговор и ушел из линии
+//		if (queue.isExistAnsweredAfter20hours()) {
+//			queue.updateAnsweredAfter20hours();
+//		}
+//
+//	}
+//}
 
 // создать + получить кто с кем разговаривает
 void INTERNALFUNCTION::getActiveSip(void)
@@ -147,7 +147,7 @@ void INTERNALFUNCTION::getActiveSip(void)
 		system(CONSTANTS::cActiveSipResponse.c_str());
 	}
 
-    ACTIVE_SIP::Parsing sip(CONSTANTS::cActiveSipName.c_str());
+	ACTIVE_SIP_old::Parsing_old sip(CONSTANTS::cActiveSipName.c_str());
 	if (sip.isExistList()) 
 	{ 
 		sip.show(); 

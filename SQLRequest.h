@@ -49,13 +49,13 @@ namespace SQL_REQUEST
 		int getLastIDQUEUE(const char *phone);												// получение последнего ID актуального
 		void updateQUEUE_SIP(const char *phone, const char *sip, const char *talk_time);	// обновление данных таблицы QUEUE о том с кем сейчас разговаривает оператор
 		bool isExistQUEUE_SIP(const char *phone);											// существует ли такой номер в таблице QUEUE чтобы добавить sip оператора который с разговор ведет
-		void updateQUEUE_fail(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list);			// обновление данных когда звонок не дождался своей очереди 
+		//void updateQUEUE_fail(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list);			// обновление данных когда звонок не дождался своей очереди 
 		void updateQUEUE_fail();															// обновление данных когда звонок не дождался своей очереди 
-		void updateIVR_to_queue(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list);			// обновление данных когда у нас звонок из IVR попал в очередь
+		//void updateIVR_to_queue(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list);			// обновление данных когда у нас звонок из IVR попал в очередь
 		bool isExistQueueAfter20hours();													// проверка есть ли номера которые позвонили после 20:00
-		void updateQUEUE_hash(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list);			// обновление поля hash когда успешно поговорили
+		//void updateQUEUE_hash(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list);			// обновление поля hash когда успешно поговорили
 		bool isExistAnsweredAfter20hours();													// проверка есть ли номера которым нужно проставить статус отвечено после того как оператор ушел из линии		
-		void updateAnswered_fail();															// обновление данных когда оператор поговорил и ушел из линии, а звонок все еще находится не обработанным
+		//void updateAnswered_fail();															// обновление данных когда оператор поговорил и ушел из линии, а звонок все еще находится не обработанным
 
 
 		// table operators_queue
@@ -63,7 +63,7 @@ namespace SQL_REQUEST
 		void clearOperatorsQueue();															// очистка таблицы operators_queue
 		bool isExistOperatorsQueue(const char *sip, const char *queue);						// проверка существует ли такой sip+очередь в БД
 		bool isExistOperatorsQueue();														// проверка существует ли хоть 1 запись в БД sip+очередь
-		void checkOperatorsQueue(const std::vector<ACTIVE_SIP::Operators> &list_operators);	// проверка текущих sip + очередь 
+		void checkOperatorsQueue(const std::vector<ACTIVE_SIP_old::Operators> &list_operators);	// проверка текущих sip + очередь 
 		void deleteOperatorsQueue(const std::string &sip);											// удаление sip номера оператора из всех очередей
 		void deleteOperatorsQueue(const std::string &sip, const std::string &queue);						// удаление sip номера оператора и конкретной очереди
 
@@ -105,10 +105,10 @@ namespace SQL_REQUEST
 
 
 		// table operators_ohhold
-		void updateOperatorsOnHold(ACTIVE_SIP::Parsing *list);						// обнление данных о статусе оператора OnHold
-		std::shared_ptr<std::vector<ACTIVE_SIP::OnHold>> createOnHoldSip();								    // создание списка с sip оператоарми которые находятся в статусе OnHold по БД
+		void updateOperatorsOnHold(ACTIVE_SIP_old::Parsing_old *list);						// обнление данных о статусе оператора OnHold
+		std::shared_ptr<std::vector<ACTIVE_SIP_old::OnHold>> createOnHoldSip();								    // создание списка с sip оператоарми которые находятся в статусе OnHold по БД
 		void addOperatorsOnHold(const std::string &sip, const std::string &phone);				// добавление sip номера орератора в таблицу operators_onhold
-		void disableOperatorsOnHold(const ACTIVE_SIP::OnHold &onhold);						// обновление данных что sip закончил быть в статусе onHold 
+		void disableOperatorsOnHold(const ACTIVE_SIP_old::OnHold &onhold);						// обновление данных что sip закончил быть в статусе onHold 
 		bool isExistOnHold(const std::string &sip, std::string hash);							// проверка существует ли такой уже onHold (что бы обезопаситься от дубля)											
 
 

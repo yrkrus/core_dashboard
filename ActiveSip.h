@@ -2,12 +2,60 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
+#include <list>
+
+#include "IAsteriskData.h"
+#include "ISQLConnect.h"
+#include "Queue.h"
 
 #ifndef ACTIVESIP_H
 #define ACTIVESIP_H
 
+static std::string SESSION_SIP_RESPONSE		= "asterisk -rx \"core show channels concise\"";
+static std::string SESSION_QUEUE_OPERATOR	= "asterisk -rx \"queue show %queue\"";
 
-namespace ACTIVE_SIP
+typedef std::vector<ecQueueNumber> QueueList;
+
+namespace active_sip 
+{
+	// структура оператора 
+	struct Operator 
+	{
+		std::string sipNumber = "null";		// номер sip орератора
+		QueueList	queueList;				// очереди в которых сидит орператор
+		bool isOnHold = false ;             // находится ли оператор в статусе OnHold
+		std::string phoneOnHold = "null";	// телефон с которым идет onHold		
+	};
+	typedef std::vector<Operator> OperatorList;
+	
+
+	class ActiveSession : public IAsteriskData	// класс в котором будет жить данные по активным сессиям операторов 
+	{
+	public:
+		ActiveSession();
+		~ActiveSession() override;
+
+		void Start() override;
+		void Stop() override;
+		void Parsing() override;				// разбор сырых данных
+	private:
+		OperatorList		m_listOperators;
+		SP_SQL				m_sql;		
+		IFile				m_queue;	// запрос информауии по текущей очереди
+
+		void CreateListActiveSessionOperators();				// активные операторы в линии
+		void CreateActiveOperators(const ecQueueNumber _queue);	// найдем активных операторов в линии
+		void CreateOperator(std::string &_lines, Operator &, ecQueueNumber);	// создание структуры Operator					
+		std::string FindSipNumber(const std::string &_lines);	// парсинг нахождения активного sip оператора
+		bool FindOnHoldStatus(const std::string &_lines);		// парсинг нахождения статуса onHold
+	};
+
+
+
+}
+
+
+namespace ACTIVE_SIP_old
 {
 	enum Currentfind
 	{
@@ -40,11 +88,11 @@ namespace ACTIVE_SIP
 		}
 	};
 
-	class Parsing
+	class Parsing_old
 	{
 	public:
-		Parsing(const char *fileActiveSip);
-		~Parsing();		
+		Parsing_old(const char *fileActiveSip);
+		~Parsing_old();
 
 		void show(bool silent = false);
 		bool isExistList();
@@ -57,7 +105,7 @@ namespace ACTIVE_SIP
 	private:
 		std::string findParsing(std::string str, Currentfind find, const std::string &number_operator);		// парсинг
 		std::string findNumberSip(std::string &str);														// парсинг нахождения активного sip оператора
-		bool findOnHold(const std::string &str);																	// парсинг нахождения статуса onHold 
+		bool findOnHold(const std::string &str);												    		// парсинг нахождения статуса onHold 
 
 
 		void findActiveOperators(const char *fileOperators, std::string queue);  							// парсинг #2 (для activeoperaots) 

@@ -24,8 +24,8 @@
 
 namespace INTERNALFUNCTION {
 	
-	typedef std::shared_ptr<std::vector<ACTIVE_SIP::OnHold>> SP_OnHold;
-	typedef std::vector<ACTIVE_SIP::Operators> Operators;
+	typedef std::shared_ptr<std::vector<ACTIVE_SIP_old::OnHold>> SP_OnHold;
+	typedef std::vector<ACTIVE_SIP_old::Operators> Operators;
 	typedef std::shared_ptr<std::map<std::string, std::string>> SP_NewOnHoldOperators;
 
 	std::string StringFormat(const char *format, ...);
@@ -35,7 +35,7 @@ namespace INTERNALFUNCTION {
 
 	std::string phoneParsing(std::string &phone);					// парсинг номера телефона в нормальный вид
 	//void getIVR();												    // создать + получить текущий IVR
-	void getQueue(void);											// создать + получить текущую очередь
+	//void getQueue(void);											// создать + получить текущую очередь
 	void getActiveSip(void);										// создать + получить кто с кем разговаривает
 	std::string getNumberQueue(CONSTANTS::AsteriskQueue queue);		// получение номера очереди
 	std::string getTalkTime(std::string talk);						// перевод временни из сек -> 00:00:00

@@ -48,6 +48,9 @@
     <ClCompile Include="IAsteriskData.cpp">
       <Filter>include_cpp</Filter>
     </ClCompile>
+    <ClCompile Include="TCPServer.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include_cpp">
@@ -113,6 +116,9 @@
       <Filter>include_h</Filter>
     </ClInclude>
     <ClInclude Include="IAsteriskData.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="TCPServer.h">
       <Filter>include_h</Filter>
     </ClInclude>
   </ItemGroup>

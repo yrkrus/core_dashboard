@@ -32,7 +32,7 @@ void LOG::LogToFile::add(std::string message)
 }
 
 
-void LOG::LogToFile::add(const std::shared_ptr<std::vector<ACTIVE_SIP::OnHold>> onhold, const std::vector<ACTIVE_SIP::Operators> *operators)
+void LOG::LogToFile::add(const std::shared_ptr<std::vector<ACTIVE_SIP_old::OnHold>> onhold, const std::vector<ACTIVE_SIP_old::Operators> *operators)
 {
 	std::lock_guard<std::mutex> lock(mutex);
 
@@ -58,7 +58,7 @@ void LOG::LogToFile::add(const std::shared_ptr<std::vector<ACTIVE_SIP::OnHold>> 
 	}
 }
 
-void LOG::LogToFile::add(const std::vector<ACTIVE_SIP::OnHold> *onhold)
+void LOG::LogToFile::add(const std::vector<ACTIVE_SIP_old::OnHold> *onhold)
 {
 	std::lock_guard<std::mutex> lock(mutex);
 	

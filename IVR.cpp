@@ -265,9 +265,6 @@ void IVR::Stop()
 }
 
 
-
-
-
 void IVR::Parsing()
 {
 	m_listIvr.clear(); // обнулим текущий список	

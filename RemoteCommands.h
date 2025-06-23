@@ -1,13 +1,11 @@
-//////////////////////////////////////////////////////
-//													//	        
-//			by Petrov Yuri 12.08.2024				//
-//  команды регистрации\разрегистрации в чоереди	//
-//													//	
-//////////////////////////////////////////////////////
-#pragma once
+//  команды регистрации\разрегистрации в очереди	
+
 #include "Log.h"
 #include <vector>
 #include <string>
+
+#ifndef REMOTE_COMMANDS_H
+#define REMOTE_COMMANDS_H
 
 
 namespace REMOTE_COMMANDS {
@@ -55,3 +53,5 @@ namespace REMOTE_COMMANDS {
 	};
 
 }
+
+#endif // REMOTE_COMMANDS_H

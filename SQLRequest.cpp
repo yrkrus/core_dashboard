@@ -596,48 +596,48 @@ bool SQL_REQUEST::SQL::isExistQUEUE_SIP(const char *phone)
 }
 
 //обновление данных когда звонок не дождался своей очереди
-void SQL_REQUEST::SQL::updateQUEUE_fail(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list)
-{
-	
-	// найдем текущие номера которые мы не будет трогать при обновлении
-	std::string list_phone;
-	
-	for (const auto &list : pacient_list) {
-		
-		if (list_phone.empty()) {
-			list_phone = "'"+list.phone+"'";
-		}
-		else {
-			list_phone = list_phone + ",'" + list.phone + "'";
-		}		
-	}	
-
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
-
-	// обновляем данные
-	std::string query = "update queue set fail = '1' where date_time > '" + getCurrentStartDay() + "' and answered = '0'"
-		+ " and sip = '-1' and phone not in ("+ list_phone +")";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		showErrorBD(METHOD_NAME+" -> Data (updateQUEUE_fail) error -> query(" + query + ")", &this->mysql);
-	};
-
-	mysql_close(&this->mysql);
-}
+//void SQL_REQUEST::SQL::updateQUEUE_fail(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list)
+//{
+//	
+//	// найдем текущие номера которые мы не будет трогать при обновлении
+//	std::string list_phone;
+//	
+//	for (const auto &list : pacient_list) {
+//		
+//		if (list_phone.empty()) {
+//			list_phone = "'"+list.phone+"'";
+//		}
+//		else {
+//			list_phone = list_phone + ",'" + list.phone + "'";
+//		}		
+//	}	
+//
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//
+//	// обновляем данные
+//	std::string query = "update queue set fail = '1' where date_time > '" + getCurrentStartDay() + "' and answered = '0'"
+//		+ " and sip = '-1' and phone not in ("+ list_phone +")";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		showErrorBD(METHOD_NAME+" -> Data (updateQUEUE_fail) error -> query(" + query + ")", &this->mysql);
+//	};
+//
+//	mysql_close(&this->mysql);
+//}
 
 // обновление данных когда звонок не дождался своей очереди
 void SQL_REQUEST::SQL::updateQUEUE_fail()
@@ -669,48 +669,48 @@ void SQL_REQUEST::SQL::updateQUEUE_fail()
 }
 
 // обновление данных когда у нас звонок из IVR попал в очередь
-void SQL_REQUEST::SQL::updateIVR_to_queue(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list)
-{
-	// найдем текущие номера которые будем трогать при обновлении
-	std::string list_phone;
-
-	for (const auto &list : pacient_list)
-	{
-		if (list_phone.empty())
-		{
-			list_phone = "'" + list.phone + "'";
-		}
-		else
-		{
-			list_phone = list_phone + ",'" + list.phone + "'";
-		}
-	}
-
-	// обновляем данные
-	std::string query = "update ivr set to_queue = '1' where date_time > '" + getCurrentDateTimeAfterMinutes(5)+"' and phone in(" + list_phone + ") and to_queue = '0'";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		showErrorBD(METHOD_NAME+" -> Data (updateIVR_to_queue) error -> query(" + query + ")", &this->mysql);
-	};
-
-	mysql_close(&this->mysql);
-}
+//void SQL_REQUEST::SQL::updateIVR_to_queue(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list)
+//{
+//	// найдем текущие номера которые будем трогать при обновлении
+//	std::string list_phone;
+//
+//	for (const auto &list : pacient_list)
+//	{
+//		if (list_phone.empty())
+//		{
+//			list_phone = "'" + list.phone + "'";
+//		}
+//		else
+//		{
+//			list_phone = list_phone + ",'" + list.phone + "'";
+//		}
+//	}
+//
+//	// обновляем данные
+//	std::string query = "update ivr set to_queue = '1' where date_time > '" + getCurrentDateTimeAfterMinutes(5)+"' and phone in(" + list_phone + ") and to_queue = '0'";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		showErrorBD(METHOD_NAME+" -> Data (updateIVR_to_queue) error -> query(" + query + ")", &this->mysql);
+//	};
+//
+//	mysql_close(&this->mysql);
+//}
 
 
 // проверка есть ли номера которые позвонили после 20:00
@@ -755,109 +755,109 @@ bool SQL_REQUEST::SQL::isExistQueueAfter20hours()
 }
 
 // обновление поля hash когда успешно поговорили
-void SQL_REQUEST::SQL::updateQUEUE_hash(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}	
-
-	// найдем текущие номера которые будем трогать при обновлении
-	std::string list_phone;
-
-	for (const auto &list : pacient_list)
-	{
-		if (list_phone.empty())
-		{
-			list_phone = "'" + list.phone + "'";
-		}
-		else
-		{
-			list_phone = list_phone + ",'" + list.phone + "'";
-		}
-	} 
-
-	QUEUE_OLD::QueueBD_old queuebd;
-	
-	
-	const std::string query = "select id,phone,date_time from queue where date_time > '"
-		+ getCurrentStartDay() + "' and answered = '1' and fail = '0' and hash is NULL and phone not in("+ list_phone+")";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
-		return;
-	}
-
-	// результат
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row; 
-	
-	while ((row = mysql_fetch_row(result)) != NULL)
-	{
-		QUEUE_OLD::BD bd;
-		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
-		{
-			
-			if (i == 0) {
-				bd.id = row[i];
-			}
-			else if (i == 1) {
-				bd.phone = row[i];
-			}
-			else if (i == 2) {
-				bd.date_time = row[i];
-			}			
-		}
-
-		bd.hash = std::hash<std::string>()(bd.phone+"_"+bd.date_time);
-		queuebd.list.push_back(bd);		
-	}	
-	
-	mysql_free_result(result);
-	
-	// обновляем
-	for (const auto &list : queuebd.list)	{
-
-		std::string query = "update queue set hash = '" + std::to_string(list.hash)
-			+ "' where id ='" + list.id
-			+ "' and phone ='" + list.phone
-			+ "' and date_time = '" + list.date_time + "'";
-
-		if (CONSTANTS::SAFE_LOG)
-		{
-			if (CONSTANTS::LOG_MODE_DEBUG)
-			{
-				LOG::LogToFile log(LOG::eLogType_DEBUG);
-				log.add(METHOD_NAME + " -> " + query);
-			}
-		}
-
-		if (!isConnectedBD())
-		{
-			showErrorBD(METHOD_NAME);
-			return;
-		}
-
-		if (mysql_query(&this->mysql, query.c_str()) != 0)
-		{
-			showErrorBD(METHOD_NAME+" -> Data (updateQUEUE_hash) error -> query(" + query + ")", &this->mysql);
-		};
-
-	};
-	mysql_close(&this->mysql); 
-}
+//void SQL_REQUEST::SQL::updateQUEUE_hash(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}	
+//
+//	// найдем текущие номера которые будем трогать при обновлении
+//	std::string list_phone;
+//
+//	for (const auto &list : pacient_list)
+//	{
+//		if (list_phone.empty())
+//		{
+//			list_phone = "'" + list.phone + "'";
+//		}
+//		else
+//		{
+//			list_phone = list_phone + ",'" + list.phone + "'";
+//		}
+//	} 
+//
+//	QUEUE_OLD::QueueBD_old queuebd;
+//	
+//	
+//	const std::string query = "select id,phone,date_time from queue where date_time > '"
+//		+ getCurrentStartDay() + "' and answered = '1' and fail = '0' and hash is NULL and phone not in("+ list_phone+")";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		// ошибка считаем что есть запись		
+//		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+//		return;
+//	}
+//
+//	// результат
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row; 
+//	
+//	while ((row = mysql_fetch_row(result)) != NULL)
+//	{
+//		QUEUE_OLD::BD bd;
+//		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
+//		{
+//			
+//			if (i == 0) {
+//				bd.id = row[i];
+//			}
+//			else if (i == 1) {
+//				bd.phone = row[i];
+//			}
+//			else if (i == 2) {
+//				bd.date_time = row[i];
+//			}			
+//		}
+//
+//		bd.hash = std::hash<std::string>()(bd.phone+"_"+bd.date_time);
+//		queuebd.list.push_back(bd);		
+//	}	
+//	
+//	mysql_free_result(result);
+//	
+//	// обновляем
+//	for (const auto &list : queuebd.list)	{
+//
+//		std::string query = "update queue set hash = '" + std::to_string(list.hash)
+//			+ "' where id ='" + list.id
+//			+ "' and phone ='" + list.phone
+//			+ "' and date_time = '" + list.date_time + "'";
+//
+//		if (CONSTANTS::SAFE_LOG)
+//		{
+//			if (CONSTANTS::LOG_MODE_DEBUG)
+//			{
+//				LOG::LogToFile log(LOG::eLogType_DEBUG);
+//				log.add(METHOD_NAME + " -> " + query);
+//			}
+//		}
+//
+//		if (!isConnectedBD())
+//		{
+//			showErrorBD(METHOD_NAME);
+//			return;
+//		}
+//
+//		if (mysql_query(&this->mysql, query.c_str()) != 0)
+//		{
+//			showErrorBD(METHOD_NAME+" -> Data (updateQUEUE_hash) error -> query(" + query + ")", &this->mysql);
+//		};
+//
+//	};
+//	mysql_close(&this->mysql); 
+//}
 
 
 // проверка есть ли номера которым нужно проставить статус отвечено после того как оператор ушел из линии
@@ -903,97 +903,97 @@ bool SQL_REQUEST::SQL::isExistAnsweredAfter20hours()
 }
 
 // обновление данных когда оператор поговорил и ушел из линии, а звонок все еще находится не обработанным
-void SQL_REQUEST::SQL::updateAnswered_fail()
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}	
-
-	QUEUE_OLD::QueueBD_old queuebd;
-
-	const std::string query = "select id,phone,date_time from queue where date_time > '"
-		+ getCurrentStartDay() + "' and answered = '1' and fail = '0' and hash is NULL";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
-		return;
-	}
-
-	// результат
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row;
-
-	while ((row = mysql_fetch_row(result)) != NULL)
-	{
-		QUEUE_OLD::BD bd;
-		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
-		{
-
-			if (i == 0)
-			{
-				bd.id = row[i];
-			}
-			else if (i == 1)
-			{
-				bd.phone = row[i];
-			}
-			else if (i == 2)
-			{
-				bd.date_time = row[i];
-			}
-		}
-
-		bd.hash = std::hash<std::string>()(bd.phone + "_" + bd.date_time);
-		queuebd.list.push_back(bd);
-	}
-
-	mysql_free_result(result);
-
-	// обновляем
-	for (const auto &list : queuebd.list)
-	{
-
-		std::string query = "update queue set hash = '" + std::to_string(list.hash)
-			+ "' where id ='" + list.id
-			+ "' and phone ='" + list.phone
-			+ "' and date_time = '" + list.date_time + "'";
-
-		if (CONSTANTS::SAFE_LOG)
-		{
-			if (CONSTANTS::LOG_MODE_DEBUG)
-			{
-				LOG::LogToFile log(LOG::eLogType_DEBUG);
-				log.add(METHOD_NAME + " -> " + query);
-			}
-		}
-
-		if (!isConnectedBD())
-		{
-			showErrorBD(METHOD_NAME);
-			return;
-		}
-
-		if (mysql_query(&this->mysql, query.c_str()) != 0)
-		{
-			showErrorBD(METHOD_NAME+" -> Data(updateAnswered_fail) error -> query(" + query + ")", &this->mysql);
-		};
-
-	};
-	mysql_close(&this->mysql);
-}
+//void SQL_REQUEST::SQL::updateAnswered_fail()
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}	
+//
+//	QUEUE_OLD::QueueBD_old queuebd;
+//
+//	const std::string query = "select id,phone,date_time from queue where date_time > '"
+//		+ getCurrentStartDay() + "' and answered = '1' and fail = '0' and hash is NULL";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		// ошибка считаем что есть запись		
+//		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+//		return;
+//	}
+//
+//	// результат
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row;
+//
+//	while ((row = mysql_fetch_row(result)) != NULL)
+//	{
+//		QUEUE_OLD::BD bd;
+//		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
+//		{
+//
+//			if (i == 0)
+//			{
+//				bd.id = row[i];
+//			}
+//			else if (i == 1)
+//			{
+//				bd.phone = row[i];
+//			}
+//			else if (i == 2)
+//			{
+//				bd.date_time = row[i];
+//			}
+//		}
+//
+//		bd.hash = std::hash<std::string>()(bd.phone + "_" + bd.date_time);
+//		queuebd.list.push_back(bd);
+//	}
+//
+//	mysql_free_result(result);
+//
+//	// обновляем
+//	for (const auto &list : queuebd.list)
+//	{
+//
+//		std::string query = "update queue set hash = '" + std::to_string(list.hash)
+//			+ "' where id ='" + list.id
+//			+ "' and phone ='" + list.phone
+//			+ "' and date_time = '" + list.date_time + "'";
+//
+//		if (CONSTANTS::SAFE_LOG)
+//		{
+//			if (CONSTANTS::LOG_MODE_DEBUG)
+//			{
+//				LOG::LogToFile log(LOG::eLogType_DEBUG);
+//				log.add(METHOD_NAME + " -> " + query);
+//			}
+//		}
+//
+//		if (!isConnectedBD())
+//		{
+//			showErrorBD(METHOD_NAME);
+//			return;
+//		}
+//
+//		if (mysql_query(&this->mysql, query.c_str()) != 0)
+//		{
+//			showErrorBD(METHOD_NAME+" -> Data(updateAnswered_fail) error -> query(" + query + ")", &this->mysql);
+//		};
+//
+//	};
+//	mysql_close(&this->mysql);
+//}
 
 
 // добавление sip номере оператора + его очередь
@@ -1196,7 +1196,7 @@ void SQL_REQUEST::SQL::deleteOperatorsQueue(const std::string &sip, const std::s
 
 
 // проверка текущих sip + очередь
-void SQL_REQUEST::SQL::checkOperatorsQueue(const std::vector<ACTIVE_SIP::Operators> &list_operators)
+void SQL_REQUEST::SQL::checkOperatorsQueue(const std::vector<ACTIVE_SIP_old::Operators> &list_operators)
 {
 	if (!isConnectedBD())
 	{
@@ -1205,8 +1205,8 @@ void SQL_REQUEST::SQL::checkOperatorsQueue(const std::vector<ACTIVE_SIP::Operato
 	}
 
 	// найдем данные по БД
-	ACTIVE_SIP::Operators curr_list_operator;
-	std::vector<ACTIVE_SIP::Operators> list_operators_bd;
+	ACTIVE_SIP_old::Operators curr_list_operator;
+	std::vector<ACTIVE_SIP_old::Operators> list_operators_bd;
 
 	const std::string query = "select sip,queue from operators_queue";
 
@@ -2752,10 +2752,10 @@ bool SQL_REQUEST::SQL::deleteDataTaskSmsSending(int _id)
 
 
 
-void SQL_REQUEST::SQL::updateOperatorsOnHold(ACTIVE_SIP::Parsing *list)
+void SQL_REQUEST::SQL::updateOperatorsOnHold(ACTIVE_SIP_old::Parsing_old *list)
 {
-	typedef std::vector<ACTIVE_SIP::Operators>	operators;
-	typedef std::vector<ACTIVE_SIP::OnHold>		operators_onhold;
+	typedef std::vector<ACTIVE_SIP_old::Operators>	operators;
+	typedef std::vector<ACTIVE_SIP_old::OnHold>		operators_onhold;
 	
 	if (!isConnectedBD())
 	{
@@ -2928,9 +2928,9 @@ void SQL_REQUEST::SQL::updateOperatorsOnHold(ACTIVE_SIP::Parsing *list)
 	// delete onHold;
 }
 
-std::shared_ptr<std::vector<ACTIVE_SIP::OnHold>> SQL_REQUEST::SQL::createOnHoldSip()
+std::shared_ptr<std::vector<ACTIVE_SIP_old::OnHold>> SQL_REQUEST::SQL::createOnHoldSip()
 {
-	auto listHold = std::make_shared<std::vector<ACTIVE_SIP::OnHold>>();
+	auto listHold = std::make_shared<std::vector<ACTIVE_SIP_old::OnHold>>();
 
 	
 	if (!isConnectedBD())
@@ -2964,7 +2964,7 @@ std::shared_ptr<std::vector<ACTIVE_SIP::OnHold>> SQL_REQUEST::SQL::createOnHoldS
 
 	while ((row = mysql_fetch_row(result)) != NULL)
 	{
-		ACTIVE_SIP::OnHold hold;
+		ACTIVE_SIP_old::OnHold hold;
 
 		for (size_t i = 0; i < mysql_num_fields(result); ++i)
 		{
@@ -3051,7 +3051,7 @@ void SQL_REQUEST::SQL::addOperatorsOnHold(const std::string &sip, const std::str
 }
 
 
-void SQL_REQUEST::SQL::disableOperatorsOnHold(const ACTIVE_SIP::OnHold &onhold)
+void SQL_REQUEST::SQL::disableOperatorsOnHold(const ACTIVE_SIP_old::OnHold &onhold)
 {
 	if (!isConnectedBD())
 	{

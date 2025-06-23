@@ -22,9 +22,10 @@ public:
 	virtual ~IFile();
 	
 	bool CreateData(string &_request, string &_errorDescription);
+	bool IsExistRaw();						// есть ли данные
 
 	std::deque<string> GetRawAll() const;	// получение всего списка 
-	std::string GetRawLast() const;			// получение только последнейй записи
+	std::string GetRawLast() const;			// получение только последней записи
 	std::string GetRawFirst() const;		// получение только первой записи
 
 	void DeleteRawLast();					// удаление последней записи

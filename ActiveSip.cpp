@@ -12,7 +12,7 @@
 
 
 // коструктор
-ACTIVE_SIP::Parsing::Parsing(const char *fileActiveSip)
+ACTIVE_SIP_old::Parsing_old::Parsing_old(const char *fileActiveSip)
 {
 	// найдем активных операторов в линии
 	createListActiveOperators();
@@ -45,9 +45,9 @@ ACTIVE_SIP::Parsing::Parsing(const char *fileActiveSip)
 
 									Pacients pacient;
 
-									pacient.internal_sip = findParsing(line, ACTIVE_SIP::Currentfind::internal_sip_find, it->sip_number);
-									pacient.phone		 = findParsing(line, ACTIVE_SIP::Currentfind::phone_find, it->sip_number);
-									pacient.talk_time	 = findParsing(line, ACTIVE_SIP::Currentfind::talk_time_find, it->sip_number);
+									pacient.internal_sip = findParsing(line, ACTIVE_SIP_old::Currentfind::internal_sip_find, it->sip_number);
+									pacient.phone		 = findParsing(line, ACTIVE_SIP_old::Currentfind::phone_find, it->sip_number);
+									pacient.talk_time	 = findParsing(line, ACTIVE_SIP_old::Currentfind::talk_time_find, it->sip_number);
 
 
 									// добавляем
@@ -71,19 +71,19 @@ ACTIVE_SIP::Parsing::Parsing(const char *fileActiveSip)
 }
 
 // деструткор
-ACTIVE_SIP::Parsing::~Parsing()
+ACTIVE_SIP_old::Parsing_old::~Parsing_old()
 {
 	if (!active_sip_list.empty()) { active_sip_list.clear(); }
 }
 
 // проверка пустой ли список в номерами
-bool ACTIVE_SIP::Parsing::isExistList()
+bool ACTIVE_SIP_old::Parsing_old::isExistList()
 {
 	return (active_sip_list.empty() ? false : true);
 }
 
 // получаем активный лист операторов которые у нас сейчас в линии находятся
-void ACTIVE_SIP::Parsing::createListActiveOperators()
+void ACTIVE_SIP_old::Parsing_old::createListActiveOperators()
 {		
 	for (size_t i = 0; i != CONSTANTS::AsteriskQueue::COUNT; ++i) {
 	
@@ -107,7 +107,7 @@ void ACTIVE_SIP::Parsing::createListActiveOperators()
 }
 
 
-void ACTIVE_SIP::Parsing::show(bool silent)
+void ACTIVE_SIP_old::Parsing_old::show(bool silent)
 {
 	std::ostringstream buffer;
 	
@@ -139,7 +139,7 @@ void ACTIVE_SIP::Parsing::show(bool silent)
 }
 
 // парсинг строки
-std::string ACTIVE_SIP::Parsing::findParsing(std::string str, ACTIVE_SIP::Currentfind find, const std::string &number_operator)
+std::string ACTIVE_SIP_old::Parsing_old::findParsing(std::string str, ACTIVE_SIP_old::Currentfind find, const std::string &number_operator)
 {
 	std::vector<std::string> lines;
 	std::string current_str;
@@ -178,17 +178,17 @@ std::string ACTIVE_SIP::Parsing::findParsing(std::string str, ACTIVE_SIP::Curren
 		
 		switch (find)
 		{
-			case ACTIVE_SIP::Currentfind::phone_find:
+			case ACTIVE_SIP_old::Currentfind::phone_find:
 			{
 				return INTERNALFUNCTION::phoneParsing(lines[7]);
 				break;
 			}
-			case ACTIVE_SIP::Currentfind::internal_sip_find:	// внутренний номер SIP (мы его и так знаем из функции)
+			case ACTIVE_SIP_old::Currentfind::internal_sip_find:	// внутренний номер SIP (мы его и так знаем из функции)
 			{
 				return number_operator;
 				break;
 			}
-			case ACTIVE_SIP::Currentfind::talk_time_find:		// время разговора
+			case ACTIVE_SIP_old::Currentfind::talk_time_find:		// время разговора
 			{
 				return lines[9];
 				break;
@@ -207,21 +207,21 @@ std::string ACTIVE_SIP::Parsing::findParsing(std::string str, ACTIVE_SIP::Curren
 
 
 // парсинг нахождения активного sip оператора
-std::string ACTIVE_SIP::Parsing::findNumberSip(std::string &str)
+std::string ACTIVE_SIP_old::Parsing_old::findNumberSip(std::string &str)
 {
 	// 6 т.к. lenght("Local/) = 6	
 	return str.substr( str.find_first_of("Local/") + 6,  str.find_first_of("@") - str.find_first_of("Local/") - 6);	
 }
 
 
-bool ACTIVE_SIP::Parsing::findOnHold(const std::string &str)
+bool ACTIVE_SIP_old::Parsing_old::findOnHold(const std::string &str)
 {
 	return ((str.find("On Hold") != std::string::npos) ? true : false);	
 }
 
 
 // // парсинг #2 (для activeoperaots)
-void ACTIVE_SIP::Parsing::findActiveOperators(const char *fileOperators, std::string queue)
+void ACTIVE_SIP_old::Parsing_old::findActiveOperators(const char *fileOperators, std::string queue)
 {
 	
 	std::ifstream file;
@@ -273,7 +273,7 @@ void ACTIVE_SIP::Parsing::findActiveOperators(const char *fileOperators, std::st
 
 
 // добавление номена очереди оператора	
-void ACTIVE_SIP::Parsing::insert_updateQueueNumberOperators()
+void ACTIVE_SIP_old::Parsing_old::insert_updateQueueNumberOperators()
 {
 	if (!isExistListActiveOperators())	{			
 		// очищаем номера очереди операторов
@@ -312,7 +312,7 @@ void ACTIVE_SIP::Parsing::insert_updateQueueNumberOperators()
 }
 
 // есть ли операторы в очередях
-bool ACTIVE_SIP::Parsing::isExistQueueOperators()
+bool ACTIVE_SIP_old::Parsing_old::isExistQueueOperators()
 {
 	SQL_REQUEST::SQL base;
 	if (base.isConnectedBD())
@@ -326,7 +326,7 @@ bool ACTIVE_SIP::Parsing::isExistQueueOperators()
 
 
 // очистка номеров очереди операторов
-void ACTIVE_SIP::Parsing::clearQueueNumberOperators()
+void ACTIVE_SIP_old::Parsing_old::clearQueueNumberOperators()
 {
 	SQL_REQUEST::SQL base;
 	if (base.isConnectedBD())
@@ -335,14 +335,14 @@ void ACTIVE_SIP::Parsing::clearQueueNumberOperators()
 	}
 }
 
-void ACTIVE_SIP::Parsing::clearListOperatorsPhoneOnHold()
+void ACTIVE_SIP_old::Parsing_old::clearListOperatorsPhoneOnHold()
 {
 	for (auto &list : list_operators) {
 		list.phoneOnHold = "null";
 	}
 }
 
-bool ACTIVE_SIP::Parsing::getSipIsOnHold(std::string sip)
+bool ACTIVE_SIP_old::Parsing_old::getSipIsOnHold(std::string sip)
 {
 	for (auto &list : list_operators) {
 		if ( list.sip_number == sip) {			
@@ -352,19 +352,19 @@ bool ACTIVE_SIP::Parsing::getSipIsOnHold(std::string sip)
 }
 
 
-bool ACTIVE_SIP::Parsing::isExistListActiveOperators()
+bool ACTIVE_SIP_old::Parsing_old::isExistListActiveOperators()
 {
 	return (!list_operators.empty() ? true : false );
 }
 
 
 //добавление данных в БД
-void ACTIVE_SIP::Parsing::updateData()
+void ACTIVE_SIP_old::Parsing_old::updateData()
 {
 	if (this->isExistList())
 	{			
 		
-		for (std::vector<ACTIVE_SIP::Pacients>::iterator it = active_sip_list.begin(); it != active_sip_list.end(); ++it)
+		for (std::vector<ACTIVE_SIP_old::Pacients>::iterator it = active_sip_list.begin(); it != active_sip_list.end(); ++it)
 		{
 			SQL_REQUEST::SQL base;
 			if (base.isConnectedBD())
@@ -400,7 +400,7 @@ void ACTIVE_SIP::Parsing::updateData()
 	}*/
 }
 
-std::vector<ACTIVE_SIP::Operators> ACTIVE_SIP::Parsing::getListOperators()
+std::vector<ACTIVE_SIP_old::Operators> ACTIVE_SIP_old::Parsing_old::getListOperators()
 {
 	// очищаем лист phoneOnHold
 	clearListOperatorsPhoneOnHold();	
@@ -423,4 +423,162 @@ std::vector<ACTIVE_SIP::Operators> ACTIVE_SIP::Parsing::getListOperators()
 	return this->list_operators;
 }
 
+active_sip::ActiveSession::ActiveSession()
+	:IAsteriskData(CONSTANTS::TIMEOUT::ACTIVE_SESSION)
+	, m_sql(std::make_shared<ISQLConnect>(false))
+{
+}
+
+active_sip::ActiveSession::~ActiveSession()
+{
+}
+
+void active_sip::ActiveSession::Start()
+{
+	std::string error;
+	auto func = [this, error = std::move(error)]() mutable
+		{
+			return m_rawData.CreateData(SESSION_SIP_RESPONSE, error);
+		};
+
+	m_dispether.Start(func);	
+}
+
+void active_sip::ActiveSession::Stop()
+{
+	m_dispether.Stop();
+}
+
+void active_sip::ActiveSession::Parsing()
+{
+	m_listOperators.clear(); // TODO тут пока обнуление, потом подумать!!!
+	
+	// найдем активных операторов в линии(смотрим текущие статичные очереди)
+	CreateListActiveSessionOperators();
+	
+	
+	std::string rawLines = GetRawLastData();
+	if (rawLines.empty())
+	{
+		// TODO тут подумать, что делать!
+		return;
+	}
+
+	
+
+}
+
+// активные операторы в линии
+void active_sip::ActiveSession::CreateListActiveSessionOperators()
+{
+	// без цикла очередей ecQueueNumber, просто берем нужные статичные очереди
+	static const std::vector<ecQueueNumber> queueList =
+	{
+		ecQueueNumber::e5000,
+		ecQueueNumber::e5050		
+	};
+
+	for (const auto &queue : queueList) 
+	{
+		std::string request = SESSION_QUEUE_OPERATOR;
+
+		// заменяем %queue на номер очереди
+		std::string repl = "%queue";
+		size_t position = request.find(repl);
+		request.replace(position, repl.length(), EnumToString<ecQueueNumber>(queue));
+
+		std::string error;
+		m_queue.DeleteRawAll(); // очистим все текущие данные 
+
+		if (!m_queue.CreateData(request, error))
+		{
+			// TODO тут подумать что делать (пока след. очередь)
+			continue;
+		}
+
+		// найдем активных операторов в линии
+		CreateActiveOperators(queue);
+	
+	}
+	
+	
+
+	//findActiveOperators(CONSTANTS::cActiveSipOperatorsName.c_str(), INTERNALFUNCTION::getNumberQueue(static_cast<CONSTANTS::AsteriskQueue>(i)));
+
+
+	
+	
+	
+
+	// добавим\обновим очереди 
+	//insert_updateQueueNumberOperators();
+}
+
+// найдем активных операторов в линии
+void active_sip::ActiveSession::CreateActiveOperators(const ecQueueNumber _queue)
+{	
+	if (!m_queue.IsExistRaw()) 
+	{
+		// TODO нет данных надо убрать очередь из m_listOperators, подумать об этом!
+		return;
+	}
+	
+	std::istringstream ss(m_queue.GetRawLast());
+	std::string line;
+
+	while (std::getline(ss, line))
+	{
+		// заносить активные CAllers не требуется
+		if (line.find("Callers") != std::string::npos)
+		{
+			break;
+		}
+
+		// проверим есть ли активный sip
+		if (line.find("Local/") != std::string::npos)
+		{
+			// найдем активный sip
+			Operator sip;
+			CreateOperator(line, sip, _queue);			
+
+			// проверим есть ли уже такой sip чтобы добавить ему только очередь
+			bool isExistOperator = false;
+			for (auto &listOperators : m_listOperators) 
+			{
+				if (sip.sipNumber == listOperators.sipNumber) 
+				{
+					isExistOperator = true;
+					listOperators.queueList.push_back(_queue); // т.к. находим именно эту очередь
+					break;
+				}
+			}		
+
+			if (!isExistOperator)
+			{
+				m_listOperators.push_back(sip);
+			}
+		}
+	}
+	
+}
+
+void active_sip::ActiveSession::CreateOperator(std::string &_lines, Operator &_sip, ecQueueNumber _queue)
+{
+	_sip.sipNumber = FindSipNumber(_lines);
+	_sip.queueList.push_back(_queue);
+	_sip.isOnHold = FindOnHoldStatus(_lines);
+}
+
+// парсинг нахождения активного sip оператора
+std::string active_sip::ActiveSession::FindSipNumber(const std::string &_lines)
+{
+	// 6 т.к. lenght("Local/) = 6	
+	return _lines.substr(_lines.find_first_of("Local/") + 6, _lines.find_first_of("@") - _lines.find_first_of("Local/") - 6);
+}
+
+// парсинг нахождения статуса onHold
+bool active_sip::ActiveSession::FindOnHoldStatus(const std::string &_lines)
+{
+	return ((_lines.find("On Hold") != std::string::npos) ? true : false);
+}
 

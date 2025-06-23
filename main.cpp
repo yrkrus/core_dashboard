@@ -1,17 +1,20 @@
 ﻿#include <iostream>
 #include <string>
 #include <unistd.h>
+#include <thread>
+#include <csignal>
+
+#include "ISQLConnect.h"
+#include "CreateFiles.h"
 #include "Constants.h"
 #include "InternalFunction.h"
 #include "SQLRequest.h"
 #include "RemoteCommands.h"
 #include "HouseKeeping.h"
-#include <thread>
-
-#include "ISQLConnect.h"
-#include "CreateFiles.h"
+#include "TCPServer.h"
 
 #include "IVR.h"
+#include "ActiveSip.h"
 
 // эти include потом убрать, они нужны для отладки только
 #include <stdio.h>
@@ -19,6 +22,7 @@
 #include <chrono>
 
 using namespace INTERNALFUNCTION;
+using namespace active_sip;
 
 
 
@@ -29,8 +33,8 @@ enum Commands
 {
     help,           // хелп справка
   //  ivr,            // кто в IVR
-    queue,          // текущая очередь
-    active_sip,     // какие активные sip зарегистрированы в очереди
+  //  queue,          // текущая очередь
+    active_sip_old,     // какие активные sip зарегистрированы в очереди
     connect_bd,     // убрать потом, это для теста
     start,          // сбор данных в БД   
     statistics,     // отобразить статистику
@@ -45,8 +49,8 @@ Commands static getCommand(char *ch) {
 
     if (commands == "help")              return help;
    // if (commands == "ivr")               return ivr;
-    if (commands == "queue")             return queue;
-    if (commands == "active_sip")        return active_sip;
+   // if (commands == "queue")             return queue;
+    if (commands == "active_sip")        return active_sip_old;
     if (commands == "connect_bd")        return connect_bd;
     if (commands == "start")             return start;
     if (commands == "statistics")        return statistics;
@@ -59,7 +63,7 @@ Commands static getCommand(char *ch) {
 
 
 static void thread_Queue_ActiveSIP() {
-    getQueue();
+    //getQueue();
     getActiveSip();
 }
 
@@ -219,44 +223,72 @@ static void collect() {
     }
 }
 
+static std::atomic<bool> g_running(true);
+
+void sigint_handler(int)
+{
+    g_running = false;
+}
+
 int main(int argc, char *argv[])
 {
     
-   // getQueue();
+    // Перехватываем Ctrl+C
+    std::signal(SIGINT, sigint_handler);
+
+    HeartbeatServer server(12345);
+    server.set_on_ping([]()
+        {
+            std::cout << "[PING] got ping\n";
+        });
+    
+    if (!server.start())
+    {
+        std::cerr << "Server not started on port 12345\n";
+        return 1;
+    }
+    std::cout << "Server is running on port 12345. Press Ctrl+C to stop.\n";
+   
+   
     {        
         IVR ivr;
-        Queue queue;
-        
+        Queue queue; 
+        ActiveSession activeSession;
         
         ivr.Start();    // запускаем поток
         queue.Start();  // запускаем поток
+        activeSession.Start();
 
         
         static int _val = 0;
 
-        while (1) 
+        while (g_running) 
         {
             ivr.Parsing();
+            queue.Parsing();
+            activeSession.Parsing();
 
-            if (queue.GetRawAllData().empty())
+            if (!activeSession.IsExistRawData())
             {
                 std::cout << "null value " << _val << "\n";
             }
             else 
             {
-                printf("All RawData = %u\n  %s\n", queue.GetRawAllData().size(), queue.GetRawFirstData().c_str());
-                queue.Parsing();
+                printf("All RawData = %u\n  %s\n", activeSession.GetRawAllData().size(), activeSession.GetRawFirstData().c_str());
+                
             }
             
             ++_val;
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+            std::this_thread::sleep_for(std::chrono::milliseconds(1000));          
            
         }
        
-        
-        
-        return 0;
+        std::cout << "\nStopping server...\n";
+        server.stop();
+        std::cout << "Server stopped.\n";
+        return 0;       
+       
 
     }
 
@@ -299,12 +331,12 @@ int main(int argc, char *argv[])
         //    getIVR();   
         //    break;
         //}
-        case(queue): {              // запись в БД кто ушел из IVR в очередь
-            // запрос
-            getQueue();
-            break;
-        } 
-        case(active_sip): {         // запись в БД кто сейчас с кем разговариваети сколько по времени
+        //case(queue): {              // запись в БД кто ушел из IVR в очередь
+        //    // запрос
+        //    getQueue();
+        //    break;
+        //} 
+        case(active_sip_old): {         // запись в БД кто сейчас с кем разговариваети сколько по времени
             // запрос
             getActiveSip();
             break;

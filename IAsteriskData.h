@@ -25,6 +25,8 @@ public:
 	virtual void Parsing() = 0;					// разбор сырых данных
 	
 	std::deque<std::string> GetRawAllData();	// список со списком сырых данных	
+	bool IsExistRawData();						// есть ли сырые данные 
+	
 	std::string GetRawLastData();				// последние с конца сырые данные
 	std::string GetRawFirstData();				// первые сырые данные	
 	

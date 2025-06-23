@@ -16,6 +16,11 @@ std::deque<std::string> IAsteriskData::GetRawAllData()
 	return m_rawData.GetRawAll();
 }
 
+bool IAsteriskData::IsExistRawData()
+{
+	return m_rawData.IsExistRaw();
+}
+
 std::string IAsteriskData::GetRawLastData()
 {
 	return m_rawData.GetRawLast();

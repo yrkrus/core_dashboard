@@ -5,6 +5,7 @@
 #include <vector>
 #include <iostream>
 #include <sstream>
+#include <map>
 
 #include "IAsteriskData.h"
 #include "ISQLConnect.h"
@@ -16,19 +17,17 @@ static std::string QUEUE_COMMANDS		= "Queue";
 static std::string QUEUE_COMMANDS_EXT1	= "App";
 static std::string QUEUE_REQUEST		= "asterisk -rx \"core show channels verbose\" | grep -E \"" + QUEUE_COMMANDS + "\" " + " | grep -v \"" + QUEUE_COMMANDS_EXT1 + "\"";
 
+enum class ecQueueNumber
+{
+	eUnknown = 0,
+	e5000,
+	e5050,
+	e5100,
+};
 
 class Queue : public IAsteriskData
 {
-public:
-	
-	enum class ecQueueNumber 
-	{
-		eUnknown = 0,
-		e5000,
-		e5050,
-		e5100,
-	};
-
+public:	
 	struct QueueCalls
 	{
 		std::string phone	= "null";					// текущий номер телефона который в очереди сейчас
@@ -60,12 +59,11 @@ private:
 	bool FindQueueCallers();									// поиск текущих активных звонков
 
 	bool CreateQueueCallers(const std::string&, QueueCalls&);
-	bool CheckCallers(const QueueCalls&);							// проверка корреткности стуктуры звонка
+	bool CheckCallers(const QueueCalls&);						// проверка корреткности стуктуры звонка
 
-	bool IsExistQueueCalls();										// есть ли звонки в памяти
+	bool IsExistQueueCalls();									// есть ли звонки в памяти
 
-	ecQueueNumber StringToEnum(const std::string &_str);
-	std::string EnumToString(ecQueueNumber _number);
+	
 
 	void InsertQueueCalls();													// добавление данных в БД
 	void InsertCall(const QueueCalls &_call);									// добавление нового звонка
@@ -87,66 +85,98 @@ private:
 	bool IsExistCallAnsweredAfter20hours(std::string &_errorDescription);	// есть ли не про hash'нные номера, когда оператор уже закончил разговор и ушел из линии
 	void UpdateCallAnsweredAfter20hours();									// есть не про hash'нные номера обновляем их
 
-	
-
-
 };
 
+template<typename T>
+T StringToEnum(const std::string&);
 
-
-namespace QUEUE_OLD
+template<>
+inline ecQueueNumber StringToEnum<ecQueueNumber>(const std::string &_str)
 {
-	enum Currentfind
-	{
-		phone_find,
-		waiting_find,
-		queue_find,
-	};
+	if (_str.find("5000") != std::string::npos)		return ecQueueNumber::e5000;
+	if (_str.find("5050") != std::string::npos)		return ecQueueNumber::e5050;
+	if (_str.find("5100") != std::string::npos)		return ecQueueNumber::e5100;
 
-	struct Pacients_old
-	{
-		std::string phone	{ "null" };		// текущий номер телефона который в очереди сейчас
-		std::string waiting { "null" };		// время в (сек) которое сейчас в очереди находится
-		std::string queue	{ "null" };		// номер очереди
-	};
-
-	class Parsing
-	{
-	public:
-		Parsing(const char *fileQueue);
-		~Parsing() = default;
-
-		bool isExistList();					// есть ли очередь	
-		void show(bool silent = false);
-		
-		void insertData();					// добавление данных в БД
-		bool isExistQueueAfter20hours();	// проверка есть ли не отвеченные записи после 20:00
-		void updateQueueAfter20hours();		// обновление данных если звонок пришел того как нет активных операторов на линии	
-		bool isExistAnsweredAfter20hours(); // проверка если ли номера по которым закончили разгвоаривать, но не успели обработать
-		void updateAnsweredAfter20hours();	// обновление данных когда закончили разговаривать и ушли с линии
-		
-
-	private:
-		std::string findParsing(std::string str, QUEUE_OLD::Currentfind find); // парсинг  
-		std::vector<QUEUE_OLD::Pacients_old> pacient_list;
-	};
-
-
-	struct BD 
-	{
-		std::string id;
-		std::string phone;
-		std::string date_time;
-		size_t hash{0};
-	};
-
-	class QueueBD_old 
-	{
-		public:
-			QueueBD_old()	= default;
-			~QueueBD_old()	= default;
-			std::vector<QUEUE_OLD::BD> list;
-	};
+	return ecQueueNumber::eUnknown;
 }
+
+template<typename T>
+std::string EnumToString(T);
+
+template<>
+inline std::string EnumToString<ecQueueNumber>(ecQueueNumber _number)
+{
+	static std::map<ecQueueNumber, std::string> queueNumber =
+	{
+		{ecQueueNumber::eUnknown,	"Unknown"},
+		{ecQueueNumber::e5000,		"5000"},
+		{ecQueueNumber::e5050,		"5050"},
+		{ecQueueNumber::e5100,		"5100"},
+	};
+
+	auto it = queueNumber.find(_number);
+	if (it != queueNumber.end())
+	{
+		return it->second;
+	}
+	return "Unknown";
+}
+
+
+
+//namespace QUEUE_OLD
+//{
+//	enum Currentfind
+//	{
+//		phone_find,
+//		waiting_find,
+//		queue_find,
+//	};
+//
+//	struct Pacients_old
+//	{
+//		std::string phone	{ "null" };		// текущий номер телефона который в очереди сейчас
+//		std::string waiting { "null" };		// время в (сек) которое сейчас в очереди находится
+//		std::string queue	{ "null" };		// номер очереди
+//	};
+//
+//	class Parsing
+//	{
+//	public:
+//		Parsing(const char *fileQueue);
+//		~Parsing() = default;
+//
+//		bool isExistList();					// есть ли очередь	
+//		void show(bool silent = false);
+//		
+//		void insertData();					// добавление данных в БД
+//		bool isExistQueueAfter20hours();	// проверка есть ли не отвеченные записи после 20:00
+//		void updateQueueAfter20hours();		// обновление данных если звонок пришел того как нет активных операторов на линии	
+//		bool isExistAnsweredAfter20hours(); // проверка если ли номера по которым закончили разгвоаривать, но не успели обработать
+//		void updateAnsweredAfter20hours();	// обновление данных когда закончили разговаривать и ушли с линии
+//		
+//
+//	private:
+//		std::string findParsing(std::string str, QUEUE_OLD::Currentfind find); // парсинг  
+//		std::vector<QUEUE_OLD::Pacients_old> pacient_list;
+//	};
+//
+//
+//	struct BD 
+//	{
+//		std::string id;
+//		std::string phone;
+//		std::string date_time;
+//		size_t hash{0};
+//	};
+//
+//	class QueueBD_old 
+//	{
+//		public:
+//			QueueBD_old()	= default;
+//			~QueueBD_old()	= default;
+//			std::vector<QUEUE_OLD::BD> list;
+//	};
+//}
 
 #endif //QUEUE_H

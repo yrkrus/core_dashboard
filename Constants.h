@@ -1,6 +1,5 @@
 //  CONSTANTS VALUE
 
-
 #include <string>
 
 #ifndef CONSTANTS_H
@@ -15,15 +14,13 @@
 #define BUILD __DATE__ " " __TIME__
 
 
-
-
-
 namespace CONSTANTS
 {   
     namespace TIMEOUT
     {
         static const unsigned int IVR   = 1000;     // timeout для проверки новых данных для ivr
         static const unsigned int QUEUE = 1000;     // timeout для проверки новых данных для queue
+        static const unsigned int ACTIVE_SESSION = 1000;     // timeout для проверки новых данных для активной сесии операторов
     }
     
     
@@ -45,7 +42,7 @@ namespace CONSTANTS
     valgrind --leak-check=full --show-leak-kinds=all --leak-resolution=med --log-file=./core.log ./core_dashboard start
     valgrind --leak-check=full --leak-resolution=med --log-file=./core.log ./core_dashboard start
     
-    mysqldump -uzabbix -pUFGq4kZMNIMwxTzV -h10.34.222.19 dashboard > /root/core_dashboards/backup_bd/dashboard_20240924.sql
+    mysqldump -uzabbix -pUFGq4kZMNIMwxTzV -h10.34.222.19 dashboard > /root/core_dashboards/backup_bd/dashboard_20250623.sql
 
 
     asterisk -rx "core show channels verbose" | grep to-atsaero5005  кто сейчас разговаривает с бабой железной
@@ -118,18 +115,18 @@ enum AsteriskQueue
 // IVREXT - уход на оцените обслуживание
 // после IVREXT -> Spasibo - уход на спасибо что оценили
 
-// for IVR // TODO удалиьт потом
-static std::string cIVRCommands_old	    = "Playback|lukoil|ivr-3";
-static std::string cIVRCommandsEx1_old  = "IVREXT";
-static std::string cIVRCommandsEx2_old  = "Spasibo";
-static std::string cIVRName_old         = "IVR.txt";
-static std::string cIVRResponse_old     = "asterisk -rx \"core show channels verbose\" | grep -E \"" + cIVRCommands_old + "\" " + " | grep -v \"" + cIVRCommandsEx1_old + "\" " + " | grep -v \"" + cIVRCommandsEx2_old + "\" > " + cIVRName_old;
+// for IVR 
+//static std::string cIVRCommands_old	    = "Playback|lukoil|ivr-3";
+//static std::string cIVRCommandsEx1_old  = "IVREXT";
+//static std::string cIVRCommandsEx2_old  = "Spasibo";
+//static std::string cIVRName_old         = "IVR.txt";
+//static std::string cIVRResponse_old     = "asterisk -rx \"core show channels verbose\" | grep -E \"" + cIVRCommands_old + "\" " + " | grep -v \"" + cIVRCommandsEx1_old + "\" " + " | grep -v \"" + cIVRCommandsEx2_old + "\" > " + cIVRName_old;
 
 // for QUEUE
-static std::string cQueueCommands	= "Queue";
-static std::string cQueueCommandsEx	= "App";
-static std::string cQueueName		= "Queue.txt";
-static std::string cQueueResponse	= "asterisk -rx \"core show channels verbose\" | grep -E \"" + cQueueCommands + "\" " + " | grep -v \"" + cQueueCommandsEx + "\" > " + cQueueName;
+//static std::string cQueueCommands	= "Queue";
+//static std::string cQueueCommandsEx	= "App";
+//static std::string cQueueName		= "Queue.txt";
+//static std::string cQueueResponse	= "asterisk -rx \"core show channels verbose\" | grep -E \"" + cQueueCommands + "\" " + " | grep -v \"" + cQueueCommandsEx + "\" > " + cQueueName;
 
 // for ActiveSIP
 static std::string cActiveSipName				= "ActiveSip.txt";

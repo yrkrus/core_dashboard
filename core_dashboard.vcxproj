@@ -176,6 +176,7 @@
     <ClCompile Include="RemoteCommands.cpp" />
     <ClCompile Include="RemoteCommandsCallback.cpp" />
     <ClCompile Include="SQLRequest.cpp" />
+    <ClCompile Include="TCPServer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActiveSip.h" />
@@ -197,6 +198,7 @@
     <ClInclude Include="RemoteCommands.h" />
     <ClInclude Include="RemoteCommandsCallback.h" />
     <ClInclude Include="SQLRequest.h" />
+    <ClInclude Include="TCPServer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

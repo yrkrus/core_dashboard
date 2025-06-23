@@ -77,6 +77,12 @@ bool IFile::CreateData(string &_request, string &_errorDescription)
 	return true;
 }
 
+bool IFile::IsExistRaw()
+{
+	std::shared_lock<std::shared_mutex> lock(m_mutex);
+	return !m_listRaw.empty();
+}
+
 std::deque<string> IFile::GetRawAll() const
 {
 	std::shared_lock<std::shared_mutex> lock(m_mutex);
