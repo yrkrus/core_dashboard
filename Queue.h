@@ -21,8 +21,7 @@ enum class ecQueueNumber
 {
 	eUnknown = 0,
 	e5000,
-	e5050,
-	e5100,
+	e5050,	
 };
 
 class Queue : public IAsteriskData
@@ -34,6 +33,7 @@ public:
 		std::string waiting = "null";					// врем€ в (сек) которое сейчас в очереди находитс€
 		ecQueueNumber queue	= ecQueueNumber::eUnknown;	// номер очереди
 	};
+	typedef std::vector<QueueCalls> QueueCallsList;
 
 	struct CallsInBase	// структура из Ѕƒ
 	{
@@ -51,6 +51,9 @@ public:
 	void Stop() override;
 	void Parsing() override;							// разбор сырых данных
 
+
+	void UpdateCalls();									// обновление звонков
+
 private:
 	std::vector<QueueCalls>	m_listQueue;
 	SP_SQL					m_sql;
@@ -65,18 +68,18 @@ private:
 
 	
 
-	void InsertQueueCalls();													// добавление данных в Ѕƒ
+	void InsertQueueCalls();							// добавление данных в Ѕƒ
 	void InsertCall(const QueueCalls &_call);									// добавление нового звонка
 	bool UpdateCall(int _id, const QueueCalls &_call, std::string &_errorDescription); // обновление существующего звонка
-	void UpdateCallFail(const std::vector<QueueCalls> &_calls);					// обновление данных если звонок был в очереди, но не дождалс€ ответа от оператора
+	void UpdateCallFail(const QueueCallsList &_calls);					// обновление данных если звонок был в очереди, но не дождалс€ ответа от оператора
 	void UpdateCallFail();														// обновление данных если звонок был в очереди, но не дождалс€ ответа от оператора
-	void UpdateCallToIVR(const std::vector<QueueCalls> &_calls);				// обновление данных когда у нас звонок из IVR попал в очередь
-	void UpdateCallSuccess(const std::vector<QueueCalls> &_calls);				// обновление данных когда разговор успешно состо€лс€
+	void UpdateCallToIVR(const QueueCallsList &_calls);				// обновление данных когда у нас звонок из IVR попал в очередь
+	void UpdateCallSuccess(const QueueCallsList &_calls);				// обновление данных когда разговор успешно состо€лс€
 
 	bool IsExistCall(ecQueueNumber _queue, const std::string &_phone);			// есть ли уже такой номер в Ѕƒ
 	int GetLastQueueCallId(const std::string &_phone);							// id записи по Ѕƒ о звонке
 
-	bool GetCallsInBase(CallsInBaseList &_vcalls, const std::vector<QueueCalls> &_queueCalls, std::string &_errorDescription); // получение записей из Ѕƒ 
+	bool GetCallsInBase(CallsInBaseList &_vcalls, const QueueCallsList &_queueCalls, std::string &_errorDescription); // получение записей из Ѕƒ 
 	bool GetCallsInBase(CallsInBaseList &_vcalls, std::string &_errorDescription);						// получение записей из Ѕƒ 
 
 	bool IsExistCallAfter20Hours(std::string &_errorDescription);			// есть ли звонок после 20:00
@@ -94,8 +97,7 @@ template<>
 inline ecQueueNumber StringToEnum<ecQueueNumber>(const std::string &_str)
 {
 	if (_str.find("5000") != std::string::npos)		return ecQueueNumber::e5000;
-	if (_str.find("5050") != std::string::npos)		return ecQueueNumber::e5050;
-	if (_str.find("5100") != std::string::npos)		return ecQueueNumber::e5100;
+	if (_str.find("5050") != std::string::npos)		return ecQueueNumber::e5050;	
 
 	return ecQueueNumber::eUnknown;
 }
@@ -111,7 +113,6 @@ inline std::string EnumToString<ecQueueNumber>(ecQueueNumber _number)
 		{ecQueueNumber::eUnknown,	"Unknown"},
 		{ecQueueNumber::e5000,		"5000"},
 		{ecQueueNumber::e5050,		"5050"},
-		{ecQueueNumber::e5100,		"5100"},
 	};
 
 	auto it = queueNumber.find(_number);

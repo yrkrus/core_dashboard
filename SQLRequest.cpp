@@ -42,7 +42,7 @@ void SQL_REQUEST::SQL::createMySQLConnect(MYSQL &mysql)
 	if (!mysql_real_connect(&mysql, host, login, pwd, bd, NULL, NULL, 0))
 	{
 		// Если нет возможности установить соединение с БД выводим сообщение об ошибке
-		showErrorBD(METHOD_NAME + " -> Error: can't connect to database", &mysql);
+		//showErrorBD(METHOD_NAME + " -> Error: can't connect to database", &mysql);
 		return;
 	};
 
@@ -283,13 +283,13 @@ void SQL_REQUEST::SQL::insertQUEUE(const char *queue, const char *phone, const c
 			if (CONSTANTS::LOG_MODE_DEBUG)
 			{
 				LOG::LogToFile log(LOG::eLogType_DEBUG);
-				log.add(METHOD_NAME + " -> " + query);
+				//log.add(METHOD_NAME + " -> " + query);
 			}
 		}
 
 		if (mysql_query(&this->mysql, query.c_str()) != 0)
 		{
-			showErrorBD(METHOD_NAME+" -> Data (insertQUEUE) error -> query(" + query + ")", &this->mysql);
+			//showErrorBD(METHOD_NAME+" -> Data (insertQUEUE) error -> query(" + query + ")", &this->mysql);
 		}		
 	}
 
@@ -318,14 +318,14 @@ bool SQL_REQUEST::SQL::isExistQUEUE(const char *queue, const char *phone)
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
 		return true;
 	}
 
@@ -353,14 +353,14 @@ bool SQL_REQUEST::SQL::isExistQUEUE(const char *queue, const char *phone)
 			if (CONSTANTS::LOG_MODE_DEBUG)
 			{
 				LOG::LogToFile log(LOG::eLogType_DEBUG);
-				log.add(METHOD_NAME + " -> " + query);
+				//log.add(METHOD_NAME + " -> " + query);
 			}
 		}
 
 		if (mysql_query(&this->mysql, query.c_str()) != 0)
 		{
 			// ошибка считаем что есть запись		
-			showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+			//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
 			return true;
 		}
 
@@ -389,14 +389,14 @@ bool SQL_REQUEST::SQL::isExistQUEUE(const char *queue, const char *phone)
 				if (CONSTANTS::LOG_MODE_DEBUG)
 				{
 					LOG::LogToFile log(LOG::eLogType_DEBUG);
-					log.add(METHOD_NAME + " -> " + query);
+					//log.add(METHOD_NAME + " -> " + query);
 				}
 			}
 
 			if (mysql_query(&this->mysql, query.c_str()) != 0)
 			{
 				// ошибка считаем что есть запись		
-				showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+				//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
 				return true;
 			}
 
@@ -425,14 +425,14 @@ bool SQL_REQUEST::SQL::isExistQUEUE(const char *queue, const char *phone)
 					if (CONSTANTS::LOG_MODE_DEBUG)
 					{
 						LOG::LogToFile log(LOG::eLogType_DEBUG);
-						log.add(METHOD_NAME + " -> " + query);
+						//log.add(METHOD_NAME + " -> " + query);
 					}
 				}
 
 				if (mysql_query(&this->mysql, query.c_str()) != 0)
 				{
 					// ошибка считаем что есть запись		
-					showErrorBD(METHOD_NAME +" -> query(" + query + ")", &this->mysql);
+					//showErrorBD(METHOD_NAME +" -> query(" + query + ")", &this->mysql);
 					return true;
 				}
 				// результат
@@ -469,13 +469,13 @@ void SQL_REQUEST::SQL::updateQUEUE(const char *id, const char *phone, const char
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
-		showErrorBD(METHOD_NAME+" -> Data (updateQUEUE) error -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> Data (updateQUEUE) error -> query(" + query + ")", &this->mysql);
 	}
 
 	mysql_close(&this->mysql);
@@ -499,14 +499,14 @@ int SQL_REQUEST::SQL::getLastIDQUEUE(const char *phone)
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что нет записи		
-		showErrorBD(METHOD_NAME+" -> query("+query+")",&this->mysql);
+		//showErrorBD(METHOD_NAME+" -> query("+query+")",&this->mysql);
 		return -1;
 	}
 
@@ -540,13 +540,13 @@ void SQL_REQUEST::SQL::updateQUEUE_SIP(const char *phone, const char *sip, const
 			if (CONSTANTS::LOG_MODE_DEBUG)
 			{
 				LOG::LogToFile log(LOG::eLogType_DEBUG);
-				log.add(METHOD_NAME + " -> " + query);
+				//log.add(METHOD_NAME + " -> " + query);
 			}
 		}
 
 		if (mysql_query(&this->mysql, query.c_str()) != 0)
 		{
-			showErrorBD(METHOD_NAME+" -> Data (updateQUEUE_SIP) error -> query("+query+")", &this->mysql);
+			//showErrorBD(METHOD_NAME+" -> Data (updateQUEUE_SIP) error -> query("+query+")", &this->mysql);
 		};
 
 		mysql_close(&this->mysql);		
@@ -571,14 +571,14 @@ bool SQL_REQUEST::SQL::isExistQUEUE_SIP(const char *phone)
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
 		return true;
 	}
 
@@ -650,7 +650,7 @@ void SQL_REQUEST::SQL::updateQUEUE_fail()
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
@@ -662,7 +662,7 @@ void SQL_REQUEST::SQL::updateQUEUE_fail()
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
-		showErrorBD(METHOD_NAME+" -> Data (updateQUEUE_fail) error -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> Data (updateQUEUE_fail) error -> query(" + query + ")", &this->mysql);
 	};
 
 	mysql_close(&this->mysql);
@@ -730,14 +730,14 @@ bool SQL_REQUEST::SQL::isExistQueueAfter20hours()
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 	
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
 		return true;
 	}
 
@@ -878,14 +878,14 @@ bool SQL_REQUEST::SQL::isExistAnsweredAfter20hours()
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
 		return true;
 	}
 
@@ -1014,13 +1014,13 @@ void SQL_REQUEST::SQL::insertOperatorsQueue(const char *sip, const char *queue)
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
-		showErrorBD(METHOD_NAME+" -> Data (insertOperatorsQueue) error -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> Data (insertOperatorsQueue) error -> query(" + query + ")", &this->mysql);
 	}
 	
 
@@ -1043,20 +1043,20 @@ void SQL_REQUEST::SQL::clearOperatorsQueue()
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
-		showErrorBD(METHOD_NAME+" -> Data (insertOperatorsQueue) error -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> Data (insertOperatorsQueue) error -> query(" + query + ")", &this->mysql);
 	}	
 
 	mysql_close(&this->mysql);
 }
 
 // проверка существует ли такой sip+очередь в БД
-bool SQL_REQUEST::SQL::isExistOperatorsQueue(const char *sip, const char *queue)
+bool SQL_REQUEST::SQL::isExistOperatorsQueue_old(const char *sip, const char *queue)
 {
 	if (!isConnectedBD())
 	{
@@ -1071,14 +1071,14 @@ bool SQL_REQUEST::SQL::isExistOperatorsQueue(const char *sip, const char *queue)
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
 		return true;
 	}
 
@@ -1097,7 +1097,7 @@ bool SQL_REQUEST::SQL::isExistOperatorsQueue(const char *sip, const char *queue)
 }
 
 // проверка существует ли хоть 1 запись в БД sip+очередь
-bool SQL_REQUEST::SQL::isExistOperatorsQueue()
+bool SQL_REQUEST::SQL::isExistOperatorsQueue_old()
 {
 	if (!isConnectedBD())
 	{
@@ -1112,14 +1112,14 @@ bool SQL_REQUEST::SQL::isExistOperatorsQueue()
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME+"->query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+"->query(" + query + ")", &this->mysql);
 		return true;
 	}
 
@@ -1152,14 +1152,14 @@ void SQL_REQUEST::SQL::deleteOperatorsQueue(const std::string &sip)
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 	
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
-		showErrorBD(METHOD_NAME+" -> Data (deleteOperatorsQueue) error -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> Data (deleteOperatorsQueue) error -> query(" + query + ")", &this->mysql);
 	}
 
 	mysql_close(&this->mysql);
@@ -1181,13 +1181,13 @@ void SQL_REQUEST::SQL::deleteOperatorsQueue(const std::string &sip, const std::s
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
-		showErrorBD(METHOD_NAME+" -> Data (deleteOperatorsQueue(2 param)) error -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> Data (deleteOperatorsQueue(2 param)) error -> query(" + query + ")", &this->mysql);
 	}
 
 	mysql_close(&this->mysql);
@@ -1215,14 +1215,14 @@ void SQL_REQUEST::SQL::checkOperatorsQueue(const std::vector<ACTIVE_SIP_old::Ope
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
 		return;
 	}
 
@@ -1325,14 +1325,14 @@ int SQL_REQUEST::SQL::getIVR_totalCalls()
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
 		return 0;
 	}
 
@@ -1413,14 +1413,14 @@ int SQL_REQUEST::SQL::getQUEUE_Calls(bool answered)
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
 		return 0;
 	}
 }
@@ -1447,7 +1447,7 @@ int SQL_REQUEST::SQL::getQUEUE_Calls()
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
 		return 0;
 	}
 	
@@ -1477,14 +1477,14 @@ bool SQL_REQUEST::SQL::remoteCheckNewCommads()
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+	//	showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
 		return true;
 	}
 
@@ -1519,14 +1519,14 @@ void SQL_REQUEST::SQL::createListRemoteCommands(std::vector<REMOTE_COMMANDS::R_C
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
 		return;
 	}
 
@@ -1729,13 +1729,13 @@ void SQL_REQUEST::SQL::deleteRemoteCommand(int id)
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+		//	log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
-		showErrorBD(METHOD_NAME+" -> " + query, &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> " + query, &this->mysql);
 	}
 
 	mysql_close(&this->mysql);
@@ -1757,13 +1757,13 @@ void SQL_REQUEST::SQL::updateStatusOperators(int user_id, REMOTE_COMMANDS::ecSta
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
-		showErrorBD(METHOD_NAME+" -> " + query, &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> " + query, &this->mysql);
 	};
 
 	
@@ -1789,14 +1789,14 @@ void SQL_REQUEST::SQL::addLog(LOG::Log command, int base_id)
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME+" -> " + query, &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> " + query, &this->mysql);
 		return;
 	}
 
@@ -1850,13 +1850,13 @@ void SQL_REQUEST::SQL::addLog(LOG::Log command, int base_id)
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query_insert);
+		//	log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
 	{
-		showErrorBD(METHOD_NAME+" -> Data (insertIVR) error -> query(" + query_insert + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> Data (insertIVR) error -> query(" + query_insert + ")", &this->mysql);
 	}
 	
 	mysql_close(&this->mysql);
@@ -1879,14 +1879,14 @@ void SQL_REQUEST::SQL::execTaskQueue()
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
 		return;
 	}	
 
@@ -1988,14 +1988,14 @@ void SQL_REQUEST::SQL::execTaskLogging()
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
 		return;
 	}
 
@@ -2085,14 +2085,14 @@ void SQL_REQUEST::SQL::execTaskIvr()
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
 		return;
 	}
 
@@ -2186,14 +2186,14 @@ void SQL_REQUEST::SQL::execTaskOnHold()
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
 		return;
 	}
 
@@ -2277,14 +2277,14 @@ void SQL_REQUEST::SQL::execTaskSmsSending()
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME + " -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME + " -> query(" + query + ")", &this->mysql);
 		return;
 	}
 
@@ -2415,13 +2415,13 @@ bool SQL_REQUEST::SQL::insertDataTaskQueue(HOUSEKEEPING::Queue_old &queue)
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query_insert);
+			//log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
 	{
-		showErrorBD(METHOD_NAME+" -> Data (insertDataTaskQueue) error -> query(" + query_insert + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> Data (insertDataTaskQueue) error -> query(" + query_insert + ")", &this->mysql);
 		return false;
 	}
 
@@ -2446,13 +2446,13 @@ bool SQL_REQUEST::SQL::deleteDataTaskQueue(int ID)
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+		//	log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
-		showErrorBD(METHOD_NAME+" -> Data (deleteDataTaskQueue) error -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> Data (deleteDataTaskQueue) error -> query(" + query + ")", &this->mysql);
 		return false;
 	}
 
@@ -2483,13 +2483,13 @@ bool SQL_REQUEST::SQL::insertDataTaskLogging(HOUSEKEEPING::Logging &logging)
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query_insert);
+		//	log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
 	{
-		showErrorBD(METHOD_NAME+" -> Data (insertDataTaskLogging) error -> query(" + query_insert + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> Data (insertDataTaskLogging) error -> query(" + query_insert + ")", &this->mysql);
 		return false;
 	}
 
@@ -2513,13 +2513,13 @@ bool SQL_REQUEST::SQL::deleteDataTaskLogging(int ID)
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
-		showErrorBD(METHOD_NAME+" -> Data (deleteDataTaskLogging) error -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> Data (deleteDataTaskLogging) error -> query(" + query + ")", &this->mysql);
 		return false;
 	}
 
@@ -2550,13 +2550,13 @@ bool SQL_REQUEST::SQL::insertDataTaskIvr(HOUSEKEEPING::IVR_ &ivr)
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query_insert);
+		//	log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
 	{
-		showErrorBD(METHOD_NAME+" -> Data (insertDataTaskIvr) error -> query(" + query_insert + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> Data (insertDataTaskIvr) error -> query(" + query_insert + ")", &this->mysql);
 		return false;
 	}
 
@@ -2580,13 +2580,13 @@ bool SQL_REQUEST::SQL::deleteDataTaskIvr(int ID)
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+		//	log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
-		showErrorBD(METHOD_NAME+" -> Data (deleteDataTaskIvr) error -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> Data (deleteDataTaskIvr) error -> query(" + query + ")", &this->mysql);
 		return false;
 	}
 
@@ -2615,13 +2615,13 @@ bool SQL_REQUEST::SQL::insertDataTaskOnHold(HOUSEKEEPING::OnHold &onHold)
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query_insert);
+		//	log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
 	{
-		showErrorBD(METHOD_NAME+" -> Data (insertDataTaskOnHold) error -> query(" + query_insert + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> Data (insertDataTaskOnHold) error -> query(" + query_insert + ")", &this->mysql);
 		return false;
 	}
 
@@ -2646,13 +2646,13 @@ bool SQL_REQUEST::SQL::deleteDataTaskOnHold(int ID)
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+		//	log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
-		showErrorBD(METHOD_NAME + " -> Data (deleteDataTaskOnHold) error -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME + " -> Data (deleteDataTaskOnHold) error -> query(" + query + ")", &this->mysql);
 		return false;
 	}
 
@@ -2704,13 +2704,13 @@ bool SQL_REQUEST::SQL::insertDataTaskSmsSending(const HOUSEKEEPING::SmsSending &
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query_insert);
+		//	log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
 	{
-		showErrorBD(METHOD_NAME + " -> Data (insertDataTaskSmsSending) error -> query(" + query_insert + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME + " -> Data (insertDataTaskSmsSending) error -> query(" + query_insert + ")", &this->mysql);
 		return false;
 	}
 
@@ -2735,13 +2735,13 @@ bool SQL_REQUEST::SQL::deleteDataTaskSmsSending(int _id)
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
-		showErrorBD(METHOD_NAME + " -> Data (deleteDataTaskSmsSending) error -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME + " -> Data (deleteDataTaskSmsSending) error -> query(" + query + ")", &this->mysql);
 		return false;
 	}
 
@@ -2947,14 +2947,14 @@ std::shared_ptr<std::vector<ACTIVE_SIP_old::OnHold>> SQL_REQUEST::SQL::createOnH
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка		
-		showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
 		return nullptr;
 	}
 
@@ -3037,13 +3037,13 @@ void SQL_REQUEST::SQL::addOperatorsOnHold(const std::string &sip, const std::str
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query_insert);
+		//	log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
 	{
-		showErrorBD(METHOD_NAME+" -> Data (addOperatorsOnHold) error -> query(" + query_insert + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> Data (addOperatorsOnHold) error -> query(" + query_insert + ")", &this->mysql);
 		return;
 	}	
 
@@ -3068,13 +3068,13 @@ void SQL_REQUEST::SQL::disableOperatorsOnHold(const ACTIVE_SIP_old::OnHold &onho
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
-		showErrorBD(METHOD_NAME+" -> Data (disableOperatorsOnHold) error -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME+" -> Data (disableOperatorsOnHold) error -> query(" + query + ")", &this->mysql);
 		return;
 	};
 
@@ -3097,14 +3097,14 @@ bool SQL_REQUEST::SQL::isExistOnHold(const std::string &sip, std::string hash)
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
 			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			log.add(METHOD_NAME + " -> " + query);
+			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
 		// ошибка считаем что есть запись		
-		showErrorBD(METHOD_NAME + " -> query(" + query + ")", &this->mysql);
+		//showErrorBD(METHOD_NAME + " -> query(" + query + ")", &this->mysql);
 		return true;
 	}
 

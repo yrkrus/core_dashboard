@@ -8,7 +8,7 @@
 #if defined(_MSC_VER)
     #define METHOD_NAME std::string(__FUNCSIG__)
 #else
-    #define METHOD_NAME std::string(__PRETTY_FUNCTION__)
+    #define METHOD_NAME (std::string(__PRETTY_FUNCTION__).c_str())
 #endif
 
 #define BUILD __DATE__ " " __TIME__

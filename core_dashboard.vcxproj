@@ -200,9 +200,6 @@
     <ClInclude Include="SQLRequest.h" />
     <ClInclude Include="TCPServer.h" />
   </ItemGroup>
-  <ItemGroup>
-    <None Include="ClassDiagram.cd" />
-  </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile />
     <ClCompile />

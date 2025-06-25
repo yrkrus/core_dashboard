@@ -473,7 +473,6 @@ bool IVR::IsExistIvrPhone(const IvrCalls &_caller, std::string &_errorDescriptio
 	std::stoi(row[0]) == 0 ? existIvrPhone = false : existIvrPhone = true;
 
 	mysql_free_result(result);
-
 	m_sql->Disconnect();
 
 	return existIvrPhone;
@@ -501,7 +500,6 @@ unsigned int IVR::GetPhoneIDIvr(const std::string &_phone)
 	unsigned int id = std::stoi(row[0]);
 
 	mysql_free_result(result);
-
 	m_sql->Disconnect();
 
 	return id;

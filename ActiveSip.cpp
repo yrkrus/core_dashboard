@@ -10,6 +10,7 @@
 #include <algorithm>
 #include <sstream>
 
+using namespace INTERNALFUNCTION;
 
 // коструктор
 ACTIVE_SIP_old::Parsing_old::Parsing_old(const char *fileActiveSip)
@@ -43,7 +44,7 @@ ACTIVE_SIP_old::Parsing_old::Parsing_old(const char *fileActiveSip)
 							if (line.find("Down")				== std::string::npos) {
 								if (line.find("Outgoing")		== std::string::npos) {
 
-									Pacients pacient;
+									Pacients_old pacient;
 
 									pacient.internal_sip = findParsing(line, ACTIVE_SIP_old::Currentfind::internal_sip_find, it->sip_number);
 									pacient.phone		 = findParsing(line, ACTIVE_SIP_old::Currentfind::phone_find, it->sip_number);
@@ -102,7 +103,7 @@ void ACTIVE_SIP_old::Parsing_old::createListActiveOperators()
 	}
 
 	// добавим\обновим очереди 
-	insert_updateQueueNumberOperators();
+	// insert_updateQueueNumberOperators();
 
 }
 
@@ -273,51 +274,51 @@ void ACTIVE_SIP_old::Parsing_old::findActiveOperators(const char *fileOperators,
 
 
 // добавление номена очереди оператора	
-void ACTIVE_SIP_old::Parsing_old::insert_updateQueueNumberOperators()
-{
-	if (!isExistListActiveOperators())	{			
-		// очищаем номера очереди операторов
-		if (isExistQueueOperators()) {
-			clearQueueNumberOperators();
-			return;
-		}			
-	} 	
-
-	SQL_REQUEST::SQL base;	
-
-	// проверим вдруг из очереди оператор убежал, тогда надо удалить sip из БД
-	if (base.isConnectedBD()) 
-	{
-		base.checkOperatorsQueue(list_operators);
-	}		
-
-
-	// добавляем в БД
-	for (std::vector<Operators>::iterator it = list_operators.begin(); it != list_operators.end(); ++it)
-	{
-		if (base.isConnectedBD())
-		{			
-			// вдруг очередь 5000 и 5050
-			for (size_t i = 0; i != it->queue.size(); ++i) {
-				// проверим есть ли такая запись
-				if (!base.isExistOperatorsQueue(it->sip_number.c_str(), it->queue[i].c_str())) {
-					
-					//записи нет добавляем
-					base.insertOperatorsQueue(it->sip_number.c_str(), it->queue[i].c_str());
-
-				}				
-			}			
-		}
-	}
-}
+//void ACTIVE_SIP_old::Parsing_old::insert_updateQueueNumberOperators()
+//{
+//	if (!isExistListActiveOperators())	{			
+//		// очищаем номера очереди операторов
+//		if (isExistQueueOperators_old()) {
+//			clearQueueNumberOperators();
+//			return;
+//		}			
+//	} 	
+//
+//	SQL_REQUEST::SQL base;	
+//
+//	// проверим вдруг из очереди оператор убежал, тогда надо удалить sip из БД
+//	if (base.isConnectedBD()) 
+//	{
+//		base.checkOperatorsQueue(list_operators);
+//	}		
+//
+//
+//	// добавляем в БД
+//	for (std::vector<Operators>::iterator it = list_operators.begin(); it != list_operators.end(); ++it)
+//	{
+//		if (base.isConnectedBD())
+//		{			
+//			// вдруг очередь 5000 и 5050
+//			for (size_t i = 0; i != it->queue.size(); ++i) {
+//				// проверим есть ли такая запись
+//				if (!base.isExistQueueOperators_old(it->sip_number.c_str(), it->queue[i].c_str())) {
+//					
+//					//записи нет добавляем
+//					base.insertOperatorsQueue(it->sip_number.c_str(), it->queue[i].c_str());
+//
+//				}				
+//			}			
+//		}
+//	}
+//}
 
 // есть ли операторы в очередях
-bool ACTIVE_SIP_old::Parsing_old::isExistQueueOperators()
+bool ACTIVE_SIP_old::Parsing_old::isExistQueueOperators_old()
 {
 	SQL_REQUEST::SQL base;
 	if (base.isConnectedBD())
 	{
-		return base.isExistOperatorsQueue();
+		return base.isExistOperatorsQueue_old();
 	}
 
 	return false;
@@ -364,7 +365,7 @@ void ACTIVE_SIP_old::Parsing_old::updateData()
 	if (this->isExistList())
 	{			
 		
-		for (std::vector<ACTIVE_SIP_old::Pacients>::iterator it = active_sip_list.begin(); it != active_sip_list.end(); ++it)
+		for (std::vector<ACTIVE_SIP_old::Pacients_old>::iterator it = active_sip_list.begin(); it != active_sip_list.end(); ++it)
 		{
 			SQL_REQUEST::SQL base;
 			if (base.isConnectedBD())
@@ -423,8 +424,9 @@ std::vector<ACTIVE_SIP_old::Operators> ACTIVE_SIP_old::Parsing_old::getListOpera
 	return this->list_operators;
 }
 
-active_sip::ActiveSession::ActiveSession()
+active_sip::ActiveSession::ActiveSession(Queue &_queue)
 	:IAsteriskData(CONSTANTS::TIMEOUT::ACTIVE_SESSION)
+	, m_queueSession(_queue)
 	, m_sql(std::make_shared<ISQLConnect>(false))
 {
 }
@@ -451,31 +453,37 @@ void active_sip::ActiveSession::Stop()
 
 void active_sip::ActiveSession::Parsing()
 {
-	m_listOperators.clear(); // TODO тут пока обнуление, потом подумать!!!
+	m_listOperators.clear(); // TODO тут пока обнуление, потом подумать, чтобы так не делать а работать уже с памятью!!!
 	
 	// найдем активных операторов в линии(смотрим текущие статичные очереди)
-	CreateListActiveSessionOperators();
+	CreateListActiveSessionOperators();		
 	
-	
-	std::string rawLines = GetRawLastData();
-	if (rawLines.empty())
+	// разбираем что же там по звонкам активным
+	m_listCall.clear(); // TODO тут пока обнуление, потом подумать чтобы не делать так а работать с памятью !!
+	CreateListActiveSessionCalls();
+
+	// что то есть нужно теперь в БД запихнуть
+	if (IsExistListCalls())
 	{
-		// TODO тут подумать, что делать!
-		return;
+		UpdateActiveSessionCalls();
 	}
-
-	
-
+	else 
+	{
+		// вдруг никого не осталось, тогда еще раз проверим очнереди
+		m_queueSession.UpdateCalls();
+	}	
 }
 
 // активные операторы в линии
 void active_sip::ActiveSession::CreateListActiveSessionOperators()
 {
+	// INFO: прежде чем сюда попасть полностью очищается m_listOperators!
+	
 	// без цикла очередей ecQueueNumber, просто берем нужные статичные очереди
 	static const std::vector<ecQueueNumber> queueList =
 	{
 		ecQueueNumber::e5000,
-		ecQueueNumber::e5050		
+		ecQueueNumber::e5050,		
 	};
 
 	for (const auto &queue : queueList) 
@@ -497,21 +505,45 @@ void active_sip::ActiveSession::CreateListActiveSessionOperators()
 		}
 
 		// найдем активных операторов в линии
-		CreateActiveOperators(queue);
+		CreateActiveOperators(queue);	
+	}	
 	
-	}
-	
-	
-
-	//findActiveOperators(CONSTANTS::cActiveSipOperatorsName.c_str(), INTERNALFUNCTION::getNumberQueue(static_cast<CONSTANTS::AsteriskQueue>(i)));
-
-
-	
-	
-	
-
 	// добавим\обновим очереди 
-	//insert_updateQueueNumberOperators();
+	InsertAndUpdateQueueNumberOperators();
+}
+
+void active_sip::ActiveSession::CreateListActiveSessionCalls()
+{
+	std::string rawLines = GetRawLastData();
+	if (rawLines.empty())
+	{
+		// TODO тут подумать, что делать!
+		return;
+	}
+
+	if (!IsExistListOperators()) 
+	{
+		DeleteRawLastData(); // на всякий случай
+		return;
+	}	
+	
+	std::istringstream ss(rawLines);
+	std::string line;
+
+	while (std::getline(ss, line))
+	{
+		for (const auto &sip : m_listOperators) 
+		{
+			ActiveCall call;
+			if (CreateActiveCall(line, sip.sipNumber, call))
+			{
+				m_listCall.push_back(call);
+				break; // нет смысла дальше т.к. нашли нужные данные
+			}
+		}	
+	}
+
+	DeleteRawLastData(); // удаляем просмотренное
 }
 
 // найдем активных операторов в линии
@@ -562,7 +594,7 @@ void active_sip::ActiveSession::CreateActiveOperators(const ecQueueNumber _queue
 	
 }
 
-void active_sip::ActiveSession::CreateOperator(std::string &_lines, Operator &_sip, ecQueueNumber _queue)
+void active_sip::ActiveSession::CreateOperator(const std::string &_lines, Operator &_sip, ecQueueNumber _queue)
 {
 	_sip.sipNumber = FindSipNumber(_lines);
 	_sip.queueList.push_back(_queue);
@@ -581,4 +613,457 @@ bool active_sip::ActiveSession::FindOnHoldStatus(const std::string &_lines)
 {
 	return ((_lines.find("On Hold") != std::string::npos) ? true : false);
 }
+
+// добавление\обновление номена очереди оператора в БД
+void active_sip::ActiveSession::InsertAndUpdateQueueNumberOperators()
+{
+	// если пусто в активных сессиях операторов то нужно почистить БД
+	if (!IsExistListOperators())
+	{
+		// очищаем номера очереди операторов
+		if (IsExistOperatorsQueue())
+		{
+			ClearOperatorsQueue();			
+			return;
+		}
+	}
+
+	// проверим вдруг из очереди оператор убежал, тогда надо удалить sip из БД
+	CheckOperatorsQueue();	
+
+
+	// добавляем в БД
+	for (const auto &sip : m_listOperators) 
+	{
+		for (size_t i = 0; i != sip.queueList.size(); ++i) 
+		{
+			if (!IsExistOperatorsQueue(sip.sipNumber, EnumToString<ecQueueNumber>(sip.queueList[i]))) 
+			{
+				//записи нет добавляем
+				InsertOperatorsQueue(sip.sipNumber, EnumToString<ecQueueNumber>(sip.queueList[i]));
+			}
+		}
+	}	
+}
+
+bool active_sip::ActiveSession::IsExistListOperators()
+{
+	return (!m_listOperators.empty() ? true : false);
+}
+
+bool active_sip::ActiveSession::IsExistListCalls()
+{
+	return (!m_listCall.empty() ? true : false);
+}
+
+// существует ли хоть 1 запись в БД sip+очередь
+bool active_sip::ActiveSession::IsExistOperatorsQueue()
+{
+	std::string error;
+	const std::string query = "select count(id) from operators_queue";
+
+	if (!m_sql->Request(query, error))
+	{
+		printf("%s", error.c_str());
+		m_sql->Disconnect();
+		// ошибка считаем что есть запись
+		return true;
+	}	
+
+	// результат
+	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	MYSQL_ROW row = mysql_fetch_row(result);
+
+	bool existOperatorsQueue;
+	(std::stoi(row[0]) == 0 ? existOperatorsQueue = false : existOperatorsQueue = true);
+
+	mysql_free_result(result);
+	m_sql->Disconnect();
+
+	return existOperatorsQueue;
+}
+
+// существует ли хоть запись в БД sip+очередь
+bool active_sip::ActiveSession::IsExistOperatorsQueue(const std::string &_sip, const std::string &_queue)
+{
+	const std::string query = "select count(id) from operators_queue where sip = '" + _sip + "' and queue = '" + _queue + "'";
+
+	std::string error;
+	if (!m_sql->Request(query, error))
+	{
+		printf("%s", error.c_str());
+		m_sql->Disconnect();
+		// ошибка считаем что есть запись
+		return true;
+	}	
+
+	// результат
+	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	MYSQL_ROW row = mysql_fetch_row(result);
+
+	bool exist;
+	std::stoi(row[0]) == 0 ? exist = false : exist = true;
+	
+	mysql_free_result(result);
+	m_sql->Disconnect();
+
+	return exist;
+}
+
+// очистка таблицы operators_queue
+void active_sip::ActiveSession::ClearOperatorsQueue()
+{
+	std::string error;
+	const std::string query = "delete from operators_queue";
+
+	if (!m_sql->Request(query, error))
+	{
+		printf("%s", error.c_str());
+		m_sql->Disconnect();
+		return;
+	}
+	
+	m_sql->Disconnect();
+}
+
+// проверка есть ли оператор еще в очереди
+void active_sip::ActiveSession::CheckOperatorsQueue()
+{
+	OperatorList listActiveOperatorsBase;
+
+	std::string error;
+	if (!GetActiveQueueOperators(listActiveOperatorsBase, error))
+	{
+		printf("%s", error.c_str());
+		return;
+	}
+
+	// проверим совпадают ли данные с данными по БД
+	for (const auto &curr_list : listActiveOperatorsBase)
+	{
+		bool isExistSip = true;		// считаем что sip по умолчанию существует
+		bool isExistQueue = true;	// считаем что queue по умолчанию существует
+
+		for (const auto &memory_list : m_listOperators)
+		{
+			if (curr_list.sipNumber == memory_list.sipNumber)
+			{
+				isExistSip = true;
+
+				// проверим есть ли такая очередь
+				for (size_t i = 0; i < memory_list.queueList.size(); ++i)
+				{
+					if (curr_list.queueList[0] == memory_list.queueList[i])
+					{
+						isExistQueue = true;
+						break;
+					}
+					else
+					{
+						isExistQueue = false;
+					}
+				}
+
+				break;
+			}
+			else
+			{
+				// нет sip, надо удалить из БД
+				isExistSip = false;
+			}
+		}
+
+		// что именно будем удалять из БД
+		if (isExistSip)
+		{
+			if (!isExistQueue)
+			{
+				// удаляем sip + очередь конкретную
+				DeleteOperatorsQueue(curr_list.sipNumber, EnumToString<ecQueueNumber>(curr_list.queueList[0]));
+			}
+		}
+		else
+		{
+			// удаляем весь sip
+			DeleteOperatorsQueue(curr_list.sipNumber);
+		}
+	}
+}
+
+bool active_sip::ActiveSession::GetActiveQueueOperators(OperatorList &_activeList, std::string &_errorDescription)
+{
+	// найдем данные по БД
+	_errorDescription = "";
+	const std::string query = "select sip,queue from operators_queue";
+	
+	if (!m_sql->Request(query, _errorDescription))
+	{		
+		m_sql->Disconnect();
+		return false;
+	}	
+
+	// результат
+	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	MYSQL_ROW row;
+
+	while ((row = mysql_fetch_row(result)) != NULL)
+	{
+		Operator activeOperator;
+
+		for (size_t i = 0; i < mysql_num_fields(result); ++i)
+		{
+			if (i == 0)
+			{
+				activeOperator.sipNumber = row[i];
+			}
+			else if (i == 1)
+			{
+				activeOperator.queueList.push_back(StringToEnum<ecQueueNumber>(row[i]));
+			}
+
+		}
+		_activeList.push_back(activeOperator);
+	}
+
+	mysql_free_result(result);
+	m_sql->Disconnect();
+
+	return true;
+}
+
+// удаление очереди оператора из БД таблицы operators_queue
+void active_sip::ActiveSession::DeleteOperatorsQueue(const std::string &_sip, const std::string &_queue)
+{
+	const std::string query = "delete from operators_queue where sip = '" + _sip + "' and queue = '" + _queue + "'";
+
+	std::string error;
+	if (!m_sql->Request(query, error))
+	{
+		m_sql->Disconnect();
+		printf("%s", error.c_str());
+		return;
+	}
+
+	m_sql->Disconnect();	
+}
+
+// удаление очереди оператора из БД таблицы operators_queue весь sip
+void active_sip::ActiveSession::DeleteOperatorsQueue(const std::string &_sip)
+{
+	const std::string query = "delete from operators_queue where sip = '" + _sip + "'";
+
+	std::string error;
+	if (!m_sql->Request(query, error))
+	{
+		m_sql->Disconnect();
+		printf("%s", error.c_str());
+		return;
+	}
+
+	m_sql->Disconnect();
+}
+
+// добавление очереди оператору в БД таблицы operators_queue
+void active_sip::ActiveSession::InsertOperatorsQueue(const std::string &_sip, const std::string &_queue)
+{
+	const std::string query = "insert into operators_queue (sip,queue) values ('"
+								+ _sip + "','"
+								+ _queue + "')";
+
+	std::string error;
+	if (!m_sql->Request(query, error))
+	{
+		m_sql->Disconnect();
+		printf("%s", error.c_str());
+		return;
+	}
+	m_sql->Disconnect();
+}
+
+bool active_sip::ActiveSession::CreateActiveCall(const std::string &_lines, const std::string &_sipNumber, ActiveCall &_caller)
+{	
+	if (_lines.find("Local/" + _sipNumber) == std::string::npos)
+	{
+		// нет нужной строки на выход
+		return false;
+	}
+
+	if (_lines.find("Ring") != std::string::npos ||
+		_lines.find("Down") != std::string::npos ||
+		_lines.find("Outgoing") != std::string::npos)
+	{
+		// нет нужной строки на выход
+		return false;
+	}
+
+	std::vector<std::string> lines;
+	std::string current_str;
+
+	bool isNewLine = false;
+
+	for (size_t i = 0; i != _lines.length(); ++i)
+	{
+		if (isNewLine)
+		{
+			if (!current_str.empty())
+			{
+				lines.push_back(current_str);
+				current_str.clear();
+			}
+		}
+
+		if (_lines[i] != '!') // ищем разделить (разделить !)
+		{
+			current_str += _lines[i];
+			isNewLine = false;
+		}
+		else
+		{
+			isNewLine = true;
+		}
+	}
+
+	if ((lines.empty()) || (lines.size() < 10)) 
+	{
+		return false;
+	}
+
+	_caller.sip = _sipNumber;
+	_caller.phone = phoneParsing(lines[7]);
+	_caller.talkTime = lines[9];	
+
+	return CheckActiveCall(_caller);	
+}
+
+bool active_sip::ActiveSession::CheckActiveCall(const ActiveCall &_caller)
+{
+	return !((_caller.phone == "null")	&&
+			 (_caller.sip == "null")	&&
+			 (_caller.talkTime == "null"));
+}
+
+// обновление текущих звонков операторов
+void active_sip::ActiveSession::UpdateActiveSessionCalls()
+{
+	for (const auto &sip : m_listCall) 
+	{
+		UpdateTalkCallOperator(sip);
+	}
+		
+
+	// обновление данных по операторам находящимся в статусе onHold
+	/*SQL_REQUEST::SQL base;		TODO починить
+	if (base.isConnectedBD()) {
+		base.updateOperatorsOnHold(this);
+	}	*/
+		
+	
+	// OnHold проверка TODO сделать
+	/*else {
+		typedef std::vector<ACTIVE_SIP::OnHold> operators_onhold;
+
+		// найдем все sip операторы которые числяться по БД в статусе onHold
+		SQL_REQUEST::SQL base;
+		auto onHold = base.createOnHoldSip();
+
+		if (!onHold->empty()) {
+			// очищаем список т.к. операторов нет аквтиных
+			for (operators_onhold::iterator operators_hold = onHold->begin(); operators_hold != onHold->end(); ++operators_hold)
+			{
+				SQL_REQUEST::SQL base;
+				base.updateOperatorsOnHold(operators_hold->id);
+			}
+		}
+
+		delete onHold;
+	}*/
+}
+
+// обновление данных таблицы queue о том с кем сейчас разговаривает оператор
+void active_sip::ActiveSession::UpdateTalkCallOperator(const ActiveCall &_call)
+{
+	// проверим есть ли такой номер
+	if (IsExistTalkCallOperator(_call.phone))
+	{ // номер существует, обновляем данные
+		std::string id = std::to_string(GetLastTalkCallOperatorID(_call.phone));
+		if (id.find("-1") != std::string::npos)
+		{
+			return;
+		}
+
+		const std::string query = "update queue set sip = '" 
+									+ _call.sip + "', talk_time = '" 
+									+ getTalkTime(_call.talkTime) 
+									+ "', answered ='1' where phone = '" 
+									+ _call.phone + "' and id ='" 
+									+ id + "'";
+
+		std::string error;
+		if (!m_sql->Request(query, error))
+		{
+			m_sql->Disconnect();
+			printf("%s", error.c_str());			
+			return;
+		}
+
+		m_sql->Disconnect();		
+	}
+}
+
+bool active_sip::ActiveSession::IsExistTalkCallOperator(const std::string &_phone)
+{
+	const std::string query = "select count(phone) from queue where phone = '" + _phone
+								+ "' and date_time > '" + getCurrentStartDay()
+								+ "' order by date_time desc limit 1";
+
+	std::string error;
+	if (!m_sql->Request(query, error))
+	{
+		m_sql->Disconnect();
+		printf("%s", error.c_str());
+
+		// ошибка считаем что есть запись	
+		return true;
+	}
+
+	// результат
+	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	MYSQL_ROW row = mysql_fetch_row(result);
+
+	bool existQueueSip;
+	std::stoi(row[0]) == 0 ? existQueueSip = false : existQueueSip = true;
+
+	mysql_free_result(result);
+	m_sql->Disconnect();
+
+	return existQueueSip;
+}
+
+// получение последнего ID актуального разговора текущего оператора в таблице queue
+int active_sip::ActiveSession::GetLastTalkCallOperatorID(const std::string &_phone)
+{
+	const std::string query = "select id from queue where phone = "
+							+ _phone + " and date_time > '"
+							+ getCurrentStartDay() + "' order by date_time desc limit 1";
+
+	std::string error;
+	if (!m_sql->Request(query, error))
+	{
+		m_sql->Disconnect();
+		printf("%s", error.c_str());
+
+		// ошибка считаем что нет записи
+		return -1;
+	}	
+
+	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	MYSQL_ROW row = mysql_fetch_row(result);
+	int count = std::stoi(row[0]);
+
+	mysql_free_result(result);
+	m_sql->Disconnect();
+
+	return count;
+}
+
 

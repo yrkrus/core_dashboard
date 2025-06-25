@@ -3,120 +3,107 @@
 
 using namespace INTERNALFUNCTION;
 
-ISQLConnect::ISQLConnect(bool _connected)
-	: m_connected(false)
+ISQLConnect::ISQLConnect(bool _autoConnect)
+    : m_initialized(false),
+    m_connected(false)
 {
-	std::string errorDescription;
+    if (!mysql_init(&m_mysql))
+    {
+        // не получилось выделить дескриптор MySQL
+        throw std::runtime_error("ISQLConnect: mysql_init failed");
+    }
+    m_initialized = true;
 
-	// »нициализаци€ структуры MYSQL
-	if (!mysql_init(&m_mysql))
-	{
-		printf("Error: can't create MySQL-descriptor\n");
-	}
-
-	if (_connected)
-	{
-		m_connected = Connect(m_mysql, errorDescription);
-	}
+    if (_autoConnect)
+    {
+        std::string err;
+        m_connected = Connect(err);
+    }
 }
 
 ISQLConnect::~ISQLConnect()
 {
-	if (&m_mysql)
-	{
-		mysql_close(&m_mysql);		
-	}
-
-	m_connected = false;
+    // даже если не удалось подключитьс€, но инициализаци€ была Ч
+    // закрываем дескриптор, чтобы не было утечки
+    if (m_initialized)
+    {
+        mysql_close(&m_mysql);
+    }
 }
-
-bool ISQLConnect::Connect(MYSQL &mysql, std::string &_errorDescription)
-{
-	const char *host	= HOST;
-	const char *login	= LOGIN;
-	const char *pwd		= PWD;
-	const char *bd		= BASE;
-	
-
-	if (!mysql_real_connect(&mysql, host, login, pwd, bd, NULL, NULL, 0))
-	{
-		_errorDescription = StringFormat("%s Error: can't connect to database", METHOD_NAME);		
-		return false;
-	};
-
-	mysql_set_character_set(&mysql, "utf8");
-	
-	return true;
-}
-
 
 bool ISQLConnect::IsConnected() const
 {
-	return m_connected;
+    return m_connected;
 }
 
 bool ISQLConnect::Connect(std::string &_errorDescription)
-{	
-	// »нициализаци€ структуры MYSQL
-	if (!mysql_init(&m_mysql))
-	{
-		_errorDescription = StringFormat("%s Error: can't create MySQL-descriptor\n", METHOD_NAME);
-		printf("%s",_errorDescription.c_str());
-	}		
-	m_connected = Connect(m_mysql, _errorDescription);
-	return m_connected;
+{
+    if (m_connected)
+    {
+        return true;
+    }
+    return m_connected = ConnectInternal(_errorDescription);
 }
 
 void ISQLConnect::Disconnect()
 {
-	mysql_close(&m_mysql);
-	m_connected = false;
+    if (m_initialized && m_connected)
+    {
+        mysql_close(&m_mysql);
+        // если хотим дать возможность повторно Connect() вызывать,
+        // надо снова проинициализировать:
+        mysql_init(&m_mysql);
+        // m_initialized остаЄтс€ true
+    }
+    m_connected = false;
+}
+
+bool ISQLConnect::ConnectInternal(std::string &_errorDescription)
+{
+    static const char *host     = HOST;
+    static const char *login    = LOGIN;
+    static const char *pwd      = PWD;
+    static const char *bd       = BASE;
+
+    if (!mysql_real_connect(&m_mysql, host, login, pwd, bd, 0, 0, 0))
+    {
+        _errorDescription = StringFormat("%s Error: can't connect to database: %s",METHOD_NAME, mysql_error(&m_mysql));
+        return false;
+    }
+
+    mysql_set_character_set(&m_mysql, "utf8");
+    return true;
 }
 
 bool ISQLConnect::Request(const std::string &_request, std::string &_errorDescription)
 {
-	_errorDescription = "";
+    _errorDescription.clear();
+    if (!m_connected)
+    {
+        if (!Connect(_errorDescription))
+        {
+            return false;
+        }
+    }
 
-	if (!IsConnected())
-	{
-		if (!Connect(_errorDescription))
-		{
-			return false;
-		}
-	}
-	
-	if (mysql_query(&m_mysql, _request.c_str()) != 0)
-	{
-		// ошибка 
-		_errorDescription = StringFormat("%s mysql_request (%s) error %s", METHOD_NAME, _request, mysql_error(&m_mysql));		
-		return false;
-	}
-
-	return true;
+    if (mysql_query(&m_mysql, _request.c_str()) != 0)
+    {
+        _errorDescription = StringFormat("%s mysql_query(%s) error: %s",
+                                        METHOD_NAME,
+                                        _request.c_str(),
+                                        mysql_error(&m_mysql));
+        return false;
+    }
+    return true;
 }
 
 bool ISQLConnect::Request(const std::string &_request)
-{	
-	std::string error;
-	if (!IsConnected())
-	{
-		if (!Connect(error))
-		{
-			return false;
-		}
-	}
-
-	if (mysql_query(&m_mysql, _request.c_str()) != 0)
-	{
-		// ошибка 
-		error = StringFormat("%s mysql_request (%s) error %s", METHOD_NAME, _request, mysql_error(&m_mysql));
-		return false;
-	}
-
-	return true;
+{
+    std::string error;
+    return Request(_request, error);
 }
 
 MYSQL *ISQLConnect::Get()
 {
-	return &m_mysql;
+    return &m_mysql;
 }

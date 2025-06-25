@@ -61,8 +61,8 @@ namespace SQL_REQUEST
 		// table operators_queue
 		void insertOperatorsQueue(const char *sip, const char *queue);						// добавление sip номере оператора + его очередь
 		void clearOperatorsQueue();															// очистка таблицы operators_queue
-		bool isExistOperatorsQueue(const char *sip, const char *queue);						// проверка существует ли такой sip+очередь в Ѕƒ
-		bool isExistOperatorsQueue();														// проверка существует ли хоть 1 запись в Ѕƒ sip+очередь
+		bool isExistOperatorsQueue_old(const char *sip, const char *queue);						// проверка существует ли такой sip+очередь в Ѕƒ
+		bool isExistOperatorsQueue_old();														// проверка существует ли хоть 1 запись в Ѕƒ sip+очередь
 		void checkOperatorsQueue(const std::vector<ACTIVE_SIP_old::Operators> &list_operators);	// проверка текущих sip + очередь 
 		void deleteOperatorsQueue(const std::string &sip);											// удаление sip номера оператора из всех очередей
 		void deleteOperatorsQueue(const std::string &sip, const std::string &queue);						// удаление sip номера оператора и конкретной очереди

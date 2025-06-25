@@ -253,42 +253,53 @@ int main(int argc, char *argv[])
     {        
         IVR ivr;
         Queue queue; 
-        ActiveSession activeSession;
+        ActiveSession activeSession(queue);
         
-        ivr.Start();    // запускаем поток
-        queue.Start();  // запускаем поток
-        activeSession.Start();
-
+        ivr.Start();            // запускаем поток
+        queue.Start();          // запускаем поток
+        activeSession.Start();  // запускаем поток
         
         static int _val = 0;
 
         while (g_running) 
         {
+            auto start = std::chrono::steady_clock::now();
+
             ivr.Parsing();
             queue.Parsing();
             activeSession.Parsing();
 
-            if (!activeSession.IsExistRawData())
+            auto stop = std::chrono::steady_clock::now();
+            auto execute_ms = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+            std::cout << "\ntime execute code: " << execute_ms.count() << " ms\n";
+
+            if (activeSession.IsExistRawData())
+            {
+                printf("All RawData activeSession = %u\n ", activeSession.GetRawAllData().size());                
+            }
+            else
             {
                 std::cout << "null value " << _val << "\n";
             }
-            else 
-            {
-                printf("All RawData = %u\n  %s\n", activeSession.GetRawAllData().size(), activeSession.GetRawFirstData().c_str());
-                
-            }
-            
-            ++_val;
+         
+          //  printf("After Del RawData activeSession = %u\n ", activeSession.GetRawAllData().size());
 
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000));          
-           
+            ++_val;       
+            
+
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));     
+
         }
        
         std::cout << "\nStopping server...\n";
+        
+        ivr.Stop();
+        queue.Stop();
+        activeSession.Stop();
+        
         server.stop();
         std::cout << "Server stopped.\n";
-        return 0;       
-       
+        return 0;   
 
     }
 

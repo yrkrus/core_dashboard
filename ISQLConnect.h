@@ -18,12 +18,11 @@
 #define PWD cPASSWORD.c_str();
 
 
-
 class ISQLConnect 
 {
 
 public:
-	ISQLConnect(bool _connected = false);
+	ISQLConnect(bool _autoConnect = false);
 
 	virtual ~ISQLConnect();	
 	bool IsConnected() const;
@@ -34,14 +33,16 @@ public:
 	bool Request(const std::string &_request, std::string &_errorDescription);
 	bool Request(const std::string &_request);
 
+	// доступ к сырым MYSQL*
 	MYSQL *Get();
 
 private:
-	MYSQL m_mysql;	
-	bool m_connected;
+	MYSQL	m_mysql;	
+	bool	m_connected;
+	bool	m_initialized;  // был ли вызван mysql_init
 
 	// подключаемся к БД MySQL
-	bool Connect(MYSQL &mysql, std::string &_errorDescription);
+	bool ConnectInternal(std::string &_errorDescription);
 };
 
 typedef std::shared_ptr<ISQLConnect> SP_SQL;
