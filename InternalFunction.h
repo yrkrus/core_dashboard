@@ -24,19 +24,19 @@
 
 namespace INTERNALFUNCTION {
 	
-	typedef std::shared_ptr<std::vector<ACTIVE_SIP_old::OnHold>> SP_OnHold;
-	typedef std::vector<ACTIVE_SIP_old::Operators> Operators;
-	typedef std::shared_ptr<std::map<std::string, std::string>> SP_NewOnHoldOperators;
+	//typedef std::shared_ptr<std::vector<ACTIVE_SIP_old::OnHold_old>> SP_OnHold;
+	typedef std::vector<ACTIVE_SIP_old::Operators_old> Operators_old;
+	//typedef std::shared_ptr<std::map<std::string, std::string>> SP_NewOnHoldOperators;
 
 	std::string StringFormat(const char *format, ...);
+	std::string PhoneParsing(std::string &phone);					// парсинг номера телефона в нормальный вид
 
 
 
-
-	std::string phoneParsing(std::string &phone);					// парсинг номера телефона в нормальный вид
+	
 	//void getIVR();												    // создать + получить текущий IVR
 	//void getQueue(void);											// создать + получить текущую очередь
-	void getActiveSip(void);										// создать + получить кто с кем разговаривает
+	//void getActiveSip(void);										// создать + получить кто с кем разговаривает
 	std::string getNumberQueue(CONSTANTS::AsteriskQueue queue);		// получение номера очереди
 	std::string getTalkTime(std::string talk);						// перевод временни из сек -> 00:00:00
 
@@ -57,8 +57,8 @@ namespace INTERNALFUNCTION {
 	LOG::Log getRemoteCommand(int command);	// преобразование текущей удаленной комады из int -> LOG::Log
 	int getRemoteCommand(LOG::Log command); // преобразование текущей удаленной комады из LOG::Log -> int
 	int getStatusOperators(REMOTE_COMMANDS::ecStatusOperators status); // преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
-	bool isExistNewOnHoldOperators(const SP_OnHold &onHold, const Operators &operators); // проверка есть ли разница между onHold по БД и active_sip->onHold
-	SP_NewOnHoldOperators createNewOnHoldOperators(const SP_OnHold &onHold, const Operators &operators);			// создание списка с новыми операторами в OnHold
+	//bool isExistNewOnHoldOperators(const SP_OnHold &onHold, const Operators &operators); // проверка есть ли разница между onHold по БД и active_sip->onHold
+	//SP_NewOnHoldOperators createNewOnHoldOperators(const SP_OnHold &onHold, const Operators &operators);			// создание списка с новыми операторами в OnHold
 
 
 	bool remoteCommandChekedExecution(LOG::Log command);	// проверка успешно ли выполнили удаленную команду

@@ -68,8 +68,8 @@ namespace LOG {
         ~LogToFile();
             
         void add(std::string message);  // сохранение лога в файл 
-        void add(const std::shared_ptr<std::vector<ACTIVE_SIP_old::OnHold>> onhold, const std::vector<ACTIVE_SIP_old::Operators> *operators);
-        void add(const std::vector<ACTIVE_SIP_old::OnHold> *onhold);
+        /*void add(const std::shared_ptr<std::vector<ACTIVE_SIP_old::OnHold_old>> onhold, const std::vector<ACTIVE_SIP_old::Operators_old> *operators);
+        void add(const std::vector<ACTIVE_SIP_old::OnHold_old> *onhold);*/
 
     private:        
         mutable std::mutex mutex;

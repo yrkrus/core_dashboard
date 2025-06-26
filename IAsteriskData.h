@@ -34,5 +34,4 @@ public:
 	void DeleteRawAllData();					// удаление всех сырых записей
 };
 
-
 #endif // IASTERISKDATA

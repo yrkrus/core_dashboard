@@ -65,48 +65,48 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 	}
 }
 
-void SQL_REQUEST::SQL::query_test()
-{
-	if (mysql_query(&this->mysql, "SELECT * FROM ivr")) {
-		std::cerr << "error query\n";
-		return;
-	} 
+//void SQL_REQUEST::SQL::query_test()
+//{
+//	if (mysql_query(&this->mysql, "SELECT * FROM ivr")) {
+//		std::cerr << "error query\n";
+//		return;
+//	} 
+//
+//
+//	// результат
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	int num_fields = mysql_num_fields(result);
+//
+//	MYSQL_ROW row;
+//
+//	while ((row = mysql_fetch_row(result)))
+//	{
+//		for (int i = 0; i < num_fields; i++)
+//		{
+//			if (i > 0)
+//			{
+//				std::cout << ", ";
+//			}
+//			std::cout << row[i];
+//		}
+//		std::cout << std::endl;
+//	}
+//
+//	mysql_free_result(result);
+//}
 
-
-	// результат
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	int num_fields = mysql_num_fields(result);
-
-	MYSQL_ROW row;
-
-	while ((row = mysql_fetch_row(result)))
-	{
-		for (int i = 0; i < num_fields; i++)
-		{
-			if (i > 0)
-			{
-				std::cout << ", ";
-			}
-			std::cout << row[i];
-		}
-		std::cout << std::endl;
-	}
-
-	mysql_free_result(result);
-}
-
-void SQL_REQUEST::SQL::insertData_test()
-{
-	std::string query = "insert into ivr (phone,waiting_time) values ('+79275052333','15')";
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0) {
-		std::cout << "error insert\n";
-	}
-	else {
-		std::cout << "insert ok\n";
-	}
-
-}
+//void SQL_REQUEST::SQL::insertData_test()
+//{
+//	std::string query = "insert into ivr (phone,waiting_time) values ('+79275052333','15')";
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0) {
+//		std::cout << "error insert\n";
+//	}
+//	else {
+//		std::cout << "insert ok\n";
+//	}
+//
+//}
 
 
 // добавление данных в таблицу IVR
@@ -254,304 +254,304 @@ void SQL_REQUEST::SQL::insertData_test()
 //}
 
 // добавление данных в таблицу QUEUE
-void SQL_REQUEST::SQL::insertQUEUE(const char *queue, const char *phone, const char *time)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}	
-
-
-	// проверим есть ли такой номер 	
-	if (isExistQUEUE(queue,phone))
-	{ // номер существует, обновляем данные
-	
-		std::string id = std::to_string(getLastIDQUEUE(phone));
-		updateQUEUE(id.c_str(),phone, time);
-		return;
-	}
-	else
-	{
-		std::string query = "insert into queue (number_queue,phone,waiting_time) values ('" 
-							+ std::string(queue) + "','" 
-							+ std::string(phone) + "','" 
-							+ std::string(time) + "')";
-
-		if (CONSTANTS::SAFE_LOG)
-		{
-			if (CONSTANTS::LOG_MODE_DEBUG)
-			{
-				LOG::LogToFile log(LOG::eLogType_DEBUG);
-				//log.add(METHOD_NAME + " -> " + query);
-			}
-		}
-
-		if (mysql_query(&this->mysql, query.c_str()) != 0)
-		{
-			//showErrorBD(METHOD_NAME+" -> Data (insertQUEUE) error -> query(" + query + ")", &this->mysql);
-		}		
-	}
-
-	mysql_close(&this->mysql);
-
-}
+//void SQL_REQUEST::SQL::insertQUEUE(const char *queue, const char *phone, const char *time)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}	
+//
+//
+//	// проверим есть ли такой номер 	
+//	if (isExistQUEUE(queue,phone))
+//	{ // номер существует, обновляем данные
+//	
+//		std::string id = std::to_string(getLastIDQUEUE(phone));
+//		updateQUEUE(id.c_str(),phone, time);
+//		return;
+//	}
+//	else
+//	{
+//		std::string query = "insert into queue (number_queue,phone,waiting_time) values ('" 
+//							+ std::string(queue) + "','" 
+//							+ std::string(phone) + "','" 
+//							+ std::string(time) + "')";
+//
+//		if (CONSTANTS::SAFE_LOG)
+//		{
+//			if (CONSTANTS::LOG_MODE_DEBUG)
+//			{
+//				LOG::LogToFile log(LOG::eLogType_DEBUG);
+//				//log.add(METHOD_NAME + " -> " + query);
+//			}
+//		}
+//
+//		if (mysql_query(&this->mysql, query.c_str()) != 0)
+//		{
+//			//showErrorBD(METHOD_NAME+" -> Data (insertQUEUE) error -> query(" + query + ")", &this->mysql);
+//		}		
+//	}
+//
+//	mysql_close(&this->mysql);
+//
+//}
 
 // существует ли такой уже номер в таблице QUEUE
-bool SQL_REQUEST::SQL::isExistQUEUE(const char *queue, const char *phone)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return true;
-	}	
-
-
-	// правильней проверять сначало разговор	
-	const std::string query = "select count(phone) from queue where number_queue = '" + std::string(queue)
-		+ "' and phone = '" + std::string(phone) + "'"
-		+ " and date_time > '" + getCurrentDateTimeAfterMinutes(60) + "'"
-		+ " and answered ='1' and fail='0' and sip<>'-1' and hash is NULL order by date_time desc limit 1";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		// ошибка считаем что есть запись		
-		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
-		return true;
-	}
-
-	// результат
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row = mysql_fetch_row(result);
-	
-	int countPhone = std::stoi(row[0]);
-	mysql_free_result(result);
-
-	if (countPhone >= 1)
-	{
-		return true;
-	}
-	else {
-		// проверяем вдруг в очереди сейчас находится звонок
-		const std::string query = "select count(phone) from queue where number_queue = '" + std::string(queue)
-			+ "' and phone = '" + std::string(phone) + "'"
-			+ " and date_time > '" + getCurrentDateTimeAfterMinutes(60) + "'" //тут типа ок, но время не затрагивается последние 15 мин
-			//+ " and date_time > '" + getCurrentDateTime() + "'"
-			+ " and answered ='0' and fail='0' and hash is NULL order by date_time desc limit 1";
-
-		if (CONSTANTS::SAFE_LOG)
-		{
-			if (CONSTANTS::LOG_MODE_DEBUG)
-			{
-				LOG::LogToFile log(LOG::eLogType_DEBUG);
-				//log.add(METHOD_NAME + " -> " + query);
-			}
-		}
-
-		if (mysql_query(&this->mysql, query.c_str()) != 0)
-		{
-			// ошибка считаем что есть запись		
-			//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
-			return true;
-		}
-
-		// результат
-		MYSQL_RES *result = mysql_store_result(&this->mysql);
-		MYSQL_ROW row = mysql_fetch_row(result);
-		int countPhone = std::stoi(row[0]);
-		
-		mysql_free_result(result);
-
-		if (countPhone >= 1)
-		{
-			return true; 
-		}
-		else {
-		
-			// нет разговора проверяем повтрность
-			const std::string query = "select count(phone) from queue where number_queue = '" + std::string(queue)
-				+ "' and phone = '" + std::string(phone) + "'"
-				+ " and date_time > '" + getCurrentDateTimeAfterMinutes(60) + "'" //тут типа ок, но время не затрагивается последние 15 мин
-				//+ " and date_time > '" + getCurrentDateTime() + "'"
-				+ " and answered ='0' and fail='1' and hash is NULL order by date_time desc limit 1";
-
-			if (CONSTANTS::SAFE_LOG)
-			{
-				if (CONSTANTS::LOG_MODE_DEBUG)
-				{
-					LOG::LogToFile log(LOG::eLogType_DEBUG);
-					//log.add(METHOD_NAME + " -> " + query);
-				}
-			}
-
-			if (mysql_query(&this->mysql, query.c_str()) != 0)
-			{
-				// ошибка считаем что есть запись		
-				//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
-				return true;
-			}
-
-			// результат
-			MYSQL_RES *result = mysql_store_result(&this->mysql);
-			MYSQL_ROW row = mysql_fetch_row(result);
-			int countPhone = std::stoi(row[0]);
-			
-			mysql_free_result(result);
-
-			if (countPhone >= 1)
-			{
-				return false; // считаем как новый вызов!!!
-			}
-			else 
-			{			
-			// проверка на повторность, вдруг еще раз перезвонили после того как поговорили уже	
-				const std::string query = "select count(phone) from queue where number_queue = '" + std::string(queue)
-					+ "' and phone = '" + std::string(phone) + "'"
-					+ " and date_time > '" + getCurrentDateTimeAfterMinutes(60) + "'"
-					+ " and answered = '1' and fail = '0' and sip <>'-1'"
-					+ " and hash is not NULL order by date_time desc limit 1";
-
-				if (CONSTANTS::SAFE_LOG)
-				{
-					if (CONSTANTS::LOG_MODE_DEBUG)
-					{
-						LOG::LogToFile log(LOG::eLogType_DEBUG);
-						//log.add(METHOD_NAME + " -> " + query);
-					}
-				}
-
-				if (mysql_query(&this->mysql, query.c_str()) != 0)
-				{
-					// ошибка считаем что есть запись		
-					//showErrorBD(METHOD_NAME +" -> query(" + query + ")", &this->mysql);
-					return true;
-				}
-				// результат
-				MYSQL_RES *result = mysql_store_result(&this->mysql);
-				MYSQL_ROW row = mysql_fetch_row(result);
-				
-				int countPhone = std::stoi(row[0]);
-				mysql_free_result(result);
-
-				if (countPhone >= 1)
-				{
-					return false;	// если есть запись, значит повторный звонок
-				}
-				
-				return (countPhone == 0 ? false : true);
-			}		
-		}		
-	}	
-}
+//bool SQL_REQUEST::SQL::isExistQUEUE(const char *queue, const char *phone)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return true;
+//	}	
+//
+//
+//	// правильней проверять сначало разговор	
+//	const std::string query = "select count(phone) from queue where number_queue = '" + std::string(queue)
+//		+ "' and phone = '" + std::string(phone) + "'"
+//		+ " and date_time > '" + getCurrentDateTimeAfterMinutes(60) + "'"
+//		+ " and answered ='1' and fail='0' and sip<>'-1' and hash is NULL order by date_time desc limit 1";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		// ошибка считаем что есть запись		
+//		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+//		return true;
+//	}
+//
+//	// результат
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row = mysql_fetch_row(result);
+//	
+//	int countPhone = std::stoi(row[0]);
+//	mysql_free_result(result);
+//
+//	if (countPhone >= 1)
+//	{
+//		return true;
+//	}
+//	else {
+//		// проверяем вдруг в очереди сейчас находится звонок
+//		const std::string query = "select count(phone) from queue where number_queue = '" + std::string(queue)
+//			+ "' and phone = '" + std::string(phone) + "'"
+//			+ " and date_time > '" + getCurrentDateTimeAfterMinutes(60) + "'" //тут типа ок, но время не затрагивается последние 15 мин
+//			//+ " and date_time > '" + getCurrentDateTime() + "'"
+//			+ " and answered ='0' and fail='0' and hash is NULL order by date_time desc limit 1";
+//
+//		if (CONSTANTS::SAFE_LOG)
+//		{
+//			if (CONSTANTS::LOG_MODE_DEBUG)
+//			{
+//				LOG::LogToFile log(LOG::eLogType_DEBUG);
+//				//log.add(METHOD_NAME + " -> " + query);
+//			}
+//		}
+//
+//		if (mysql_query(&this->mysql, query.c_str()) != 0)
+//		{
+//			// ошибка считаем что есть запись		
+//			//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+//			return true;
+//		}
+//
+//		// результат
+//		MYSQL_RES *result = mysql_store_result(&this->mysql);
+//		MYSQL_ROW row = mysql_fetch_row(result);
+//		int countPhone = std::stoi(row[0]);
+//		
+//		mysql_free_result(result);
+//
+//		if (countPhone >= 1)
+//		{
+//			return true; 
+//		}
+//		else {
+//		
+//			// нет разговора проверяем повтрность
+//			const std::string query = "select count(phone) from queue where number_queue = '" + std::string(queue)
+//				+ "' and phone = '" + std::string(phone) + "'"
+//				+ " and date_time > '" + getCurrentDateTimeAfterMinutes(60) + "'" //тут типа ок, но время не затрагивается последние 15 мин
+//				//+ " and date_time > '" + getCurrentDateTime() + "'"
+//				+ " and answered ='0' and fail='1' and hash is NULL order by date_time desc limit 1";
+//
+//			if (CONSTANTS::SAFE_LOG)
+//			{
+//				if (CONSTANTS::LOG_MODE_DEBUG)
+//				{
+//					LOG::LogToFile log(LOG::eLogType_DEBUG);
+//					//log.add(METHOD_NAME + " -> " + query);
+//				}
+//			}
+//
+//			if (mysql_query(&this->mysql, query.c_str()) != 0)
+//			{
+//				// ошибка считаем что есть запись		
+//				//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+//				return true;
+//			}
+//
+//			// результат
+//			MYSQL_RES *result = mysql_store_result(&this->mysql);
+//			MYSQL_ROW row = mysql_fetch_row(result);
+//			int countPhone = std::stoi(row[0]);
+//			
+//			mysql_free_result(result);
+//
+//			if (countPhone >= 1)
+//			{
+//				return false; // считаем как новый вызов!!!
+//			}
+//			else 
+//			{			
+//			// проверка на повторность, вдруг еще раз перезвонили после того как поговорили уже	
+//				const std::string query = "select count(phone) from queue where number_queue = '" + std::string(queue)
+//					+ "' and phone = '" + std::string(phone) + "'"
+//					+ " and date_time > '" + getCurrentDateTimeAfterMinutes(60) + "'"
+//					+ " and answered = '1' and fail = '0' and sip <>'-1'"
+//					+ " and hash is not NULL order by date_time desc limit 1";
+//
+//				if (CONSTANTS::SAFE_LOG)
+//				{
+//					if (CONSTANTS::LOG_MODE_DEBUG)
+//					{
+//						LOG::LogToFile log(LOG::eLogType_DEBUG);
+//						//log.add(METHOD_NAME + " -> " + query);
+//					}
+//				}
+//
+//				if (mysql_query(&this->mysql, query.c_str()) != 0)
+//				{
+//					// ошибка считаем что есть запись		
+//					//showErrorBD(METHOD_NAME +" -> query(" + query + ")", &this->mysql);
+//					return true;
+//				}
+//				// результат
+//				MYSQL_RES *result = mysql_store_result(&this->mysql);
+//				MYSQL_ROW row = mysql_fetch_row(result);
+//				
+//				int countPhone = std::stoi(row[0]);
+//				mysql_free_result(result);
+//
+//				if (countPhone >= 1)
+//				{
+//					return false;	// если есть запись, значит повторный звонок
+//				}
+//				
+//				return (countPhone == 0 ? false : true);
+//			}		
+//		}		
+//	}	
+//}
 
 // обновление данных в таблице QUEUE
-void SQL_REQUEST::SQL::updateQUEUE(const char *id, const char *phone, const char *time)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
-
-	std::string query = "update queue set waiting_time = '" + std::string(time) + "' where phone = '" + std::string(phone) + "' and id ='" + std::string(id) + "'";;
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		//showErrorBD(METHOD_NAME+" -> Data (updateQUEUE) error -> query(" + query + ")", &this->mysql);
-	}
-
-	mysql_close(&this->mysql);
-}
+//void SQL_REQUEST::SQL::updateQUEUE(const char *id, const char *phone, const char *time)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//
+//	std::string query = "update queue set waiting_time = '" + std::string(time) + "' where phone = '" + std::string(phone) + "' and id ='" + std::string(id) + "'";;
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		//showErrorBD(METHOD_NAME+" -> Data (updateQUEUE) error -> query(" + query + ")", &this->mysql);
+//	}
+//
+//	mysql_close(&this->mysql);
+//}
 
 // получение последнего ID актуального
-int SQL_REQUEST::SQL::getLastIDQUEUE(const char *phone)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return -1;
-	}
-
-	const std::string query = "select id from queue where phone = "
-		+ std::string(phone) + " and date_time > '"
-		+ getCurrentStartDay() + "' order by date_time desc limit 1";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		// ошибка считаем что нет записи		
-		//showErrorBD(METHOD_NAME+" -> query("+query+")",&this->mysql);
-		return -1;
-	}
-
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row = mysql_fetch_row(result);
-	int count = std::stoi(row[0]);
-	
-	mysql_free_result(result);	
-
-	return count;
-}
+//int SQL_REQUEST::SQL::getLastIDQUEUE(const char *phone)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return -1;
+//	}
+//
+//	const std::string query = "select id from queue where phone = "
+//		+ std::string(phone) + " and date_time > '"
+//		+ getCurrentStartDay() + "' order by date_time desc limit 1";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		// ошибка считаем что нет записи		
+//		//showErrorBD(METHOD_NAME+" -> query("+query+")",&this->mysql);
+//		return -1;
+//	}
+//
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row = mysql_fetch_row(result);
+//	int count = std::stoi(row[0]);
+//	
+//	mysql_free_result(result);	
+//
+//	return count;
+//}
 
 // обновление данных таблицы QUEUE о том с кем сейчас разговаривает оператор
-void SQL_REQUEST::SQL::updateQUEUE_SIP(const char *phone, const char *sip, const char *talk_time)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
-
-	// проверим есть ли такой номер 	
-	if (isExistQUEUE_SIP(phone))
-	{ // номер существует, обновляем данные
-		std::string id = std::to_string(getLastIDQUEUE(phone));
-
-		std::string query = "update queue set sip = '" + std::string(sip) + "', talk_time = '"+ getTalkTime(talk_time) + "', answered ='1' where phone = '" + std::string(phone) + "' and id ='" + std::string(id) + "'";
-
-		if (CONSTANTS::SAFE_LOG)
-		{
-			if (CONSTANTS::LOG_MODE_DEBUG)
-			{
-				LOG::LogToFile log(LOG::eLogType_DEBUG);
-				//log.add(METHOD_NAME + " -> " + query);
-			}
-		}
-
-		if (mysql_query(&this->mysql, query.c_str()) != 0)
-		{
-			//showErrorBD(METHOD_NAME+" -> Data (updateQUEUE_SIP) error -> query("+query+")", &this->mysql);
-		};
-
-		mysql_close(&this->mysql);		
-	}	
-}
+//void SQL_REQUEST::SQL::updateQUEUE_SIP(const char *phone, const char *sip, const char *talk_time)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//
+//	// проверим есть ли такой номер 	
+//	if (isExistQUEUE_SIP(phone))
+//	{ // номер существует, обновляем данные
+//		std::string id = std::to_string(getLastIDQUEUE(phone));
+//
+//		std::string query = "update queue set sip = '" + std::string(sip) + "', talk_time = '"+ getTalkTime(talk_time) + "', answered ='1' where phone = '" + std::string(phone) + "' and id ='" + std::string(id) + "'";
+//
+//		if (CONSTANTS::SAFE_LOG)
+//		{
+//			if (CONSTANTS::LOG_MODE_DEBUG)
+//			{
+//				LOG::LogToFile log(LOG::eLogType_DEBUG);
+//				//log.add(METHOD_NAME + " -> " + query);
+//			}
+//		}
+//
+//		if (mysql_query(&this->mysql, query.c_str()) != 0)
+//		{
+//			//showErrorBD(METHOD_NAME+" -> Data (updateQUEUE_SIP) error -> query("+query+")", &this->mysql);
+//		};
+//
+//		mysql_close(&this->mysql);		
+//	}	
+//}
 
 // существует ли такой номер в таблице QUEUE чтобы добавить sip оператора который с разговор ведет
 bool SQL_REQUEST::SQL::isExistQUEUE_SIP(const char *phone)
@@ -997,314 +997,314 @@ bool SQL_REQUEST::SQL::isExistAnsweredAfter20hours()
 
 
 // добавление sip номере оператора + его очередь
-void SQL_REQUEST::SQL::insertOperatorsQueue(const char *sip, const char *queue)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
-	
-	std::string query = "insert into operators_queue (sip,queue) values ('"
-		+ std::string(sip) + "','"
-		+ std::string(queue) + "')";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		//showErrorBD(METHOD_NAME+" -> Data (insertOperatorsQueue) error -> query(" + query + ")", &this->mysql);
-	}
-	
-
-	mysql_close(&this->mysql);
-}
+//void SQL_REQUEST::SQL::insertOperatorsQueue(const char *sip, const char *queue)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//	
+//	std::string query = "insert into operators_queue (sip,queue) values ('"
+//		+ std::string(sip) + "','"
+//		+ std::string(queue) + "')";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		//showErrorBD(METHOD_NAME+" -> Data (insertOperatorsQueue) error -> query(" + query + ")", &this->mysql);
+//	}
+//	
+//
+//	mysql_close(&this->mysql);
+//}
 
 // очистка таблицы operators_queue
-void SQL_REQUEST::SQL::clearOperatorsQueue()
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
-	
-	std::string query = "delete from operators_queue";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		//showErrorBD(METHOD_NAME+" -> Data (insertOperatorsQueue) error -> query(" + query + ")", &this->mysql);
-	}	
-
-	mysql_close(&this->mysql);
-}
+//void SQL_REQUEST::SQL::clearOperatorsQueue()
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//	
+//	std::string query = "delete from operators_queue";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		//showErrorBD(METHOD_NAME+" -> Data (insertOperatorsQueue) error -> query(" + query + ")", &this->mysql);
+//	}	
+//
+//	mysql_close(&this->mysql);
+//}
 
 // проверка существует ли такой sip+очередь в БД
-bool SQL_REQUEST::SQL::isExistOperatorsQueue_old(const char *sip, const char *queue)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return true;
-	}
-
-	const std::string query = "select count(id) from operators_queue where sip = '"+ std::string(sip) + "' and queue = '"+std::string(queue)+"'";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		// ошибка считаем что есть запись		
-		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
-		return true;
-	}
-
-	// результат
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row = mysql_fetch_row(result);	
-
-	bool existOperatos;
-	std::stoi(row[0]) == 0 ? existOperatos = false : existOperatos = true;
-	mysql_free_result(result);
-
-	mysql_close(&this->mysql); 
-
-	return existOperatos;
-
-}
+//bool SQL_REQUEST::SQL::isExistOperatorsQueue_old(const char *sip, const char *queue)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return true;
+//	}
+//
+//	const std::string query = "select count(id) from operators_queue where sip = '"+ std::string(sip) + "' and queue = '"+std::string(queue)+"'";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		// ошибка считаем что есть запись		
+//		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+//		return true;
+//	}
+//
+//	// результат
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row = mysql_fetch_row(result);	
+//
+//	bool existOperatos;
+//	std::stoi(row[0]) == 0 ? existOperatos = false : existOperatos = true;
+//	mysql_free_result(result);
+//
+//	mysql_close(&this->mysql); 
+//
+//	return existOperatos;
+//
+//}
 
 // проверка существует ли хоть 1 запись в БД sip+очередь
-bool SQL_REQUEST::SQL::isExistOperatorsQueue_old()
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return true;
-	}
-
-	const std::string query = "select count(id) from operators_queue";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		// ошибка считаем что есть запись		
-		//showErrorBD(METHOD_NAME+"->query(" + query + ")", &this->mysql);
-		return true;
-	}
-
-	// результат
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row = mysql_fetch_row(result);
-	
-	bool existOperatorsQueue;
-	(std::stoi(row[0]) == 0 ? existOperatorsQueue = false : existOperatorsQueue = true);
-
-	mysql_free_result(result);
-	mysql_close(&this->mysql);
-
-	return existOperatorsQueue;		
-}
+//bool SQL_REQUEST::SQL::isExistOperatorsQueue_old()
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return true;
+//	}
+//
+//	const std::string query = "select count(id) from operators_queue";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		// ошибка считаем что есть запись		
+//		//showErrorBD(METHOD_NAME+"->query(" + query + ")", &this->mysql);
+//		return true;
+//	}
+//
+//	// результат
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row = mysql_fetch_row(result);
+//	
+//	bool existOperatorsQueue;
+//	(std::stoi(row[0]) == 0 ? existOperatorsQueue = false : existOperatorsQueue = true);
+//
+//	mysql_free_result(result);
+//	mysql_close(&this->mysql);
+//
+//	return existOperatorsQueue;		
+//}
 
 // удаление sip номера оператора из всех очередей
-void SQL_REQUEST::SQL::deleteOperatorsQueue(const std::string &sip)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
-
-	std::string query = "delete from operators_queue where sip = '" + sip + "'";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-	
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		//showErrorBD(METHOD_NAME+" -> Data (deleteOperatorsQueue) error -> query(" + query + ")", &this->mysql);
-	}
-
-	mysql_close(&this->mysql);
-}
+//void SQL_REQUEST::SQL::deleteOperatorsQueue(const std::string &sip)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//
+//	std::string query = "delete from operators_queue where sip = '" + sip + "'";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//	
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		//showErrorBD(METHOD_NAME+" -> Data (deleteOperatorsQueue) error -> query(" + query + ")", &this->mysql);
+//	}
+//
+//	mysql_close(&this->mysql);
+//}
 
 // удаление sip номера оператора и конкретной очереди
-void SQL_REQUEST::SQL::deleteOperatorsQueue(const std::string &sip, const std::string &queue)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
-
-	std::string query = "delete from operators_queue where sip = '" + sip + "' and queue = '" + queue + "'";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		//showErrorBD(METHOD_NAME+" -> Data (deleteOperatorsQueue(2 param)) error -> query(" + query + ")", &this->mysql);
-	}
-
-	mysql_close(&this->mysql);
-
-}
+//void SQL_REQUEST::SQL::deleteOperatorsQueue(const std::string &sip, const std::string &queue)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//
+//	std::string query = "delete from operators_queue where sip = '" + sip + "' and queue = '" + queue + "'";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		//showErrorBD(METHOD_NAME+" -> Data (deleteOperatorsQueue(2 param)) error -> query(" + query + ")", &this->mysql);
+//	}
+//
+//	mysql_close(&this->mysql);
+//
+//}
 
 
 // проверка текущих sip + очередь
-void SQL_REQUEST::SQL::checkOperatorsQueue(const std::vector<ACTIVE_SIP_old::Operators> &list_operators)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
-
-	// найдем данные по БД
-	ACTIVE_SIP_old::Operators curr_list_operator;
-	std::vector<ACTIVE_SIP_old::Operators> list_operators_bd;
-
-	const std::string query = "select sip,queue from operators_queue";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		// ошибка считаем что есть запись		
-		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
-		return;
-	}
-
-	// результат
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row;
-
-	while ((row = mysql_fetch_row(result)) != NULL) {		
-		
-		curr_list_operator.clear();
-
-		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
-		{			
-			
-			if (i == 0) {
-				curr_list_operator.sip_number = row[i];
-			}
-			else if (i == 1) {
-				curr_list_operator.queue.push_back(row[i]);
-			}					
-							
-		}	
-
-		list_operators_bd.push_back(curr_list_operator);		
-	}
-
-	mysql_free_result(result);
-	mysql_close(&this->mysql);
-
-	// проверим совпадают ли данные с данными по БД
-	for (const auto &curr_list : list_operators_bd)	{
-		bool isExistSip{ true };	// считаем что sip по умолчанию существует
-		bool isExistQueue{ true };	// считаем что queue по умолчанию существует
-
-		for (const auto &memory_list : list_operators) {
-			if (curr_list.sip_number == memory_list.sip_number) {
-				isExistSip = true;
-				
-				// проверим есть ли такая очередь
-				for (unsigned int i = 0; i < memory_list.queue.size(); ++i) {
-					if (curr_list.queue[0] == memory_list.queue[i]) {
-						isExistQueue = true;
-						break;
-					}
-					else {
-						isExistQueue = false;						
-					}
-				}
-				
-				break;
-
-			}
-			else {
-				// нет sip, надо удалить из БД
-				isExistSip = false;
-			}
-		}
-		
-		// что именно будем удалять из БД
-		if (isExistSip) {
-			if (!isExistQueue) {
-				// удаляем sip + очередь конкретную
-				SQL_REQUEST::SQL base;
-				
-				if (base.isConnectedBD())
-				{
-					base.deleteOperatorsQueue(curr_list.sip_number, curr_list.queue[0]);
-				}
-			
-			}
-		}
-		else {
-			// удаляем весь sip
-			SQL_REQUEST::SQL base;
-
-			if (base.isConnectedBD())
-			{
-				base.deleteOperatorsQueue(curr_list.sip_number);
-			}
-		}
-	}		
-}
+//void SQL_REQUEST::SQL::checkOperatorsQueue(const std::vector<ACTIVE_SIP_old::Operators> &list_operators)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//
+//	// найдем данные по БД
+//	ACTIVE_SIP_old::Operators curr_list_operator;
+//	std::vector<ACTIVE_SIP_old::Operators> list_operators_bd;
+//
+//	const std::string query = "select sip,queue from operators_queue";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		// ошибка считаем что есть запись		
+//		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+//		return;
+//	}
+//
+//	// результат
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row;
+//
+//	while ((row = mysql_fetch_row(result)) != NULL) {		
+//		
+//		curr_list_operator.clear();
+//
+//		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
+//		{			
+//			
+//			if (i == 0) {
+//				curr_list_operator.sip_number = row[i];
+//			}
+//			else if (i == 1) {
+//				curr_list_operator.queue.push_back(row[i]);
+//			}					
+//							
+//		}	
+//
+//		list_operators_bd.push_back(curr_list_operator);		
+//	}
+//
+//	mysql_free_result(result);
+//	mysql_close(&this->mysql);
+//
+//	// проверим совпадают ли данные с данными по БД
+//	for (const auto &curr_list : list_operators_bd)	{
+//		bool isExistSip{ true };	// считаем что sip по умолчанию существует
+//		bool isExistQueue{ true };	// считаем что queue по умолчанию существует
+//
+//		for (const auto &memory_list : list_operators) {
+//			if (curr_list.sip_number == memory_list.sip_number) {
+//				isExistSip = true;
+//				
+//				// проверим есть ли такая очередь
+//				for (unsigned int i = 0; i < memory_list.queue.size(); ++i) {
+//					if (curr_list.queue[0] == memory_list.queue[i]) {
+//						isExistQueue = true;
+//						break;
+//					}
+//					else {
+//						isExistQueue = false;						
+//					}
+//				}
+//				
+//				break;
+//
+//			}
+//			else {
+//				// нет sip, надо удалить из БД
+//				isExistSip = false;
+//			}
+//		}
+//		
+//		// что именно будем удалять из БД
+//		if (isExistSip) {
+//			if (!isExistQueue) {
+//				// удаляем sip + очередь конкретную
+//				SQL_REQUEST::SQL base;
+//				
+//				if (base.isConnectedBD())
+//				{
+//					base.deleteOperatorsQueue(curr_list.sip_number, curr_list.queue[0]);
+//				}
+//			
+//			}
+//		}
+//		else {
+//			// удаляем весь sip
+//			SQL_REQUEST::SQL base;
+//
+//			if (base.isConnectedBD())
+//			{
+//				base.deleteOperatorsQueue(curr_list.sip_number);
+//			}
+//		}
+//	}		
+//}
 
 
 
@@ -2752,371 +2752,329 @@ bool SQL_REQUEST::SQL::deleteDataTaskSmsSending(int _id)
 
 
 
-void SQL_REQUEST::SQL::updateOperatorsOnHold(ACTIVE_SIP_old::Parsing_old *list)
-{
-	typedef std::vector<ACTIVE_SIP_old::Operators>	operators;
-	typedef std::vector<ACTIVE_SIP_old::OnHold>		operators_onhold;
-	
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
+//void SQL_REQUEST::SQL::updateOperatorsOnHold(ACTIVE_SIP_old::Parsing_old *list)
+//{
+//	typedef std::vector<ACTIVE_SIP_old::Operators>	operators;
+//	typedef std::vector<ACTIVE_SIP_old::OnHold_old>		operators_onhold;
+//	
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//
+//	// найдем все sip операторы которые числяться по БД в статусе onHold	
+//	auto onHold = createOnHoldSip();
+//	//auto onHold = createOnHoldSip();	
+//
+//	if (onHold->size() >= 4) {
+//		std::cout << "test";
+//	}
+//
+//	// проверяем
+//	if (!onHold->empty()) {
+//		// проверяем есть ли сейчас операторы с onHold
+//		operators curr_list_operators = list->getListOperators();
+//		
+//		
+//		// TODO чисто для бага чтобы понять какая же херня происходит почему идет задвоение
+//		if (CONSTANTS::LOG_MODE_INFO)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_INFO);
+//			log.add(onHold, &curr_list_operators);
+//		}
+//
+//
+//		// переменная на случай когда надо убрать из onHold значения, т.к. отключили onHold, а в памяти он еще остался
+//		bool needCheckOnHold{ false };
+//
+//		// проверяем сначало текущие которые уже были в onHold добавлены		
+//		if (!curr_list_operators.empty())
+//		{				
+//			bool isExistOnHold{ true };
+//
+//			// проверим оператор еще разговаривает в onHold или уже нет
+//			for (operators_onhold::iterator operators_hold = onHold->begin(); operators_hold != onHold->end(); ++operators_hold)
+//			{
+//				bool isExistOnHold{ true };
+//				
+//				if (needCheckOnHold) 
+//				{
+//					break;
+//				}
+//
+//				for (operators::iterator list_operators = curr_list_operators.begin(); list_operators != curr_list_operators.end(); ++list_operators)
+//				{
+//					if (operators_hold->sip_number == list_operators->sip_number)
+//					{
+//						list_operators->isOnHold ? isExistOnHold = true : isExistOnHold = false;
+//						
+//						// оператор перестал быть в onHold ставим время что он закончил этот статус
+//						if (!isExistOnHold)
+//						{
+//							SQL base;
+//							base.disableOperatorsOnHold(*operators_hold);
+//							
+//							// занесем в базу что нужно убрать из onHold
+//							needCheckOnHold = true;							
+//						} 				
+//					}					
+//				}				
+//			}			
+//
+//
+//			// вдруг новые onHold появились, добавляем в БД, но сначало проверим delOnHold
+//			if (needCheckOnHold) 
+//			{
+//				auto onHoldNeedCheck = createOnHoldSip();
+//
+//				if (!isExistNewOnHoldOperators(onHoldNeedCheck, curr_list_operators))
+//				{					
+//					auto new_list = createNewOnHoldOperators(onHoldNeedCheck, curr_list_operators);
+//
+//					for (auto iter = new_list->begin(); iter != new_list->end(); ++iter)
+//					{
+//						SQL base;
+//						base.addOperatorsOnHold(iter->first, iter->second);
+//					}
+//
+//					//delete new_list;
+//				}
+//
+//				//delete onHoldNeedCheck;
+//			}
+//			else {
+//				if (!isExistNewOnHoldOperators(onHold, curr_list_operators))
+//				{				
+//					auto new_list = createNewOnHoldOperators(onHold, curr_list_operators);
+//
+//					for (auto iter = new_list->begin(); iter != new_list->end(); ++iter)
+//					{
+//						SQL base;
+//						base.addOperatorsOnHold(iter->first,iter->second);
+//					}
+//
+//					//delete new_list;
+//				}
+//			}
+//		}
+//		else
+//		{ // очищаем список т.к. операторов нет аквтиных
+//			for (operators_onhold::iterator operators_hold = onHold->begin(); operators_hold != onHold->end(); ++operators_hold)
+//			{
+//				SQL base;
+//				base.disableOperatorsOnHold(*operators_hold);
+//			}
+//		}				
+//		
+//	}
+//	else {	// пустой проверяем что у нас сейчас на данный момент есть и добавляем в БД
+//		operators curr_list_operators = list->getListOperators();
+//		
+//		if (!curr_list_operators.empty()) {
+//			for (operators::iterator it = curr_list_operators.begin(); it != curr_list_operators.end(); ++it) {
+//				if (it->isOnHold) {
+//
+//					SQL base;
+//					base.addOperatorsOnHold(it->sip_number,it->phoneOnHold);
+//
+//				}
+//			}
+//		}		
+//	}
+//
+//	// delete onHold;
+//}
 
-	// найдем все sip операторы которые числяться по БД в статусе onHold	
-	auto onHold = createOnHoldSip();
-	//auto onHold = createOnHoldSip();	
+//std::shared_ptr<std::vector<ACTIVE_SIP_old::OnHold_old>> SQL_REQUEST::SQL::createOnHoldSip()
+//{
+//	auto listHold = std::make_shared<std::vector<ACTIVE_SIP_old::OnHold_old>>();
+//
+//	
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return nullptr;
+//	}
+//
+//	// найдем все данные 
+//	const std::string query = "select operators_ohhold.id, operators_ohhold.sip, operators_ohhold.date_time_start, operators_ohhold.date_time_stop, operators_ohhold.hash, queue.phone from queue inner join operators_ohhold on queue.sip = operators_ohhold.sip where queue.hash is NULL and operators_ohhold.date_time_stop is NULL";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		// ошибка		
+//		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+//		return nullptr;
+//	}
+//
+//	// результат
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row;	
+//
+//	while ((row = mysql_fetch_row(result)) != NULL)
+//	{
+//		ACTIVE_SIP_old::OnHold_old hold;
+//
+//		for (size_t i = 0; i < mysql_num_fields(result); ++i)
+//		{
+//			if (i == 0)			// id
+//			{
+//				hold.id = std::atoi(row[i]);
+//			}
+//			else if (i == 1)	// sip
+//			{
+//				hold.sip_number = row[i];
+//			}
+//			else if (i == 2)   // date_time_start
+//			{
+//				hold.date_time_start = row[i];
+//				
+//			}
+//			else if (i == 3) // date_time_stop
+//			{
+//				if (row[i])	{
+//					hold.date_time_stop = row[i];
+//				}
+//			}
+//			else if (i == 4) // hash
+//			{
+//				hold.hash = string_to_size_t(row[i]);
+//			}
+//			else if (i == 5) // phone
+//			{
+//				hold.phone = row[i];
+//			}
+//		}
+//
+//		listHold->push_back(hold);
+//	}
+//	
+//	mysql_free_result(result);
+//	mysql_close(&this->mysql);
+//	return listHold;
+//}
 
-	if (onHold->size() >= 4) {
-		std::cout << "test";
-		/*
-		
-		id |sip|date_time_start    |date_time_stop     |hash                |phone       |
-		---+---+-------------------+-------------------+--------------------+------------+
-		416|508|2024-11-22 14:55:35|                   |11337464765379681510|+79093910402|
-		417|514|2024-11-22 14:57:33|2024-11-22 14:58:14|13031441188243052791|+79064103692|
-		418|507|2024-11-22 14:58:53|                   |7060977062918673759 |+79608957997|
-		419|508|2024-11-22 14:58:58|                   |12630799220711158958|+79093910402|
-		420|507|2024-11-22 14:58:58|                   |12077553184312573086|+79608957997|
-
-			Line QUEUE is (9)
-			queue           phone            wait time
-			5000     >>     +79610731199     (00:01:05)
-			5000     >>     +79618438788     (00:04:08)
-			5000     >>     +79093910402     (00:05:01)
-			5000     >>     +79064103692     (00:02:42)
-			5000     >>     +79889863771     (00:04:00)
-			5000     >>     +79377052662     (00:00:49)
-			5000     >>     +79610758571     (00:03:39)
-			5000     >>     +79608957997     (00:03:26)
-			5000     >>     +78443420118     (00:01:50)
-			Line IVR is (5)
-			trunk           phone            wait time
-			COMAGIC  >>     +79093941546     (00:00:33)
-			COMAGIC  >>     +79696522569     (00:00:45)
-			STS      >>     +78443385708     (00:00:05)
-			220220   >>     +79275018420     (00:00:04)
-			220220   >>     +79951343146     (00:00:33)
-			Line Active SIP is (9)
-			sip             phone            talk time
-			507 (OnHold)    +79608957997     (00:02:38)
-			502      >>     +79889863771     (00:03:12)
-			526      >>     +79377052662     (00:00:01)
-			514      >>     +79064103692     (00:01:55)
-			506      >>     +79610758571     (00:02:51)
-			512 (OnHold)    +79618438788     (00:03:20)
-			519      >>     +78443420118     (00:01:03)
-			544      >>     +79610731199     (00:00:17)
-			508 (OnHold)    +79093910402     (00:04:07)
-
-		*/
-
-	}
-
-	// проверяем
-	if (!onHold->empty()) {
-		// проверяем есть ли сейчас операторы с onHold
-		operators curr_list_operators = list->getListOperators();
-		
-		
-		// TODO чисто для бага чтобы понять какая же херня происходит почему идет задвоение
-		if (CONSTANTS::LOG_MODE_INFO)
-		{
-			LOG::LogToFile log(LOG::eLogType_INFO);
-			log.add(onHold, &curr_list_operators);
-		}
-
-
-		// переменная на случай когда надо убрать из onHold значения, т.к. отключили onHold, а в памяти он еще остался
-		bool needCheckOnHold{ false };
-
-		// проверяем сначало текущие которые уже были в onHold добавлены		
-		if (!curr_list_operators.empty())
-		{				
-			bool isExistOnHold{ true };
-
-			// проверим оператор еще разговаривает в onHold или уже нет
-			for (operators_onhold::iterator operators_hold = onHold->begin(); operators_hold != onHold->end(); ++operators_hold)
-			{
-				bool isExistOnHold{ true };
-				
-				if (needCheckOnHold) 
-				{
-					break;
-				}
-
-				for (operators::iterator list_operators = curr_list_operators.begin(); list_operators != curr_list_operators.end(); ++list_operators)
-				{
-					if (operators_hold->sip_number == list_operators->sip_number)
-					{
-						list_operators->isOnHold ? isExistOnHold = true : isExistOnHold = false;
-						
-						// оператор перестал быть в onHold ставим время что он закончил этот статус
-						if (!isExistOnHold)
-						{
-							SQL base;
-							base.disableOperatorsOnHold(*operators_hold);
-							
-							// занесем в базу что нужно убрать из onHold
-							needCheckOnHold = true;							
-						} 				
-					}					
-				}				
-			}			
-
-
-			// вдруг новые onHold появились, добавляем в БД, но сначало проверим delOnHold
-			if (needCheckOnHold) 
-			{
-				auto onHoldNeedCheck = createOnHoldSip();
-
-				if (!isExistNewOnHoldOperators(onHoldNeedCheck, curr_list_operators))
-				{					
-					auto new_list = createNewOnHoldOperators(onHoldNeedCheck, curr_list_operators);
-
-					for (auto iter = new_list->begin(); iter != new_list->end(); ++iter)
-					{
-						SQL base;
-						base.addOperatorsOnHold(iter->first, iter->second);
-					}
-
-					//delete new_list;
-				}
-
-				//delete onHoldNeedCheck;
-			}
-			else {
-				if (!isExistNewOnHoldOperators(onHold, curr_list_operators))
-				{				
-					auto new_list = createNewOnHoldOperators(onHold, curr_list_operators);
-
-					for (auto iter = new_list->begin(); iter != new_list->end(); ++iter)
-					{
-						SQL base;
-						base.addOperatorsOnHold(iter->first,iter->second);
-					}
-
-					//delete new_list;
-				}
-			}
-		}
-		else
-		{ // очищаем список т.к. операторов нет аквтиных
-			for (operators_onhold::iterator operators_hold = onHold->begin(); operators_hold != onHold->end(); ++operators_hold)
-			{
-				SQL base;
-				base.disableOperatorsOnHold(*operators_hold);
-			}
-		}				
-		
-	}
-	else {	// пустой проверяем что у нас сейчас на данный момент есть и добавляем в БД
-		operators curr_list_operators = list->getListOperators();
-		
-		if (!curr_list_operators.empty()) {
-			for (operators::iterator it = curr_list_operators.begin(); it != curr_list_operators.end(); ++it) {
-				if (it->isOnHold) {
-
-					SQL base;
-					base.addOperatorsOnHold(it->sip_number,it->phoneOnHold);
-
-				}
-			}
-		}		
-	}
-
-	// delete onHold;
-}
-
-std::shared_ptr<std::vector<ACTIVE_SIP_old::OnHold>> SQL_REQUEST::SQL::createOnHoldSip()
-{
-	auto listHold = std::make_shared<std::vector<ACTIVE_SIP_old::OnHold>>();
-
-	
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return nullptr;
-	}
-
-	// найдем все данные 
-	const std::string query = "select operators_ohhold.id, operators_ohhold.sip, operators_ohhold.date_time_start, operators_ohhold.date_time_stop, operators_ohhold.hash, queue.phone from queue inner join operators_ohhold on queue.sip = operators_ohhold.sip where queue.hash is NULL and operators_ohhold.date_time_stop is NULL";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		// ошибка		
-		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
-		return nullptr;
-	}
-
-	// результат
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row;	
-
-	while ((row = mysql_fetch_row(result)) != NULL)
-	{
-		ACTIVE_SIP_old::OnHold hold;
-
-		for (size_t i = 0; i < mysql_num_fields(result); ++i)
-		{
-			if (i == 0)			// id
-			{
-				hold.id = std::atoi(row[i]);
-			}
-			else if (i == 1)	// sip
-			{
-				hold.sip_number = row[i];
-			}
-			else if (i == 2)   // date_time_start
-			{
-				hold.date_time_start = row[i];
-				
-			}
-			else if (i == 3) // date_time_stop
-			{
-				if (row[i])	{
-					hold.date_time_stop = row[i];
-				}
-			}
-			else if (i == 4) // hash
-			{
-				hold.hash = string_to_size_t(row[i]);
-			}
-			else if (i == 5) // phone
-			{
-				hold.phone = row[i];
-			}
-		}
-
-		listHold->push_back(hold);
-	}
-	
-	mysql_free_result(result);
-	mysql_close(&this->mysql);
-	return listHold;
-}
-
-void SQL_REQUEST::SQL::addOperatorsOnHold(const std::string &sip, const std::string &phone)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
-	
-	std::string curr_date = getCurrentDateTime();
-	size_t hash = std::hash<std::string>()(sip + "_" + curr_date);
-	
-
-	if (isExistOnHold(sip,std::to_string(hash))) 
-	{
-		return;
-	}
-
-	// нужна еще одна проверка т.к. коннект сбрасывается
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
-
-	// устанавливаем данные в operators_onhold
-	std::string	query_insert = "insert into operators_ohhold (sip,hash,date_time_start,phone) values ('" + sip + "','"+ std::to_string(hash) + "','"+curr_date+ "','" + phone +"')";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-		//	log.add(METHOD_NAME + " -> " + query_insert);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
-	{
-		//showErrorBD(METHOD_NAME+" -> Data (addOperatorsOnHold) error -> query(" + query_insert + ")", &this->mysql);
-		return;
-	}	
-
-	mysql_close(&this->mysql);
-}
+//void SQL_REQUEST::SQL::addOperatorsOnHold(const std::string &sip, const std::string &phone)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//	
+//	std::string curr_date = getCurrentDateTime();
+//	size_t hash = std::hash<std::string>()(sip + "_" + curr_date);
+//	
+//
+//	if (isExistOnHold(sip,std::to_string(hash))) 
+//	{
+//		return;
+//	}
+//
+//	// нужна еще одна проверка т.к. коннект сбрасывается
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//
+//	// устанавливаем данные в operators_onhold
+//	std::string	query_insert = "insert into operators_ohhold (sip,hash,date_time_start,phone) values ('" + sip + "','"+ std::to_string(hash) + "','"+curr_date+ "','" + phone +"')";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//		//	log.add(METHOD_NAME + " -> " + query_insert);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
+//	{
+//		//showErrorBD(METHOD_NAME+" -> Data (addOperatorsOnHold) error -> query(" + query_insert + ")", &this->mysql);
+//		return;
+//	}	
+//
+//	mysql_close(&this->mysql);
+//}
 
 
-void SQL_REQUEST::SQL::disableOperatorsOnHold(const ACTIVE_SIP_old::OnHold &onhold)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
+//void SQL_REQUEST::SQL::disableOperatorsOnHold(const ACTIVE_SIP_old::OnHold_old &onhold)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//
+//	std::string query = "update operators_ohhold set date_time_stop = '" + getCurrentDateTime() + "' where id = '" + std::to_string(onhold.id) 
+//																	  + "' and hash = '"+std::to_string(onhold.hash)+"'"
+//																	  + " and sip = '"+onhold.sip_number+"'";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		//showErrorBD(METHOD_NAME+" -> Data (disableOperatorsOnHold) error -> query(" + query + ")", &this->mysql);
+//		return;
+//	};
+//
+//
+//	mysql_close(&this->mysql);
+//}
 
-	std::string query = "update operators_ohhold set date_time_stop = '" + getCurrentDateTime() + "' where id = '" + std::to_string(onhold.id) 
-																	  + "' and hash = '"+std::to_string(onhold.hash)+"'"
-																	  + " and sip = '"+onhold.sip_number+"'";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		//showErrorBD(METHOD_NAME+" -> Data (disableOperatorsOnHold) error -> query(" + query + ")", &this->mysql);
-		return;
-	};
-
-
-	mysql_close(&this->mysql);
-}
-
-bool SQL_REQUEST::SQL::isExistOnHold(const std::string &sip, std::string hash)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return true;
-	}
-
-	const std::string query = "select count(id) from operators_ohhold where sip = '" + sip + "' and hash = '" + hash+"'";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		// ошибка считаем что есть запись		
-		//showErrorBD(METHOD_NAME + " -> query(" + query + ")", &this->mysql);
-		return true;
-	}
-
-	// результат
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row = mysql_fetch_row(result);
-
-	bool existOnHold;
-	((std::stoi(row[0]) == 0) ? existOnHold = false : existOnHold = true);
-
-	mysql_free_result(result);
-	mysql_close(&this->mysql);
-
-	return existOnHold;
-}
+//bool SQL_REQUEST::SQL::isExistOnHold(const std::string &sip, std::string hash)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return true;
+//	}
+//
+//	const std::string query = "select count(id) from operators_ohhold where sip = '" + sip + "' and hash = '" + hash+"'";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		// ошибка считаем что есть запись		
+//		//showErrorBD(METHOD_NAME + " -> query(" + query + ")", &this->mysql);
+//		return true;
+//	}
+//
+//	// результат
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row = mysql_fetch_row(result);
+//
+//	bool existOnHold;
+//	((std::stoi(row[0]) == 0) ? existOnHold = false : existOnHold = true);
+//
+//	mysql_free_result(result);
+//	mysql_close(&this->mysql);
+//
+//	return existOnHold;
+//}

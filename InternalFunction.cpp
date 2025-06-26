@@ -73,7 +73,7 @@ std::string INTERNALFUNCTION::StringFormat(const char *format, ...)
 }
 
 // парсинг номера телефона в нормальный вид
-std::string INTERNALFUNCTION::phoneParsing(std::string &phone)
+std::string INTERNALFUNCTION::PhoneParsing(std::string &phone)
 {
 	const auto n = phone.size();
 
@@ -140,20 +140,20 @@ std::string INTERNALFUNCTION::phoneParsing(std::string &phone)
 //}
 
 // создать + получить кто с кем разговаривает
-void INTERNALFUNCTION::getActiveSip(void)
-{
-	if (!CONSTANTS::DEBUG_MODE)	
-	{
-		system(CONSTANTS::cActiveSipResponse.c_str());
-	}
-
-	ACTIVE_SIP_old::Parsing_old sip(CONSTANTS::cActiveSipName.c_str());
-	if (sip.isExistList()) 
-	{ 
-		sip.show(); 
-		sip.updateData();
-	}	
-}
+//void INTERNALFUNCTION::getActiveSip(void)
+//{
+//	if (!CONSTANTS::DEBUG_MODE)	
+//	{
+//		system(CONSTANTS::cActiveSipResponse.c_str());
+//	}
+//
+//	ACTIVE_SIP_old::Parsing_old sip(CONSTANTS::cActiveSipName.c_str());
+//	if (sip.isExistList()) 
+//	{ 
+//		sip.show(); 
+//		sip.updateData();
+//	}	
+//}
 
 // получение номера очереди
 std::string INTERNALFUNCTION::getNumberQueue(CONSTANTS::AsteriskQueue queue)
@@ -417,44 +417,44 @@ int INTERNALFUNCTION::getStatusOperators(REMOTE_COMMANDS::ecStatusOperators stat
 }
 
 
-bool INTERNALFUNCTION::isExistNewOnHoldOperators(const SP_OnHold &onHold, const Operators &operators)
-{
-	int count_operators_active_sip{ 0 };
-	for (const auto &list : operators) 
-	{
-		if (list.isOnHold) 
-		{
-			++count_operators_active_sip;
-		}
-	}
-	
-	return (onHold->size() == count_operators_active_sip);
+//bool INTERNALFUNCTION::isExistNewOnHoldOperators(const SP_OnHold &onHold, const Operators &operators)
+//{
+//	int count_operators_active_sip{ 0 };
+//	for (const auto &list : operators) 
+//	{
+//		if (list.isOnHold) 
+//		{
+//			++count_operators_active_sip;
+//		}
+//	}
+//	
+//	return (onHold->size() == count_operators_active_sip);
+//
+//}
 
-}
-
-INTERNALFUNCTION::SP_NewOnHoldOperators INTERNALFUNCTION::createNewOnHoldOperators(const SP_OnHold &onHold, const Operators &operators)
-{
-	SP_NewOnHoldOperators new_lists = std::make_shared<std::map<std::string, std::string>>();
-
-	for (const auto &operators_list : operators) 
-	{		
-		if (operators_list.isOnHold) 
-		{		
-			
-			const auto &onHoldVec = *onHold; // разыменуем указатель
-			
-			for (size_t i = 0; i != onHoldVec.size(); ++i)
-			{
-				if (operators_list.sip_number != onHoldVec[i].sip_number)
-				{					
-					new_lists.get()->insert(std::make_pair(operators_list.sip_number, operators_list.phoneOnHold));
-				}
-			}			
-		}
-	}
-	
-	return new_lists;
-}
+//INTERNALFUNCTION::SP_NewOnHoldOperators INTERNALFUNCTION::createNewOnHoldOperators(const SP_OnHold &onHold, const Operators &operators)
+//{
+//	SP_NewOnHoldOperators new_lists = std::make_shared<std::map<std::string, std::string>>();
+//
+//	for (const auto &operators_list : operators) 
+//	{		
+//		if (operators_list.isOnHold) 
+//		{		
+//			
+//			const auto &onHoldVec = *onHold; // разыменуем указатель
+//			
+//			for (size_t i = 0; i != onHoldVec.size(); ++i)
+//			{
+//				if (operators_list.sip_number != onHoldVec[i].sip_number)
+//				{					
+//					new_lists.get()->insert(std::make_pair(operators_list.sip_number, operators_list.phoneOnHold));
+//				}
+//			}			
+//		}
+//	}
+//	
+//	return new_lists;
+//}
 
 // проверка успешно ли выполнили удаленную команду
 bool INTERNALFUNCTION::remoteCommandChekedExecution(LOG::Log command)

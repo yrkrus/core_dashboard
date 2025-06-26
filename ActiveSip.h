@@ -1,8 +1,8 @@
 #include <string>
 #include <vector>
-#include <iostream>
-#include <sstream>
-#include <list>
+//#include <iostream>
+//#include <sstream>
+//#include <list>
 
 #include "IAsteriskData.h"
 #include "ISQLConnect.h"
@@ -12,7 +12,7 @@
 #define ACTIVESIP_H
 
 static std::string SESSION_SIP_RESPONSE		= "asterisk -rx \"core show channels concise\"";
-static std::string SESSION_QUEUE_OPERATOR	= "asterisk -rx \"queue show %queue\"";
+static std::string SESSION_QUEUE_RESPONSE = "asterisk -rx \"queue show %queue\"";
 
 typedef std::vector<ecQueueNumber> QueueList;
 
@@ -37,6 +37,14 @@ namespace active_sip
 	};
 	typedef std::vector<ActiveCall> ActiveCallList;
 
+	// структура onHold
+	struct OnHold 
+	{
+		int id = 0;						// id по БД
+		std::string sip = "null";		// sip с которым был разговор
+		std::string phone = "null";		// телефон 		
+	};
+	typedef std::vector<OnHold> OnHoldList;
 
 
 	class ActiveSession : public IAsteriskData	// класс в котором будет жить данные по активным сессиям операторов 
@@ -48,7 +56,7 @@ namespace active_sip
 		void Start() override;
 		void Stop() override;
 		void Parsing() override;				// разбор сырых данных
-
+		
 	private:
 		Queue				&m_queueSession;	// ссылка на очереди
 		
@@ -66,8 +74,9 @@ namespace active_sip
 		bool FindOnHoldStatus(const std::string &_lines);		// парсинг нахождения статуса onHold
 		
 		void InsertAndUpdateQueueNumberOperators(); // добавление\обновление номена очереди оператора в БД
-		bool IsExistListOperators();	// есть ли данные в m_listOperators
-		bool IsExistListCalls();		// есть ли данные в m_listCall
+		bool IsExistListOperators();		// есть ли данные в m_listOperators
+		bool IsExistListOperatorsOnHold();	// есть ли данные в m_listOperators.onHold
+		bool IsExistListCalls();			// есть ли данные в m_listCall
 
 		bool IsExistOperatorsQueue();	// существует ли хоть 1 запись в БД sip+очередь
 		bool IsExistOperatorsQueue(const std::string &_sip, const std::string &_queue);	// существует ли хоть запись в БД sip+очередь
@@ -83,10 +92,20 @@ namespace active_sip
 
 		void UpdateActiveSessionCalls(); // обновление текущих звонков операторов
 		
-		void UpdateTalkCallOperator(const ActiveCall &_call);		// обновление данных таблицы queue о том с кем сейчас разговаривает оператор
+		void UpdateTalkCallOperator();								// обновление данных таблицы queue о том с кем сейчас разговаривает оператор
 		bool IsExistTalkCallOperator(const std::string &_phone);	// существует ли такой номер в таблице queue чтобы добавить sip оператора который с разговор ведет
 		int  GetLastTalkCallOperatorID(const std::string &_phone);	// получение последнего ID актуального разговора текущего оператора в таблице queue
 	
+		// onHold 
+		void UpdateOnHoldStatusOperator();					// обновление статуса onHold
+		void AddPhoneOnHoldInOperator(Operator &); // добавление номера телефона который на onHold сейчас		
+		bool GetActiveOnHold(OnHoldList &_onHoldList, std::string &_errorDescription);	// получение всех onHold стаутсов которые есть в БД
+		
+		void DisableOnHold(const OnHoldList &_onHoldList);		// очистка всех операторов которые в статусе onHold по БД 
+		bool DisableHold(const OnHold &_hold, std::string &_errorDescription);	// отключение onHold в БД
+		bool AddHold(const Operator&, std::string &_errorDescription);	// добавление нового onHold в БД
+
+		void CheckOnHold(OnHoldList &_onHoldList);		// Основная проверка отключение\добавление onHold 
 	};
 
 }
@@ -94,21 +113,21 @@ namespace active_sip
 
 namespace ACTIVE_SIP_old
 {
-	enum Currentfind
+	/*enum Currentfind
 	{
 		phone_find,
 		internal_sip_find,
 		talk_time_find,
-	};
+	};*/
 
-	struct Pacients_old
-	{
-		std::string phone		 { "null" };	// текущий номер телфеона с которым ведется беседа
-		std::string internal_sip { "null" };	// внутренний sip который ведет беседу
-		std::string talk_time	 { "null" };    // время развговора  потом в int переделать		
-	};
+	//struct Pacients_old
+	//{
+	//	std::string phone		 { "null" };	// текущий номер телфеона с которым ведется беседа
+	//	std::string internal_sip { "null" };	// внутренний sip который ведет беседу
+	//	std::string talk_time	 { "null" };    // время развговора  потом в int переделать		
+	//};
 
-	struct Operators
+	struct Operators_old
 	{
 		std::string sip_number {"null"};	// номер sip орератора
 		std::vector<std::string> queue;		// очереди в которых сидит орператор
@@ -125,45 +144,45 @@ namespace ACTIVE_SIP_old
 		}
 	};
 
-	class Parsing_old
-	{
-	public:
-		Parsing_old(const char *fileActiveSip);
-		~Parsing_old();
+	//class Parsing_old
+	//{
+	//public:
+	//	Parsing_old(const char *fileActiveSip);
+	//	~Parsing_old();
 
-		void show(bool silent = false);
-		bool isExistList();
-		bool isExistListActiveOperators();
-		void createListActiveOperators();
+	//	void show(bool silent = false);
+	//	bool isExistList();
+	//	//bool isExistListActiveOperators();
+	//	//void createListActiveOperators();
 
-		void updateData();										// добавление данных в БД	
-		std::vector<Operators> getListOperators();				// получение текущего значения со списком активных операторов		
+	//	void updateData();										// добавление данных в БД	
+	//	std::vector<Operators> getListOperators();				// получение текущего значения со списком активных операторов		
 
-	private:
-		std::string findParsing(std::string str, Currentfind find, const std::string &number_operator);		// парсинг
-		std::string findNumberSip(std::string &str);														// парсинг нахождения активного sip оператора
-		bool findOnHold(const std::string &str);												    		// парсинг нахождения статуса onHold 
+	//private:
+	//	std::string findParsing(std::string str, Currentfind find, const std::string &number_operator);		// парсинг
+	//	std::string findNumberSip(std::string &str);														// парсинг нахождения активного sip оператора
+	//	bool findOnHold(const std::string &str);												    		// парсинг нахождения статуса onHold 
 
 
-		void findActiveOperators(const char *fileOperators, std::string queue);  							// парсинг #2 (для activeoperaots) 
+	//	void findActiveOperators(const char *fileOperators, std::string queue);  							// парсинг #2 (для activeoperaots) 
 
-		void insert_updateQueueNumberOperators();														    // добавление номена очереди оператора
-		bool isExistQueueOperators_old();																	    // есть ли операторы в очередях
-		void clearQueueNumberOperators();																	// очистка номеров очереди операторов
+	//	void insert_updateQueueNumberOperators();														    // добавление номена очереди оператора
+	//	bool isExistQueueOperators_old();																	    // есть ли операторы в очередях
+	//	void clearQueueNumberOperators();																	// очистка номеров очереди операторов
 
-		
-		void clearListOperatorsPhoneOnHold();																// очистка текщего листа phoneOnHold
-		bool getSipIsOnHold(std::string sip);																// текущее состояние sip (разговор или onHold)
+	//	
+	//	void clearListOperatorsPhoneOnHold();																// очистка текщего листа phoneOnHold
+	//	bool getSipIsOnHold(std::string sip);																// текущее состояние sip (разговор или onHold)
 
-		std::vector<Pacients_old> active_sip_list;
-		std::vector<Operators>list_operators;		
-	};	
+	//	std::vector<Pacients_old> active_sip_list;
+	//	std::vector<Operators>list_operators;		
+	//};	
 	
-	class OnHold : public Operators
+	class OnHold_old : public Operators_old
 	{
 	public:
-		OnHold() = default;
-		virtual ~OnHold() = default;
+		OnHold_old() = default;
+		virtual ~OnHold_old() = default;
 
 		int id{ 0 };
 		std::string date_time_start{ "null" };

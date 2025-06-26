@@ -37,7 +37,7 @@ public:
 
 	struct CallsInBase	// структура из БД
 	{
-		std::string id			= "- 1";
+		std::string id			= "-1";
 		std::string phone		= "null";
 		std::string date_time	= "null";
 		size_t hash				= 0;
@@ -55,8 +55,8 @@ public:
 	void UpdateCalls();									// обновление звонков
 
 private:
-	std::vector<QueueCalls>	m_listQueue;
-	SP_SQL					m_sql;
+	QueueCallsList		m_listQueue;
+	SP_SQL				m_sql;
 	
 	
 	bool FindQueueCallers();									// поиск текущих активных звонков
@@ -66,27 +66,26 @@ private:
 
 	bool IsExistQueueCalls();									// есть ли звонки в памяти
 
-	
-
 	void InsertQueueCalls();							// добавление данных в БД
-	void InsertCall(const QueueCalls &_call);									// добавление нового звонка
+	void InsertCall(const QueueCalls &_call);			// добавление нового звонка
 	bool UpdateCall(int _id, const QueueCalls &_call, std::string &_errorDescription); // обновление существующего звонка
-	void UpdateCallFail(const QueueCallsList &_calls);					// обновление данных если звонок был в очереди, но не дождался ответа от оператора
-	void UpdateCallFail();														// обновление данных если звонок был в очереди, но не дождался ответа от оператора
-	void UpdateCallToIVR(const QueueCallsList &_calls);				// обновление данных когда у нас звонок из IVR попал в очередь
-	void UpdateCallSuccess(const QueueCallsList &_calls);				// обновление данных когда разговор успешно состоялся
+	void UpdateCallFail(const QueueCallsList &_calls);	// обновление данных если звонок был в очереди, но не дождался ответа от оператора
+	void UpdateCallFail();								// обновление данных если звонок был в очереди, но не дождался ответа от оператора
+	void UpdateCallToIVR(const QueueCallsList &_calls);	// обновление данных когда у нас звонок из IVR попал в очередь
+	void UpdateCallSuccess(const QueueCallsList &_calls);// обновление данных когда разговор успешно состоялся
 
-	bool IsExistCall(ecQueueNumber _queue, const std::string &_phone);			// есть ли уже такой номер в БД
-	int GetLastQueueCallId(const std::string &_phone);							// id записи по БД о звонке
+	bool IsExistCall(ecQueueNumber _queue, const std::string &_phone);	// есть ли уже такой номер в БД
+	int GetLastQueueCallId(const std::string &_phone);					// id записи по БД о звонке
 
 	bool GetCallsInBase(CallsInBaseList &_vcalls, const QueueCallsList &_queueCalls, std::string &_errorDescription); // получение записей из БД 
 	bool GetCallsInBase(CallsInBaseList &_vcalls, std::string &_errorDescription);						// получение записей из БД 
 
 	bool IsExistCallAfter20Hours(std::string &_errorDescription);			// есть ли звонок после 20:00
 	void UpdateCallsAfter20hours();											// есть потеряшки которые звонили после 20:00, обновить их
-
 	bool IsExistCallAnsweredAfter20hours(std::string &_errorDescription);	// есть ли не про hash'нные номера, когда оператор уже закончил разговор и ушел из линии
 	void UpdateCallAnsweredAfter20hours();									// есть не про hash'нные номера обновляем их
+
+	
 
 };
 

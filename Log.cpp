@@ -32,52 +32,52 @@ void LOG::LogToFile::add(std::string message)
 }
 
 
-void LOG::LogToFile::add(const std::shared_ptr<std::vector<ACTIVE_SIP_old::OnHold>> onhold, const std::vector<ACTIVE_SIP_old::Operators> *operators)
-{
-	std::lock_guard<std::mutex> lock(mutex);
+//void LOG::LogToFile::add(const std::shared_ptr<std::vector<ACTIVE_SIP_old::OnHold_old>> onhold, const std::vector<ACTIVE_SIP_old::Operators_old> *operators)
+//{
+//	std::lock_guard<std::mutex> lock(mutex);
+//
+//	std::ostringstream buffer;
+//
+//	buffer << "========================   " + getCurrentDateTime() + "   ==========================\n";
+//
+//	unsigned int countHoldBase{ 0 };
+//	unsigned int countOperatorsOnHoldAsterisk{ 0 };
+//
+//	countHoldBase = onhold->size();
+//
+//	for (const auto &list : *operators)
+//	{
+//		if (list.isOnHold) ++countOperatorsOnHoldAsterisk;
+//	}
+//	buffer << "count OnHold Operators Base -> \t"			<< std::to_string(countHoldBase) << "\n";
+//	buffer << "count OnHold Asterisk -> \t"					<< std::to_string(countOperatorsOnHoldAsterisk) << "\n";
+//
+//	if (file_log->is_open())
+//	{
+//		*file_log << buffer.str();
+//	}
+//}
 
-	std::ostringstream buffer;
-
-	buffer << "========================   " + getCurrentDateTime() + "   ==========================\n";
-
-	unsigned int countHoldBase{ 0 };
-	unsigned int countOperatorsOnHoldAsterisk{ 0 };
-
-	countHoldBase = onhold->size();
-
-	for (const auto &list : *operators)
-	{
-		if (list.isOnHold) ++countOperatorsOnHoldAsterisk;
-	}
-	buffer << "count OnHold Operators Base -> \t"			<< std::to_string(countHoldBase) << "\n";
-	buffer << "count OnHold Asterisk -> \t"					<< std::to_string(countOperatorsOnHoldAsterisk) << "\n";
-
-	if (file_log->is_open())
-	{
-		*file_log << buffer.str();
-	}
-}
-
-void LOG::LogToFile::add(const std::vector<ACTIVE_SIP_old::OnHold> *onhold)
-{
-	std::lock_guard<std::mutex> lock(mutex);
-	
-	std::ostringstream buffer;
-
-	buffer << "========================" + getCurrentDateTime() + "   ==========================\n";
-	
-	unsigned int countHold{ 0 };
-
-	for (const auto &list : *onhold) {
-		if (list.isOnHold) ++countHold;		
-	}
-	buffer << "count OnHold -> " << std::to_string(countHold) << "\n";
-
-	if (file_log->is_open())
-	{
-		*file_log << buffer.str();
-	}
-}
+//void LOG::LogToFile::add(const std::vector<ACTIVE_SIP_old::OnHold_old> *onhold)
+//{
+//	std::lock_guard<std::mutex> lock(mutex);
+//	
+//	std::ostringstream buffer;
+//
+//	buffer << "========================" + getCurrentDateTime() + "   ==========================\n";
+//	
+//	unsigned int countHold{ 0 };
+//
+//	for (const auto &list : *onhold) {
+//		if (list.isOnHold) ++countHold;		
+//	}
+//	buffer << "count OnHold -> " << std::to_string(countHold) << "\n";
+//
+//	if (file_log->is_open())
+//	{
+//		*file_log << buffer.str();
+//	}
+//}
 
 LOG::LogToFile::LogToFile(ELogType type)
 {

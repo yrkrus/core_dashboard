@@ -53,6 +53,10 @@ namespace CONSTANTS
 
     */
 
+    // при совершении звонка, в ivr добавить еще id_звонка из queue таблицы,
+    // потом будет проще найти этот звонок + повторные звонки будут проще отслеживаться
+
+    // бэкапы базы будут тут жить \\srvbak\G$\dashboard_backup_COV
 
 // для будущей интеграции с телефонами!!!    
 /*   
@@ -102,7 +106,7 @@ namespace CONSTANTS
  static std::string core_version = "CORE DASHBOARD | version 2.17 " BUILD;
  
 
-// asterisk очереди  
+// asterisk очереди  удалить потом
 enum AsteriskQueue
 {
     main,       // основная очередь     5000
@@ -129,10 +133,10 @@ enum AsteriskQueue
 //static std::string cQueueResponse	= "asterisk -rx \"core show channels verbose\" | grep -E \"" + cQueueCommands + "\" " + " | grep -v \"" + cQueueCommandsEx + "\" > " + cQueueName;
 
 // for ActiveSIP
-static std::string cActiveSipName				= "ActiveSip.txt";
-static std::string cActiveSipResponse			= "asterisk -rx \"core show channels concise\" > " + cActiveSipName;
-static std::string cActiveSipOperatorsName		= "ActiveSipOperators.txt";
-static std::string cActiveSipOperatorsResponse	= "asterisk -rx \"queue show %queue\" > " + cActiveSipOperatorsName;
+//static std::string cActiveSipName				= "ActiveSip.txt";
+//static std::string cActiveSipResponse			= "asterisk -rx \"core show channels concise\" > " + cActiveSipName;
+//static std::string cActiveSipOperatorsName		= "ActiveSipOperators.txt";
+//static std::string cActiveSipOperatorsResponse	= "asterisk -rx \"queue show %queue\" > " + cActiveSipOperatorsName;
 
 //for MySQL Connect
 static std::string cHOST       = "10.34.222.19";

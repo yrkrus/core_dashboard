@@ -264,7 +264,7 @@ void Queue::Stop()
 }
 
 void Queue::Parsing()
-{
+{	
 	if (FindQueueCallers())	// ждем сырые данные 
 	{		
 		// есть данные добавляем\обновляем в БД
@@ -272,9 +272,10 @@ void Queue::Parsing()
 
 		// обновляем очереди (по списку)
 		UpdateCalls();
-	}
-	else 
-	{		
+	}	
+
+	
+	// TODO сделать!!!!
 		//std::string error;
 
 		//// проверим время вдруг кто то позвонил после 20:00:00 и был в очереди, тогда надо пройтись 1 раз по БД
@@ -288,7 +289,7 @@ void Queue::Parsing()
 		//{		
 		//	UpdateCallAnsweredAfter20hours();
 		//}
-	}
+	
 
 	// удаляем из сырых данных
 	DeleteRawLastData();
@@ -353,13 +354,17 @@ bool Queue::CreateQueueCallers(const std::string &_lines, QueueCalls &_queueCall
 
 	if (!lines.empty())
 	{
-		_queueCaller.phone = INTERNALFUNCTION::phoneParsing(lines[7]);
+		_queueCaller.phone = INTERNALFUNCTION::PhoneParsing(lines[7]);
 		_queueCaller.waiting = lines[8];
 		_queueCaller.queue = StringToEnum<ecQueueNumber>(lines[2]);
 
 		// TODO тут в лог запись если не прошел по какой то причине 
 		if (!CheckCallers(_queueCaller))
 		{
+			LOG::LogToFile log(LOG::eLogType_ERROR);
+			std::string err = std::string(__PRETTY_FUNCTION__) +"\t"+ _lines;
+			log.add(err);
+
 			return false;
 		}
 
@@ -371,9 +376,16 @@ bool Queue::CreateQueueCallers(const std::string &_lines, QueueCalls &_queueCall
 
 bool Queue::CheckCallers(const QueueCalls &_caller)
 {
-	return !((_caller.phone		== "null") &&
-			 (_caller.waiting	== "null") &&
-			 (_caller.queue		== ecQueueNumber::eUnknown));
+	// если в phone или waiting есть подстрока "null" 
+	// или callerID == eUnknown — сразу false
+	if (_caller.phone.find("null") != std::string::npos ||
+		_caller.waiting.find("null") != std::string::npos ||
+		_caller.queue == ecQueueNumber::eUnknown)
+	{
+		return false;
+	}
+
+	return true;
 }
 
 bool Queue::IsExistQueueCalls()

@@ -331,13 +331,17 @@ bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 
 	if (!lines.empty())
 	{
-		_caller.phone = INTERNALFUNCTION::phoneParsing(lines[7]);
+		_caller.phone = INTERNALFUNCTION::PhoneParsing(lines[7]);
 		_caller.waiting = lines[8];
 		_caller.callerID = StringToEnum(lines[0] + "," + lines[1]);
 		
 		// TODO тут в лог запись если не прошел по какой то причине 
 		if (!CheckCallers(_caller)) 
 		{
+			LOG::LogToFile log(LOG::eLogType_ERROR);
+			std::string err = std::string(__PRETTY_FUNCTION__) +"\t"+ _lines;
+			log.add(err);
+
 			return false;
 		}		
 
@@ -349,9 +353,16 @@ bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 
 bool IVR::CheckCallers(const IvrCalls &_caller)
 {
-	return !((_caller.phone		== "null") &&
-			 (_caller.waiting	== "null") &&
-			 (_caller.callerID	== ecCallerId::eUnknown));
+	// если в phone или waiting есть подстрока "null" 
+	// или callerID == eUnknown Ч сразу false
+	if (_caller.phone.find("null") != std::string::npos ||
+		_caller.waiting.find("null") != std::string::npos ||
+		_caller.callerID == ecCallerId::eUnknown)
+	{
+		return false;
+	}
+
+	return true;
 }
 
 bool IVR::IsExistListIvr()
@@ -409,7 +420,12 @@ void IVR::InsertIvrCalls()
 		// проверим есть ли такой номер в бд
 		if (IsExistIvrPhone(list, _errorDescription)) 
 		{
-			unsigned int id = GetPhoneIDIvr(list.phone);
+			int id = GetPhoneIDIvr(list.phone);
+			if (id <= 0) 
+			{				
+				continue;
+			}
+
 			UpdateIvrCalls(id, list);
 		}
 		else  
@@ -422,8 +438,10 @@ void IVR::InsertIvrCalls()
 
 			if (!m_sql->Request(query, _errorDescription))
 			{
+				printf("%s", _errorDescription.c_str());
 				m_sql->Disconnect();
-				return;
+				
+				continue;
 			}
 
 			m_sql->Disconnect();
@@ -431,7 +449,7 @@ void IVR::InsertIvrCalls()
 	}
 }
 
-void IVR::UpdateIvrCalls(unsigned int _id, const IvrCalls &_caller)
+void IVR::UpdateIvrCalls(int _id, const IvrCalls &_caller)
 {
 	std::string error;
 	const std::string query = "update ivr set waiting_time = '" 
@@ -461,6 +479,7 @@ bool IVR::IsExistIvrPhone(const IvrCalls &_caller, std::string &_errorDescriptio
 	if (!m_sql->Request(query, _errorDescription))
 	{	
 		// есть ошибка считаем что есть такой номер в Ѕƒ
+		printf("%s", _errorDescription.c_str());
 		m_sql->Disconnect();
 		return true;
 	}
@@ -479,25 +498,23 @@ bool IVR::IsExistIvrPhone(const IvrCalls &_caller, std::string &_errorDescriptio
 
 }
 
-unsigned int IVR::GetPhoneIDIvr(const std::string &_phone)
+int IVR::GetPhoneIDIvr(const std::string &_phone)
 {
 	const std::string query = "select id from ivr where phone = "
 								+ _phone + " and date_time > '"
 								+ getCurrentStartDay() + "' order by date_time desc limit 1";
-
 	
 	if (!m_sql->Request(query))
 	{
 		// есть ошибка		
 		m_sql->Disconnect();
-		return 0;
-	}
-	
+		return -1;
+	}	
 
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 	MYSQL_ROW row = mysql_fetch_row(result);
 
-	unsigned int id = std::stoi(row[0]);
+	int id = std::stoi(row[0]);
 
 	mysql_free_result(result);
 	m_sql->Disconnect();

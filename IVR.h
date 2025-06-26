@@ -55,9 +55,9 @@ private:
 	std::string EnumToString(ecCallerId _caller);
 
 	void InsertIvrCalls();																// вставка в БД данных
-	void UpdateIvrCalls(unsigned int _id, const IvrCalls &_caller);						// обновдление звонка IVR по БД
+	void UpdateIvrCalls(int _id, const IvrCalls &_caller);						// обновдление звонка IVR по БД
 	bool IsExistIvrPhone(const IvrCalls &_caller, std::string &_errorDescription);		// есть ли такой номер в БД
-	unsigned int GetPhoneIDIvr(const std::string &_phone);								// id phone по БД
+	int GetPhoneIDIvr(const std::string &_phone);								// id phone по БД
 
 };
 

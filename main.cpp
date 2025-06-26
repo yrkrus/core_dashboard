@@ -34,8 +34,8 @@ enum Commands
     help,           // хелп справка
   //  ivr,            // кто в IVR
   //  queue,          // текущая очередь
-    active_sip_old,     // какие активные sip зарегистрированы в очереди
-    connect_bd,     // убрать потом, это для теста
+  //  active_sip_old,     // какие активные sip зарегистрированы в очереди
+  // connect_bd,     // убрать потом, это для теста
     start,          // сбор данных в БД   
     statistics,     // отобразить статистику
     remote,         // проверка есть ли удаленные команды на добавление\удаление очереди
@@ -50,8 +50,8 @@ Commands static getCommand(char *ch) {
     if (commands == "help")              return help;
    // if (commands == "ivr")               return ivr;
    // if (commands == "queue")             return queue;
-    if (commands == "active_sip")        return active_sip_old;
-    if (commands == "connect_bd")        return connect_bd;
+  //  if (commands == "active_sip")        return active_sip_old;
+  //  if (commands == "connect_bd")        return connect_bd;
     if (commands == "start")             return start;
     if (commands == "statistics")        return statistics;
     if (commands == "remote")            return remote;
@@ -62,10 +62,10 @@ Commands static getCommand(char *ch) {
 }
 
 
-static void thread_Queue_ActiveSIP() {
-    //getQueue();
-    getActiveSip();
-}
+//static void thread_Queue_ActiveSIP() {
+//    //getQueue();
+//    getActiveSip();
+//}
 
 // запуск проверки удаленных команд
 static void thread_RemoteCommands() {
@@ -164,7 +164,7 @@ static void collect() {
 
         std::cout << "\n\n";
         //std::thread th_ivr(getIVR);
-        std::thread th_Queue_ActiveSIP(thread_Queue_ActiveSIP);
+       // std::thread th_Queue_ActiveSIP(thread_Queue_ActiveSIP);
         std::thread th_RemoteCommand(thread_RemoteCommands);
         std::thread th_HouseKeeping(thread_HouseKeeping);
 
@@ -173,10 +173,10 @@ static void collect() {
         //    //th_ivr.detach();
         //} 
         
-        if (th_Queue_ActiveSIP.joinable()) {
-            th_Queue_ActiveSIP.join();
-            //th_Queue_ActiveSIP.detach();
-        }
+        //if (th_Queue_ActiveSIP.joinable()) {
+        //    th_Queue_ActiveSIP.join();
+        //    //th_Queue_ActiveSIP.detach();
+        //}
 
         // проверка удаленных команд
         if (th_RemoteCommand.joinable()) {
@@ -267,7 +267,8 @@ int main(int argc, char *argv[])
 
             ivr.Parsing();
             queue.Parsing();
-            activeSession.Parsing();
+            activeSession.Parsing();          
+
 
             auto stop = std::chrono::steady_clock::now();
             auto execute_ms = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
@@ -279,7 +280,7 @@ int main(int argc, char *argv[])
             }
             else
             {
-                std::cout << "null value " << _val << "\n";
+                std::cout << "null value " << _val << " (" << execute_ms.count()<<" ms)\n";
             }
          
           //  printf("After Del RawData activeSession = %u\n ", activeSession.GetRawAllData().size());
@@ -347,17 +348,17 @@ int main(int argc, char *argv[])
         //    getQueue();
         //    break;
         //} 
-        case(active_sip_old): {         // запись в БД кто сейчас с кем разговариваети сколько по времени
-            // запрос
-            getActiveSip();
-            break;
-        }
-        case(connect_bd): {      
+        //case(active_sip_old): {         // запись в БД кто сейчас с кем разговариваети сколько по времени
+        //    // запрос
+        //    getActiveSip();
+        //    break;
+        //}
+       /* case(connect_bd): {      
             SQL_REQUEST::SQL base;            
             std::cout << (base.isConnectedBD()) ? "Connect UP\n" : "Connect DOWN!\n";            
                  
             break;
-        }        
+        }     */   
         case(start):      {         
             collect();
             break;
