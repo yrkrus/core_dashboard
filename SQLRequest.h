@@ -48,13 +48,13 @@ namespace SQL_REQUEST
 		//void updateQUEUE(const char *id, const char *phone, const char *time);				// обновление данных в таблице QUEUE
 		//int getLastIDQUEUE(const char *phone);												// получение последнего ID актуального
 		//void updateQUEUE_SIP(const char *phone, const char *sip, const char *talk_time);	// обновление данных таблицы QUEUE о том с кем сейчас разговаривает оператор
-		bool isExistQUEUE_SIP(const char *phone);											// существует ли такой номер в таблице QUEUE чтобы добавить sip оператора который с разговор ведет
+		//bool isExistQUEUE_SIP(const char *phone);											// существует ли такой номер в таблице QUEUE чтобы добавить sip оператора который с разговор ведет
 		//void updateQUEUE_fail(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list);			// обновление данных когда звонок не дождался своей очереди 
-		void updateQUEUE_fail();															// обновление данных когда звонок не дождался своей очереди 
+		//void updateQUEUE_fail();															// обновление данных когда звонок не дождался своей очереди 
 		//void updateIVR_to_queue(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list);			// обновление данных когда у нас звонок из IVR попал в очередь
-		bool isExistQueueAfter20hours();													// проверка есть ли номера которые позвонили после 20:00
+		//bool isExistQueueAfter20hours();													// проверка есть ли номера которые позвонили после 20:00
 		//void updateQUEUE_hash(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list);			// обновление поля hash когда успешно поговорили
-		bool isExistAnsweredAfter20hours();													// проверка есть ли номера которым нужно проставить статус отвечено после того как оператор ушел из линии		
+		//bool isExistAnsweredAfter20hours();													// проверка есть ли номера которым нужно проставить статус отвечено после того как оператор ушел из линии		
 		//void updateAnswered_fail();															// обновление данных когда оператор поговорил и ушел из линии, а звонок все еще находится не обработанным
 
 
@@ -76,14 +76,14 @@ namespace SQL_REQUEST
 
 		// RemoteComands
 		bool remoteCheckNewCommads();														// проверка если новая команда для  входа\выхода из очереди
-		void createListRemoteCommands(std::vector<REMOTE_COMMANDS::R_Commands> &list);	    // генерация текущиъ найденных команд
-		void startRemoteCommand(int id, std::string sip, LOG::Log command, int user_id);	// запуск удаленной команды
+		void createListRemoteCommands(std::vector<REMOTE_COMMANDS_old::R_Commands_old> &list);	    // генерация текущиъ найденных команд
+		void startRemoteCommand(int id, std::string sip, LOG_old::ecStatus command, int user_id);	// запуск удаленной команды
 		void deleteRemoteCommand(int id);													// удаление успешно выполненной команды
-		void updateStatusOperators(int user_id, REMOTE_COMMANDS::ecStatusOperators status);	// обновление текущего статуса оператора
+		void updateStatusOperators(int user_id, remote::ecStatusOperator status);	// обновление текущего статуса оператора
 
 
 		// Логирование 
-		void addLog(LOG::Log command, int base_id);    // создание лога в БД
+		void addLog(LOG_old::ecStatus command, int base_id);    // создание лога в БД
 		
 		
 		// Housekeeping

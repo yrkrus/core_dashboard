@@ -1,7 +1,7 @@
 #include <string>
 #include <vector>
-#include <map>
-#include <iostream>
+//#include <map>
+//#include <iostream>
 
 #include "IAsteriskData.h"
 #include "ISQLConnect.h"
@@ -9,11 +9,19 @@
 #ifndef IVR_H
 #define IVR_H
 
-static std::string IVR_COMMANDS			= "Playback|lukoil|ivr-3";
-static std::string IVR_COMMANDS_EXT1	= "IVREXT";
-static std::string IVR_COMMANDS_EXT2	= "Spasibo";
-static std::string IVR_REQUEST			= "asterisk -rx \"core show channels verbose\" | grep -E \"" + IVR_COMMANDS + "\" " + " | grep -v \"" + IVR_COMMANDS_EXT1 + "\" " + " | grep -v \"" + IVR_COMMANDS_EXT2 + "\" ";
+static std::string IVR_COMMANDS			= "Playback|lukoil|ivr-3";	// ищем только эти слова при формировании IVR
+static std::string IVR_COMMANDS_EXT1	= "IVREXT";					// пропуск этой записи
+static std::string IVR_COMMANDS_EXT2	= "Spasibo";				// пропуск этой записи
+static std::string IVR_COMMANDS_EXT3	= "recOfficeOffline";		// пропуск этой записи
+static std::string IVR_COMMANDS_EXT4	= "noservice";				// пропуск этой записи 
+static std::string IVR_REQUEST			= "asterisk -rx \"core show channels verbose\" | grep -E \"" + IVR_COMMANDS + "\" " 
+																				   + " | grep -v \"" + IVR_COMMANDS_EXT1 + "\" " 
+																				   + " | grep -v \"" + IVR_COMMANDS_EXT2 + "\" "
+																				   + " | grep -v \"" + IVR_COMMANDS_EXT3 + "\" "
+																				   + " | grep -v \"" + IVR_COMMANDS_EXT4 + "\" ";
 
+class IVR;
+typedef std::shared_ptr<IVR> SP_IVR;
 
 class IVR : public IAsteriskData			
 {
@@ -60,6 +68,8 @@ private:
 	int GetPhoneIDIvr(const std::string &_phone);								// id phone по БД
 
 };
+
+
 
 //template<> TODO сделать на EnumToString
 

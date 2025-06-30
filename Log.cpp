@@ -7,7 +7,7 @@
 using namespace INTERNALFUNCTION;
 
 // создание лога
-void LOG::Logging::createLog(Log command, int base_id)
+void LOG_old::Logging::createLog(ecStatus command, int base_id)
 {
 	SQL_REQUEST::SQL base;
 
@@ -20,7 +20,7 @@ void LOG::Logging::createLog(Log command, int base_id)
 
 
 
-void LOG::LogToFile::add(std::string message)
+void LOG_old::LogToFile::add(std::string message)
 {
 	std::lock_guard<std::mutex> lock(mutex);	
 	std::string mess = getCurrentDateTime() + "\t" + ELogType_to_string(current_type) + "\t" + message + "\n";
@@ -79,7 +79,7 @@ void LOG::LogToFile::add(std::string message)
 //	}
 //}
 
-LOG::LogToFile::LogToFile(ELogType type)
+LOG_old::LogToFile::LogToFile(ELogType type)
 {
 	this->file_log = new std::ofstream;
 	current_type = type;
@@ -109,43 +109,43 @@ LOG::LogToFile::LogToFile(ELogType type)
 		{
 			case eLogType_DEBUG:
 			{
-				std::cerr << getCurrentDateTime << " Ошибка при открытии лог-файла: " << CONSTANTS::cFileLogDEBUG << "\n";
+				std::cerr << getCurrentDateTime() << " Ошибка при открытии лог-файла: " << CONSTANTS::cFileLogDEBUG << "\n";
 				break;
 			}
 			case eLogType_INFO:
 			{
-				std::cerr << getCurrentDateTime << " Ошибка при открытии лог-файла: " << CONSTANTS::cFileLogINFO << "\n";
+				std::cerr << getCurrentDateTime() << " Ошибка при открытии лог-файла: " << CONSTANTS::cFileLogINFO << "\n";
 				break;
 			}
 			case eLogType_ERROR:
 			{
-				std::cerr << getCurrentDateTime << " Ошибка при открытии лог-файла: " << CONSTANTS::cFileLogDEBUG << "\n";
+				std::cerr << getCurrentDateTime() << " Ошибка при открытии лог-файла: " << CONSTANTS::cFileLogDEBUG << "\n";
 				break;
 			}
 		}
 	}	
 }
 
-std::string LOG::LogToFile::ELogType_to_string(const ELogType &elogtype)
+std::string LOG_old::LogToFile::ELogType_to_string(const ELogType &elogtype)
 {
 	switch (elogtype)
 	{
-		case LOG::eLogType_DEBUG: {
+		case LOG_old::eLogType_DEBUG: {
 			return "DEBUG";
 			break;
 		}		
-		case LOG::eLogType_INFO: {
+		case LOG_old::eLogType_INFO: {
 			return "INFO";
 			break;
 		}		
-		case LOG::eLogType_ERROR: {
+		case LOG_old::eLogType_ERROR: {
 			return "ERROR";
 			break;
 		}		
 	}
 }
 
-LOG::LogToFile::~LogToFile()
+LOG_old::LogToFile::~LogToFile()
 {
 	if (file_log->is_open()) 
 	{

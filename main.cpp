@@ -24,12 +24,44 @@
 using namespace INTERNALFUNCTION;
 using namespace active_sip;
 
+// Global Score
+static SP_IVR ivr = nullptr;
+static SP_Queue queue = nullptr;
+static SP_ActiveSession activeSession = nullptr;
+static SP_Status changeStatus = nullptr;
+
+static std::atomic<bool> g_running(true);
+
+static void Init() 
+{
+    ivr = std::make_shared<IVR>();
+    queue = std::make_shared<Queue>();
+    activeSession = std::make_shared<active_sip::ActiveSession>(queue);
+
+    changeStatus = std::make_shared<remote::Status>();
+}
+
+static void Run() 
+{
+    ivr->Start();
+    queue->Start();
+    activeSession->Start();
+}
+
+static void Destroy()
+{
+    ivr->Stop();
+    queue->Stop();
+    activeSession->Stop();
+}
+
+static void sigint_handler(int)
+{
+    g_running = false;
+}
 
 
-
-
-
-enum Commands
+enum class Commands
 {
     help,           // хелп справка
   //  ivr,            // кто в IVR
@@ -40,25 +72,25 @@ enum Commands
     statistics,     // отобразить статистику
     remote,         // проверка есть ли удаленные команды на добавление\удаление очереди
     housekeeping,   // внутренния задания на очистку БД таблиц (queue, logging, ivr)
-    test,           // test remove after
+   // test,           // test remove after
 };
 
 // получить команду
 Commands static getCommand(char *ch) {
     std::string commands = static_cast<std::string> (ch);
 
-    if (commands == "help")              return help;
+    if (commands == "help")              return Commands::help;
    // if (commands == "ivr")               return ivr;
    // if (commands == "queue")             return queue;
   //  if (commands == "active_sip")        return active_sip_old;
   //  if (commands == "connect_bd")        return connect_bd;
-    if (commands == "start")             return start;
-    if (commands == "statistics")        return statistics;
-    if (commands == "remote")            return remote;
-    if (commands == "housekeeping")      return housekeeping;
-    if (commands == "test")              return test;
+    if (commands == "start")             return Commands::start;
+    if (commands == "statistics")        return Commands::statistics;
+    if (commands == "remote")            return Commands::remote;
+    if (commands == "housekeeping")      return Commands::housekeeping;
+   // if (commands == "test")              return Commands::test;
 
-    return help;                         // default;
+    return Commands::help;                         // default;
 }
 
 
@@ -69,7 +101,7 @@ Commands static getCommand(char *ch) {
 
 // запуск проверки удаленных команд
 static void thread_RemoteCommands() {
-    REMOTE_COMMANDS::Remote remote;
+    REMOTE_COMMANDS_old::Remote remote;
     if (remote.getCountCommand())
     {
         remote.startCommand();
@@ -113,7 +145,7 @@ static void stat() {
 
         
         // проверка
-        REMOTE_COMMANDS::Remote remote;
+        REMOTE_COMMANDS_old::Remote remote;
         if (remote.getCountCommand())
         {
             remote.startCommand();
@@ -126,8 +158,8 @@ static void stat() {
         std::cout << "\ntime execute code: " << execute_ms.count() << " ms\n";
         all += execute_ms.count();
 
-        if (execute_ms.count() < min) { min = execute_ms.count(); }
-        if (execute_ms.count() > max) { max = execute_ms.count(); }
+        if (execute_ms.count() < min) { min = static_cast<uint64_t>(execute_ms.count()); }
+        if (execute_ms.count() > max) { max = static_cast<uint64_t>(execute_ms.count()); }
 
         std::cout << "avg execute = " << all / i << " ms | min execute = " << min << " ms | max execute = " << max << " ms\n";
                
@@ -196,8 +228,8 @@ static void collect() {
 
         all += execute_ms.count();
 
-        if (execute_ms.count() < min) { min = execute_ms.count(); }
-        if (execute_ms.count() > max) { max = execute_ms.count(); }
+        if (execute_ms.count() < min) { min = static_cast<int>(execute_ms.count()); }
+        if (execute_ms.count() > max) { max = static_cast<int>(execute_ms.count()); }
 
         std::cout  << "avg execute = " << all / i << " ms | min execute = " << min << " ms | max execute = " << max << " ms\n";       
 
@@ -223,12 +255,6 @@ static void collect() {
     }
 }
 
-static std::atomic<bool> g_running(true);
-
-void sigint_handler(int)
-{
-    g_running = false;
-}
 
 int main(int argc, char *argv[])
 {
@@ -251,13 +277,8 @@ int main(int argc, char *argv[])
    
    
     {        
-        IVR ivr;
-        Queue queue; 
-        ActiveSession activeSession(queue);
-        
-        ivr.Start();            // запускаем поток
-        queue.Start();          // запускаем поток
-        activeSession.Start();  // запускаем поток
+        Init();        
+        Run();
         
         static int _val = 0;
 
@@ -265,18 +286,19 @@ int main(int argc, char *argv[])
         {
             auto start = std::chrono::steady_clock::now();
 
-            ivr.Parsing();
-            queue.Parsing();
-            activeSession.Parsing();          
+            ivr->Parsing();
+            queue->Parsing();
+            activeSession->Parsing();
 
+            changeStatus->Execute();
 
             auto stop = std::chrono::steady_clock::now();
             auto execute_ms = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
             std::cout << "\ntime execute code: " << execute_ms.count() << " ms\n";
 
-            if (activeSession.IsExistRawData())
+            if (activeSession->IsExistRawData())
             {
-                printf("All RawData activeSession = %u\n ", activeSession.GetRawAllData().size());                
+                printf("All RawData activeSession = %u\n ", activeSession->GetRawAllData().size());
             }
             else
             {
@@ -294,9 +316,7 @@ int main(int argc, char *argv[])
        
         std::cout << "\nStopping server...\n";
         
-        ivr.Stop();
-        queue.Stop();
-        activeSession.Stop();
+        Destroy();
         
         server.stop();
         std::cout << "Server stopped.\n";
@@ -334,7 +354,7 @@ int main(int argc, char *argv[])
     // пошли запросики
     switch (ch)
     {
-        case(help): {
+    case(Commands::help): {
             showHelpInfo();
             break;
         }
@@ -359,20 +379,20 @@ int main(int argc, char *argv[])
                  
             break;
         }     */   
-        case(start):      {         
+        case(Commands::start):      {
             collect();
             break;
         }    
-        case(statistics): {
+        case(Commands::statistics): {
             stat();
             break;
         }
-        case(remote): {
+        case(Commands::remote): {
           /* REMOTE_COMMANDS::Remote remote;            
             remote.chekNewCommand() ? std::cout << "New command EXIST\n" : std::cout << "New command NO EXIST\n";         
             break;*/
         }
-        case(housekeeping): {   
+        case(Commands::housekeeping): {
             HOUSEKEEPING::HouseKeeping task;           
             std::cout << "create Task and execute -> TaskQueue\n";
             task.createTask(HOUSEKEEPING::TASKS::TaskQueue);
@@ -394,16 +414,16 @@ int main(int argc, char *argv[])
 
             break;
         }
-        case(test): {
-            
-            SQL_REQUEST::SQL base;
-            if (base.isConnectedBD())
-            {
-               // base.updateOperatorsOnHold(&this);
-            }
+        //case(Commands::test): {
+        //    
+        //    SQL_REQUEST::SQL base;
+        //    if (base.isConnectedBD())
+        //    {
+        //       // base.updateOperatorsOnHold(&this);
+        //    }
 
-            break;
-        }
+        //    break;
+        //}
     }
      return 0;
 };

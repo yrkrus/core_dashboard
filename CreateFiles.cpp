@@ -97,7 +97,7 @@ void FileTXT::Run()
  	{ 
 		if (!GetFile(errorDescription))
 		{
-			printf('/n'+errorDescription.c_str());  // TODO тут потом подумать может в лог писать!?			
+			printf("%s",errorDescription.c_str());  // TODO тут потом подумать может в лог писать!?			
 		}		
 		
 		std::this_thread::sleep_for(std::chrono::seconds(1)); // «адержка между вызовами TODO потом ее увеличить\уменьшить!?

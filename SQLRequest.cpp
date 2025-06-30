@@ -32,7 +32,7 @@ void SQL_REQUEST::SQL::createMySQLConnect(MYSQL &mysql)
 		
 		if (CONSTANTS::SAFE_LOG) {
 			if (CONSTANTS::LOG_MODE_ERROR) {
-				LOG::LogToFile log(LOG::eLogType_ERROR);
+				LOG_old::LogToFile log(LOG_old::eLogType_ERROR);
 				log.add("Error: can't create MySQL-descriptor");
 			}
 		}
@@ -554,46 +554,46 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //}
 
 // существует ли такой номер в таблице QUEUE чтобы добавить sip оператора который с разговор ведет
-bool SQL_REQUEST::SQL::isExistQUEUE_SIP(const char *phone)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return true;
-	}
-	
-	const std::string query = "select count(phone) from queue where phone = '" + std::string(phone)
-							+ "' and date_time > '" + getCurrentStartDay() 
-							+ "' order by date_time desc limit 1";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		// ошибка считаем что есть запись		
-		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
-		return true;
-	}
-
-	// результат
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row = mysql_fetch_row(result);
-	
-	bool existQueueSip;
-	(std::stoi(row[0]) == 0 ? existQueueSip = false : existQueueSip = true);
-	
-	mysql_free_result(result);
-
-	return existQueueSip;
-	
-}
+//bool SQL_REQUEST::SQL::isExistQUEUE_SIP(const char *phone)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return true;
+//	}
+//	
+//	const std::string query = "select count(phone) from queue where phone = '" + std::string(phone)
+//							+ "' and date_time > '" + getCurrentStartDay() 
+//							+ "' order by date_time desc limit 1";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		// ошибка считаем что есть запись		
+//		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+//		return true;
+//	}
+//
+//	// результат
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row = mysql_fetch_row(result);
+//	
+//	bool existQueueSip;
+//	(std::stoi(row[0]) == 0 ? existQueueSip = false : existQueueSip = true);
+//	
+//	mysql_free_result(result);
+//
+//	return existQueueSip;
+//	
+//}
 
 //обновление данных когда звонок не дождался своей очереди
 //void SQL_REQUEST::SQL::updateQUEUE_fail(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list)
@@ -640,33 +640,33 @@ bool SQL_REQUEST::SQL::isExistQUEUE_SIP(const char *phone)
 //}
 
 // обновление данных когда звонок не дождался своей очереди
-void SQL_REQUEST::SQL::updateQUEUE_fail()
-{
-	// обновляем данные
-	std::string query = "update queue set fail = '1' where date_time > '" + getCurrentDateTimeAfter20hours() + "' and answered = '0' and sip = '-1' ";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		//showErrorBD(METHOD_NAME+" -> Data (updateQUEUE_fail) error -> query(" + query + ")", &this->mysql);
-	};
-
-	mysql_close(&this->mysql);
-}
+//void SQL_REQUEST::SQL::updateQUEUE_fail()
+//{
+//	// обновляем данные
+//	std::string query = "update queue set fail = '1' where date_time > '" + getCurrentDateTimeAfter20hours() + "' and answered = '0' and sip = '-1' ";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		//showErrorBD(METHOD_NAME+" -> Data (updateQUEUE_fail) error -> query(" + query + ")", &this->mysql);
+//	};
+//
+//	mysql_close(&this->mysql);
+//}
 
 // обновление данных когда у нас звонок из IVR попал в очередь
 //void SQL_REQUEST::SQL::updateIVR_to_queue(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list)
@@ -714,45 +714,45 @@ void SQL_REQUEST::SQL::updateQUEUE_fail()
 
 
 // проверка есть ли номера которые позвонили после 20:00
-bool SQL_REQUEST::SQL::isExistQueueAfter20hours()
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return true;
-	}
-
-	const std::string query = "select count(phone) from queue where date_time > '"
-		+ getCurrentDateTimeAfter20hours() + "' and sip = '-1' and answered = '0' and fail = '0' order by date_time desc ";
-	
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-	
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		// ошибка считаем что есть запись		
-		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
-		return true;
-	}
-
-	// результат
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row = mysql_fetch_row(result);
-	
-	bool existQueueAfter20hours;
-	(std::stoi(row[0]) == 0 ? existQueueAfter20hours = false : existQueueAfter20hours = true);
-
-	mysql_free_result(result);	
-	mysql_close(&this->mysql); 
-			
-	return existQueueAfter20hours;
-}
+//bool SQL_REQUEST::SQL::isExistQueueAfter20hours()
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return true;
+//	}
+//
+//	const std::string query = "select count(phone) from queue where date_time > '"
+//		+ getCurrentDateTimeAfter20hours() + "' and sip = '-1' and answered = '0' and fail = '0' order by date_time desc ";
+//	
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//	
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		// ошибка считаем что есть запись		
+//		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+//		return true;
+//	}
+//
+//	// результат
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row = mysql_fetch_row(result);
+//	
+//	bool existQueueAfter20hours;
+//	(std::stoi(row[0]) == 0 ? existQueueAfter20hours = false : existQueueAfter20hours = true);
+//
+//	mysql_free_result(result);	
+//	mysql_close(&this->mysql); 
+//			
+//	return existQueueAfter20hours;
+//}
 
 // обновление поля hash когда успешно поговорили
 //void SQL_REQUEST::SQL::updateQUEUE_hash(const std::vector<QUEUE_OLD::Pacients_old> &pacient_list)
@@ -861,46 +861,46 @@ bool SQL_REQUEST::SQL::isExistQueueAfter20hours()
 
 
 // проверка есть ли номера которым нужно проставить статус отвечено после того как оператор ушел из линии
-bool SQL_REQUEST::SQL::isExistAnsweredAfter20hours()
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return true;
-	}
-
-	const std::string query = "select count(id) from queue where date_time > '"
-		+ getCurrentStartDay() + "' and answered = '1' and fail = '0' and hash is NULL";
-
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		// ошибка считаем что есть запись		
-		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
-		return true;
-	}
-
-	// результат
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row = mysql_fetch_row(result);
-	
-	bool existAnsweredAfter20;
-	(std::stoi(row[0]) == 0 ? existAnsweredAfter20 = false : existAnsweredAfter20 = true);
-
-	mysql_free_result(result);
-	mysql_close(&this->mysql); 
-
-	return existAnsweredAfter20;
-}
+//bool SQL_REQUEST::SQL::isExistAnsweredAfter20hours()
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return true;
+//	}
+//
+//	const std::string query = "select count(id) from queue where date_time > '"
+//		+ getCurrentStartDay() + "' and answered = '1' and fail = '0' and hash is NULL";
+//
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		// ошибка считаем что есть запись		
+//		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+//		return true;
+//	}
+//
+//	// результат
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row = mysql_fetch_row(result);
+//	
+//	bool existAnsweredAfter20;
+//	(std::stoi(row[0]) == 0 ? existAnsweredAfter20 = false : existAnsweredAfter20 = true);
+//
+//	mysql_free_result(result);
+//	mysql_close(&this->mysql); 
+//
+//	return existAnsweredAfter20;
+//}
 
 // обновление данных когда оператор поговорил и ушел из линии, а звонок все еще находится не обработанным
 //void SQL_REQUEST::SQL::updateAnswered_fail()
@@ -1324,7 +1324,7 @@ int SQL_REQUEST::SQL::getIVR_totalCalls()
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -1412,7 +1412,7 @@ int SQL_REQUEST::SQL::getQUEUE_Calls(bool answered)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -1429,7 +1429,7 @@ int SQL_REQUEST::SQL::getQUEUE_Calls(bool answered)
 	MYSQL_ROW row = mysql_fetch_row(result);
 	mysql_free_result(result);
 
-	mysql_close(&this->mysql); // под вопросом?
+	mysql_close(&this->mysql); 
 
 	return std::stoi(row[0]);
 }
@@ -1476,7 +1476,7 @@ bool SQL_REQUEST::SQL::remoteCheckNewCommads()
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -1503,7 +1503,7 @@ bool SQL_REQUEST::SQL::remoteCheckNewCommads()
 
 
 // генерация текущиъ найденных команд
-void SQL_REQUEST::SQL::createListRemoteCommands(std::vector<REMOTE_COMMANDS::R_Commands> &list)
+void SQL_REQUEST::SQL::createListRemoteCommands(std::vector<REMOTE_COMMANDS_old::R_Commands_old> &list)
 {	
 	
 	if (!isConnectedBD())
@@ -1518,7 +1518,7 @@ void SQL_REQUEST::SQL::createListRemoteCommands(std::vector<REMOTE_COMMANDS::R_C
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -1539,7 +1539,7 @@ void SQL_REQUEST::SQL::createListRemoteCommands(std::vector<REMOTE_COMMANDS::R_C
 		
 		int id;						// id команды (для удобного поиска в запросе)
 		std::string sip;			// sip инициализировавший команду
-		LOG::Log command;			// сама команда (int)
+		LOG_old::ecStatus command;			// сама команда (int)
 		std::string ip;				// ip с которого пришла команда
 		int user_id;				// id пользователя по БД
 		std::string user_login_pc;	// логин зареган на пк с которого пришла команда
@@ -1583,7 +1583,7 @@ void SQL_REQUEST::SQL::createListRemoteCommands(std::vector<REMOTE_COMMANDS::R_C
 }
 
 // запуск удаленной команды
-void SQL_REQUEST::SQL::startRemoteCommand(int id, std::string sip, LOG::Log command, int user_id)
+void SQL_REQUEST::SQL::startRemoteCommand(int id, std::string sip, LOG_old::ecStatus command, int user_id)
 {
 	if (!isConnectedBD())
 	{
@@ -1601,7 +1601,7 @@ void SQL_REQUEST::SQL::startRemoteCommand(int id, std::string sip, LOG::Log comm
 	switch (command)
 	{
 		// добавленние в очередь 5000 или 5050	
-		case LOG::Log::Log_add_queue_5000 ... LOG::Log::Log_add_queue_5050 :  
+		case LOG_old::ecStatus::Log_add_queue_5000 ... LOG_old::ecStatus::Log_add_queue_5050 :
 		{			
 			std::string responce = CONSTANTS::cRemoteCommandResponseAdd;
 			
@@ -1620,11 +1620,11 @@ void SQL_REQUEST::SQL::startRemoteCommand(int id, std::string sip, LOG::Log comm
 			position = responce.find(repl_queue);
 			
 			//в какую очередь поставить оператора
-			if (command == LOG::Log::Log_add_queue_5000) 
+			if (command == LOG_old::ecStatus::Log_add_queue_5000)
 			{
 				curr_queue = CONSTANTS::AsteriskQueue::main;
 			}
-			else if (command == LOG::Log::Log_add_queue_5050) 
+			else if (command == LOG_old::ecStatus::Log_add_queue_5050)
 			{
 				curr_queue = CONSTANTS::AsteriskQueue::lukoil;
 			}
@@ -1640,20 +1640,20 @@ void SQL_REQUEST::SQL::startRemoteCommand(int id, std::string sip, LOG::Log comm
 			break;
 		}		
 		// добавление в очередь 5000+5050
-		case LOG::Log::Log_add_queue_5000_5050: {		 
+		case LOG_old::ecStatus::Log_add_queue_5000_5050: {
 			
-			LOG::Log command = LOG::Log::Log_add_queue_5000;			
+			LOG_old::ecStatus command = LOG_old::ecStatus::Log_add_queue_5000;
 			// ставим 5000
 			startRemoteCommand(id,sip, command, user_id);
 
 
-			command = LOG::Log::Log_add_queue_5050;
+			command = LOG_old::ecStatus::Log_add_queue_5050;
 			// ставим 5050
 			startRemoteCommand(id, sip, command, user_id);
 			
 			break;
 		}	
-		case LOG::Log::Log_del_queue_5000 ... LOG::Log::Log_del_queue_5050:
+		case LOG_old::ecStatus::Log_del_queue_5000 ... LOG_old::ecStatus::Log_del_queue_5050:
 			{
 
 			std::string responce = CONSTANTS::cRemoteCommandResponseDel;
@@ -1669,11 +1669,11 @@ void SQL_REQUEST::SQL::startRemoteCommand(int id, std::string sip, LOG::Log comm
 			position = responce.find(repl_queue);
 
 			//в какую очередь поставить оператора
-			if (command == LOG::Log::Log_del_queue_5000)
+			if (command == LOG_old::ecStatus::Log_del_queue_5000)
 			{
 				curr_queue = CONSTANTS::AsteriskQueue::main;
 			}
-			else if (command == LOG::Log::Log_del_queue_5050)
+			else if (command == LOG_old::ecStatus::Log_del_queue_5050)
 			{
 				curr_queue = CONSTANTS::AsteriskQueue::lukoil;
 			}
@@ -1689,24 +1689,24 @@ void SQL_REQUEST::SQL::startRemoteCommand(int id, std::string sip, LOG::Log comm
 			break;
 		}	
 			// удаление из очереди 5000+5050
-		case LOG::Log::Log_del_queue_5000_5050:
+		case LOG_old::ecStatus::Log_del_queue_5000_5050:
 		{
 
-			LOG::Log command = LOG::Log::Log_del_queue_5000;
+			LOG_old::ecStatus command = LOG_old::ecStatus::Log_del_queue_5000;
 			// ставим 5000
 			startRemoteCommand(id, sip, command, user_id);
 
 
-			command = LOG::Log::Log_del_queue_5050;
+			command = LOG_old::ecStatus::Log_del_queue_5050;
 			// ставим 5050
 			startRemoteCommand(id, sip, command, user_id);
 
 			break;
 		}
 			// исход
-		case LOG::Log::Log_home ... LOG::Log::Log_callback : {
+		case LOG_old::ecStatus::Log_home ... LOG_old::ecStatus::Log_callback : {
 			// ну тут все просто не зависимо от того в какой очереди находимся выходим из всех очередей
-			LOG::Log command = LOG::Log::Log_del_queue_5000_5050;			
+			LOG_old::ecStatus command = LOG_old::ecStatus::Log_del_queue_5000_5050;
 			startRemoteCommand(id, sip, command, user_id);
 		}
 	}
@@ -1728,7 +1728,7 @@ void SQL_REQUEST::SQL::deleteRemoteCommand(int id)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -1742,7 +1742,7 @@ void SQL_REQUEST::SQL::deleteRemoteCommand(int id)
 }
 
 // обновление текущего статуса оператора
-void SQL_REQUEST::SQL::updateStatusOperators(int user_id, REMOTE_COMMANDS::ecStatusOperators status)
+void SQL_REQUEST::SQL::updateStatusOperators(int user_id, remote::ecStatusOperator status)
 {
 	if (!isConnectedBD())
 	{
@@ -1756,7 +1756,7 @@ void SQL_REQUEST::SQL::updateStatusOperators(int user_id, REMOTE_COMMANDS::ecSta
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -1772,7 +1772,7 @@ void SQL_REQUEST::SQL::updateStatusOperators(int user_id, REMOTE_COMMANDS::ecSta
 }
 
 // создание лога в БД
-void SQL_REQUEST::SQL::addLog(LOG::Log command, int base_id)
+void SQL_REQUEST::SQL::addLog(LOG_old::ecStatus command, int base_id)
 {
 	if (!isConnectedBD())
 	{
@@ -1788,7 +1788,7 @@ void SQL_REQUEST::SQL::addLog(LOG::Log command, int base_id)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -1849,7 +1849,7 @@ void SQL_REQUEST::SQL::addLog(LOG::Log command, int base_id)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
@@ -1878,7 +1878,7 @@ void SQL_REQUEST::SQL::execTaskQueue()
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -1987,7 +1987,7 @@ void SQL_REQUEST::SQL::execTaskLogging()
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2084,7 +2084,7 @@ void SQL_REQUEST::SQL::execTaskIvr()
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2185,7 +2185,7 @@ void SQL_REQUEST::SQL::execTaskOnHold()
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2276,7 +2276,7 @@ void SQL_REQUEST::SQL::execTaskSmsSending()
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2414,7 +2414,7 @@ bool SQL_REQUEST::SQL::insertDataTaskQueue(HOUSEKEEPING::Queue_old &queue)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
@@ -2445,7 +2445,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskQueue(int ID)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2482,7 +2482,7 @@ bool SQL_REQUEST::SQL::insertDataTaskLogging(HOUSEKEEPING::Logging &logging)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
@@ -2512,7 +2512,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskLogging(int ID)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2549,7 +2549,7 @@ bool SQL_REQUEST::SQL::insertDataTaskIvr(HOUSEKEEPING::IVR_ &ivr)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
@@ -2579,7 +2579,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskIvr(int ID)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2614,7 +2614,7 @@ bool SQL_REQUEST::SQL::insertDataTaskOnHold(HOUSEKEEPING::OnHold &onHold)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
@@ -2645,7 +2645,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskOnHold(int ID)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2703,7 +2703,7 @@ bool SQL_REQUEST::SQL::insertDataTaskSmsSending(const HOUSEKEEPING::SmsSending &
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
@@ -2734,7 +2734,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskSmsSending(int _id)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG::LogToFile log(LOG::eLogType_DEBUG);
+			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}

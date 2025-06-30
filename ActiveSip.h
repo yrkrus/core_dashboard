@@ -12,7 +12,10 @@
 #define ACTIVESIP_H
 
 static std::string SESSION_SIP_RESPONSE		= "asterisk -rx \"core show channels concise\"";
-static std::string SESSION_QUEUE_RESPONSE = "asterisk -rx \"queue show %queue\"";
+static std::string SESSION_QUEUE_RESPONSE	= "asterisk -rx \"queue show %queue\"";
+
+//class ActiveSession;
+
 
 typedef std::vector<ecQueueNumber> QueueList;
 
@@ -50,7 +53,7 @@ namespace active_sip
 	class ActiveSession : public IAsteriskData	// класс в котором будет жить данные по активным сессиям операторов 
 	{
 	public:
-		ActiveSession(Queue &_queue);
+		explicit ActiveSession(const SP_Queue &_queue);
 		~ActiveSession() override;
 
 		void Start() override;
@@ -58,7 +61,7 @@ namespace active_sip
 		void Parsing() override;				// разбор сырых данных
 		
 	private:
-		Queue				&m_queueSession;	// ссылка на очереди
+		const SP_Queue		&m_queueSession;	// ссылка на очереди
 		
 		OperatorList		m_listOperators;	// TODO может лучше в shared_ptr потом обернуть
 		ActiveCallList		m_listCall;			// TODO может лучше в shared_ptr потом обернуть
@@ -107,9 +110,8 @@ namespace active_sip
 
 		void CheckOnHold(OnHoldList &_onHoldList);		// Основная проверка отключение\добавление onHold 
 	};
-
 }
-
+typedef std::shared_ptr<active_sip::ActiveSession> SP_ActiveSession;
 
 namespace ACTIVE_SIP_old
 {

@@ -424,7 +424,7 @@ using namespace INTERNALFUNCTION;
 //	return this->list_operators;
 //}
 
-active_sip::ActiveSession::ActiveSession(Queue &_queue)
+active_sip::ActiveSession::ActiveSession(const SP_Queue &_queue)
 	:IAsteriskData(CONSTANTS::TIMEOUT::ACTIVE_SESSION)
 	, m_queueSession(_queue)
 	, m_sql(std::make_shared<ISQLConnect>(false))
@@ -467,9 +467,12 @@ void active_sip::ActiveSession::Parsing()
 		UpdateActiveSessionCalls();
 	}
 	else 
-	{
-		// вдруг никого не осталось, тогда еще раз проверим очнереди
-		m_queueSession.UpdateCalls();
+	{		
+		if (!IsExistListOperators()) 
+		{
+			// вдруг никого не осталось, тогда еще раз проверим очнереди
+			m_queueSession->UpdateCallSuccess();
+		}		
 	}	
 }
 

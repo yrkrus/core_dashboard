@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-#include <iostream>
+//#include <iostream>
 #include <sstream>
 #include <map>
 
@@ -13,7 +13,7 @@
 #ifndef QUEUE_H
 #define QUEUE_H
 
-static std::string QUEUE_COMMANDS		= "Queue";
+static std::string QUEUE_COMMANDS		= "Queue|to-atsaero5005";
 static std::string QUEUE_COMMANDS_EXT1	= "App";
 static std::string QUEUE_REQUEST		= "asterisk -rx \"core show channels verbose\" | grep -E \"" + QUEUE_COMMANDS + "\" " + " | grep -v \"" + QUEUE_COMMANDS_EXT1 + "\"";
 
@@ -21,8 +21,11 @@ enum class ecQueueNumber
 {
 	eUnknown = 0,
 	e5000,
+	e5005,	// очередь для бабы железной
 	e5050,	
 };
+class Queue;
+typedef std::shared_ptr<Queue> SP_Queue;
 
 class Queue : public IAsteriskData
 {
@@ -51,14 +54,14 @@ public:
 	void Stop() override;
 	void Parsing() override;							// разбор сырых данных
 
-
-	void UpdateCalls();									// обновление звонков
-
-private:
+	void UpdateCallSuccess();							// обновление данных когда разговор успешно состоялся (все звонки)
+	private:
 	QueueCallsList		m_listQueue;
 	SP_SQL				m_sql;
 	
 	
+	void UpdateCalls();									// обновление звонков
+
 	bool FindQueueCallers();									// поиск текущих активных звонков
 
 	bool CreateQueueCallers(const std::string&, QueueCalls&);
@@ -68,22 +71,34 @@ private:
 
 	void InsertQueueCalls();							// добавление данных в БД
 	void InsertCall(const QueueCalls &_call);			// добавление нового звонка
+	void InsertCallVirtualOperator(const QueueCalls &_call);	// добавление нового звонка (виртуальный оператор лиза)
 	bool UpdateCall(int _id, const QueueCalls &_call, std::string &_errorDescription); // обновление существующего звонка
+	bool UpdateCallVirualOperator(int _id, const QueueCalls &_call, std::string &_errorDescription); // обновление существующего звонка (виртуальный оператор)
 	void UpdateCallFail(const QueueCallsList &_calls);	// обновление данных если звонок был в очереди, но не дождался ответа от оператора
-	void UpdateCallFail();								// обновление данных если звонок был в очереди, но не дождался ответа от оператора
-	void UpdateCallToIVR(const QueueCallsList &_calls);	// обновление данных когда у нас звонок из IVR попал в очередь
-	void UpdateCallSuccess(const QueueCallsList &_calls);// обновление данных когда разговор успешно состоялся
-
+	//void UpdateCallFail();								// обновление данных если звонок был в очереди, но не дождался ответа от оператора
+	void UpdateCallIvr(const QueueCallsList &_calls);	// обновление данных когда у нас звонок из IVR попал в очередь или на виртуального оператора
+	void UpdateCallIvrToQueue(const QueueCallsList &_calls);	// звонок из IVR попал в очередь
+	void UpdateCallIvrToVirtualOperator (const QueueCallsList &_calls);	// звонок из IVR попал на виртуального оператора
+	
+	void UpdateCallSuccess(const QueueCallsList &_calls);				// обновление данных когда разговор успешно состоялся
+	void UpdateCallSuccessRealOperator(const QueueCallsList &_calls);	// разговор успешно состоялся реальный оператор
+	void UpdateCallSuccessVirtualOperator(const QueueCallsList &_calls);// разговор успешно состоялся виртуальный оператор
+	
 	bool IsExistCall(ecQueueNumber _queue, const std::string &_phone);	// есть ли уже такой номер в БД
+	bool IsExistCallVirtualOperator(ecQueueNumber _queue, const std::string &_phone);	// есть ли уже такой номер в БД (виртуальный оператор)
+
 	int GetLastQueueCallId(const std::string &_phone);					// id записи по БД о звонке
+	int GetLastQueueVirtualOperatorCallId(const std::string &_phone);	// id записи по БД о звонке(виртуальный оператор)
 
 	bool GetCallsInBase(CallsInBaseList &_vcalls, const QueueCallsList &_queueCalls, std::string &_errorDescription); // получение записей из БД 
 	bool GetCallsInBase(CallsInBaseList &_vcalls, std::string &_errorDescription);						// получение записей из БД 
+	bool GetCallsInBaseVirtualOperator(CallsInBaseList &_vcalls, const QueueCallsList &_queueCalls, std::string &_errorDescription); // получение записей из БД (виртуальный оператор)
+	bool GetCallsInBaseVirtualOperator(CallsInBaseList &_vcalls, std::string &_errorDescription);	// получение записей из БД (виртуальный оператор)
 
-	bool IsExistCallAfter20Hours(std::string &_errorDescription);			// есть ли звонок после 20:00
-	void UpdateCallsAfter20hours();											// есть потеряшки которые звонили после 20:00, обновить их
-	bool IsExistCallAnsweredAfter20hours(std::string &_errorDescription);	// есть ли не про hash'нные номера, когда оператор уже закончил разговор и ушел из линии
-	void UpdateCallAnsweredAfter20hours();									// есть не про hash'нные номера обновляем их
+	//bool IsExistCallAfter20Hours(std::string &_errorDescription);			// есть ли звонок после 20:00
+	//void UpdateCallsAfter20hours();											// есть потеряшки которые звонили после 20:00, обновить их
+	bool IsExistAnyAnsweredCall();					// есть ли не про hash'нные номера, когда оператор уже закончил разговор и ушел из линии
+	void UpdateAllAnyAnsweredCalls();				// есть не про hash'нные номера обновляем их (ВСЕ!)
 
 	
 
@@ -96,6 +111,7 @@ template<>
 inline ecQueueNumber StringToEnum<ecQueueNumber>(const std::string &_str)
 {
 	if (_str.find("5000") != std::string::npos)		return ecQueueNumber::e5000;
+	if (_str.find("5005") != std::string::npos)		return ecQueueNumber::e5005;
 	if (_str.find("5050") != std::string::npos)		return ecQueueNumber::e5050;	
 
 	return ecQueueNumber::eUnknown;
@@ -111,6 +127,7 @@ inline std::string EnumToString<ecQueueNumber>(ecQueueNumber _number)
 	{
 		{ecQueueNumber::eUnknown,	"Unknown"},
 		{ecQueueNumber::e5000,		"5000"},
+		{ecQueueNumber::e5005,		"5005"},
 		{ecQueueNumber::e5050,		"5050"},
 	};
 

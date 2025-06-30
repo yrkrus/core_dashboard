@@ -4,8 +4,8 @@
 using namespace INTERNALFUNCTION;
 
 ISQLConnect::ISQLConnect(bool _autoConnect)
-    : m_initialized(false),
-    m_connected(false)
+    : m_connected(false)
+    , m_initialized(false)
 {
     if (!mysql_init(&m_mysql))
     {

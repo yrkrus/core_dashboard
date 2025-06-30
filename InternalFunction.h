@@ -43,8 +43,8 @@ namespace INTERNALFUNCTION {
 	// функции работы со временем (формат год-месяц-день 00:00:00 )
 	std::string getCurrentDateTime();							// текущее время 
 	std::string getCurrentStartDay();							// текущее начало дня
-	std::string getCurrentDateTimeAfterMinutes(int minutes);	// текущее время -(МИНУС) указанная минута 
-	std::string getCurrentDateTimeAfter20hours();				// текущее время после 20:00 
+	std::string getCurrentDateTimeAfterMinutes(int minutes);	// текущее время - (МИНУС) указанная минута 
+	//std::string getCurrentDateTimeAfter20hours();				// текущее время после 20:00 
 
 	void showVersionCore(unsigned int iter);					// показ версии ядра
 
@@ -54,14 +54,14 @@ namespace INTERNALFUNCTION {
 	void showErrorBD(const std::string str); // отображжение инфо что не возможно подключиться к бд
 	void showErrorBD(const std::string str, MYSQL *mysql); // отображение инфо что пошла какая то ошибка
 
-	LOG::Log getRemoteCommand(int command);	// преобразование текущей удаленной комады из int -> LOG::Log
-	int getRemoteCommand(LOG::Log command); // преобразование текущей удаленной комады из LOG::Log -> int
-	int getStatusOperators(REMOTE_COMMANDS::ecStatusOperators status); // преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
+	LOG_old::ecStatus getRemoteCommand(int command);	// преобразование текущей удаленной комады из int -> LOG::Log
+	int getRemoteCommand(LOG_old::ecStatus command); // преобразование текущей удаленной комады из LOG::Log -> int
+	int getStatusOperators(remote::ecStatusOperator status); // преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
 	//bool isExistNewOnHoldOperators(const SP_OnHold &onHold, const Operators &operators); // проверка есть ли разница между onHold по БД и active_sip->onHold
 	//SP_NewOnHoldOperators createNewOnHoldOperators(const SP_OnHold &onHold, const Operators &operators);			// создание списка с новыми операторами в OnHold
 
 
-	bool remoteCommandChekedExecution(LOG::Log command);	// проверка успешно ли выполнили удаленную команду
+	bool remoteCommandChekedExecution(LOG_old::ecStatus command);	// проверка успешно ли выполнили удаленную команду
 
 	bool to_bool(const std::string &str);						// конвертер из std::string -> bool
 	std::string to_string(bool value);					// конвертер из bool -> std::string 

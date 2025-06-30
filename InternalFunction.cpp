@@ -282,23 +282,23 @@ std::string INTERNALFUNCTION::getCurrentDateTimeAfterMinutes(int minutes)
 }
 
 // текущее время после 20:00 
-std::string INTERNALFUNCTION::getCurrentDateTimeAfter20hours()
-{
-	auto now = std::chrono::system_clock::now();
-	std::time_t now_c = std::chrono::system_clock::to_time_t(now);
-	struct std::tm *now_tm = std::localtime(&now_c);
-
-	//формат год-месяц-день 00:00:00
-	std::string year = std::to_string((now_tm->tm_year + 1900));
-
-	std::string mon = std::to_string((now_tm->tm_mon + 1));
-	if (mon.length() == 1) { mon = "0" + mon; }
-
-	std::string day = std::to_string(now_tm->tm_mday);
-	if (day.length() == 1) { day = "0" + day; }
-
-	return year + "-" + mon + "-" + day + " 20:00:00";
-}
+//std::string INTERNALFUNCTION::getCurrentDateTimeAfter20hours()
+//{
+//	auto now = std::chrono::system_clock::now();
+//	std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+//	struct std::tm *now_tm = std::localtime(&now_c);
+//
+//	//формат год-месяц-день 00:00:00
+//	std::string year = std::to_string((now_tm->tm_year + 1900));
+//
+//	std::string mon = std::to_string((now_tm->tm_mon + 1));
+//	if (mon.length() == 1) { mon = "0" + mon; }
+//
+//	std::string day = std::to_string(now_tm->tm_mday);
+//	if (day.length() == 1) { day = "0" + day; }
+//
+//	return year + "-" + mon + "-" + day + " 20:00:00";
+//}
 
 // показ версии ядра
 void INTERNALFUNCTION::showVersionCore(unsigned int iter)
@@ -378,7 +378,7 @@ void INTERNALFUNCTION::showErrorBD(const std::string str)
 	{
 		if (CONSTANTS::LOG_MODE_ERROR) 
 		{
-			LOG::LogToFile log(LOG::eLogType_ERROR);
+			LOG_old::LogToFile log(LOG_old::eLogType_ERROR);
 			log.add(str +" -> Error: can't connect to database " + CONSTANTS::cHOST + ":" + CONSTANTS::cBD);
 		}
 	}
@@ -392,26 +392,26 @@ void INTERNALFUNCTION::showErrorBD(const std::string str, MYSQL *mysql)
 	{
 		if (CONSTANTS::LOG_MODE_ERROR)	
 		{
-			LOG::LogToFile log(LOG::eLogType_ERROR);
+			LOG_old::LogToFile log(LOG_old::eLogType_ERROR);
 			log.add(str + " " + mysql_error(mysql));
 		}
 	}
 }
 
 // преобразование текущей удаленной комады из int -> REMOTE_COMMANDS::Command 
-LOG::Log INTERNALFUNCTION::getRemoteCommand(int command)
+LOG_old::ecStatus INTERNALFUNCTION::getRemoteCommand(int command) // TODO переделать на template IntegerToEnum
 {
-	return static_cast<LOG::Log>(command);
+	return static_cast<LOG_old::ecStatus>(command);
 }
 
 // преобразование текущей удаленной комады из LOG::Log -> int
-int INTERNALFUNCTION::getRemoteCommand(LOG::Log command)
+int INTERNALFUNCTION::getRemoteCommand(LOG_old::ecStatus command)// TODO переделать на template EnumToInteger
 {
 	return static_cast<int>(command);
 }
 
 // преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
-int INTERNALFUNCTION::getStatusOperators(REMOTE_COMMANDS::ecStatusOperators status)
+int INTERNALFUNCTION::getStatusOperators(remote::ecStatusOperator status)// TODO переделать на template EnumToInteger
 {
 	return static_cast<int>(status);
 }
@@ -457,7 +457,7 @@ int INTERNALFUNCTION::getStatusOperators(REMOTE_COMMANDS::ecStatusOperators stat
 //}
 
 // проверка успешно ли выполнили удаленную команду
-bool INTERNALFUNCTION::remoteCommandChekedExecution(LOG::Log command)
+bool INTERNALFUNCTION::remoteCommandChekedExecution(LOG_old::ecStatus command)
 {	
 	
 	std::ifstream fileRemoteCommand;
@@ -473,9 +473,9 @@ bool INTERNALFUNCTION::remoteCommandChekedExecution(LOG::Log command)
 	while (std::getline(fileRemoteCommand, line)) {		
 		
 		// какую именно команду ищем
-		if (command == LOG::Log::Log_add_queue_5000 ||
-			command == LOG::Log::Log_add_queue_5050 ||
-			command == LOG::Log::Log_add_queue_5000_5050)
+		if (command == LOG_old::ecStatus::Log_add_queue_5000 ||
+			command == LOG_old::ecStatus::Log_add_queue_5050 ||
+			command == LOG_old::ecStatus::Log_add_queue_5000_5050)
 		{
 			if ((line.find("Added") != std::string::npos) || (line.find("Already there") != std::string::npos))
 			{
@@ -483,19 +483,19 @@ bool INTERNALFUNCTION::remoteCommandChekedExecution(LOG::Log command)
 				return true;				
 			}
 		}
-		else if (command == LOG::Log::Log_del_queue_5000		||
-				 command == LOG::Log::Log_del_queue_5050		||
-				 command == LOG::Log::Log_del_queue_5000_5050	||
-				 command == LOG::Log::Log_home					||
-				 command == LOG::Log::Log_exodus				||
-				 command == LOG::Log::Log_break					||
-				 command == LOG::Log::Log_dinner				||
-				 command == LOG::Log::Log_postvyzov				||
-				 command == LOG::Log::Log_studies				||
-				 command == LOG::Log::Log_IT					||
-				 command == LOG::Log::Log_transfer				||
-				 command == LOG::Log::Log_reserve				||
-				 command == LOG::Log::Log_callback) 
+		else if (command == LOG_old::ecStatus::Log_del_queue_5000		||
+				 command == LOG_old::ecStatus::Log_del_queue_5050		||
+				 command == LOG_old::ecStatus::Log_del_queue_5000_5050	||
+				 command == LOG_old::ecStatus::Log_home					||
+				 command == LOG_old::ecStatus::Log_exodus				||
+				 command == LOG_old::ecStatus::Log_break					||
+				 command == LOG_old::ecStatus::Log_dinner				||
+				 command == LOG_old::ecStatus::Log_postvyzov				||
+				 command == LOG_old::ecStatus::Log_studies				||
+				 command == LOG_old::ecStatus::Log_IT					||
+				 command == LOG_old::ecStatus::Log_transfer				||
+				 command == LOG_old::ecStatus::Log_reserve				||
+				 command == LOG_old::ecStatus::Log_callback)
 		{
 			if ((line.find("Removed") != std::string::npos) || (line.find("Not there") != std::string::npos))
 			{

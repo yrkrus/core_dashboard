@@ -15,10 +15,18 @@
 #include "ActiveSip.h"
 
 
+class Log 
+{
+private:
+    Log();
+    ~Log();
+public:
+};
 
-namespace LOG {
+
+namespace LOG_old {
 	
-	enum class Log
+	enum class ecStatus
 	{
         Log_enter                   = 0,         // Вход
         Log_exit                    = 1,         // Выход
@@ -49,7 +57,7 @@ namespace LOG {
         Logging()	= default;
 		~Logging()	= default;
     
-        void createLog(Log command, int base_id);       // создание лога
+        void createLog(ecStatus command, int base_id);       // создание лога
 	};
 
     

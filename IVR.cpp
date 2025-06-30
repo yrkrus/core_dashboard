@@ -338,7 +338,7 @@ bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 		// TODO тут в лог запись если не прошел по какой то причине 
 		if (!CheckCallers(_caller)) 
 		{
-			LOG::LogToFile log(LOG::eLogType_ERROR);
+			LOG_old::LogToFile log(LOG_old::eLogType_ERROR);
 			std::string err = std::string(__PRETTY_FUNCTION__) +"\t"+ _lines;
 			log.add(err);
 
