@@ -63,55 +63,55 @@ void REMOTE_COMMANDS_old::Remote::startCommand()
 					
 					
 					// ¬ј∆Ќќ!! адекватно работает только if else .. т.к. в кострукции swith case не находитс€ почему то параметр!!!
-					if (list.command == LOG_old::ecStatus::Log_add_queue_5000) {
+					if (list.command == remote::ecCommand::AddQueue5000) {
 						status = remote::ecStatusOperator::ecAvailable;							
 					}
-					else if (list.command == LOG_old::ecStatus::Log_add_queue_5050) {
+					else if (list.command == remote::ecCommand::AddQueue5050) {
 						status = remote::ecStatusOperator::ecAvailable;
 					}
-					else if (list.command == LOG_old::ecStatus::Log_add_queue_5000_5050) {
+					else if (list.command == remote::ecCommand::AddQueue5000_5050) {
 						status = remote::ecStatusOperator::ecAvailable;
 					}
-					else if (list.command == LOG_old::ecStatus::Log_del_queue_5000) {
+					else if (list.command == remote::ecCommand::DelQueue5000) {
 						status = remote::ecStatusOperator::ecAvailable;
 					} 
-					else if (list.command == LOG_old::ecStatus::Log_del_queue_5050)	{
+					else if (list.command == remote::ecCommand::DelQueue5050)	{
 						status = remote::ecStatusOperator::ecAvailable;
 					}
-					else if (list.command == LOG_old::ecStatus::Log_del_queue_5000_5050)	{
+					else if (list.command == remote::ecCommand::DelQueue5000_5050)	{
 						status = remote::ecStatusOperator::ecAvailable;
 					}
-					else if (list.command == LOG_old::ecStatus::Log_home)	{
+					else if (list.command == remote::ecCommand::Home)	{
 						status = remote::ecStatusOperator::ecHome;
 					}
-					else if (list.command == LOG_old::ecStatus::Log_exodus)	{
+					else if (list.command == remote::ecCommand::Exodus)	{
 						status = remote::ecStatusOperator::ecExodus;
 					}
-					else if (list.command == LOG_old::ecStatus::Log_break)	{
+					else if (list.command == remote::ecCommand::Break)	{
 						status = remote::ecStatusOperator::ecBreak;
 					}
-					else if (list.command == LOG_old::ecStatus::Log_dinner)	{
+					else if (list.command == remote::ecCommand::Dinner)	{
 						status = remote::ecStatusOperator::ecDinner;
 					}
-					else if (list.command == LOG_old::ecStatus::Log_postvyzov)	{
+					else if (list.command == remote::ecCommand::Postvyzov)	{
 						status = remote::ecStatusOperator::ecPostvyzov;
 					}
-					else if (list.command == LOG_old::ecStatus::Log_studies)	{
+					else if (list.command == remote::ecCommand::Studies)	{
 						status = remote::ecStatusOperator::ecStudies;
 					}
-					else if (list.command == LOG_old::ecStatus::Log_IT)
+					else if (list.command == remote::ecCommand::IT)
 					{
 						status = remote::ecStatusOperator::ecIt;
 					}
-					else if (list.command == LOG_old::ecStatus::Log_transfer)
+					else if (list.command == remote::ecCommand::Transfer)
 					{
 						status = remote::ecStatusOperator::ecTransfer;
 					}
-					else if (list.command == LOG_old::ecStatus::Log_reserve)
+					else if (list.command == remote::ecCommand::Reserve)
 					{
 						status = remote::ecStatusOperator::ecReserve;
 					}
-					else if (list.command == LOG_old::ecStatus::Log_callback)
+					else if (list.command == remote::ecCommand::Callback)
 					{
 						status = remote::ecStatusOperator::ecCallback;
 					}
@@ -207,8 +207,78 @@ bool remote::Status::GetCommand(std::string &_errorDesciption)
 // выполнение команды
 bool remote::Status::ExecuteCommand(const Command &_command, std::string &_errorDesciption)
 {
+	ecCommandType commandType = GetCommandType(_command);
+
+	bool status = false;
+	_errorDesciption = "command not found"; // default
+
+	switch (commandType)
+	{
+	case remote::ecCommandType::Unknown:		
+		return false;	
 	
+	case remote::ecCommandType::Del:
+		if (!Del(_command, _errorDesciption)) 
+		{
+			status = false;
+			break;
+		}
+		status = true;
+		break;
 	
+	case remote::ecCommandType::Add:
+		if (!Add(_command, _errorDesciption))
+		{
+			status = false;
+			break;
+		}
+		status = true;
+		break;
+	
+	default:
+		status = false;
+		break;
+	}
+	
+	return status;
+}
+
+// выполнение команды (добавление)
+bool remote::Status::Add(const Command &_command, std::string &_errorDesciption)
+{
+	_errorDesciption.clear();
+	
+	std::string request = COMMAND_ADD_QUEUE;
+	ecQueueNumber queue = GetQueueNumber(_command);
+
+	// замен€ем %queue на номер очереди
+	std::string repl = "%queue";
+	/*size_t position = request.find(repl);
+	request.replace(position, repl.length(), EnumToString<ecQueueNumber>(queue));*/
+
+	//std::string error;
+	//m_register.DeleteRawAll(); // очистим все текущие данные 
+
+	//if (!m_queue.CreateData(request, error))
+	//{
+	//	// TODO тут подумать что делать (пока след. очередь)
+	//	continue;
+	//}
+
+
+
+	//m_register
+
+
+	return false;
+}
+
+// выполнение команды (удаление)
+bool remote::Status::Del(const Command &_command, std::string &_errorDesciption)
+{
+	_errorDesciption.clear();
+
+	return false;
 }
 
 // не удачное выполнение команды
@@ -228,6 +298,67 @@ void remote::Status::ExecuteCommandFail(const Command &_command, const std::stri
 	m_sql->Disconnect();	
 }
 
+// поиск кака€ команда пришла
+remote::ecCommandType remote::Status::GetCommandType(const Command &_command)
+{	
+	// TODO может в будущем потом на std::map и static переделать
+	
+	switch (_command.command)
+	{
+		case ecCommand::Enter:
+		case ecCommand::Exit:
+		case ecCommand::AuthError:
+		case ecCommand::ExitForce: 
+						return ecCommandType::Unknown;				
+		
+		case ecCommand::AddQueue5000:
+		case ecCommand::AddQueue5050:
+		case ecCommand::AddQueue5000_5050: 
+						return ecCommandType::Add;
+		
+		case ecCommand::DelQueue5000: 
+		case ecCommand::DelQueue5050:
+		case ecCommand::DelQueue5000_5050:	
+		case ecCommand::Available:
+		case ecCommand::Home: 
+		case ecCommand::Exodus: 
+		case ecCommand::Break:
+		case ecCommand::Dinner: 
+		case ecCommand::Postvyzov: 
+		case ecCommand::Studies: 
+		case ecCommand::IT: 
+		case ecCommand::Transfer:
+		case ecCommand::Reserve:
+		case ecCommand::Callback: 
+						return ecCommandType::Del;
+	
+	default:
+		return ecCommandType::Unknown;
+	}	
+}
+
+// поиск номера очереди
+ecQueueNumber remote::Status::GetQueueNumber(const Command &_command)
+{
+	switch (_command.command) 
+	{	
+		case ecCommand::AddQueue5000:
+		case ecCommand::DelQueue5000:
+			return ecQueueNumber::e5000;
+
+		case ecCommand::AddQueue5050:
+		case ecCommand::DelQueue5050:
+			return ecQueueNumber::e5050;
+
+		case ecCommand::AddQueue5000_5050:
+		case ecCommand::DelQueue5000_5050:
+			return ecQueueNumber::e5000_e5050;
+	
+	default:
+			return ecQueueNumber::Unknown;
+	}
+}
+
 // выполнение команд
 void remote::Status::Execute()
 {
@@ -237,23 +368,21 @@ void remote::Status::Execute()
 		printf("%s", error.c_str());
 		return;
 	}
-
-	if (!IsExistCommand()) 
-	{
-		return;
-	}
-
+	
 	// выполнение команд
-	for (const auto &command : m_commandList) 
+	if (IsExistCommand()) 
 	{
-		std::string error;
-		if (!ExecuteCommand(command, error)) 
+		for (const auto &command : m_commandList)
 		{
-			printf("%s", error.c_str());
-			
-			// инфо в Ѕƒ что не успешно выполнили команду, дальше в gui это отображаетс€ у пользовател€
-			ExecuteCommandFail(command, error);
-			continue;  
+			std::string error;
+			if (!ExecuteCommand(command, error))
+			{
+				printf("%s", error.c_str());
+
+				// инфо в Ѕƒ что не успешно выполнили команду, дальше в gui это отображаетс€ у пользовател€
+				ExecuteCommandFail(command, error);
+				continue;
+			}
 		}
-	}
+	}	
 }

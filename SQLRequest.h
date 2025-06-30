@@ -21,6 +21,7 @@
 #ifndef SQLREQUEST_H
 #define	SQLREQUEST_H
 
+
 namespace SQL_REQUEST
 {
 	class SQL
@@ -77,13 +78,13 @@ namespace SQL_REQUEST
 		// RemoteComands
 		bool remoteCheckNewCommads();														// проверка если нова€ команда дл€  входа\выхода из очереди
 		void createListRemoteCommands(std::vector<REMOTE_COMMANDS_old::R_Commands_old> &list);	    // генераци€ текущиъ найденных команд
-		void startRemoteCommand(int id, std::string sip, LOG_old::ecStatus command, int user_id);	// запуск удаленной команды
+		void startRemoteCommand(int id, std::string sip, remote::ecCommand command, int user_id);	// запуск удаленной команды
 		void deleteRemoteCommand(int id);													// удаление успешно выполненной команды
 		void updateStatusOperators(int user_id, remote::ecStatusOperator status);	// обновление текущего статуса оператора
 
 
 		// Ћогирование 
-		void addLog(LOG_old::ecStatus command, int base_id);    // создание лога в Ѕƒ
+		void addLog(remote::ecCommand command, int base_id);    // создание лога в Ѕƒ
 		
 		
 		// Housekeeping

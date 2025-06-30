@@ -360,10 +360,10 @@ bool Queue::CreateQueueCallers(const std::string &_lines, QueueCalls &_queueCall
 bool Queue::CheckCallers(const QueueCalls &_caller)
 {
 	// если в phone или waiting есть подстрока "null" 
-	// или callerID == eUnknown Ч сразу false
+	// или callerID == Unknown Ч сразу false
 	if (_caller.phone.find("null") != std::string::npos ||
 		_caller.waiting.find("null") != std::string::npos ||
-		_caller.queue == ecQueueNumber::eUnknown)
+		_caller.queue == ecQueueNumber::Unknown)
 	{
 		return false;
 	}

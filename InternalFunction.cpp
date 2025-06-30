@@ -399,13 +399,13 @@ void INTERNALFUNCTION::showErrorBD(const std::string str, MYSQL *mysql)
 }
 
 // преобразование текущей удаленной комады из int -> REMOTE_COMMANDS::Command 
-LOG_old::ecStatus INTERNALFUNCTION::getRemoteCommand(int command) // TODO переделать на template IntegerToEnum
+remote::ecCommand INTERNALFUNCTION::getRemoteCommand(int command) // TODO переделать на template IntegerToEnum
 {
-	return static_cast<LOG_old::ecStatus>(command);
+	return static_cast<remote::ecCommand>(command);
 }
 
 // преобразование текущей удаленной комады из LOG::Log -> int
-int INTERNALFUNCTION::getRemoteCommand(LOG_old::ecStatus command)// TODO переделать на template EnumToInteger
+int INTERNALFUNCTION::getRemoteCommand(remote::ecCommand command)// TODO переделать на template EnumToInteger
 {
 	return static_cast<int>(command);
 }
@@ -457,7 +457,7 @@ int INTERNALFUNCTION::getStatusOperators(remote::ecStatusOperator status)// TODO
 //}
 
 // проверка успешно ли выполнили удаленную команду
-bool INTERNALFUNCTION::remoteCommandChekedExecution(LOG_old::ecStatus command)
+bool INTERNALFUNCTION::remoteCommandChekedExecution(remote::ecCommand command)
 {	
 	
 	std::ifstream fileRemoteCommand;
@@ -473,9 +473,9 @@ bool INTERNALFUNCTION::remoteCommandChekedExecution(LOG_old::ecStatus command)
 	while (std::getline(fileRemoteCommand, line)) {		
 		
 		// какую именно команду ищем
-		if (command == LOG_old::ecStatus::Log_add_queue_5000 ||
-			command == LOG_old::ecStatus::Log_add_queue_5050 ||
-			command == LOG_old::ecStatus::Log_add_queue_5000_5050)
+		if (command == remote::ecCommand::AddQueue5000 ||
+			command == remote::ecCommand::AddQueue5050 ||
+			command == remote::ecCommand::AddQueue5000_5050)
 		{
 			if ((line.find("Added") != std::string::npos) || (line.find("Already there") != std::string::npos))
 			{
@@ -483,19 +483,19 @@ bool INTERNALFUNCTION::remoteCommandChekedExecution(LOG_old::ecStatus command)
 				return true;				
 			}
 		}
-		else if (command == LOG_old::ecStatus::Log_del_queue_5000		||
-				 command == LOG_old::ecStatus::Log_del_queue_5050		||
-				 command == LOG_old::ecStatus::Log_del_queue_5000_5050	||
-				 command == LOG_old::ecStatus::Log_home					||
-				 command == LOG_old::ecStatus::Log_exodus				||
-				 command == LOG_old::ecStatus::Log_break					||
-				 command == LOG_old::ecStatus::Log_dinner				||
-				 command == LOG_old::ecStatus::Log_postvyzov				||
-				 command == LOG_old::ecStatus::Log_studies				||
-				 command == LOG_old::ecStatus::Log_IT					||
-				 command == LOG_old::ecStatus::Log_transfer				||
-				 command == LOG_old::ecStatus::Log_reserve				||
-				 command == LOG_old::ecStatus::Log_callback)
+		else if (command == remote::ecCommand::DelQueue5000		||
+				 command == remote::ecCommand::DelQueue5050		||
+				 command == remote::ecCommand::DelQueue5000_5050	||
+				 command == remote::ecCommand::Home					||
+				 command == remote::ecCommand::Exodus				||
+				 command == remote::ecCommand::Break					||
+				 command == remote::ecCommand::Dinner				||
+				 command == remote::ecCommand::Postvyzov				||
+				 command == remote::ecCommand::Studies				||
+				 command == remote::ecCommand::IT					||
+				 command == remote::ecCommand::Transfer				||
+				 command == remote::ecCommand::Reserve				||
+				 command == remote::ecCommand::Callback)
 		{
 			if ((line.find("Removed") != std::string::npos) || (line.find("Not there") != std::string::npos))
 			{

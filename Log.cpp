@@ -3,11 +3,12 @@
 #include <vector>
 #include "Constants.h"
 #include "InternalFunction.h"
+#include "RemoteCommands.h"
 
 using namespace INTERNALFUNCTION;
 
 // создание лога
-void LOG_old::Logging::createLog(ecStatus command, int base_id)
+void LOG_old::Logging::createLog(remote::ecCommand command, int base_id)
 {
 	SQL_REQUEST::SQL base;
 

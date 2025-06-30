@@ -11,10 +11,42 @@ static std::string COMMAND_ADD_QUEUE = "asterisk -rx \"queue add member Local/%s
 static std::string COMMAND_DEL_QUEUE = "asterisk -rx \"queue remove member Local/%sip@from-queue/n from %queue\" ";
 
 
-using namespace LOG_old;
-
 namespace remote
 {
+	// удаленные команды (ID команд такие же как и в БД)
+	enum class ecCommand
+	{
+		Enter				= 0,         // Вход
+		Exit				= 1,         // Выход
+		AuthError			= 2,         // не успешная авторизация
+		ExitForce			= 3,         // Выход (через команду force_closed)
+		AddQueue5000		= 4,         // добавление в очередь 5000
+		AddQueue5050		= 5,         // добавление в очередь 5050
+		AddQueue5000_5050	= 6,         // добавление в очередь 5000 и 5050
+		DelQueue5000		= 7,         // удаление из очереди 5000
+		DelQueue5050		= 8,         // удаление из очереди 5050
+		DelQueue5000_5050	= 9,         // удаление из очереди 5000 и 5050
+		Available			= 10,        // доступен
+		Home				= 11,        // домой        
+		Exodus				= 12,        // исход
+		Break				= 13,        // перерыв
+		Dinner				= 14,        // обед
+		Postvyzov			= 15,        // поствызов
+		Studies				= 16,        // учеба
+		IT					= 17,        // ИТ
+		Transfer			= 18,        // переносы
+		Reserve				= 19,        // резерв
+		Callback			= 20,        // callback
+	};
+	
+	
+	enum class ecCommandType
+	{
+		Unknown = -1,
+		Del,		// команда на добавление в очередь
+		Add			// команда на удаление из очереди
+	};
+	
 	enum class ecStatusOperator
 	{
 		ecAvailable = 1,	// доступен
@@ -32,10 +64,10 @@ namespace remote
 
 	struct Command
 	{
-		int			id;				// id команды (для удобного поиска в запросе)
-		std::string sip;			// sip инициализировавший команду
-		LOG_old::ecStatus	command;		// сама команда (int)
-		int			userId;			// id самого пользака
+		int			id;			// id команды (для удобного поиска в запросе)
+		std::string sip;		// sip инициализировавший команду
+		ecCommand	command;	// сама команда (int)
+		int			userId;		// id самого пользака
 	};
 	typedef std::vector<Command> CommandList;
 
@@ -55,15 +87,19 @@ namespace remote
 		SP_SQL				m_sql;
 		IPotokDispether		m_dispether;
 		IFile				m_register;			// запрос информации по регистрации\разрегистрации в очередях
-		Logging				m_log;
-
-
+		
 
 		bool IsExistCommand();
 		bool GetCommand(std::string &_errorDesciption); // получение новых команд из БД
 
 		bool ExecuteCommand(const Command &_command, std::string &_errorDesciption); // выполнение команды
+		bool Add(const Command &_command, std::string &_errorDesciption); // выполнение команды (добавление)
+		bool Del(const Command &_command, std::string &_errorDesciption); // выполнение команды (удаление)
+
 		void ExecuteCommandFail(const Command &_command, const std::string &_errorStr); // не удачное выполнение команды
+		
+		ecCommandType GetCommandType(const Command &_command); // поиск какая команда пришла
+		ecQueueNumber GetQueueNumber(const Command &_command); // поиск номера очереди
 	};
 };
 
@@ -71,15 +107,12 @@ typedef std::shared_ptr<remote::Status> SP_Status;
 
 
 namespace REMOTE_COMMANDS_old {
-
-	
-
-	
+		
 	struct R_Commands_old
 	{
 		int			id;				// id команды (для удобного поиска в запросе)
 		std::string sip;			// sip инициализировавший команду
-		LOG_old::ecStatus	command;		// сама команда (int)
+		remote::ecCommand	command;		// сама команда (int)
 		std::string ip;				// ip с которого пришла команда
 		int			user_id;		// id пользователя по БД
 		std::string user_login_pc;	// логин зареган на пк с которого пришла команда

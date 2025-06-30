@@ -19,10 +19,11 @@ static std::string QUEUE_REQUEST		= "asterisk -rx \"core show channels verbose\"
 
 enum class ecQueueNumber
 {
-	eUnknown = 0,
+	Unknown = 0,
 	e5000,
 	e5005,	// очередь для бабы железной
-	e5050,	
+	e5050,
+	e5000_e5050,	// сочетение 5000+5050 (испотльзуется почти никогда)
 };
 class Queue;
 typedef std::shared_ptr<Queue> SP_Queue;
@@ -34,7 +35,7 @@ public:
 	{
 		std::string phone	= "null";					// текущий номер телефона который в очереди сейчас
 		std::string waiting = "null";					// время в (сек) которое сейчас в очереди находится
-		ecQueueNumber queue	= ecQueueNumber::eUnknown;	// номер очереди
+		ecQueueNumber queue	= ecQueueNumber::Unknown;	// номер очереди
 	};
 	typedef std::vector<QueueCalls> QueueCallsList;
 
@@ -112,9 +113,10 @@ inline ecQueueNumber StringToEnum<ecQueueNumber>(const std::string &_str)
 {
 	if (_str.find("5000") != std::string::npos)		return ecQueueNumber::e5000;
 	if (_str.find("5005") != std::string::npos)		return ecQueueNumber::e5005;
-	if (_str.find("5050") != std::string::npos)		return ecQueueNumber::e5050;	
+	if (_str.find("5050") != std::string::npos)		return ecQueueNumber::e5050;
+	if (_str.find("5000 и 5050") != std::string::npos)		return ecQueueNumber::e5000_e5050;
 
-	return ecQueueNumber::eUnknown;
+	return ecQueueNumber::Unknown;
 }
 
 template<typename T>
@@ -125,10 +127,11 @@ inline std::string EnumToString<ecQueueNumber>(ecQueueNumber _number)
 {
 	static std::map<ecQueueNumber, std::string> queueNumber =
 	{
-		{ecQueueNumber::eUnknown,	"Unknown"},
+		{ecQueueNumber::Unknown,	"Unknown"},
 		{ecQueueNumber::e5000,		"5000"},
 		{ecQueueNumber::e5005,		"5005"},
 		{ecQueueNumber::e5050,		"5050"},
+		{ecQueueNumber::e5000_e5050,"5000 и 5050"},
 	};
 
 	auto it = queueNumber.find(_number);

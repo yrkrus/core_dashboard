@@ -1539,7 +1539,7 @@ void SQL_REQUEST::SQL::createListRemoteCommands(std::vector<REMOTE_COMMANDS_old:
 		
 		int id;						// id команды (для удобного поиска в запросе)
 		std::string sip;			// sip инициализировавший команду
-		LOG_old::ecStatus command;			// сама команда (int)
+		remote::ecCommand command;			// сама команда (int)
 		std::string ip;				// ip с которого пришла команда
 		int user_id;				// id пользователя по БД
 		std::string user_login_pc;	// логин зареган на пк с которого пришла команда
@@ -1583,7 +1583,7 @@ void SQL_REQUEST::SQL::createListRemoteCommands(std::vector<REMOTE_COMMANDS_old:
 }
 
 // запуск удаленной команды
-void SQL_REQUEST::SQL::startRemoteCommand(int id, std::string sip, LOG_old::ecStatus command, int user_id)
+void SQL_REQUEST::SQL::startRemoteCommand(int id, std::string sip, remote::ecCommand command, int user_id)
 {
 	if (!isConnectedBD())
 	{
@@ -1601,7 +1601,7 @@ void SQL_REQUEST::SQL::startRemoteCommand(int id, std::string sip, LOG_old::ecSt
 	switch (command)
 	{
 		// добавленние в очередь 5000 или 5050	
-		case LOG_old::ecStatus::Log_add_queue_5000 ... LOG_old::ecStatus::Log_add_queue_5050 :
+		case remote::ecCommand::AddQueue5000 ... remote::ecCommand::AddQueue5050 :
 		{			
 			std::string responce = CONSTANTS::cRemoteCommandResponseAdd;
 			
@@ -1620,11 +1620,11 @@ void SQL_REQUEST::SQL::startRemoteCommand(int id, std::string sip, LOG_old::ecSt
 			position = responce.find(repl_queue);
 			
 			//в какую очередь поставить оператора
-			if (command == LOG_old::ecStatus::Log_add_queue_5000)
+			if (command == remote::ecCommand::AddQueue5000)
 			{
 				curr_queue = CONSTANTS::AsteriskQueue::main;
 			}
-			else if (command == LOG_old::ecStatus::Log_add_queue_5050)
+			else if (command == remote::ecCommand::AddQueue5050)
 			{
 				curr_queue = CONSTANTS::AsteriskQueue::lukoil;
 			}
@@ -1640,20 +1640,20 @@ void SQL_REQUEST::SQL::startRemoteCommand(int id, std::string sip, LOG_old::ecSt
 			break;
 		}		
 		// добавление в очередь 5000+5050
-		case LOG_old::ecStatus::Log_add_queue_5000_5050: {
+		case remote::ecCommand::AddQueue5000_5050: {
 			
-			LOG_old::ecStatus command = LOG_old::ecStatus::Log_add_queue_5000;
+			remote::ecCommand command = remote::ecCommand::AddQueue5000;
 			// ставим 5000
 			startRemoteCommand(id,sip, command, user_id);
 
 
-			command = LOG_old::ecStatus::Log_add_queue_5050;
+			command = remote::ecCommand::AddQueue5050;
 			// ставим 5050
 			startRemoteCommand(id, sip, command, user_id);
 			
 			break;
 		}	
-		case LOG_old::ecStatus::Log_del_queue_5000 ... LOG_old::ecStatus::Log_del_queue_5050:
+		case remote::ecCommand::DelQueue5000 ... remote::ecCommand::DelQueue5050:
 			{
 
 			std::string responce = CONSTANTS::cRemoteCommandResponseDel;
@@ -1669,11 +1669,11 @@ void SQL_REQUEST::SQL::startRemoteCommand(int id, std::string sip, LOG_old::ecSt
 			position = responce.find(repl_queue);
 
 			//в какую очередь поставить оператора
-			if (command == LOG_old::ecStatus::Log_del_queue_5000)
+			if (command == remote::ecCommand::DelQueue5000)
 			{
 				curr_queue = CONSTANTS::AsteriskQueue::main;
 			}
-			else if (command == LOG_old::ecStatus::Log_del_queue_5050)
+			else if (command == remote::ecCommand::DelQueue5050)
 			{
 				curr_queue = CONSTANTS::AsteriskQueue::lukoil;
 			}
@@ -1689,24 +1689,24 @@ void SQL_REQUEST::SQL::startRemoteCommand(int id, std::string sip, LOG_old::ecSt
 			break;
 		}	
 			// удаление из очереди 5000+5050
-		case LOG_old::ecStatus::Log_del_queue_5000_5050:
+		case remote::ecCommand::DelQueue5000_5050:
 		{
 
-			LOG_old::ecStatus command = LOG_old::ecStatus::Log_del_queue_5000;
+			remote::ecCommand command = remote::ecCommand::DelQueue5000;
 			// ставим 5000
 			startRemoteCommand(id, sip, command, user_id);
 
 
-			command = LOG_old::ecStatus::Log_del_queue_5050;
+			command = remote::ecCommand::DelQueue5050;
 			// ставим 5050
 			startRemoteCommand(id, sip, command, user_id);
 
 			break;
 		}
 			// исход
-		case LOG_old::ecStatus::Log_home ... LOG_old::ecStatus::Log_callback : {
+		case remote::ecCommand::Home ... remote::ecCommand::Callback : {
 			// ну тут все просто не зависимо от того в какой очереди находимся выходим из всех очередей
-			LOG_old::ecStatus command = LOG_old::ecStatus::Log_del_queue_5000_5050;
+			remote::ecCommand command = remote::ecCommand::DelQueue5000_5050;
 			startRemoteCommand(id, sip, command, user_id);
 		}
 	}
@@ -1772,7 +1772,7 @@ void SQL_REQUEST::SQL::updateStatusOperators(int user_id, remote::ecStatusOperat
 }
 
 // создание лога в БД
-void SQL_REQUEST::SQL::addLog(LOG_old::ecStatus command, int base_id)
+void SQL_REQUEST::SQL::addLog(remote::ecCommand command, int base_id)
 {
 	if (!isConnectedBD())
 	{
