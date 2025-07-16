@@ -442,7 +442,7 @@ bool Status::UpdateNewStatus(const Command &_command, std::string &_errorDescipt
 
 bool Status::IsTalkOperator(const std::string &_sip, std::string &_errorDesciption)
 {
-	const std::string query = "select count(phone) from queue where date_time > '" + getCurrentStartDay() +
+	const std::string query = "select count(phone) from queue where date_time > '" + GetCurrentStartDay() +
 																	"' and sip = '" + _sip + "' and answered = '1' and hash is null limit 1";
 	if (!m_sql->Request(query, _errorDesciption))
 	{

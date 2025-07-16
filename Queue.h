@@ -71,13 +71,13 @@ public:
 	void Stop() override;
 	void Parsing() override;							// разбор сырых данных
 
-	void UpdateCallSuccess();							// обновление данных когда разговор успешно состоялся (все звонки)
+	void UpdateCallSuccess();							// обновление данных когда нет активных операторов на линии
 	private:
 	QueueCallsList		m_listQueue;
 	SP_SQL				m_sql;
 	
 	
-	void UpdateCalls();									// обновление звонков
+	void UpdateCalls(const QueueCallsList &_callList);  			// обновление звонков
 
 	bool FindQueueCallers();									// поиск текущих активных звонков
 
@@ -119,60 +119,5 @@ public:
 
 };
 
-
-//namespace QUEUE_OLD
-//{
-//	enum Currentfind
-//	{
-//		phone_find,
-//		waiting_find,
-//		queue_find,
-//	};
-//
-//	struct Pacients_old
-//	{
-//		std::string phone	{ "null" };		// текущий номер телефона который в очереди сейчас
-//		std::string waiting { "null" };		// время в (сек) которое сейчас в очереди находится
-//		std::string queue	{ "null" };		// номер очереди
-//	};
-//
-//	class Parsing
-//	{
-//	public:
-//		Parsing(const char *fileQueue);
-//		~Parsing() = default;
-//
-//		bool isExistList();					// есть ли очередь	
-//		void show(bool silent = false);
-//		
-//		void insertData();					// добавление данных в БД
-//		bool isExistQueueAfter20hours();	// проверка есть ли не отвеченные записи после 20:00
-//		void updateQueueAfter20hours();		// обновление данных если звонок пришел того как нет активных операторов на линии	
-//		bool isExistAnsweredAfter20hours(); // проверка если ли номера по которым закончили разгвоаривать, но не успели обработать
-//		void updateAnsweredAfter20hours();	// обновление данных когда закончили разговаривать и ушли с линии
-//		
-//
-//	private:
-//		std::string findParsing(std::string str, QUEUE_OLD::Currentfind find); // парсинг  
-//		std::vector<QUEUE_OLD::Pacients_old> pacient_list;
-//	};
-//
-//
-//	struct BD 
-//	{
-//		std::string id;
-//		std::string phone;
-//		std::string date_time;
-//		size_t hash{0};
-//	};
-//
-//	class QueueBD_old 
-//	{
-//		public:
-//			QueueBD_old()	= default;
-//			~QueueBD_old()	= default;
-//			std::vector<QUEUE_OLD::BD> list;
-//	};
-//}
 
 #endif //QUEUE_H

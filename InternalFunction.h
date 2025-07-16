@@ -41,9 +41,9 @@ namespace utils {
 	std::string getTalkTime(std::string talk);						// перевод временни из сек -> 00:00:00
 
 	// функции работы со временем (формат год-месяц-день 00:00:00 )
-	std::string getCurrentDateTime();							// текущее время 
-	std::string getCurrentStartDay();							// текущее начало дня
-	std::string getCurrentDateTimeAfterMinutes(int minutes);	// текущее время - (МИНУС) указанная минута 
+	std::string GetCurrentDateTime();							// текущее время 
+	std::string GetCurrentStartDay();							// текущее начало дня
+	std::string GetCurrentDateTimeAfterMinutes(int minutes);	// текущее время - (МИНУС) указанная минута 
 	//std::string getCurrentDateTimeAfter20hours();				// текущее время после 20:00 
 
 	void showVersionCore(unsigned int iter);					// показ версии ядра

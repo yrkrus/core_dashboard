@@ -156,7 +156,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	
 //	const std::string query = "select count(phone) from ivr where phone = '" 
 //							  + std::string(phone) +"' and  date_time > '"
-//							  + getCurrentDateTimeAfterMinutes(2)+"' and to_queue = '0' order by date_time desc";
+//							  + GetCurrentDateTimeAfterMinutes(2)+"' and to_queue = '0' order by date_time desc";
 //
 //	if (CONSTANTS::SAFE_LOG)
 //	{
@@ -196,7 +196,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //
 //	const std::string query = "select id from ivr where phone = "
 //		+ std::string(phone) + " and date_time > '"
-//		+ getCurrentStartDay() + "' order by date_time desc limit 1";
+//		+ GetCurrentStartDay() + "' order by date_time desc limit 1";
 //
 //	if (CONSTANTS::SAFE_LOG)
 //	{
@@ -310,7 +310,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	// правильней проверять сначало разговор	
 //	const std::string query = "select count(phone) from queue where number_queue = '" + std::string(queue)
 //		+ "' and phone = '" + std::string(phone) + "'"
-//		+ " and date_time > '" + getCurrentDateTimeAfterMinutes(60) + "'"
+//		+ " and date_time > '" + GetCurrentDateTimeAfterMinutes(60) + "'"
 //		+ " and answered ='1' and fail='0' and sip<>'-1' and hash is NULL order by date_time desc limit 1";
 //
 //	if (CONSTANTS::SAFE_LOG)
@@ -344,8 +344,8 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //		// проверяем вдруг в очереди сейчас находится звонок
 //		const std::string query = "select count(phone) from queue where number_queue = '" + std::string(queue)
 //			+ "' and phone = '" + std::string(phone) + "'"
-//			+ " and date_time > '" + getCurrentDateTimeAfterMinutes(60) + "'" //тут типа ок, но время не затрагивается последние 15 мин
-//			//+ " and date_time > '" + getCurrentDateTime() + "'"
+//			+ " and date_time > '" + GetCurrentDateTimeAfterMinutes(60) + "'" //тут типа ок, но время не затрагивается последние 15 мин
+//			//+ " and date_time > '" + GetCurrentDateTime() + "'"
 //			+ " and answered ='0' and fail='0' and hash is NULL order by date_time desc limit 1";
 //
 //		if (CONSTANTS::SAFE_LOG)
@@ -380,8 +380,8 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //			// нет разговора проверяем повтрность
 //			const std::string query = "select count(phone) from queue where number_queue = '" + std::string(queue)
 //				+ "' and phone = '" + std::string(phone) + "'"
-//				+ " and date_time > '" + getCurrentDateTimeAfterMinutes(60) + "'" //тут типа ок, но время не затрагивается последние 15 мин
-//				//+ " and date_time > '" + getCurrentDateTime() + "'"
+//				+ " and date_time > '" + GetCurrentDateTimeAfterMinutes(60) + "'" //тут типа ок, но время не затрагивается последние 15 мин
+//				//+ " and date_time > '" + GetCurrentDateTime() + "'"
 //				+ " and answered ='0' and fail='1' and hash is NULL order by date_time desc limit 1";
 //
 //			if (CONSTANTS::SAFE_LOG)
@@ -416,7 +416,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //			// проверка на повторность, вдруг еще раз перезвонили после того как поговорили уже	
 //				const std::string query = "select count(phone) from queue where number_queue = '" + std::string(queue)
 //					+ "' and phone = '" + std::string(phone) + "'"
-//					+ " and date_time > '" + getCurrentDateTimeAfterMinutes(60) + "'"
+//					+ " and date_time > '" + GetCurrentDateTimeAfterMinutes(60) + "'"
 //					+ " and answered = '1' and fail = '0' and sip <>'-1'"
 //					+ " and hash is not NULL order by date_time desc limit 1";
 //
@@ -492,7 +492,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //
 //	const std::string query = "select id from queue where phone = "
 //		+ std::string(phone) + " and date_time > '"
-//		+ getCurrentStartDay() + "' order by date_time desc limit 1";
+//		+ GetCurrentStartDay() + "' order by date_time desc limit 1";
 //
 //	if (CONSTANTS::SAFE_LOG)
 //	{
@@ -563,7 +563,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	}
 //	
 //	const std::string query = "select count(phone) from queue where phone = '" + std::string(phone)
-//							+ "' and date_time > '" + getCurrentStartDay() 
+//							+ "' and date_time > '" + GetCurrentStartDay() 
 //							+ "' order by date_time desc limit 1";
 //
 //	if (CONSTANTS::SAFE_LOG)
@@ -619,7 +619,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	}
 //
 //	// обновляем данные
-//	std::string query = "update queue set fail = '1' where date_time > '" + getCurrentStartDay() + "' and answered = '0'"
+//	std::string query = "update queue set fail = '1' where date_time > '" + GetCurrentStartDay() + "' and answered = '0'"
 //		+ " and sip = '-1' and phone not in ("+ list_phone +")";
 //
 //	if (CONSTANTS::SAFE_LOG)
@@ -687,7 +687,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	}
 //
 //	// обновляем данные
-//	std::string query = "update ivr set to_queue = '1' where date_time > '" + getCurrentDateTimeAfterMinutes(5)+"' and phone in(" + list_phone + ") and to_queue = '0'";
+//	std::string query = "update ivr set to_queue = '1' where date_time > '" + GetCurrentDateTimeAfterMinutes(5)+"' and phone in(" + list_phone + ") and to_queue = '0'";
 //
 //	if (CONSTANTS::SAFE_LOG)
 //	{
@@ -782,7 +782,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	
 //	
 //	const std::string query = "select id,phone,date_time from queue where date_time > '"
-//		+ getCurrentStartDay() + "' and answered = '1' and fail = '0' and hash is NULL and phone not in("+ list_phone+")";
+//		+ GetCurrentStartDay() + "' and answered = '1' and fail = '0' and hash is NULL and phone not in("+ list_phone+")";
 //
 //	if (CONSTANTS::SAFE_LOG)
 //	{
@@ -870,7 +870,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	}
 //
 //	const std::string query = "select count(id) from queue where date_time > '"
-//		+ getCurrentStartDay() + "' and answered = '1' and fail = '0' and hash is NULL";
+//		+ GetCurrentStartDay() + "' and answered = '1' and fail = '0' and hash is NULL";
 //
 //
 //	if (CONSTANTS::SAFE_LOG)
@@ -914,7 +914,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	QUEUE_OLD::QueueBD_old queuebd;
 //
 //	const std::string query = "select id,phone,date_time from queue where date_time > '"
-//		+ getCurrentStartDay() + "' and answered = '1' and fail = '0' and hash is NULL";
+//		+ GetCurrentStartDay() + "' and answered = '1' and fail = '0' and hash is NULL";
 //
 //	if (CONSTANTS::SAFE_LOG)
 //	{
@@ -1318,7 +1318,7 @@ int SQL_REQUEST::SQL::getIVR_totalCalls()
 		return 0;
 	}
 
-	const std::string query = "select count(phone) from ivr where date_time > '" + getCurrentStartDay() + "'";
+	const std::string query = "select count(phone) from ivr where date_time > '" + GetCurrentStartDay() + "'";
 
 	if (CONSTANTS::SAFE_LOG)
 	{
@@ -1355,7 +1355,7 @@ int SQL_REQUEST::SQL::getIVR_totalCalls()
 //		return 0;
 //	}
 //
-//	const std::string query = "select count(phone) from ivr where trunk ='" + IVR_OLD::getCallerID(trunk) + "'  and date_time > '" + getCurrentStartDay() + "'";
+//	const std::string query = "select count(phone) from ivr where trunk ='" + IVR_OLD::getCallerID(trunk) + "'  and date_time > '" + GetCurrentStartDay() + "'";
 //
 //	if (CONSTANTS::SAFE_LOG)
 //	{
@@ -1398,12 +1398,12 @@ int SQL_REQUEST::SQL::getQUEUE_Calls(bool answered)
 	{
 		case(true):
 		{
-			query = "select count(phone) from queue where date_time > '" + getCurrentStartDay() + "' and answered = '1' and hash is not NULL";
+			query = "select count(phone) from queue where date_time > '" + GetCurrentStartDay() + "' and answered = '1' and hash is not NULL";
 			break;
 		}
 		case(false):
 		{
-			query = "select count(phone) from queue where date_time > '" + getCurrentStartDay() + "' and fail = '1'";
+			query = "select count(phone) from queue where date_time > '" + GetCurrentStartDay() + "' and fail = '1'";
 			break;
 		}
 	}
@@ -1442,7 +1442,7 @@ int SQL_REQUEST::SQL::getQUEUE_Calls()
 		showErrorBD(METHOD_NAME);
 		return 0;
 	}		
-	 const std::string query = "select count(phone) from queue where date_time > '" + getCurrentStartDay()+"'";
+	 const std::string query = "select count(phone) from queue where date_time > '" + GetCurrentStartDay()+"'";
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -1872,7 +1872,7 @@ void SQL_REQUEST::SQL::execTaskQueue()
 	}
 
 	// найдем все данные 
-	const std::string query = "select * from queue where date_time < '" + getCurrentStartDay() + "'";
+	const std::string query = "select * from queue where date_time < '" + GetCurrentStartDay() + "'";
 
 	if (CONSTANTS::SAFE_LOG)
 	{
@@ -1981,7 +1981,7 @@ void SQL_REQUEST::SQL::execTaskLogging()
 	}
 
 	// найдем все данные 
-	const std::string query = "select * from logging where date_time < '" + getCurrentStartDay() + "'";
+	const std::string query = "select * from logging where date_time < '" + GetCurrentStartDay() + "'";
 
 	if (CONSTANTS::SAFE_LOG)
 	{
@@ -2078,7 +2078,7 @@ void SQL_REQUEST::SQL::execTaskIvr()
 	}
 
 	// найдем все данные 
-	const std::string query = "select * from ivr where date_time < '" + getCurrentStartDay() + "'";
+	const std::string query = "select * from ivr where date_time < '" + GetCurrentStartDay() + "'";
 
 	if (CONSTANTS::SAFE_LOG)
 	{
@@ -2179,7 +2179,7 @@ void SQL_REQUEST::SQL::execTaskOnHold()
 	}
 
 	// найдем все данные 
-	const std::string query = "select * from operators_ohhold where date_time_start < '" + getCurrentStartDay() + "'";
+	const std::string query = "select * from operators_ohhold where date_time_start < '" + GetCurrentStartDay() + "'";
 
 	if (CONSTANTS::SAFE_LOG)
 	{
@@ -2270,7 +2270,7 @@ void SQL_REQUEST::SQL::execTaskSmsSending()
 	}
 
 	// найдем все данные 
-	const std::string query = "select * from sms_sending where date_time < '" + getCurrentStartDay() + "'";
+	const std::string query = "select * from sms_sending where date_time < '" + GetCurrentStartDay() + "'";
 
 	if (CONSTANTS::SAFE_LOG)
 	{
@@ -2971,7 +2971,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskSmsSending(int _id)
 //		return;
 //	}
 //	
-//	std::string curr_date = getCurrentDateTime();
+//	std::string curr_date = GetCurrentDateTime();
 //	size_t hash = std::hash<std::string>()(sip + "_" + curr_date);
 //	
 //
@@ -3017,7 +3017,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskSmsSending(int _id)
 //		return;
 //	}
 //
-//	std::string query = "update operators_ohhold set date_time_stop = '" + getCurrentDateTime() + "' where id = '" + std::to_string(onhold.id) 
+//	std::string query = "update operators_ohhold set date_time_stop = '" + GetCurrentDateTime() + "' where id = '" + std::to_string(onhold.id) 
 //																	  + "' and hash = '"+std::to_string(onhold.hash)+"'"
 //																	  + " and sip = '"+onhold.sip_number+"'";
 //

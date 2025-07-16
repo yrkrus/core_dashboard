@@ -12,232 +12,6 @@
 
 using namespace utils;
 
-// коструктор
-//QUEUE_OLD::Parsing::Parsing(const char *fileQueue)
-//{
-//	std::ifstream filequeue;
-//
-//	filequeue.open(fileQueue);
-//
-//	if (filequeue.is_open())
-//	{
-//		//std::cout << "open file... OK\n";
-//
-//		std::string line;
-//
-//		// разберем
-//		while (std::getline(filequeue, line))
-//		{
-//			Pacients_old pacient;
-//
-//			pacient.phone	= findParsing(line, QUEUE_OLD::Currentfind::phone_find);
-//			pacient.waiting = findParsing(line, QUEUE_OLD::Currentfind::waiting_find);
-//			pacient.queue	= findParsing(line, QUEUE_OLD::Currentfind::queue_find);
-//
-//			// добавляем
-//			if (pacient.phone	!= "null" && 
-//				pacient.waiting != "null" && 
-//				pacient.queue	!= "null")
-//			{
-//				pacient_list.push_back(pacient);
-//			}
-//		}
-//	}
-//
-//	filequeue.close();
-//	
-//}
-
-// деструткор
-//QUEUE::Parsing::~Parsing()
-//{
-//	if (!pacient_list.empty())
-//	{
-//		pacient_list.clear();
-//	}
-//}
-
-// проверка пустой ли список в номерами
-//bool QUEUE_OLD::Parsing::isExistList()
-//{
-//	return (pacient_list.empty() ? false : true);
-//}
-
-//void QUEUE_OLD::Parsing::show(bool silent)
-//{
-//	std::ostringstream buffer;
-//	
-//	if (isExistList())
-//	{
-//		buffer << "Line QUEUE is (" << pacient_list.size() << ")\n";
-//		
-//		if (!silent) {
-//			buffer << "queue" << "\t    \t" << "phone" << "\t \t" << " wait time" << "\n";
-//
-//			for (std::vector<QUEUE_OLD::Pacients_old>::iterator it = pacient_list.begin(); it != pacient_list.end(); ++it)
-//			{
-//				buffer << it->queue << "\t >> \t" << it->phone << "\t (" << it->waiting << ")\n";
-//			}
-//		}	
-//			
-//	}
-//	else
-//	{
-//		buffer << "QUEUE is empty!\n";
-//	}
-//
-//	 std::cout << buffer.str();
-//}
-
-
-//добавление данных в БД
-//void QUEUE_OLD::Parsing::insertData()
-//{
-//	if (this->isExistList())
-//	{
-//		SQL_REQUEST::SQL base;
-//
-//		for (std::vector<QUEUE_OLD::Pacients_old>::iterator it = pacient_list.begin(); it != pacient_list.end(); ++it)
-//		{
-//			if (base.isConnectedBD())
-//			{
-//				base.insertQUEUE(it->queue.c_str(), it->phone.c_str(), it->waiting.c_str());
-//			}
-//		}
-//		
-//		
-//		// находим и обновляем данные если звонок был в очереди, но не дождался ответа от оператора
-//		if (base.isConnectedBD()) 
-//		{ 
-//			base.updateQUEUE_fail(pacient_list);			
-//		}	
-//
-//		// находим и обновляем данные когда у нас звонок из IVR попал в очередь
-//		if (base.isConnectedBD())
-//		{
-//			base.updateIVR_to_queue(pacient_list);
-//		}
-//
-//		// находим и обновляем данные когда разговор успешно состоялся 
-//		if (base.isConnectedBD()) 
-//		{
-//			base.updateQUEUE_hash(pacient_list);
-//		}
-//
-//	}	
-//}
-
-// проверка есть ли не отвеченные записи после 20:00
-//bool QUEUE_OLD::Parsing::isExistQueueAfter20hours()
-//{
-//	SQL_REQUEST::SQL base;
-//
-//	if (base.isConnectedBD()) {
-//		return base.isExistQueueAfter20hours();
-//	}
-//
-//	return false;
-//}
-
-// обновление данных если звонок пришел того как нет активных операторов на линии
-//void QUEUE_OLD::Parsing::updateQueueAfter20hours()
-//{
-//	SQL_REQUEST::SQL base;
-//
-//	if (base.isConnectedBD())
-//	{
-//		base.updateQUEUE_fail();
-//	}
-//}
-
-
-// проверка если ли номера по которым закончили разгвоаривать, но не успели обработать
-//bool QUEUE_OLD::Parsing::isExistAnsweredAfter20hours()
-//{
-//	SQL_REQUEST::SQL base;
-//
-//	if (base.isConnectedBD())
-//	{
-//		return base.isExistAnsweredAfter20hours();
-//	}
-//
-//	return false;
-//}
-
-// обновление данных когда закончили разговаривать и ушли с линии
-//void QUEUE_OLD::Parsing::updateAnsweredAfter20hours()
-//{
-//	SQL_REQUEST::SQL base;
-//
-//	if (base.isConnectedBD())
-//	{
-//		base.updateAnswered_fail();
-//	}
-//}
-
-
-
-// парсинг строки
-//std::string QUEUE_OLD::Parsing::findParsing(std::string str, Currentfind find)
-//{
-//	std::vector<std::string> lines;
-//	std::string current_str;
-//
-//	bool isNewLine{ false };
-//
-//	for (size_t i = 0; i != str.length(); ++i)
-//	{
-//
-//		if (isNewLine)
-//		{
-//			if (!current_str.empty())
-//			{
-//				lines.push_back(current_str);
-//				current_str.clear();
-//			}
-//		}
-//
-//		if (str[i] != ' ') // ищем разделить (разделить пустая строка)
-//		{
-//			current_str += str[i];
-//			isNewLine = false;
-//		}
-//		else
-//		{
-//			isNewLine = true;
-//		}
-//	}
-//
-//	if (!lines.empty())
-//	{
-//		switch (find)
-//		{
-//		case QUEUE_OLD::Currentfind::phone_find:
-//		{
-//			return phoneParsing(lines[7]);	
-//			break;
-//		}
-//		case QUEUE_OLD::Currentfind::waiting_find:
-//		{
-//			return lines[8];
-//			break;
-//		}
-//		case QUEUE_OLD::Currentfind::queue_find: {
-//			return lines[2];
-//			break;
-//		}
-//		default:
-//		{
-//			return "null";
-//			break;
-//		}
-//		}
-//	}
-//	else {
-//		return "null";
-//	}
-//}
-
 Queue::Queue()
 	:IAsteriskData(CONSTANTS::TIMEOUT::QUEUE)
 	, m_sql(std::make_shared<ISQLConnect>(false))
@@ -272,7 +46,10 @@ void Queue::Parsing()
 		InsertQueueCalls();
 
 		// обновляем очереди (по списку)
-		UpdateCalls();
+		if (IsExistQueueCalls()) 
+		{
+			UpdateCalls(m_listQueue);
+		}		
 	}	
 
 	// удаляем из сырых данных
@@ -377,21 +154,21 @@ void Queue::InsertQueueCalls()
 	}	
 }
 
-void Queue::UpdateCalls()
+void Queue::UpdateCalls(const QueueCallsList &_callList)
 {
-	if (!IsExistQueueCalls()) 
+	/*if (!IsExistQueueCalls()) 
 	{
 		return;
-	}
+	}*/
 	
 	// находим и обновляем данные если звонок был в очереди, но не дождался ответа от оператора
-	UpdateCallFail(m_listQueue);
+	UpdateCallFail(_callList);
 
 	// находим и обновляем данные когда у нас звонок из IVR попал в очередь\на виртаульного оператора
-	UpdateCallIvr(m_listQueue);
+	UpdateCallIvr(_callList);
 
 	// находим и обновляем данные когда разговор успешно состоялся 
-	UpdateCallSuccess(m_listQueue);
+	UpdateCallSuccess(_callList);
 }
 
 void Queue::InsertCall(const QueueCalls &_call)
@@ -519,7 +296,7 @@ void Queue::UpdateCallFail(const QueueCallsList &_calls)
 	
 	// обновляем данные	
 	const std::string query = "update queue set fail = '1' where date_time > '"
-										+ getCurrentStartDay()
+										+ GetCurrentStartDay()
 										+ "' and answered = '0'"
 										+ " and sip = '-1' and phone not in (" + phoneDoNotTouch + ")";
 
@@ -585,7 +362,7 @@ void Queue::UpdateCallIvrToQueue(const QueueCallsList &_calls)
 	if (phoneTouch.empty()) return;
 
 	const std::string query = "update ivr set to_queue = '1' where date_time > '"
-		+ getCurrentDateTimeAfterMinutes(5)
+		+ GetCurrentDateTimeAfterMinutes(5)
 		+ "' and phone in(" + phoneTouch + ") and to_queue = '0' and to_robot ='0' ";
 
 	std::string error;
@@ -623,7 +400,7 @@ void Queue::UpdateCallIvrToVirtualOperator(const QueueCallsList &_calls)
 	if (phoneTouch.empty()) return;
 
 	const std::string query = "update ivr set to_robot = '1' where date_time > '"
-								+ getCurrentDateTimeAfterMinutes(5)
+								+ GetCurrentDateTimeAfterMinutes(5)
 								+ "' and phone in(" + phoneTouch + ") and to_robot = '0' and to_queue = '0'";
 
 	std::string error;
@@ -708,12 +485,15 @@ void Queue::UpdateCallSuccessVirtualOperator(const QueueCallsList &_calls)
 	m_sql->Disconnect();
 }
 
-// обновление данных когда разговор успешно состоялся (все звонки)
+// обновление данных когда нет активных операторов на линии
 void Queue::UpdateCallSuccess()
 {
 	if (IsExistAnyAnsweredCall())
 	{
 		UpdateAllAnyAnsweredCalls();
+
+		QueueCallsList emptyList;
+		UpdateCalls(emptyList);
 	}	
 }
 
@@ -723,7 +503,7 @@ bool Queue::IsExistCall(EQueueNumber _queue, const std::string &_phone)
 	// правильней проверять сначало разговор	
 	const std::string query = "select count(phone) from queue where number_queue = '" +EnumToString(_queue)
 								+ "' and phone = '" + _phone + "'"
-								+ " and date_time > '" + getCurrentDateTimeAfterMinutes(60) + "'"
+								+ " and date_time > '" + GetCurrentDateTimeAfterMinutes(60) + "'"
 								+ " and answered ='1' and fail='0' and sip<>'-1' and hash is NULL order by date_time desc limit 1";
 	
 	if (!m_sql->Request(query, error))
@@ -778,7 +558,7 @@ bool Queue::IsExistCall(EQueueNumber _queue, const std::string &_phone)
 			// нет разговора проверяем повтрность
 			const std::string query = "select count(phone) from queue where number_queue = '" + EnumToString(_queue)
 				+ "' and phone = '" + _phone + "'"
-				+ " and date_time > '" + getCurrentDateTimeAfterMinutes(60) + "'" //тут типа ок, но время не затрагивается последние 15 мин
+				+ " and date_time > '" + GetCurrentDateTimeAfterMinutes(60) + "'" //тут типа ок, но время не затрагивается последние 15 мин
 				+ " and answered ='0' and fail='1' and sip = '-1' and hash is NULL order by date_time desc limit 1";
 		
 			if (!m_sql->Request(query, error))
@@ -807,7 +587,7 @@ bool Queue::IsExistCall(EQueueNumber _queue, const std::string &_phone)
 				// проверка на повторность, вдруг еще раз перезвонили после того как поговорили уже	
 				const std::string query = "select count(phone) from queue where number_queue = '" + EnumToString(_queue)
 					+ "' and phone = '" + _phone + "'"
-					+ " and date_time > '" + getCurrentDateTimeAfterMinutes(60) + "'"
+					+ " and date_time > '" + GetCurrentDateTimeAfterMinutes(60) + "'"
 					+ " and answered = '1' and fail = '0' and sip <>'-1'"
 					+ " and hash is not NULL order by date_time desc limit 1";
 				
@@ -845,7 +625,7 @@ bool Queue::IsExistCallVirtualOperator(EQueueNumber _queue, const std::string &_
 	// правильней проверять сначало разговор	
 	const std::string query = "select count(phone) from queue_robot where number_queue = '" + EnumToString(_queue)
 		+ "' and phone = '" + _phone + "'"
-		+ " and date_time > '" + getCurrentDateTimeAfterMinutes(60) + "'"
+		+ " and date_time > '" + GetCurrentDateTimeAfterMinutes(60) + "'"
 		+ " and hash is NULL order by date_time desc limit 1";
 
 	if (!m_sql->Request(query, error))
@@ -873,7 +653,7 @@ bool Queue::IsExistCallVirtualOperator(EQueueNumber _queue, const std::string &_
 		// нет разговора проверяем повтрность
 		const std::string query = "select count(phone) from queue_robot where number_queue = '" + EnumToString(_queue)
 			+ "' and phone = '" + _phone + "'"
-			+ " and date_time > '" + getCurrentDateTimeAfterMinutes(60) + "'" //тут типа ок, но время не затрагивается последние 15 мин
+			+ " and date_time > '" + GetCurrentDateTimeAfterMinutes(60) + "'" //тут типа ок, но время не затрагивается последние 15 мин
 			+ " and hash is NULL order by date_time desc limit 1";
 
 		if (!m_sql->Request(query, error))
@@ -901,7 +681,7 @@ bool Queue::IsExistCallVirtualOperator(EQueueNumber _queue, const std::string &_
 			// проверка на повторность, вдруг еще раз перезвонили после того как поговорили уже	
 			const std::string query = "select count(phone) from queue_robot where number_queue = '" + EnumToString(_queue)
 				+ "' and phone = '" + _phone + "'"
-				+ " and date_time > '" + getCurrentDateTimeAfterMinutes(60) + "'"			
+				+ " and date_time > '" + GetCurrentDateTimeAfterMinutes(60) + "'"			
 				+ " and hash is not NULL order by date_time desc limit 1";
 
 			if (!m_sql->Request(query, error))
@@ -934,7 +714,7 @@ int Queue::GetLastQueueCallId(const std::string &_phone)
 {
 	const std::string query = "select id from queue where phone = "
 							+ _phone + " and date_time > '"
-							+ getCurrentStartDay() + "' order by date_time desc limit 1";
+							+ GetCurrentStartDay() + "' order by date_time desc limit 1";
 
 	if (!m_sql->Request(query))
 	{
@@ -958,7 +738,7 @@ int Queue::GetLastQueueVirtualOperatorCallId(const std::string &_phone)
 {
 	const std::string query = "select id from queue_robot where phone = "
 								+ _phone + " and date_time > '"
-								+ getCurrentStartDay() + "' order by date_time desc limit 1";
+								+ GetCurrentStartDay() + "' order by date_time desc limit 1";
 
 	if (!m_sql->Request(query))
 	{
@@ -998,13 +778,13 @@ bool Queue::GetCallsInBase(CallsInBaseList &_vcalls, const QueueCallsList &_queu
 	if (!phoneTouch.empty()) 
 	{
 		query = "select id,phone,date_time from queue where date_time > '"
-									+ getCurrentStartDay()
+									+ GetCurrentStartDay()
 									+ "' and answered = '1' and fail = '0' and hash is NULL and phone not in(" + phoneTouch + ")";
 	} 
 	else 
 	{
 		query = "select id,phone,date_time from queue where date_time > '"
-									+ getCurrentStartDay()
+									+ GetCurrentStartDay()
 									+ "' and answered = '1' and fail = '0' and hash is NULL";
 	}	
 		
@@ -1048,7 +828,7 @@ bool Queue::GetCallsInBase(CallsInBaseList &_vcalls, const QueueCallsList &_queu
 bool Queue::GetCallsInBase(CallsInBaseList &_vcalls, std::string &_errorDescription)
 {
 	const std::string query = "select id,phone,date_time from queue where date_time > '"
-								+ getCurrentStartDay() 
+								+ GetCurrentStartDay() 
 								+ "' and answered = '1' and fail = '0' and hash is NULL";
 
 	
@@ -1068,18 +848,12 @@ bool Queue::GetCallsInBase(CallsInBaseList &_vcalls, std::string &_errorDescript
 		CallsInBase call;
 		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
 		{
-			if (i == 0)
+			switch (i)
 			{
-				call.id = row[i];
-			}
-			else if (i == 1)
-			{
-				call.phone = row[i];
-			}
-			else if (i == 2)
-			{
-				call.date_time = row[i];
-			}
+			case 0:	call.id = row[i];			break;
+			case 1:	call.phone = row[i];		break;
+			case 2:	call.date_time = row[i];	break;
+			}			
 		}
 
 		call.hash = std::hash<std::string>()(call.phone + "_" + call.date_time);
@@ -1120,13 +894,13 @@ bool Queue::GetCallsInBaseVirtualOperator(CallsInBaseList &_vcalls, const QueueC
 	if (!phoneTouch.empty())
 	{
 		query = "select id,phone,date_time from queue_robot where date_time > '"
-					+ getCurrentStartDay()
+					+ GetCurrentStartDay()
 					+ "' and hash is NULL and phone not in(" + phoneTouch + ")";
 	}
 	else
 	{
 		query = "select id,phone,date_time from queue_robot where date_time > '"
-					+ getCurrentStartDay()
+					+ GetCurrentStartDay()
 					+ "' and hash is NULL";
 	}
 
@@ -1147,18 +921,11 @@ bool Queue::GetCallsInBaseVirtualOperator(CallsInBaseList &_vcalls, const QueueC
 		CallsInBase call;
 		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
 		{
-
-			if (i == 0)
+			switch (i)
 			{
-				call.id = row[i];
-			}
-			else if (i == 1)
-			{
-				call.phone = row[i];
-			}
-			else if (i == 2)
-			{
-				call.date_time = row[i];
+				case 0:	call.id = row[i];			break;
+				case 1:	call.phone = row[i];		break;
+				case 2:	call.date_time = row[i];	break;
 			}
 		}
 
@@ -1178,7 +945,7 @@ bool Queue::GetCallsInBaseVirtualOperator(CallsInBaseList &_vcalls, const QueueC
 bool Queue::GetCallsInBaseVirtualOperator(CallsInBaseList &_vcalls, std::string &_errorDescription)
 {
 	const std::string query = "select id,phone,date_time from queue_robot where date_time > '"
-							+ getCurrentStartDay()
+							+ GetCurrentStartDay()
 							+ "' and hash is NULL";
 
 
@@ -1198,18 +965,12 @@ bool Queue::GetCallsInBaseVirtualOperator(CallsInBaseList &_vcalls, std::string 
 		CallsInBase call;
 		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
 		{
-			if (i == 0)
+			switch (i)
 			{
-				call.id = row[i];
-			}
-			else if (i == 1)
-			{
-				call.phone = row[i];
-			}
-			else if (i == 2)
-			{
-				call.date_time = row[i];
-			}
+				case 0:	call.id = row[i];			break;
+				case 1:	call.phone = row[i];		break;
+				case 2:	call.date_time = row[i];	break;
+			}			
 		}
 
 		call.hash = std::hash<std::string>()(call.phone + "_" + call.date_time);
@@ -1262,7 +1023,7 @@ bool Queue::IsExistAnyAnsweredCall()
 {
 	std::string error;
 	const std::string query = "select count(id) from queue where date_time > '"
-							  + getCurrentStartDay() + "' and answered = '1' and fail = '0' and hash is NULL";
+							  + GetCurrentStartDay() + "' and answered = '1' and fail = '0' and hash is NULL";
 	
 	if (!m_sql->Request(query, error))
 	{

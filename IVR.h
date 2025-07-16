@@ -1,8 +1,5 @@
 #include <string>
 #include <vector>
-//#include <map>
-//#include <iostream>
-
 #include "IAsteriskData.h"
 #include "ISQLConnect.h"
 
@@ -94,60 +91,5 @@ private:
 	int GetPhoneIDIvr(const std::string &_phone);										// id phone по БД
 
 };
-
-
-
-//template<> TODO сделать на EnumToString
-
-
-//namespace IVR_OLD 
-//{	
-//	/*enum Currentfind
-//	{
-//		phone_find,
-//		waiting_find,
-//		caller_id,
-//	};*/
-//
-//	/*enum CallerID 
-//	{
-//		domru_220220,
-//		domru_220000,
-//		sts,
-//		comagic,
-//		null_caller,
-//		COUNT = 5,
-//	*/};
-//	
-//	//struct Pacients
-//	//{
-//	//	std::string phone	{"null"};		// текущий номер телефона который в IVR слушает
-//	//	std::string waiting {"null"};		// время в (сек) которое он слушает	
-//	//	CallerID callerID;					// откуда пришел звонок		
-//	//};
-//
-//	class Parsing 
-//	{
-//	public:
-//		Parsing(const char *fileIVR);
-//		~Parsing() = default;			
-//	
-//		bool isExistList();						// существет ли очередь IVR		
-//		//void show(bool silent = false);		
-//	//	void insertData();						//добавление данных в БД
-//
-//	private:	
-//		//std::string findParsing(std::string str, IVR_OLD::Currentfind find); // парсинг		
-//		//std::vector<IVR_OLD::Pacients> pacient_list;
-//
-//
-//	};
-//
-//	CallerID getCallerID(std::string str);
-//	std::string getCallerID(const CallerID &callerID);
-//}
-
-
-
 
 #endif //IVR_H

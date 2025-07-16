@@ -16,6 +16,8 @@
 #include "IVR.h"
 #include "ActiveSip.h"
 
+#include "clearing_current_day/HistoryQueue.h"
+
 // эти include потом убрать, они нужны для отладки только
 #include <stdio.h>
 #include <time.h>
@@ -129,61 +131,6 @@ static void thread_HouseKeeping() {
 }
 
 
-//static void stat() {
-//    uint64_t TIK = 6000;
-//    // int avg{0};
-//    size_t all{ 0 };
-//    uint64_t min{ 1000 };
-//    uint64_t max{ 0 };
-//
-//    for (size_t i = 1; /*i <= TIK*/; ++i)
-//    {
-//
-//        showVersionCore(i);
-//        
-//        auto start = std::chrono::steady_clock::now();
-//        std::cout << "\n\n";
-//       // std::cout << getCurrentDateTime() + "\t\titeration: \t" << i << "\n\n";
-//
-//        getStatistics();
-//
-//        
-//        // проверка
-//       /* REMOTE_COMMANDS_old::Remote remote;
-//        if (remote.getCountCommand())
-//        {
-//            remote.startCommand();
-//        }   */     
-//
-//        auto stop = std::chrono::steady_clock::now();
-//
-//        auto execute_ms = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-//
-//        std::cout << "\ntime execute code: " << execute_ms.count() << " ms\n";
-//        all += execute_ms.count();
-//
-//        if (execute_ms.count() < min) { min = static_cast<uint64_t>(execute_ms.count()); }
-//        if (execute_ms.count() > max) { max = static_cast<uint64_t>(execute_ms.count()); }
-//
-//        std::cout << "avg execute = " << all / i << " ms | min execute = " << min << " ms | max execute = " << max << " ms\n";
-//               
-//        if (execute_ms.count() < 1000)
-//        {
-//            std::this_thread::sleep_for(std::chrono::milliseconds(1000 - execute_ms.count()));
-//        }
-//
-//        system("clear");
-//
-//        if (i >= 10800)
-//        {
-//            all = 0;
-//            i = 1;
-//            min = 1000;
-//            max = 0;
-//        }
-//    }
-//}
-
 static void collect() {
      //int TIK = 3600;  
     static size_t   all{ 0 };
@@ -196,7 +143,7 @@ static void collect() {
 
         auto start = std::chrono::steady_clock::now();
 
-        //std::cout << getCurrentDateTime() + "\t\titeration: \t" << i << "\n\n";       
+        //std::cout << GetCurrentDateTime() + "\t\titeration: \t" << i << "\n\n";       
 
         std::cout << "\n\n";
         //std::thread th_ivr(getIVR);
@@ -263,6 +210,11 @@ static void collect() {
 int main(int argc, char *argv[])
 {
     
+    HistoryQueue historyQueue;
+    historyQueue.Execute();
+    
+    return 0;
+
     // Перехватываем Ctrl+C
     std::signal(SIGINT, sigint_handler);
 
@@ -325,28 +277,6 @@ int main(int argc, char *argv[])
         return 0;   
 
     }
-
-
-
-    
-    
-    /*setlocale(LC_ALL, "ru_RU.UTF-8"); 
-
-    if (argc == 1)
-    {
-        printf("no arguments!\nUse command : help\n");       
-        return -1;
-    }
-    else if (argc > 2)
-    {       
-        printf("too mony arguments\nUse command: help\n");
-        return -1;
-    }*/
-     
-   
-   
-
- 
 
 
 

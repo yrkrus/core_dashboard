@@ -27,7 +27,7 @@ using remote::CommandSendInfoUser;
 void LOG_old::LogToFile_old::add(std::string message)
 {
 	std::lock_guard<std::mutex> lock(mutex);	
-	std::string mess = getCurrentDateTime() + "\t" + ELogType_to_string(current_type) + "\t" + message + "\n";
+	std::string mess = GetCurrentDateTime() + "\t" + ELogType_to_string(current_type) + "\t" + message + "\n";
 
 	if (file_log->is_open()) 
 	{		
@@ -42,7 +42,7 @@ void LOG_old::LogToFile_old::add(std::string message)
 //
 //	std::ostringstream buffer;
 //
-//	buffer << "========================   " + getCurrentDateTime() + "   ==========================\n";
+//	buffer << "========================   " + GetCurrentDateTime() + "   ==========================\n";
 //
 //	unsigned int countHoldBase{ 0 };
 //	unsigned int countOperatorsOnHoldAsterisk{ 0 };
@@ -68,7 +68,7 @@ void LOG_old::LogToFile_old::add(std::string message)
 //	
 //	std::ostringstream buffer;
 //
-//	buffer << "========================" + getCurrentDateTime() + "   ==========================\n";
+//	buffer << "========================" + GetCurrentDateTime() + "   ==========================\n";
 //	
 //	unsigned int countHold{ 0 };
 //
@@ -113,17 +113,17 @@ LOG_old::LogToFile_old::LogToFile_old(ELogType_old type)
 		{
 			case eLogType_DEBUG:
 			{
-				std::cerr << getCurrentDateTime() << " Ошибка при открытии лог-файла: " << CONSTANTS::cFileLogDEBUG << "\n";
+				std::cerr << GetCurrentDateTime() << " Ошибка при открытии лог-файла: " << CONSTANTS::cFileLogDEBUG << "\n";
 				break;
 			}
 			case eLogType_INFO:
 			{
-				std::cerr << getCurrentDateTime() << " Ошибка при открытии лог-файла: " << CONSTANTS::cFileLogINFO << "\n";
+				std::cerr << GetCurrentDateTime() << " Ошибка при открытии лог-файла: " << CONSTANTS::cFileLogINFO << "\n";
 				break;
 			}
 			case eLogType_ERROR:
 			{
-				std::cerr << getCurrentDateTime() << " Ошибка при открытии лог-файла: " << CONSTANTS::cFileLogDEBUG << "\n";
+				std::cerr << GetCurrentDateTime() << " Ошибка при открытии лог-файла: " << CONSTANTS::cFileLogDEBUG << "\n";
 				break;
 			}
 		}

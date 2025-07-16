@@ -160,8 +160,12 @@
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="ActiveSip.cpp" />
+    <ClCompile Include="clearing_current_day\HistoryQueue.cpp" />
+    <ClCompile Include="clearing_current_day\IClear.cpp" />
+    <ClCompile Include="Command.cpp" />
     <ClCompile Include="CreateFiles.cpp" />
-    <ClCompile Include="DashboardCore.cpp" />
+    <ClCompile Include="Dispather.cpp" />
+    <ClCompile Include="Event.cpp" />
     <ClCompile Include="IAsteriskData.cpp" />
     <ClCompile Include="IFile.cpp" />
     <ClCompile Include="IResponseFileHandler.cpp" />
@@ -182,10 +186,14 @@
   <ItemGroup>
     <ClInclude Include="ActiveSip.h" />
     <ClInclude Include="AUTH.h" />
+    <ClInclude Include="clearing_current_day\HistoryQueue.h" />
+    <ClInclude Include="clearing_current_day\IClear.h" />
+    <ClInclude Include="Command.h" />
     <ClInclude Include="Constants.h" />
     <ClInclude Include="CreateFiles.h" />
-    <ClInclude Include="DashboardCore.h" />
     <ClInclude Include="DEBUG.h" />
+    <ClInclude Include="Dispather.h" />
+    <ClInclude Include="Event.h" />
     <ClInclude Include="IAsteriskData.h" />
     <ClInclude Include="IFile.h" />
     <ClInclude Include="IResponseFileHandler.h" />

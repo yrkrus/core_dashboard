@@ -211,7 +211,7 @@ std::string utils::getTalkTime(std::string talk)
 }
 
 // текущее время 
-std::string utils::getCurrentDateTime()
+std::string utils::GetCurrentDateTime()
 {	
 	auto now = std::chrono::system_clock::now();
 	std::time_t now_c = std::chrono::system_clock::to_time_t(now);
@@ -239,7 +239,7 @@ std::string utils::getCurrentDateTime()
 }
 
 // текущее начало дня
-std::string utils::getCurrentStartDay()
+std::string utils::GetCurrentStartDay()
 {
 	auto now = std::chrono::system_clock::now();
 	std::time_t now_c = std::chrono::system_clock::to_time_t(now);
@@ -258,7 +258,7 @@ std::string utils::getCurrentStartDay()
 }
 
 // текущее время - 2 минута 
-std::string utils::getCurrentDateTimeAfterMinutes(int minutes)
+std::string utils::GetCurrentDateTimeAfterMinutes(int minutes)
 {
 	auto now = std::chrono::system_clock::now();
 	auto minute = std::chrono::minutes(minutes);
@@ -329,7 +329,7 @@ void utils::showVersionCore(unsigned int iter)
 	}
 
 	// итерация какая по счету пошла
-	buffer << "\t"+getCurrentDateTime() + "\t\titeration: " << iter <<"\n";
+	buffer << "\t"+GetCurrentDateTime() + "\t\titeration: " << iter <<"\n";
 
 	buffer << "==========================================================\n";
 	std::cout << buffer.str();

@@ -35,7 +35,6 @@
     <ClCompile Include="CreateFiles.cpp">
       <Filter>include_cpp</Filter>
     </ClCompile>
-    <ClCompile Include="DashboardCore.cpp" />
     <ClCompile Include="RemoteCommandsCallback.cpp">
       <Filter>include_cpp</Filter>
     </ClCompile>
@@ -52,6 +51,21 @@
       <Filter>include_cpp</Filter>
     </ClCompile>
     <ClCompile Include="utils.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Dispather.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Command.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Event.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="clearing_current_day\IClear.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="clearing_current_day\HistoryQueue.cpp">
       <Filter>include_cpp</Filter>
     </ClCompile>
   </ItemGroup>
@@ -106,9 +120,6 @@
     <ClInclude Include="DEBUG.h">
       <Filter>include_h</Filter>
     </ClInclude>
-    <ClInclude Include="DashboardCore.h">
-      <Filter>include_h</Filter>
-    </ClInclude>
     <ClInclude Include="RemoteCommandsCallback.h">
       <Filter>include_h</Filter>
     </ClInclude>
@@ -125,6 +136,21 @@
       <Filter>include_h</Filter>
     </ClInclude>
     <ClInclude Include="utils.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="Dispather.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="Command.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="Event.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="clearing_current_day\IClear.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="clearing_current_day\HistoryQueue.h">
       <Filter>include_h</Filter>
     </ClInclude>
   </ItemGroup>

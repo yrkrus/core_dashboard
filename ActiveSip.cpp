@@ -1017,7 +1017,7 @@ void active_sip::ActiveSession::UpdateTalkCallOperator()
 bool active_sip::ActiveSession::IsExistTalkCallOperator(const std::string &_phone)
 {
 	const std::string query = "select count(phone) from queue where phone = '" + _phone
-								+ "' and date_time > '" + getCurrentStartDay()
+								+ "' and date_time > '" + GetCurrentStartDay()
 								+ "' order by date_time desc limit 1";
 
 	std::string error;
@@ -1048,7 +1048,7 @@ int active_sip::ActiveSession::GetLastTalkCallOperatorID(const std::string &_pho
 {
 	const std::string query = "select id from queue where phone = "
 							+ _phone + " and date_time > '"
-							+ getCurrentStartDay() + "' order by date_time desc limit 1";
+							+ GetCurrentStartDay() + "' order by date_time desc limit 1";
 
 	std::string error;
 	if (!m_sql->Request(query, error))
@@ -1205,7 +1205,7 @@ void active_sip::ActiveSession::DisableOnHold(const OnHoldList &_onHoldList)
 bool active_sip::ActiveSession::DisableHold(const OnHold &_hold, std::string &_errorDescription)
 {
 	_errorDescription.clear();
-	const std::string query = "update operators_ohhold set date_time_stop = '" + getCurrentDateTime() 
+	const std::string query = "update operators_ohhold set date_time_stop = '" + GetCurrentDateTime() 
 							+ "' where id = '" + std::to_string(_hold.id)
 							+ "' and sip = '" + _hold.sip + "'";
 
