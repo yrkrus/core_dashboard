@@ -1,7 +1,3 @@
-#include "ActiveSip.h"
-#include "InternalFunction.h"
-#include "Constants.h"
-#include "SQLRequest.h"
 #include <vector>
 #include <fstream>
 #include <iostream>
@@ -9,8 +5,13 @@
 #include <iterator>
 #include <algorithm>
 #include <sstream>
+#include "ActiveSip.h"
+#include "InternalFunction.h"
+#include "Constants.h"
+#include "SQLRequest.h"
+#include "utils.h"
 
-using namespace INTERNALFUNCTION;
+using namespace utils;
 
 // коструктор
 //ACTIVE_SIP_old::Parsing_old::Parsing_old(const char *fileActiveSip)
@@ -93,13 +94,13 @@ using namespace INTERNALFUNCTION;
 //		// заменяем %queue на номер очереди
 //		std::string repl = "%queue";
 //		size_t position = responce.find(repl);
-//		responce.replace(position, repl.length(), INTERNALFUNCTION::getNumberQueue(static_cast<CONSTANTS::AsteriskQueue>(i)));
+//		responce.replace(position, repl.length(), utils::getNumberQueue(static_cast<CONSTANTS::AsteriskQueue>(i)));
 //
 //		if (!CONSTANTS::DEBUG_MODE) {
 //			system(responce.c_str());
 //		}			
 //
-//		findActiveOperators(CONSTANTS::cActiveSipOperatorsName.c_str(), INTERNALFUNCTION::getNumberQueue(static_cast<CONSTANTS::AsteriskQueue>(i)));
+//		findActiveOperators(CONSTANTS::cActiveSipOperatorsName.c_str(), utils::getNumberQueue(static_cast<CONSTANTS::AsteriskQueue>(i)));
 //	}
 //
 //	// добавим\обновим очереди 
@@ -122,11 +123,11 @@ using namespace INTERNALFUNCTION;
 //			{
 //				if (!getSipIsOnHold(list.internal_sip)) 
 //				{
-//					buffer << list.internal_sip << "\t >> \t" << list.phone << "\t (" << INTERNALFUNCTION::getTalkTime(list.talk_time) << ")\n";
+//					buffer << list.internal_sip << "\t >> \t" << list.phone << "\t (" << utils::getTalkTime(list.talk_time) << ")\n";
 //				}
 //				else 
 //				{
-//					buffer << list.internal_sip << " (OnHold) \t" << list.phone << "\t (" << INTERNALFUNCTION::getTalkTime(list.talk_time) << ")\n";
+//					buffer << list.internal_sip << " (OnHold) \t" << list.phone << "\t (" << utils::getTalkTime(list.talk_time) << ")\n";
 //				}				
 //			}
 //		}		
@@ -181,7 +182,7 @@ using namespace INTERNALFUNCTION;
 //		{
 //			case ACTIVE_SIP_old::Currentfind::phone_find:
 //			{
-//				return INTERNALFUNCTION::phoneParsing(lines[7]);
+//				return utils::phoneParsing(lines[7]);
 //				break;
 //			}
 //			case ACTIVE_SIP_old::Currentfind::internal_sip_find:	// внутренний номер SIP (мы его и так знаем из функции)
@@ -481,11 +482,11 @@ void active_sip::ActiveSession::CreateListActiveSessionOperators()
 {
 	// INFO: прежде чем сюда попасть полностью очищается m_listOperators!
 	
-	// без цикла очередей ecQueueNumber, просто берем нужные статичные очереди
-	static const std::vector<ecQueueNumber> queueList =
+	// без цикла очередей EQueueNumber, просто берем нужные статичные очереди
+	static const std::vector<EQueueNumber> queueList =
 	{
-		ecQueueNumber::e5000,
-		ecQueueNumber::e5050,		
+		EQueueNumber::e5000,
+		EQueueNumber::e5050,		
 	};
 
 	for (const auto &queue : queueList) 
@@ -495,7 +496,7 @@ void active_sip::ActiveSession::CreateListActiveSessionOperators()
 		// заменяем %queue на номер очереди
 		std::string repl = "%queue";
 		size_t position = request.find(repl);
-		request.replace(position, repl.length(), EnumToString<ecQueueNumber>(queue));
+		request.replace(position, repl.length(), EnumToString<EQueueNumber>(queue));
 
 		std::string error;
 		m_queue.DeleteRawAll(); // очистим все текущие данные 
@@ -549,7 +550,7 @@ void active_sip::ActiveSession::CreateListActiveSessionCalls()
 }
 
 // найдем активных операторов в линии
-void active_sip::ActiveSession::CreateActiveOperators(const ecQueueNumber _queue)
+void active_sip::ActiveSession::CreateActiveOperators(const EQueueNumber _queue)
 {	
 	if (!m_queue.IsExistRaw()) 
 	{
@@ -596,7 +597,7 @@ void active_sip::ActiveSession::CreateActiveOperators(const ecQueueNumber _queue
 	
 }
 
-void active_sip::ActiveSession::CreateOperator(const std::string &_lines, Operator &_sip, ecQueueNumber _queue)
+void active_sip::ActiveSession::CreateOperator(const std::string &_lines, Operator &_sip, EQueueNumber _queue)
 {
 	_sip.sipNumber = FindSipNumber(_lines);
 	_sip.queueList.push_back(_queue);
@@ -646,10 +647,10 @@ void active_sip::ActiveSession::InsertAndUpdateQueueNumberOperators()
 	{
 		for (size_t i = 0; i != sip.queueList.size(); ++i) 
 		{
-			if (!IsExistOperatorsQueue(sip.sipNumber, EnumToString<ecQueueNumber>(sip.queueList[i]))) 
+			if (!IsExistOperatorsQueue(sip.sipNumber, EnumToString<EQueueNumber>(sip.queueList[i]))) 
 			{
 				//записи нет добавляем
-				InsertOperatorsQueue(sip.sipNumber, EnumToString<ecQueueNumber>(sip.queueList[i]));
+				InsertOperatorsQueue(sip.sipNumber, EnumToString<EQueueNumber>(sip.queueList[i]));
 			}
 		}
 	}	
@@ -799,7 +800,7 @@ void active_sip::ActiveSession::CheckOperatorsQueue()
 			if (!isExistQueue)
 			{
 				// удаляем sip + очередь конкретную
-				DeleteOperatorsQueue(curr_list.sipNumber, EnumToString<ecQueueNumber>(curr_list.queueList[0]));
+				DeleteOperatorsQueue(curr_list.sipNumber, EnumToString<EQueueNumber>(curr_list.queueList[0]));
 			}
 		}
 		else
@@ -838,7 +839,7 @@ bool active_sip::ActiveSession::GetActiveQueueOperators(OperatorList &_activeLis
 			}
 			else if (i == 1)
 			{
-				activeOperator.queueList.push_back(StringToEnum<ecQueueNumber>(row[i]));
+				activeOperator.queueList.push_back(StringToEnum<EQueueNumber>(row[i]));
 			}
 
 		}
@@ -1091,6 +1092,7 @@ void active_sip::ActiveSession::UpdateOnHoldStatusOperator()
 	// найдем операторов которые по БД числяться в onHold
 	if (!GetActiveOnHold(onHoldList, error))
 	{
+		// TODO запись в лог
 		printf("%s", error.c_str());
 		return;
 	}	
@@ -1103,6 +1105,29 @@ void active_sip::ActiveSession::UpdateOnHoldStatusOperator()
 			DisableOnHold(onHoldList);
 		}				
 		return;
+	}
+	else 
+	{
+		// проверка на случай если оператор потерялся а по БД он числиться как в onHold
+		//for (const auto &sip : m_listOperators) 
+		//{
+		//	bool exist = false; // по умолчанию считаем что нет sip
+		//	const OnHold hold_disable;
+		//	for (const auto &hold : onHoldList) 
+		//	{
+		//		if (hold.sip == sip.sipNumber) 
+		//		{
+		//			exist = true;
+		//			break;
+		//		}
+		//	}
+
+		//	if (!exist) 
+		//	{
+		//		DisableHold()
+		//	}
+
+		//}
 	}
 
 	// основная проверка onHold
@@ -1169,6 +1194,7 @@ void active_sip::ActiveSession::DisableOnHold(const OnHoldList &_onHoldList)
 		std::string error;
 		if (!DisableHold(hold, error))
 		{
+			// TODO в лог
 			printf("%s", error.c_str());
 			continue;
 		}
@@ -1212,25 +1238,20 @@ bool active_sip::ActiveSession::AddHold(const Operator &_sip, std::string &_erro
 // Основная проверка отключение\добавление onHold 
 void active_sip::ActiveSession::CheckOnHold(OnHoldList &_onHoldList)
 {
-	if (_onHoldList.size() >= 2) 
-	{
-		std::cout << "test"; // debug удалить потом
-	}
-	
 	// надо сначало существующие проверить
 	bool needNewHoldList = false; // флаг того что нужно пересчитать HoldList
 	std::string error;
 
 	for (const auto &hold : _onHoldList) 
 	{
-		bool existHold = true; // по умолчанию считаем что есть активный hold
+		bool existHold = false; // по умолчанию считаем что нет активного активного hold
 		for (const auto &sip : m_listOperators)
 		{
 			if (hold.sip == sip.sipNumber) 
 			{
-				if (!sip.isOnHold) 
+				if (sip.isOnHold) 
 				{
-					existHold = false;
+					existHold = true;
 					break;
 				}				
 			}
@@ -1240,6 +1261,7 @@ void active_sip::ActiveSession::CheckOnHold(OnHoldList &_onHoldList)
 		{			
 			if (!DisableHold(hold, error))
 			{
+				// TODO в лог
 				printf("%s", error.c_str());
 				return;
 			}
@@ -1253,6 +1275,7 @@ void active_sip::ActiveSession::CheckOnHold(OnHoldList &_onHoldList)
 	{
 		if (!GetActiveOnHold(_onHoldList, error))
 		{
+			// TODO в лог
 			printf("%s", error.c_str());
 			return;
 		}
@@ -1294,6 +1317,7 @@ void active_sip::ActiveSession::CheckOnHold(OnHoldList &_onHoldList)
 			std::string error;
 			if (!AddHold(sip, error))
 			{
+				// TODO в лог
 				printf("%s", error.c_str());				
 			}
 		}

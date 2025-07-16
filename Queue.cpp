@@ -8,8 +8,9 @@
 #include "Queue.h"
 #include "InternalFunction.h"
 #include "SQLRequest.h"
+#include "utils.h"
 
-using namespace INTERNALFUNCTION;
+using namespace utils;
 
 // коструктор
 //QUEUE_OLD::Parsing::Parsing(const char *fileQueue)
@@ -337,14 +338,14 @@ bool Queue::CreateQueueCallers(const std::string &_lines, QueueCalls &_queueCall
 
 	if (!lines.empty())
 	{
-		_queueCaller.phone = INTERNALFUNCTION::PhoneParsing(lines[7]);
+		_queueCaller.phone = utils::PhoneParsing(lines[7]);
 		_queueCaller.waiting = lines[8];
-		_queueCaller.queue = StringToEnum<ecQueueNumber>(lines[2]);
+		_queueCaller.queue = StringToEnum<EQueueNumber>(lines[2]);
 
 		// TODO тут в лог запись если не прошел по какой то причине 
 		if (!CheckCallers(_queueCaller))
 		{
-			LOG_old::LogToFile log(LOG_old::eLogType_ERROR);
+			LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
 			std::string err = std::string(__PRETTY_FUNCTION__) +"\t"+ _lines;
 			log.add(err);
 
@@ -359,16 +360,7 @@ bool Queue::CreateQueueCallers(const std::string &_lines, QueueCalls &_queueCall
 
 bool Queue::CheckCallers(const QueueCalls &_caller)
 {
-	// если в phone или waiting есть подстрока "null" 
-	// или callerID == Unknown — сразу false
-	if (_caller.phone.find("null") != std::string::npos ||
-		_caller.waiting.find("null") != std::string::npos ||
-		_caller.queue == ecQueueNumber::Unknown)
-	{
-		return false;
-	}
-
-	return true;
+	return _caller.check();
 }
 
 bool Queue::IsExistQueueCalls()
@@ -380,7 +372,7 @@ void Queue::InsertQueueCalls()
 {	
 	for (const auto &list : m_listQueue) 
 	{	
-		list.queue != ecQueueNumber::e5005	? InsertCall(list)						// для очереди из живых операторо											
+		list.queue != EQueueNumber::e5005	? InsertCall(list)						// для очереди из живых операторо											
 											: InsertCallVirtualOperator(list);		// для виртуалной бабы				
 	}	
 }
@@ -577,7 +569,7 @@ void Queue::UpdateCallIvrToQueue(const QueueCallsList &_calls)
 
 	for (const auto &call : _calls)
 	{
-		if (call.queue != ecQueueNumber::e5005) 
+		if (call.queue != EQueueNumber::e5005) 
 		{
 			if (phoneTouch.empty())
 			{
@@ -615,7 +607,7 @@ void Queue::UpdateCallIvrToVirtualOperator(const QueueCallsList &_calls)
 
 	for (const auto &call : _calls)
 	{
-		if (call.queue == ecQueueNumber::e5005) 
+		if (call.queue == EQueueNumber::e5005) 
 		{
 			if (phoneTouch.empty())
 			{
@@ -725,7 +717,7 @@ void Queue::UpdateCallSuccess()
 	}	
 }
 
-bool Queue::IsExistCall(ecQueueNumber _queue, const std::string &_phone)
+bool Queue::IsExistCall(EQueueNumber _queue, const std::string &_phone)
 {
 	std::string error;
 	// правильней проверять сначало разговор	
@@ -847,7 +839,7 @@ bool Queue::IsExistCall(ecQueueNumber _queue, const std::string &_phone)
 }
 
 // есть ли уже такой номер в БД (виртуальный оператор)
-bool Queue::IsExistCallVirtualOperator(ecQueueNumber _queue, const std::string &_phone)
+bool Queue::IsExistCallVirtualOperator(EQueueNumber _queue, const std::string &_phone)
 {
 	std::string error;
 	// правильней проверять сначало разговор	
@@ -1111,7 +1103,7 @@ bool Queue::GetCallsInBaseVirtualOperator(CallsInBaseList &_vcalls, const QueueC
 
 	for (const auto &call : _queueCalls)
 	{
-		if (call.queue == ecQueueNumber::e5005) 
+		if (call.queue == EQueueNumber::e5005) 
 		{
 			if (phoneTouch.empty())
 			{

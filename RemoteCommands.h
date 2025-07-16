@@ -1,11 +1,11 @@
 //  команды регистрации\разрегистрации в очереди	
 
+#ifndef REMOTE_COMMANDS_H
+#define REMOTE_COMMANDS_H
+
 #include "Log.h"
 #include <vector>
 #include <string>
-
-#ifndef REMOTE_COMMANDS_H
-#define REMOTE_COMMANDS_H
 
 static std::string COMMAND_ADD_QUEUE = "asterisk -rx \"queue add member Local/%sip@from-queue/n to %queue penalty 0 as %sip state_interface hint:%sip@ext-local\" ";
 static std::string COMMAND_DEL_QUEUE = "asterisk -rx \"queue remove member Local/%sip@from-queue/n from %queue\" ";
@@ -14,7 +14,7 @@ static std::string COMMAND_DEL_QUEUE = "asterisk -rx \"queue remove member Local
 namespace remote
 {
 	// удаленные команды (ID команд такие же как и в БД)
-	enum class ecCommand
+	enum class ECommand
 	{
 		Enter				= 0,         // Вход
 		Exit				= 1,         // Выход
@@ -38,38 +38,61 @@ namespace remote
 		Reserve				= 19,        // резерв
 		Callback			= 20,        // callback
 	};
-	
-	
-	enum class ecCommandType
+		
+	enum class ECommandType
 	{
 		Unknown = -1,
 		Del,		// команда на добавление в очередь
 		Add			// команда на удаление из очереди
 	};
 	
-	enum class ecStatusOperator
+	enum class EStatus
 	{
-		ecAvailable = 1,	// доступен
-		ecHome		= 2,	// домой		
-		ecExodus	= 3,	// исход
-		ecBreak		= 4,	// перерыв
-		ecDinner	= 5,	// обед
-		ecPostvyzov = 6,	// поствызов
-		ecStudies	= 7,	// учеба
-		ecIt		= 8,	// ИТ
-		ecTransfer	= 9,	// переносы
-		ecReserve	= 10,	// резерв
-		ecCallback	= 11,   // callback
+		Unknown		= -1,	// неизвестный
+		Available	= 1,	// доступен
+		Home		= 2,	// домой		
+		Exodus		= 3,	// исход
+		Break		= 4,	// перерыв
+		Dinner		= 5,	// обед
+		Postvyzov	= 6,	// поствызов
+		Studies		= 7,	// учеба
+		It			= 8,	// ИТ
+		Transfer	= 9,	// переносы
+		Reserve		= 10,	// резерв
+		Callback	= 11,   // callback
 	};
 
 	struct Command
 	{
 		int			id;			// id команды (для удобного поиска в запросе)
 		std::string sip;		// sip инициализировавший команду
-		ecCommand	command;	// сама команда (int)
+		ECommand	command;	// сама команда (int)
 		int			userId;		// id самого пользака
 	};
-	typedef std::vector<Command> CommandList;
+	using CommandList = std::vector<Command>;
+
+	struct CommandSendInfoUser 
+	{
+		std::string	 sip;			// sip инициализировавший команду	
+		std::string	 ip;			// ip с которого пришла команда
+		unsigned int id;			// id пользователя по БД
+		std::string	 user_login_pc;	// логин зареган на пк с которого пришла команда
+		std::string	 pc;			// имя пк с которого отправили коиманду
+		
+		inline bool check() const noexcept
+		{
+			if (sip.empty() ||
+				ip.empty()	||
+				id == 0		||
+				user_login_pc.empty() ||
+				pc.empty())
+			{
+				return false;
+			}
+
+			return true;
+		}
+	};
 
 
 	class Status
@@ -80,60 +103,66 @@ namespace remote
 
 		void Start();
 		void Stop();
-
-		void Execute(); // выполнение команд TODO потом перенести в private
+		
 	private:
 		CommandList			m_commandList;
 		SP_SQL				m_sql;
 		IPotokDispether		m_dispether;
-		IFile				m_register;			// запрос информации по регистрации\разрегистрации в очередях
-		
+		IFile				m_register;				// запрос информации по регистрации\разрегистрации в очередях
+		Log					m_log;
 
+		bool Execute();		
+		
 		bool IsExistCommand();
 		bool GetCommand(std::string &_errorDesciption); // получение новых команд из БД
 
 		bool ExecuteCommand(const Command &_command, std::string &_errorDesciption); // выполнение команды
-		bool Add(const Command &_command, std::string &_errorDesciption); // выполнение команды (добавление)
-		bool Del(const Command &_command, std::string &_errorDesciption); // выполнение команды (удаление)
+		std::string CreateCommand(const Command &_command, const EQueueNumber _queue, const std::string &_rawCommand); // создвание команды
+			
+		void DeleteCommand(const Command &_command);	// удаление выполненной команды 
 
 		void ExecuteCommandFail(const Command &_command, const std::string &_errorStr); // не удачное выполнение команды
 		
-		ecCommandType GetCommandType(const Command &_command); // поиск какая команда пришла
-		ecQueueNumber GetQueueNumber(const Command &_command); // поиск номера очереди
+		bool SendCommand(ECommandType commandType, std::string &_request, std::string &_errorDesciption);	// отправка команды на добавление\удаление из очереди
+		bool CheckSendingCommand(ECommandType _commandType, std::string &_errorDesciption); // проверка успешно ли выполнена команда
+
+		bool UpdateNewStatus(const Command &_command, std::string &_errorDesciption); // обновление нового статуса оператора
+
+		ECommandType GetCommandType(const Command &_command); // поиск какая команда пришла
+		EQueueNumber GetQueueNumber(const ECommand &_command); // поиск номера очереди		
 	};
 };
+using SP_Status = std::shared_ptr<remote::Status>;
 
-typedef std::shared_ptr<remote::Status> SP_Status;
 
-
-namespace REMOTE_COMMANDS_old {
-		
-	struct R_Commands_old
-	{
-		int			id;				// id команды (для удобного поиска в запросе)
-		std::string sip;			// sip инициализировавший команду
-		remote::ecCommand	command;		// сама команда (int)
-		std::string ip;				// ip с которого пришла команда
-		int			user_id;		// id пользователя по БД
-		std::string user_login_pc;	// логин зареган на пк с которого пришла команда
-		std::string pc;				// имя пк с которого отправили коиманду
-	};
-
-	class Remote
-	{
-	public:
-		Remote();
-		~Remote()	= default;		
-
-		unsigned getCountCommand() const;		// кол-во команд которые на данный момент есть в памяти	
-		std::vector<R_Commands_old> list_commads;
-		void startCommand();		// отработка команд
-
-	private:
-		bool chekNewCommand();		// проверка если новая команда	
-		void createListCommands();	// создание списка команд		
-	};
-
-}
+//namespace REMOTE_COMMANDS_old {
+//		
+//	struct R_Commands_old
+//	{
+//		int			id;				// id команды (для удобного поиска в запросе)
+//		std::string sip;			// sip инициализировавший команду
+//		remote::ECommand	command;		// сама команда (int)
+//		std::string ip;				// ip с которого пришла команда
+//		int			user_id;		// id пользователя по БД
+//		std::string user_login_pc;	// логин зареган на пк с которого пришла команда
+//		std::string pc;				// имя пк с которого отправили коиманду
+//	};
+//
+//	class Remote
+//	{
+//	public:
+//		Remote();
+//		~Remote()	= default;		
+//
+//		unsigned getCountCommand() const;		// кол-во команд которые на данный момент есть в памяти	
+//		std::vector<R_Commands_old> list_commads;
+//		void startCommand();		// отработка команд
+//
+//	private:
+//		bool chekNewCommand();		// проверка если новая команда	
+//		void createListCommands();	// создание списка команд		
+//	};
+//
+//}
 
 #endif // REMOTE_COMMANDS_H

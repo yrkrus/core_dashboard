@@ -21,7 +21,7 @@
 //#endif
 
 
-std::string INTERNALFUNCTION::StringFormat(const char *format, ...)
+std::string utils::StringFormat(const char *format, ...)
 {
 	// Создаем объект ostringstream для форматирования строки
 	std::ostringstream oss;
@@ -37,10 +37,16 @@ std::string INTERNALFUNCTION::StringFormat(const char *format, ...)
 			format++;
 			switch (*format)
 			{
-			case 'd':
-			{  // Для целых чисел
+			case 'd':	 // Для целых чисел
+			{ 
 				int i = va_arg(args, int);
 				oss << i;
+				break;
+			}
+			case 'u':	// беззнаковое целое
+			{
+				unsigned int u = va_arg(args, unsigned int);
+				oss << u;
 				break;
 			}
 			case 'f':
@@ -73,7 +79,7 @@ std::string INTERNALFUNCTION::StringFormat(const char *format, ...)
 }
 
 // парсинг номера телефона в нормальный вид
-std::string INTERNALFUNCTION::PhoneParsing(std::string &phone)
+std::string utils::PhoneParsing(std::string &phone)
 {
 	const auto n = phone.size();
 
@@ -98,7 +104,7 @@ std::string INTERNALFUNCTION::PhoneParsing(std::string &phone)
 
 
 // создать + получить текущий IVR
-//void INTERNALFUNCTION::getIVR()
+//void utils::getIVR()
 //{   
 //	if (!CONSTANTS::DEBUG_MODE) {
 //		system(CONSTANTS::cIVRResponse_old.c_str());
@@ -113,7 +119,7 @@ std::string INTERNALFUNCTION::PhoneParsing(std::string &phone)
 //}
 
 // создать + получить текущую очередь
-//void INTERNALFUNCTION::getQueue(void)
+//void utils::getQueue(void)
 //{
 //	if (!CONSTANTS::DEBUG_MODE)	{
 //		system(CONSTANTS::cQueueResponse.c_str());
@@ -140,7 +146,7 @@ std::string INTERNALFUNCTION::PhoneParsing(std::string &phone)
 //}
 
 // создать + получить кто с кем разговаривает
-//void INTERNALFUNCTION::getActiveSip(void)
+//void utils::getActiveSip(void)
 //{
 //	if (!CONSTANTS::DEBUG_MODE)	
 //	{
@@ -156,27 +162,27 @@ std::string INTERNALFUNCTION::PhoneParsing(std::string &phone)
 //}
 
 // получение номера очереди
-std::string INTERNALFUNCTION::getNumberQueue(CONSTANTS::AsteriskQueue queue)
-{
-	switch (queue)
-	{
-		case CONSTANTS::main: {
-			return "5000";
-			break;
-		}			
-		case CONSTANTS::lukoil: {
-			return "5050";
-			break;
-		}			
-		default: {
-			return "5000";
-			break;
-		}			
-	}
-}
+//std::string utils::getNumberQueue(CONSTANTS::AsteriskQueue queue)
+//{
+//	switch (queue)
+//	{
+//		case CONSTANTS::main: {
+//			return "5000";
+//			break;
+//		}			
+//		case CONSTANTS::lukoil: {
+//			return "5050";
+//			break;
+//		}			
+//		default: {
+//			return "5000";
+//			break;
+//		}			
+//	}
+//}
 
 // перевод общего кол-ва секунда в 00:00:00 формат
-std::string INTERNALFUNCTION::getTalkTime(std::string talk)
+std::string utils::getTalkTime(std::string talk)
 {
 	const unsigned int daysCount	= 24 * 3600;
 	const unsigned short hourCount	= 3600;
@@ -205,7 +211,7 @@ std::string INTERNALFUNCTION::getTalkTime(std::string talk)
 }
 
 // текущее время 
-std::string INTERNALFUNCTION::getCurrentDateTime()
+std::string utils::getCurrentDateTime()
 {	
 	auto now = std::chrono::system_clock::now();
 	std::time_t now_c = std::chrono::system_clock::to_time_t(now);
@@ -233,7 +239,7 @@ std::string INTERNALFUNCTION::getCurrentDateTime()
 }
 
 // текущее начало дня
-std::string INTERNALFUNCTION::getCurrentStartDay()
+std::string utils::getCurrentStartDay()
 {
 	auto now = std::chrono::system_clock::now();
 	std::time_t now_c = std::chrono::system_clock::to_time_t(now);
@@ -252,7 +258,7 @@ std::string INTERNALFUNCTION::getCurrentStartDay()
 }
 
 // текущее время - 2 минута 
-std::string INTERNALFUNCTION::getCurrentDateTimeAfterMinutes(int minutes)
+std::string utils::getCurrentDateTimeAfterMinutes(int minutes)
 {
 	auto now = std::chrono::system_clock::now();
 	auto minute = std::chrono::minutes(minutes);
@@ -282,7 +288,7 @@ std::string INTERNALFUNCTION::getCurrentDateTimeAfterMinutes(int minutes)
 }
 
 // текущее время после 20:00 
-//std::string INTERNALFUNCTION::getCurrentDateTimeAfter20hours()
+//std::string utils::getCurrentDateTimeAfter20hours()
 //{
 //	auto now = std::chrono::system_clock::now();
 //	std::time_t now_c = std::chrono::system_clock::to_time_t(now);
@@ -301,7 +307,7 @@ std::string INTERNALFUNCTION::getCurrentDateTimeAfterMinutes(int minutes)
 //}
 
 // показ версии ядра
-void INTERNALFUNCTION::showVersionCore(unsigned int iter)
+void utils::showVersionCore(unsigned int iter)
 {
 	std::ostringstream buffer;
 	buffer << "==========================================================\n";
@@ -330,7 +336,7 @@ void INTERNALFUNCTION::showVersionCore(unsigned int iter)
 }
 
 // статистика // пока без класса, может потом в отдельный класс сделать
-void INTERNALFUNCTION::getStatistics()
+void utils::getStatistics()
 {
 	SQL_REQUEST::SQL base;
 
@@ -371,53 +377,53 @@ void INTERNALFUNCTION::getStatistics()
 }
 
 // отображжение инфо что не возможно подключиться к бд
-void INTERNALFUNCTION::showErrorBD(const std::string str)
+void utils::showErrorBD(const std::string str)
 {
 	std::cerr << str << " -> Error: can't connect to database " << CONSTANTS::cHOST << ":" << CONSTANTS::cBD << "\n";
 	if (CONSTANTS::SAFE_LOG) 
 	{
 		if (CONSTANTS::LOG_MODE_ERROR) 
 		{
-			LOG_old::LogToFile log(LOG_old::eLogType_ERROR);
+			LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
 			log.add(str +" -> Error: can't connect to database " + CONSTANTS::cHOST + ":" + CONSTANTS::cBD);
 		}
 	}
 }
 
 // отображение инфо что пошла какая то ошибка
-void INTERNALFUNCTION::showErrorBD(const std::string str, MYSQL *mysql)
+void utils::showErrorBD(const std::string str, MYSQL *mysql)
 {
 	std::cerr << str <<" " << mysql_error(mysql) <<"\n";
 	if (CONSTANTS::SAFE_LOG) 
 	{
 		if (CONSTANTS::LOG_MODE_ERROR)	
 		{
-			LOG_old::LogToFile log(LOG_old::eLogType_ERROR);
+			LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
 			log.add(str + " " + mysql_error(mysql));
 		}
 	}
 }
 
 // преобразование текущей удаленной комады из int -> REMOTE_COMMANDS::Command 
-remote::ecCommand INTERNALFUNCTION::getRemoteCommand(int command) // TODO переделать на template IntegerToEnum
+remote::ECommand utils::getRemoteCommand(int command) // TODO переделать на template IntegerToEnum
 {
-	return static_cast<remote::ecCommand>(command);
+	return static_cast<remote::ECommand>(command);
 }
 
 // преобразование текущей удаленной комады из LOG::Log -> int
-int INTERNALFUNCTION::getRemoteCommand(remote::ecCommand command)// TODO переделать на template EnumToInteger
+int utils::getRemoteCommand(remote::ECommand command)// TODO переделать на template EnumToInteger
 {
 	return static_cast<int>(command);
 }
 
 // преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
-int INTERNALFUNCTION::getStatusOperators(remote::ecStatusOperator status)// TODO переделать на template EnumToInteger
+int utils::getStatusOperators(remote::EStatus status)// TODO переделать на template EnumToInteger
 {
 	return static_cast<int>(status);
 }
 
 
-//bool INTERNALFUNCTION::isExistNewOnHoldOperators(const SP_OnHold &onHold, const Operators &operators)
+//bool utils::isExistNewOnHoldOperators(const SP_OnHold &onHold, const Operators &operators)
 //{
 //	int count_operators_active_sip{ 0 };
 //	for (const auto &list : operators) 
@@ -432,7 +438,7 @@ int INTERNALFUNCTION::getStatusOperators(remote::ecStatusOperator status)// TODO
 //
 //}
 
-//INTERNALFUNCTION::SP_NewOnHoldOperators INTERNALFUNCTION::createNewOnHoldOperators(const SP_OnHold &onHold, const Operators &operators)
+//utils::SP_NewOnHoldOperators utils::createNewOnHoldOperators(const SP_OnHold &onHold, const Operators &operators)
 //{
 //	SP_NewOnHoldOperators new_lists = std::make_shared<std::map<std::string, std::string>>();
 //
@@ -457,71 +463,71 @@ int INTERNALFUNCTION::getStatusOperators(remote::ecStatusOperator status)// TODO
 //}
 
 // проверка успешно ли выполнили удаленную команду
-bool INTERNALFUNCTION::remoteCommandChekedExecution(remote::ecCommand command)
-{	
-	
-	std::ifstream fileRemoteCommand;
-	fileRemoteCommand.open(CONSTANTS::cRemoteCommandName);
+//bool utils::remoteCommandChekedExecution(remote::ECommand command)
+//{	
+//	
+//	std::ifstream fileRemoteCommand;
+//	fileRemoteCommand.open(CONSTANTS::cRemoteCommandName);
+//
+//	// не удается открыть файл
+//	if (!fileRemoteCommand.is_open()) return false;
+//
+//	// находим и разбираем команду 
+//	std::string line;
+//	
+//
+//	while (std::getline(fileRemoteCommand, line)) {		
+//		
+//		// какую именно команду ищем
+//		if (command == remote::ECommand::AddQueue5000 ||
+//			command == remote::ECommand::AddQueue5050 ||
+//			command == remote::ECommand::AddQueue5000_5050)
+//		{
+//			if ((line.find("Added") != std::string::npos) || (line.find("Already there") != std::string::npos))
+//			{
+//				fileRemoteCommand.close();
+//				return true;				
+//			}
+//		}
+//		else if (command == remote::ECommand::DelQueue5000		||
+//				 command == remote::ECommand::DelQueue5050		||
+//				 command == remote::ECommand::DelQueue5000_5050	||
+//				 command == remote::ECommand::Home					||
+//				 command == remote::ECommand::Exodus				||
+//				 command == remote::ECommand::Break					||
+//				 command == remote::ECommand::Dinner				||
+//				 command == remote::ECommand::Postvyzov				||
+//				 command == remote::ECommand::Studies				||
+//				 command == remote::ECommand::IT					||
+//				 command == remote::ECommand::Transfer				||
+//				 command == remote::ECommand::Reserve				||
+//				 command == remote::ECommand::Callback)
+//		{
+//			if ((line.find("Removed") != std::string::npos) || (line.find("Not there") != std::string::npos))
+//			{
+//				fileRemoteCommand.close();
+//				return true;				
+//			}
+//		}		
+//		
+//	}
+//
+//	fileRemoteCommand.close();
+//	return false;	
+//}
 
-	// не удается открыть файл
-	if (!fileRemoteCommand.is_open()) return false;
 
-	// находим и разбираем команду 
-	std::string line;
-	
-
-	while (std::getline(fileRemoteCommand, line)) {		
-		
-		// какую именно команду ищем
-		if (command == remote::ecCommand::AddQueue5000 ||
-			command == remote::ecCommand::AddQueue5050 ||
-			command == remote::ecCommand::AddQueue5000_5050)
-		{
-			if ((line.find("Added") != std::string::npos) || (line.find("Already there") != std::string::npos))
-			{
-				fileRemoteCommand.close();
-				return true;				
-			}
-		}
-		else if (command == remote::ecCommand::DelQueue5000		||
-				 command == remote::ecCommand::DelQueue5050		||
-				 command == remote::ecCommand::DelQueue5000_5050	||
-				 command == remote::ecCommand::Home					||
-				 command == remote::ecCommand::Exodus				||
-				 command == remote::ecCommand::Break					||
-				 command == remote::ecCommand::Dinner				||
-				 command == remote::ecCommand::Postvyzov				||
-				 command == remote::ecCommand::Studies				||
-				 command == remote::ecCommand::IT					||
-				 command == remote::ecCommand::Transfer				||
-				 command == remote::ecCommand::Reserve				||
-				 command == remote::ecCommand::Callback)
-		{
-			if ((line.find("Removed") != std::string::npos) || (line.find("Not there") != std::string::npos))
-			{
-				fileRemoteCommand.close();
-				return true;				
-			}
-		}		
-		
-	}
-
-	fileRemoteCommand.close();
-	return false;	
-}
-
-
-bool INTERNALFUNCTION::to_bool(const std::string &str)
+bool utils::to_bool(const std::string &str)
 {
 	return ((str == "true") ? true : false);
 }
 
-std::string INTERNALFUNCTION::to_string(bool value)
+std::string utils::to_string(bool value)
 {
 	return (value ? "true" : "false");
 }
 
-size_t INTERNALFUNCTION::string_to_size_t(const std::string &str)
+size_t utils::string_to_size_t(const std::string &str)
 {
 	std::stringstream stream(str);
 	size_t output;
@@ -530,7 +536,7 @@ size_t INTERNALFUNCTION::string_to_size_t(const std::string &str)
 	return output;
 }
 
-void INTERNALFUNCTION::showHelpInfo()
+void utils::showHelpInfo()
 {
 	system("clear");
 	//printf("\n\t%s\n", CONSTANTS::core_version);
@@ -545,6 +551,28 @@ void INTERNALFUNCTION::showHelpInfo()
 	std::cout << " housekeeping \t\t - внутренния задания на очистку БД таблиц (queue, logging, ivr)\n\n";
 
 	std::cout << "\t\t\t\t\t\t\t\t === by Petrov Yuri @2024 === \n\n";
+}
+
+
+void utils::ReplaceResponseStatus(std::string &_replacmentResponse, const std::string &_find, const std::string &_repl)
+{
+	// замена для номера очереди
+	if (_find.find("%queue") != std::string::npos) 
+	{
+		size_t position = _replacmentResponse.find(_find);
+		_replacmentResponse.replace(position, _find.length(), _repl);
+	}	
+	
+	// замена для sip
+	if (_find.find("%sip") != std::string::npos)
+	{
+		size_t position = _replacmentResponse.find(_find);
+		while (position != std::string::npos)
+		{
+			_replacmentResponse.replace(position, _find.length(), _repl);
+			position = _replacmentResponse.find(_find);
+		}
+	}
 }
 
 

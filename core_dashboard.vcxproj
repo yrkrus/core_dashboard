@@ -177,6 +177,7 @@
     <ClCompile Include="RemoteCommandsCallback.cpp" />
     <ClCompile Include="SQLRequest.cpp" />
     <ClCompile Include="TCPServer.cpp" />
+    <ClCompile Include="utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ActiveSip.h" />
@@ -199,6 +200,7 @@
     <ClInclude Include="RemoteCommandsCallback.h" />
     <ClInclude Include="SQLRequest.h" />
     <ClInclude Include="TCPServer.h" />
+    <ClInclude Include="utils.h" />
   </ItemGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile />

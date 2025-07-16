@@ -10,7 +10,7 @@
 #include <list>
 
 
-using namespace INTERNALFUNCTION;
+using namespace utils;
 
 SQL_REQUEST::SQL::SQL()
 {	
@@ -32,7 +32,7 @@ void SQL_REQUEST::SQL::createMySQLConnect(MYSQL &mysql)
 		
 		if (CONSTANTS::SAFE_LOG) {
 			if (CONSTANTS::LOG_MODE_ERROR) {
-				LOG_old::LogToFile log(LOG_old::eLogType_ERROR);
+				LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
 				log.add("Error: can't create MySQL-descriptor");
 			}
 		}
@@ -131,7 +131,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //		if (CONSTANTS::SAFE_LOG) {
 //			if (CONSTANTS::LOG_MODE_DEBUG) 
 //			{
-//				LOG::LogToFile log(LOG::eLogType_DEBUG);
+//				LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //				log.add(METHOD_NAME +" -> " + query);
 //			}
 //		}
@@ -162,7 +162,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -202,7 +202,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -239,7 +239,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -282,7 +282,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //		{
 //			if (CONSTANTS::LOG_MODE_DEBUG)
 //			{
-//				LOG::LogToFile log(LOG::eLogType_DEBUG);
+//				LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //				//log.add(METHOD_NAME + " -> " + query);
 //			}
 //		}
@@ -317,7 +317,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			//log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -352,7 +352,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //		{
 //			if (CONSTANTS::LOG_MODE_DEBUG)
 //			{
-//				LOG::LogToFile log(LOG::eLogType_DEBUG);
+//				LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //				//log.add(METHOD_NAME + " -> " + query);
 //			}
 //		}
@@ -388,7 +388,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //			{
 //				if (CONSTANTS::LOG_MODE_DEBUG)
 //				{
-//					LOG::LogToFile log(LOG::eLogType_DEBUG);
+//					LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //					//log.add(METHOD_NAME + " -> " + query);
 //				}
 //			}
@@ -424,7 +424,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //				{
 //					if (CONSTANTS::LOG_MODE_DEBUG)
 //					{
-//						LOG::LogToFile log(LOG::eLogType_DEBUG);
+//						LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //						//log.add(METHOD_NAME + " -> " + query);
 //					}
 //				}
@@ -468,7 +468,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			//log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -498,7 +498,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			//log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -539,7 +539,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //		{
 //			if (CONSTANTS::LOG_MODE_DEBUG)
 //			{
-//				LOG::LogToFile log(LOG::eLogType_DEBUG);
+//				LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //				//log.add(METHOD_NAME + " -> " + query);
 //			}
 //		}
@@ -570,7 +570,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			//log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -626,7 +626,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -649,7 +649,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			//log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -693,7 +693,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -729,7 +729,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			//log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -788,7 +788,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -839,7 +839,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //		{
 //			if (CONSTANTS::LOG_MODE_DEBUG)
 //			{
-//				LOG::LogToFile log(LOG::eLogType_DEBUG);
+//				LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //				log.add(METHOD_NAME + " -> " + query);
 //			}
 //		}
@@ -877,7 +877,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			//log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -920,7 +920,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -975,7 +975,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //		{
 //			if (CONSTANTS::LOG_MODE_DEBUG)
 //			{
-//				LOG::LogToFile log(LOG::eLogType_DEBUG);
+//				LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //				log.add(METHOD_NAME + " -> " + query);
 //			}
 //		}
@@ -1013,7 +1013,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			//log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -1042,7 +1042,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			//log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -1070,7 +1070,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			//log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -1111,7 +1111,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			//log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -1151,7 +1151,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			//log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -1180,7 +1180,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			//log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -1214,7 +1214,7 @@ bool SQL_REQUEST::SQL::isConnectedBD()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			//log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -1324,7 +1324,7 @@ int SQL_REQUEST::SQL::getIVR_totalCalls()
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
+			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -1361,7 +1361,7 @@ int SQL_REQUEST::SQL::getIVR_totalCalls()
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -1412,7 +1412,7 @@ int SQL_REQUEST::SQL::getQUEUE_Calls(bool answered)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
+			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -1462,405 +1462,405 @@ int SQL_REQUEST::SQL::getQUEUE_Calls()
 }
 
 // проверка если новая команда для  входа\выхода из очереди
-bool SQL_REQUEST::SQL::remoteCheckNewCommads()
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return true;
-	}
-
-	const std::string query = "select count(id) from remote_commands";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		// ошибка считаем что есть запись		
-	//	showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
-		return true;
-	}
-
-	// результат
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row = mysql_fetch_row(result);			
-
-	bool existNewCommand;
-	((std::stoi(row[0]) == 0) ? existNewCommand = false : existNewCommand = true);
-	
-	mysql_free_result(result);
-	mysql_close(&this->mysql);
-	
-	return existNewCommand;
-}
+//bool SQL_REQUEST::SQL::remoteCheckNewCommads()
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return true;
+//	}
+//
+//	const std::string query = "select count(id) from remote_commands";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		// ошибка считаем что есть запись		
+//	//	showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+//		return true;
+//	}
+//
+//	// результат
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row = mysql_fetch_row(result);			
+//
+//	bool existNewCommand;
+//	((std::stoi(row[0]) == 0) ? existNewCommand = false : existNewCommand = true);
+//	
+//	mysql_free_result(result);
+//	mysql_close(&this->mysql);
+//	
+//	return existNewCommand;
+//}
 
 
 // генерация текущиъ найденных команд
-void SQL_REQUEST::SQL::createListRemoteCommands(std::vector<REMOTE_COMMANDS_old::R_Commands_old> &list)
-{	
-	
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}	
-	// формируем лист 
-	const std::string query = "select id,sip,command,ip,user_id,user_login_pc,pc from remote_commands";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		// ошибка считаем что есть запись		
-		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
-		return;
-	}
-
-	// результат
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row;
-
-	while ((row = mysql_fetch_row(result)) != NULL)	{
-		
-		
-		int id;						// id команды (для удобного поиска в запросе)
-		std::string sip;			// sip инициализировавший команду
-		remote::ecCommand command;			// сама команда (int)
-		std::string ip;				// ip с которого пришла команда
-		int user_id;				// id пользователя по БД
-		std::string user_login_pc;	// логин зареган на пк с которого пришла команда
-		std::string pc;				// имя пк с которого отправили коиманду
-
-
-		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
-		{
-
-			if (i == 0)	{
-				id = std::stoi(row[i]);
-			}
-			else if (i == 1) {
-				sip = row[i];
-			}
-			else if (i == 2) {
-				  command = getRemoteCommand(std::stoi(row[i]));
-			}
-			else if (i == 3) {
-				ip = row[i];
-			}
-			else if (i == 4) {
-				user_id = std::stoi(row[i]);
-			}
-			else if (i == 5) {
-				user_login_pc = row[i];
-			}
-			else if (i == 6) {
-				pc = row[i];
-			}
-		}
-
-		// добавим нужную команду в список всех найдекнных команд
-		list.push_back({id,sip,command,ip,user_id,user_login_pc,pc});
-	}
-
-
-	mysql_free_result(result);	
-	mysql_close(&this->mysql);
-	
-}
+//void SQL_REQUEST::SQL::createListRemoteCommands(std::vector<REMOTE_COMMANDS_old::R_Commands_old> &list)
+//{	
+//	
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}	
+//	// формируем лист 
+//	const std::string query = "select id,sip,command,ip,user_id,user_login_pc,pc from remote_commands";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		// ошибка считаем что есть запись		
+//		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+//		return;
+//	}
+//
+//	// результат
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row;
+//
+//	while ((row = mysql_fetch_row(result)) != NULL)	{
+//		
+//		
+//		int id;						// id команды (для удобного поиска в запросе)
+//		std::string sip;			// sip инициализировавший команду
+//		remote::ECommand command;			// сама команда (int)
+//		std::string ip;				// ip с которого пришла команда
+//		int user_id;				// id пользователя по БД
+//		std::string user_login_pc;	// логин зареган на пк с которого пришла команда
+//		std::string pc;				// имя пк с которого отправили коиманду
+//
+//
+//		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
+//		{
+//
+//			if (i == 0)	{
+//				id = std::stoi(row[i]);
+//			}
+//			else if (i == 1) {
+//				sip = row[i];
+//			}
+//			else if (i == 2) {
+//				  command = getRemoteCommand(std::stoi(row[i]));
+//			}
+//			else if (i == 3) {
+//				ip = row[i];
+//			}
+//			else if (i == 4) {
+//				user_id = std::stoi(row[i]);
+//			}
+//			else if (i == 5) {
+//				user_login_pc = row[i];
+//			}
+//			else if (i == 6) {
+//				pc = row[i];
+//			}
+//		}
+//
+//		// добавим нужную команду в список всех найдекнных команд
+//		list.push_back({id,sip,command,ip,user_id,user_login_pc,pc});
+//	}
+//
+//
+//	mysql_free_result(result);	
+//	mysql_close(&this->mysql);
+//	
+//}
 
 // запуск удаленной команды
-void SQL_REQUEST::SQL::startRemoteCommand(int id, std::string sip, remote::ecCommand command, int user_id)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
-
-	// запускаем команду
-	std::string responce_now;	
-	
-	// в какую очередь поставить
-	CONSTANTS::AsteriskQueue curr_queue;
-
-
-	switch (command)
-	{
-		// добавленние в очередь 5000 или 5050	
-		case remote::ecCommand::AddQueue5000 ... remote::ecCommand::AddQueue5050 :
-		{			
-			std::string responce = CONSTANTS::cRemoteCommandResponseAdd;
-			
-			// заменяем % на нужное нам
-			std::string repl_sip = "%sip";			
-			 
-			size_t position = responce.find(repl_sip);
-
-			while (position != std::string::npos) 
-			{
-				responce.replace(position, repl_sip.length(), sip);
-				position = responce.find(repl_sip);
-			}
-			
-			std::string repl_queue = "%queue";
-			position = responce.find(repl_queue);
-			
-			//в какую очередь поставить оператора
-			if (command == remote::ecCommand::AddQueue5000)
-			{
-				curr_queue = CONSTANTS::AsteriskQueue::main;
-			}
-			else if (command == remote::ecCommand::AddQueue5050)
-			{
-				curr_queue = CONSTANTS::AsteriskQueue::lukoil;
-			}
-
-			responce.replace(position, repl_queue.length(), getNumberQueue(static_cast<CONSTANTS::AsteriskQueue>(curr_queue)));
-			responce_now = responce;			
-
-			if (!CONSTANTS::DEBUG_MODE)
-			{
-				system(responce_now.c_str());
-			}
-
-			break;
-		}		
-		// добавление в очередь 5000+5050
-		case remote::ecCommand::AddQueue5000_5050: {
-			
-			remote::ecCommand command = remote::ecCommand::AddQueue5000;
-			// ставим 5000
-			startRemoteCommand(id,sip, command, user_id);
-
-
-			command = remote::ecCommand::AddQueue5050;
-			// ставим 5050
-			startRemoteCommand(id, sip, command, user_id);
-			
-			break;
-		}	
-		case remote::ecCommand::DelQueue5000 ... remote::ecCommand::DelQueue5050:
-			{
-
-			std::string responce = CONSTANTS::cRemoteCommandResponseDel;
-
-			// заменяем % на нужное нам
-			std::string repl_sip = "%sip";
-
-			size_t position = responce.find(repl_sip);
-			
-			responce.replace(position, repl_sip.length(), sip);			
-
-			std::string repl_queue = "%queue";
-			position = responce.find(repl_queue);
-
-			//в какую очередь поставить оператора
-			if (command == remote::ecCommand::DelQueue5000)
-			{
-				curr_queue = CONSTANTS::AsteriskQueue::main;
-			}
-			else if (command == remote::ecCommand::DelQueue5050)
-			{
-				curr_queue = CONSTANTS::AsteriskQueue::lukoil;
-			}
-
-			responce.replace(position, repl_queue.length(), getNumberQueue(static_cast<CONSTANTS::AsteriskQueue>(curr_queue)));
-			responce_now = responce;
-
-			if (!CONSTANTS::DEBUG_MODE)
-			{
-				system(responce_now.c_str());
-			}
-
-			break;
-		}	
-			// удаление из очереди 5000+5050
-		case remote::ecCommand::DelQueue5000_5050:
-		{
-
-			remote::ecCommand command = remote::ecCommand::DelQueue5000;
-			// ставим 5000
-			startRemoteCommand(id, sip, command, user_id);
-
-
-			command = remote::ecCommand::DelQueue5050;
-			// ставим 5050
-			startRemoteCommand(id, sip, command, user_id);
-
-			break;
-		}
-			// исход
-		case remote::ecCommand::Home ... remote::ecCommand::Callback : {
-			// ну тут все просто не зависимо от того в какой очереди находимся выходим из всех очередей
-			remote::ecCommand command = remote::ecCommand::DelQueue5000_5050;
-			startRemoteCommand(id, sip, command, user_id);
-		}
-	}
-	
-}
+//void SQL_REQUEST::SQL::startRemoteCommand(int id, std::string sip, remote::ECommand command, int user_id)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//
+//	// запускаем команду
+//	std::string responce_now;	
+//	
+//	// в какую очередь поставить
+//	CONSTANTS::AsteriskQueue curr_queue;
+//
+//
+//	switch (command)
+//	{
+//		// добавленние в очередь 5000 или 5050	
+//		case remote::ECommand::AddQueue5000 ... remote::ECommand::AddQueue5050 :
+//		{			
+//			std::string responce = CONSTANTS::cRemoteCommandResponseAdd;
+//			
+//			// заменяем % на нужное нам
+//			std::string repl_sip = "%sip";			
+//			 
+//			size_t position = responce.find(repl_sip);
+//
+//			while (position != std::string::npos) 
+//			{
+//				responce.replace(position, repl_sip.length(), sip);
+//				position = responce.find(repl_sip);
+//			}
+//			
+//			std::string repl_queue = "%queue";
+//			position = responce.find(repl_queue);
+//			
+//			//в какую очередь поставить оператора
+//			if (command == remote::ECommand::AddQueue5000)
+//			{
+//				curr_queue = CONSTANTS::AsteriskQueue::main;
+//			}
+//			else if (command == remote::ECommand::AddQueue5050)
+//			{
+//				curr_queue = CONSTANTS::AsteriskQueue::lukoil;
+//			}
+//
+//			responce.replace(position, repl_queue.length(), getNumberQueue(static_cast<CONSTANTS::AsteriskQueue>(curr_queue)));
+//			responce_now = responce;			
+//
+//			if (!CONSTANTS::DEBUG_MODE)
+//			{
+//				system(responce_now.c_str());
+//			}
+//
+//			break;
+//		}		
+//		// добавление в очередь 5000+5050
+//		case remote::ECommand::AddQueue5000_5050: {
+//			
+//			remote::ECommand command = remote::ECommand::AddQueue5000;
+//			// ставим 5000
+//			startRemoteCommand(id,sip, command, user_id);
+//
+//
+//			command = remote::ECommand::AddQueue5050;
+//			// ставим 5050
+//			startRemoteCommand(id, sip, command, user_id);
+//			
+//			break;
+//		}	
+//		case remote::ECommand::DelQueue5000 ... remote::ECommand::DelQueue5050:
+//			{
+//
+//			std::string responce = CONSTANTS::cRemoteCommandResponseDel;
+//
+//			// заменяем % на нужное нам
+//			std::string repl_sip = "%sip";
+//
+//			size_t position = responce.find(repl_sip);
+//			
+//			responce.replace(position, repl_sip.length(), sip);			
+//
+//			std::string repl_queue = "%queue";
+//			position = responce.find(repl_queue);
+//
+//			//в какую очередь поставить оператора
+//			if (command == remote::ECommand::DelQueue5000)
+//			{
+//				curr_queue = CONSTANTS::AsteriskQueue::main;
+//			}
+//			else if (command == remote::ECommand::DelQueue5050)
+//			{
+//				curr_queue = CONSTANTS::AsteriskQueue::lukoil;
+//			}
+//
+//			responce.replace(position, repl_queue.length(), getNumberQueue(static_cast<CONSTANTS::AsteriskQueue>(curr_queue)));
+//			responce_now = responce;
+//
+//			if (!CONSTANTS::DEBUG_MODE)
+//			{
+//				system(responce_now.c_str());
+//			}
+//
+//			break;
+//		}	
+//			// удаление из очереди 5000+5050
+//		case remote::ECommand::DelQueue5000_5050:
+//		{
+//
+//			remote::ECommand command = remote::ECommand::DelQueue5000;
+//			// ставим 5000
+//			startRemoteCommand(id, sip, command, user_id);
+//
+//
+//			command = remote::ECommand::DelQueue5050;
+//			// ставим 5050
+//			startRemoteCommand(id, sip, command, user_id);
+//
+//			break;
+//		}
+//			// исход
+//		case remote::ECommand::Home ... remote::ECommand::Callback : {
+//			// ну тут все просто не зависимо от того в какой очереди находимся выходим из всех очередей
+//			remote::ECommand command = remote::ECommand::DelQueue5000_5050;
+//			startRemoteCommand(id, sip, command, user_id);
+//		}
+//	}
+//	
+//}
 
 // удаление успешно выполненной команды
-void SQL_REQUEST::SQL::deleteRemoteCommand(int id)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
-
-	std::string query = "delete from remote_commands where id = '"+std::to_string(id)+"'";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
-		//	log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		//showErrorBD(METHOD_NAME+" -> " + query, &this->mysql);
-	}
-
-	mysql_close(&this->mysql);
-}
+//void SQL_REQUEST::SQL::deleteRemoteCommand(int id)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//
+//	std::string query = "delete from remote_commands where id = '"+std::to_string(id)+"'";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+//		//	log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		//showErrorBD(METHOD_NAME+" -> " + query, &this->mysql);
+//	}
+//
+//	mysql_close(&this->mysql);
+//}
 
 // обновление текущего статуса оператора
-void SQL_REQUEST::SQL::updateStatusOperators(int user_id, remote::ecStatusOperator status)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
-	
-	std::string query = "update operators set status = '" + std::to_string(getStatusOperators(status)) + "' where user_id = '" + std::to_string(user_id) + "'";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		//showErrorBD(METHOD_NAME+" -> " + query, &this->mysql);
-	};
-
-	
-	mysql_close(&this->mysql);
-	
-}
+//void SQL_REQUEST::SQL::updateStatusOperators(int user_id, remote::EStatus status)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//	
+//	std::string query = "update operators set status = '" + std::to_string(getStatusOperators(status)) + "' where user_id = '" + std::to_string(user_id) + "'";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		//showErrorBD(METHOD_NAME+" -> " + query, &this->mysql);
+//	};
+//
+//	
+//	mysql_close(&this->mysql);
+//	
+//}
 
 // создание лога в БД
-void SQL_REQUEST::SQL::addLog(remote::ecCommand command, int base_id)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
-
-
-	// найдем все данные по пользователю для логирования
-	const std::string query = "select sip,ip,user_id,user_login_pc,pc from remote_commands where id = '"+ std::to_string(base_id)+"' limit 1";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		// ошибка считаем что есть запись		
-		//showErrorBD(METHOD_NAME+" -> " + query, &this->mysql);
-		return;
-	}
-
-	// результат
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row;
-	
-	std::string sip;			// sip инициализировавший команду	
-	std::string ip;				// ip с которого пришла команда
-	int user_id;				// id пользователя по БД
-	std::string user_login_pc;	// логин зареган на пк с которого пришла команда
-	std::string pc;				// имя пк с которого отправили коиманду
-
-	while ((row = mysql_fetch_row(result)) != NULL)
-	{
-		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
-		{
-			if (i == 0)
-			{
-				sip = row[i];
-			}
-			else if (i == 1)
-			{
-				ip = row[i];
-			}
-			else if (i == 2)
-			{
-				user_id = std::stoi(row[i]);
-			}
-			else if (i == 3)
-			{
-				user_login_pc = row[i];
-			}
-			else if (i == 4)
-			{
-				pc = row[i];
-			}			
-		}		
-	}
-
-	mysql_free_result(result);	
-	
-	// устанавливаем данные в лог
-	std::string query_insert = "insert into logging (ip,user_id,user_login_pc,pc,action) values ('" + ip + 
-																								"','" + std::to_string(user_id) + 
-																								"','" + user_login_pc + 
-																								"','" + pc + 
-																								"','" + std::to_string(getRemoteCommand(command)) + "')";
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
-		//	log.add(METHOD_NAME + " -> " + query_insert);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
-	{
-		//showErrorBD(METHOD_NAME+" -> Data (insertIVR) error -> query(" + query_insert + ")", &this->mysql);
-	}
-	
-	mysql_close(&this->mysql);
-}
+//void SQL_REQUEST::SQL::addLog(remote::ECommand command, int base_id)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//
+//
+//	// найдем все данные по пользователю для логирования
+//	const std::string query = "select sip,ip,user_id,user_login_pc,pc from remote_commands where id = '"+ std::to_string(base_id)+"' limit 1";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		// ошибка считаем что есть запись		
+//		//showErrorBD(METHOD_NAME+" -> " + query, &this->mysql);
+//		return;
+//	}
+//
+//	// результат
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row;
+//	
+//	std::string sip;			// sip инициализировавший команду	
+//	std::string ip;				// ip с которого пришла команда
+//	int user_id;				// id пользователя по БД
+//	std::string user_login_pc;	// логин зареган на пк с которого пришла команда
+//	std::string pc;				// имя пк с которого отправили коиманду
+//
+//	while ((row = mysql_fetch_row(result)) != NULL)
+//	{
+//		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
+//		{
+//			if (i == 0)
+//			{
+//				sip = row[i];
+//			}
+//			else if (i == 1)
+//			{
+//				ip = row[i];
+//			}
+//			else if (i == 2)
+//			{
+//				user_id = std::stoi(row[i]);
+//			}
+//			else if (i == 3)
+//			{
+//				user_login_pc = row[i];
+//			}
+//			else if (i == 4)
+//			{
+//				pc = row[i];
+//			}			
+//		}		
+//	}
+//
+//	mysql_free_result(result);	
+//	
+//	// устанавливаем данные в лог
+//	std::string query_insert = "insert into logging (ip,user_id,user_login_pc,pc,action) values ('" + ip + 
+//																								"','" + std::to_string(user_id) + 
+//																								"','" + user_login_pc + 
+//																								"','" + pc + 
+//																								"','" + std::to_string(getRemoteCommand(command)) + "')";
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+//		//	log.add(METHOD_NAME + " -> " + query_insert);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
+//	{
+//		//showErrorBD(METHOD_NAME+" -> Data (insertIVR) error -> query(" + query_insert + ")", &this->mysql);
+//	}
+//	
+//	mysql_close(&this->mysql);
+//}
 
 
 void SQL_REQUEST::SQL::execTaskQueue()
@@ -1878,7 +1878,7 @@ void SQL_REQUEST::SQL::execTaskQueue()
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
+			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -1987,7 +1987,7 @@ void SQL_REQUEST::SQL::execTaskLogging()
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
+			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2003,11 +2003,11 @@ void SQL_REQUEST::SQL::execTaskLogging()
 	MYSQL_RES *result = mysql_store_result(&this->mysql);
 	MYSQL_ROW row;
 
-	std::vector<HOUSEKEEPING::Logging> listLogging;
+	std::vector<HOUSEKEEPING::Logging_old> listLogging;
 
 	while ((row = mysql_fetch_row(result)) != NULL)
 	{
-		HOUSEKEEPING::Logging logging;
+		HOUSEKEEPING::Logging_old logging;
 
 		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
 		{
@@ -2084,7 +2084,7 @@ void SQL_REQUEST::SQL::execTaskIvr()
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
+			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2185,7 +2185,7 @@ void SQL_REQUEST::SQL::execTaskOnHold()
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
+			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2276,7 +2276,7 @@ void SQL_REQUEST::SQL::execTaskSmsSending()
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
+			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2414,7 +2414,7 @@ bool SQL_REQUEST::SQL::insertDataTaskQueue(HOUSEKEEPING::Queue_old &queue)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
+			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
@@ -2445,7 +2445,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskQueue(int ID)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
+			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2461,7 +2461,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskQueue(int ID)
 	return true;
 }
 
-bool SQL_REQUEST::SQL::insertDataTaskLogging(HOUSEKEEPING::Logging &logging)
+bool SQL_REQUEST::SQL::insertDataTaskLogging(HOUSEKEEPING::Logging_old &logging)
 {
 	if (!isConnectedBD())
 	{
@@ -2482,7 +2482,7 @@ bool SQL_REQUEST::SQL::insertDataTaskLogging(HOUSEKEEPING::Logging &logging)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
+			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
@@ -2512,7 +2512,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskLogging(int ID)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
+			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2549,7 +2549,7 @@ bool SQL_REQUEST::SQL::insertDataTaskIvr(HOUSEKEEPING::IVR_ &ivr)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
+			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
@@ -2579,7 +2579,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskIvr(int ID)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
+			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2614,7 +2614,7 @@ bool SQL_REQUEST::SQL::insertDataTaskOnHold(HOUSEKEEPING::OnHold &onHold)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
+			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
@@ -2645,7 +2645,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskOnHold(int ID)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
+			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2703,7 +2703,7 @@ bool SQL_REQUEST::SQL::insertDataTaskSmsSending(const HOUSEKEEPING::SmsSending &
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
+			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
@@ -2734,7 +2734,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskSmsSending(int _id)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile log(LOG_old::eLogType_DEBUG);
+			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2780,7 +2780,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskSmsSending(int _id)
 //		// TODO чисто для бага чтобы понять какая же херня происходит почему идет задвоение
 //		if (CONSTANTS::LOG_MODE_INFO)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_INFO);
+//			LOG::LogToFile_old log(LOG::eLogType_INFO);
 //			log.add(onHold, &curr_list_operators);
 //		}
 //
@@ -2904,7 +2904,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskSmsSending(int _id)
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			//log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -2994,7 +2994,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskSmsSending(int _id)
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //		//	log.add(METHOD_NAME + " -> " + query_insert);
 //		}
 //	}
@@ -3025,7 +3025,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskSmsSending(int _id)
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			//log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}
@@ -3054,7 +3054,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskSmsSending(int _id)
 //	{
 //		if (CONSTANTS::LOG_MODE_DEBUG)
 //		{
-//			LOG::LogToFile log(LOG::eLogType_DEBUG);
+//			LOG::LogToFile_old log(LOG::eLogType_DEBUG);
 //			//log.add(METHOD_NAME + " -> " + query);
 //		}
 //	}

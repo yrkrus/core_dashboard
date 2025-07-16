@@ -8,7 +8,7 @@
 #include "DEBUG.h"
 
 
-using namespace INTERNALFUNCTION;
+using namespace utils;
 
 
 IFile::IFile()

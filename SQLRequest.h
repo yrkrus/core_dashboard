@@ -76,15 +76,15 @@ namespace SQL_REQUEST
 		int getQUEUE_Calls();																// сколько всего было в очереди
 
 		// RemoteComands
-		bool remoteCheckNewCommads();														// проверка если новая команда для  входа\выхода из очереди
-		void createListRemoteCommands(std::vector<REMOTE_COMMANDS_old::R_Commands_old> &list);	    // генерация текущиъ найденных команд
-		void startRemoteCommand(int id, std::string sip, remote::ecCommand command, int user_id);	// запуск удаленной команды
-		void deleteRemoteCommand(int id);													// удаление успешно выполненной команды
-		void updateStatusOperators(int user_id, remote::ecStatusOperator status);	// обновление текущего статуса оператора
+		//bool remoteCheckNewCommads();														// проверка если новая команда для  входа\выхода из очереди
+		//void createListRemoteCommands(std::vector<REMOTE_COMMANDS_old::R_Commands_old> &list);	    // генерация текущиъ найденных команд
+		//void startRemoteCommand(int id, std::string sip, remote::ECommand command, int user_id);	// запуск удаленной команды
+		//void deleteRemoteCommand(int id);													// удаление успешно выполненной команды
+		//void updateStatusOperators(int user_id, remote::EStatus status);	// обновление текущего статуса оператора
 
 
 		// Логирование 
-		void addLog(remote::ecCommand command, int base_id);    // создание лога в БД
+		//void addLog(remote::ECommand command, int base_id);    // создание лога в БД
 		
 		
 		// Housekeeping
@@ -95,7 +95,7 @@ namespace SQL_REQUEST
 		void execTaskSmsSending();															// выполнение задачи очистки таблицы sms_sending	
 		bool insertDataTaskQueue(HOUSEKEEPING::Queue_old &queue);								// вставка данных для таблицы history_queue			
 		bool deleteDataTaskQueue(int ID);													// удаление данных из таблицы queue
-		bool insertDataTaskLogging(HOUSEKEEPING::Logging &logging);							// вставка данных для таблицы history_logging
+		bool insertDataTaskLogging(HOUSEKEEPING::Logging_old &logging);							// вставка данных для таблицы history_logging
 		bool deleteDataTaskLogging(int ID);													// удаление данных из таблицы logging
 		bool insertDataTaskIvr(HOUSEKEEPING::IVR_ &ivr);										// вставка данных из талицы history_ivr
 		bool deleteDataTaskIvr(int ID);														// удаление данных из таблицы ivr 

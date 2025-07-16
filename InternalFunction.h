@@ -22,7 +22,7 @@
 
 
 
-namespace INTERNALFUNCTION {
+namespace utils {
 	
 	//typedef std::shared_ptr<std::vector<ACTIVE_SIP_old::OnHold_old>> SP_OnHold;
 	typedef std::vector<ACTIVE_SIP_old::Operators_old> Operators_old;
@@ -37,7 +37,7 @@ namespace INTERNALFUNCTION {
 	//void getIVR();												    // создать + получить текущий IVR
 	//void getQueue(void);											// создать + получить текущую очередь
 	//void getActiveSip(void);										// создать + получить кто с кем разговаривает
-	std::string getNumberQueue(CONSTANTS::AsteriskQueue queue);		// получение номера очереди
+	//std::string getNumberQueue(CONSTANTS::AsteriskQueue queue);		// получение номера очереди
 	std::string getTalkTime(std::string talk);						// перевод временни из сек -> 00:00:00
 
 	// функции работы со временем (формат год-месяц-день 00:00:00 )
@@ -54,14 +54,14 @@ namespace INTERNALFUNCTION {
 	void showErrorBD(const std::string str); // отображжение инфо что не возможно подключиться к бд
 	void showErrorBD(const std::string str, MYSQL *mysql); // отображение инфо что пошла какая то ошибка
 
-	remote::ecCommand getRemoteCommand(int command);	// преобразование текущей удаленной комады из int -> LOG::Log
-	int getRemoteCommand(remote::ecCommand command); // преобразование текущей удаленной комады из LOG::Log -> int
-	int getStatusOperators(remote::ecStatusOperator status); // преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
+	remote::ECommand getRemoteCommand(int command);	// преобразование текущей удаленной комады из int -> LOG::Log
+	int getRemoteCommand(remote::ECommand command); // преобразование текущей удаленной комады из LOG::Log -> int
+	int getStatusOperators(remote::EStatus status); // преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
 	//bool isExistNewOnHoldOperators(const SP_OnHold &onHold, const Operators &operators); // проверка есть ли разница между onHold по БД и active_sip->onHold
 	//SP_NewOnHoldOperators createNewOnHoldOperators(const SP_OnHold &onHold, const Operators &operators);			// создание списка с новыми операторами в OnHold
 
 
-	bool remoteCommandChekedExecution(remote::ecCommand command);	// проверка успешно ли выполнили удаленную команду
+	//bool remoteCommandChekedExecution(remote::ECommand command);	// проверка успешно ли выполнили удаленную команду
 
 	bool to_bool(const std::string &str);						// конвертер из std::string -> bool
 	std::string to_string(bool value);					// конвертер из bool -> std::string 
@@ -69,6 +69,12 @@ namespace INTERNALFUNCTION {
 	size_t string_to_size_t(const std::string &str);	// конвертер std::string->size_t
 
 	void showHelpInfo();						// отображение хелп справки, когда не корректную команду ввесли
+	
+
+	//@param &_replacmentResponse - изменяемая строка
+	//@param &_find - параметр который ищем
+	//@param &_repl - параметр НА которой будем заменять
+	void ReplaceResponseStatus(std::string &_replacmentResponse, const std::string &_find, const std::string &_repl);
 }
 	
 

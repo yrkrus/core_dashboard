@@ -17,7 +17,7 @@ static std::string SESSION_QUEUE_RESPONSE	= "asterisk -rx \"queue show %queue\""
 //class ActiveSession;
 
 
-typedef std::vector<ecQueueNumber> QueueList;
+typedef std::vector<EQueueNumber> QueueList;
 
 namespace active_sip 
 {
@@ -29,7 +29,7 @@ namespace active_sip
 		bool isOnHold = false ;             // находится ли оператор в статусе OnHold
 		std::string phoneOnHold = "null";	// телефон с которым идет onHold		
 	};
-	typedef std::vector<Operator> OperatorList;
+	using OperatorList = std::vector<Operator>;
 	
 	// структура текущего звонка
 	struct ActiveCall 
@@ -38,7 +38,7 @@ namespace active_sip
 		std::string sip = "null";			// внутренний sip который ведет беседу
 		std::string talkTime = "null";		// время развговора  //TODO потом в int переделать		
 	};
-	typedef std::vector<ActiveCall> ActiveCallList;
+	using ActiveCallList = std::vector<ActiveCall>;
 
 	// структура onHold
 	struct OnHold 
@@ -47,7 +47,7 @@ namespace active_sip
 		std::string sip = "null";		// sip с которым был разговор
 		std::string phone = "null";		// телефон 		
 	};
-	typedef std::vector<OnHold> OnHoldList;
+	using OnHoldList = std::vector<OnHold>;
 
 
 	class ActiveSession : public IAsteriskData	// класс в котором будет жить данные по активным сессиям операторов 
@@ -71,8 +71,8 @@ namespace active_sip
 		void CreateListActiveSessionOperators();			// активные операторы в линии
 		void CreateListActiveSessionCalls();				// активные звонки в линии
 
-		void CreateActiveOperators(const ecQueueNumber _queue);	// найдем активных операторов в линии
-		void CreateOperator(const std::string &_lines, Operator &, ecQueueNumber);	// создание структуры Operator					
+		void CreateActiveOperators(const EQueueNumber _queue);	// найдем активных операторов в линии
+		void CreateOperator(const std::string &_lines, Operator &, EQueueNumber);	// создание структуры Operator					
 		std::string FindSipNumber(const std::string &_lines);	// парсинг нахождения активного sip оператора
 		bool FindOnHoldStatus(const std::string &_lines);		// парсинг нахождения статуса onHold
 		
@@ -111,7 +111,7 @@ namespace active_sip
 		void CheckOnHold(OnHoldList &_onHoldList);		// Основная проверка отключение\добавление onHold 
 	};
 }
-typedef std::shared_ptr<active_sip::ActiveSession> SP_ActiveSession;
+using SP_ActiveSession = std::shared_ptr<active_sip::ActiveSession>;
 
 namespace ACTIVE_SIP_old
 {

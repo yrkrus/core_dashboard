@@ -15,7 +15,7 @@
 #include "IResponseFileHandler.h"
 #include "InternalFunction.h"
 
-using INTERNALFUNCTION::StringFormat;
+using utils::StringFormat;
 
 
 namespace FILES

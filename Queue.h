@@ -17,16 +17,17 @@ static std::string QUEUE_COMMANDS		= "Queue|to-atsaero5005";
 static std::string QUEUE_COMMANDS_EXT1	= "App";
 static std::string QUEUE_REQUEST		= "asterisk -rx \"core show channels verbose\" | grep -E \"" + QUEUE_COMMANDS + "\" " + " | grep -v \"" + QUEUE_COMMANDS_EXT1 + "\"";
 
-enum class ecQueueNumber
+enum class EQueueNumber // ВАЖНО в методе bool Status::CreateCommand используется for 1..2 
 {
 	Unknown = 0,
-	e5000,
-	e5005,	// очередь для бабы железной
+	e5000,	
 	e5050,
-	e5000_e5050,	// сочетение 5000+5050 (испотльзуется почти никогда)
+	e5000_e5050,	// сочетение 5000+5050 
+	e5005,			// очередь для бабы железной
 };
 class Queue;
-typedef std::shared_ptr<Queue> SP_Queue;
+using SP_Queue = std::shared_ptr<Queue>;
+
 
 class Queue : public IAsteriskData
 {
@@ -35,10 +36,24 @@ public:
 	{
 		std::string phone	= "null";					// текущий номер телефона который в очереди сейчас
 		std::string waiting = "null";					// время в (сек) которое сейчас в очереди находится
-		ecQueueNumber queue	= ecQueueNumber::Unknown;	// номер очереди
-	};
-	typedef std::vector<QueueCalls> QueueCallsList;
+		EQueueNumber queue	= EQueueNumber::Unknown;	// номер очереди
+	
+		inline bool check() const noexcept
+		{
+			// если в phone или waiting есть подстрока "null" 
+			// или callerID == Unknown — сразу false
+			if (phone.find("null")		!= std::string::npos ||
+				waiting.find("null")	!= std::string::npos ||
+				queue					== EQueueNumber::Unknown)
+			{
+				return false;
+			}
 
+			return true;
+		}
+	};
+	using QueueCallsList = std::vector<QueueCalls>;
+	
 	struct CallsInBase	// структура из БД
 	{
 		std::string id			= "-1";
@@ -46,7 +61,8 @@ public:
 		std::string date_time	= "null";
 		size_t hash				= 0;
 	};
-	typedef std::vector<CallsInBase> CallsInBaseList;
+	using CallsInBaseList = std::vector<CallsInBase>;
+
 	
 	Queue();
 	~Queue() override;
@@ -85,8 +101,8 @@ public:
 	void UpdateCallSuccessRealOperator(const QueueCallsList &_calls);	// разговор успешно состоялся реальный оператор
 	void UpdateCallSuccessVirtualOperator(const QueueCallsList &_calls);// разговор успешно состоялся виртуальный оператор
 	
-	bool IsExistCall(ecQueueNumber _queue, const std::string &_phone);	// есть ли уже такой номер в БД
-	bool IsExistCallVirtualOperator(ecQueueNumber _queue, const std::string &_phone);	// есть ли уже такой номер в БД (виртуальный оператор)
+	bool IsExistCall(EQueueNumber _queue, const std::string &_phone);	// есть ли уже такой номер в БД
+	bool IsExistCallVirtualOperator(EQueueNumber _queue, const std::string &_phone);	// есть ли уже такой номер в БД (виртуальный оператор)
 
 	int GetLastQueueCallId(const std::string &_phone);					// id записи по БД о звонке
 	int GetLastQueueVirtualOperatorCallId(const std::string &_phone);	// id записи по БД о звонке(виртуальный оператор)
@@ -101,47 +117,7 @@ public:
 	bool IsExistAnyAnsweredCall();					// есть ли не про hash'нные номера, когда оператор уже закончил разговор и ушел из линии
 	void UpdateAllAnyAnsweredCalls();				// есть не про hash'нные номера обновляем их (ВСЕ!)
 
-	
-
 };
-
-template<typename T>
-T StringToEnum(const std::string&);
-
-template<>
-inline ecQueueNumber StringToEnum<ecQueueNumber>(const std::string &_str)
-{
-	if (_str.find("5000") != std::string::npos)		return ecQueueNumber::e5000;
-	if (_str.find("5005") != std::string::npos)		return ecQueueNumber::e5005;
-	if (_str.find("5050") != std::string::npos)		return ecQueueNumber::e5050;
-	if (_str.find("5000 и 5050") != std::string::npos)		return ecQueueNumber::e5000_e5050;
-
-	return ecQueueNumber::Unknown;
-}
-
-template<typename T>
-std::string EnumToString(T);
-
-template<>
-inline std::string EnumToString<ecQueueNumber>(ecQueueNumber _number)
-{
-	static std::map<ecQueueNumber, std::string> queueNumber =
-	{
-		{ecQueueNumber::Unknown,	"Unknown"},
-		{ecQueueNumber::e5000,		"5000"},
-		{ecQueueNumber::e5005,		"5005"},
-		{ecQueueNumber::e5050,		"5050"},
-		{ecQueueNumber::e5000_e5050,"5000 и 5050"},
-	};
-
-	auto it = queueNumber.find(_number);
-	if (it != queueNumber.end())
-	{
-		return it->second;
-	}
-	return "Unknown";
-}
-
 
 
 //namespace QUEUE_OLD

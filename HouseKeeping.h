@@ -69,11 +69,11 @@ namespace HOUSEKEEPING {
 			int			to_robot{ 0 };
 	};
 
-	class Logging final: public ExportTable
+	class Logging_old final: public ExportTable
 	{
 		public:
-			Logging()	= default;
-			~Logging()	= default;
+			Logging_old()	= default;
+			~Logging_old()	= default;
 
 			std::string		ip{ "0.0.0.0" };
 			int				user_id{ 0 };

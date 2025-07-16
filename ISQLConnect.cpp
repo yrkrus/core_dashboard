@@ -1,7 +1,7 @@
 #include "ISQLConnect.h"
 #include "InternalFunction.h"
 
-using namespace INTERNALFUNCTION;
+using namespace utils;
 
 ISQLConnect::ISQLConnect(bool _autoConnect)
     : m_connected(false)

@@ -23,6 +23,12 @@ namespace CONSTANTS
         static const unsigned int ACTIVE_SESSION = 1000;    // timeout для проверки новых данных для активной сесии операторов
         static const unsigned int OPERATOR_STATUS = 100;    // timeout для проверки новых данных для смены статуса оператором
     }
+
+    namespace SERVER 
+    {
+        static const unsigned int PORT = 12345;
+        //static const unsigned int PORT = 12346;        
+    }
     
     
     
@@ -43,7 +49,7 @@ namespace CONSTANTS
     valgrind --leak-check=full --show-leak-kinds=all --leak-resolution=med --log-file=./core.log ./core_dashboard start
     valgrind --leak-check=full --leak-resolution=med --log-file=./core.log ./core_dashboard start
     
-    mysqldump -uzabbix -pUFGq4kZMNIMwxTzV -h10.34.222.19 dashboard > /root/core_dashboards/backup_bd/dashboard_20250701.sql
+    mysqldump -uzabbix -pUFGq4kZMNIMwxTzV -h10.34.222.19 dashboard > /root/core_dashboards/backup_bd/dashboard_20250715.sql
 
 
     asterisk -rx "core show channels verbose" | grep to-atsaero5005  кто сейчас разговаривает с бабой железной
@@ -108,12 +114,12 @@ namespace CONSTANTS
  
 
 // asterisk очереди  удалить потом
-enum AsteriskQueue
-{
-    main,       // основная очередь     5000
-    lukoil,     // очередь лукой        5050
-    COUNT = 2,
-};
+//enum AsteriskQueue
+//{
+//    main,       // основная очередь     5000
+//    lukoil,     // очередь лукой        5050
+//    COUNT = 2,
+//};
 
 
 // шпаргалка
@@ -146,9 +152,9 @@ static std::string cLOGIN      = "zabbix";
 static std::string cPASSWORD   = "UFGq4kZMNIMwxTzV";
 
 //for Remote Connect
-static std::string cRemoteCommandName           = "RemoteCommand.txt";
-static std::string cRemoteCommandResponseAdd    = "asterisk -rx \"queue add member Local/%sip@from-queue/n to %queue penalty 0 as %sip state_interface hint:%sip@ext-local\" > " + cRemoteCommandName;
-static std::string cRemoteCommandResponseDel    = "asterisk -rx \"queue remove member Local/%sip@from-queue/n from %queue\" > " + cRemoteCommandName;
+//static std::string cRemoteCommandName           = "RemoteCommand.txt";
+//static std::string cRemoteCommandResponseAdd    = "asterisk -rx \"queue add member Local/%sip@from-queue/n to %queue penalty 0 as %sip state_interface hint:%sip@ext-local\" > " + cRemoteCommandName;
+//static std::string cRemoteCommandResponseDel    = "asterisk -rx \"queue remove member Local/%sip@from-queue/n from %queue\" > " + cRemoteCommandName;
 
 // for FileLog (типы логов)
 static std::string cFileLogDEBUG    = "Log_DEBUG.log";

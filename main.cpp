@@ -21,7 +21,7 @@
 #include <time.h>
 #include <chrono>
 
-using namespace INTERNALFUNCTION;
+using namespace utils;
 using namespace active_sip;
 
 // Global Score
@@ -46,6 +46,8 @@ static void Run()
     ivr->Start();
     queue->Start();
     activeSession->Start();
+
+    changeStatus->Start();
 }
 
 static void Destroy()
@@ -53,6 +55,8 @@ static void Destroy()
     ivr->Stop();
     queue->Stop();
     activeSession->Stop();
+
+    changeStatus->Stop();
 }
 
 static void sigint_handler(int)
@@ -63,14 +67,14 @@ static void sigint_handler(int)
 
 enum class Commands
 {
-    help,           // хелп справка
+  //  help,           // хелп справка
   //  ivr,            // кто в IVR
   //  queue,          // текущая очередь
   //  active_sip_old,     // какие активные sip зарегистрированы в очереди
   // connect_bd,     // убрать потом, это для теста
     start,          // сбор данных в БД   
-    statistics,     // отобразить статистику
-    remote,         // проверка есть ли удаленные команды на добавление\удаление очереди
+   // statistics,     // отобразить статистику
+  //  remote,         // проверка есть ли удаленные команды на добавление\удаление очереди
     housekeeping,   // внутренния задания на очистку БД таблиц (queue, logging, ivr)
    // test,           // test remove after
 };
@@ -79,18 +83,18 @@ enum class Commands
 Commands static getCommand(char *ch) {
     std::string commands = static_cast<std::string> (ch);
 
-    if (commands == "help")              return Commands::help;
+ //   if (commands == "help")              return Commands::help;
    // if (commands == "ivr")               return ivr;
    // if (commands == "queue")             return queue;
   //  if (commands == "active_sip")        return active_sip_old;
   //  if (commands == "connect_bd")        return connect_bd;
     if (commands == "start")             return Commands::start;
-    if (commands == "statistics")        return Commands::statistics;
-    if (commands == "remote")            return Commands::remote;
+  //  if (commands == "statistics")        return Commands::statistics;
+  //  if (commands == "remote")            return Commands::remote;
     if (commands == "housekeeping")      return Commands::housekeeping;
    // if (commands == "test")              return Commands::test;
 
-    return Commands::help;                         // default;
+  //  return Commands::help;                         // default;
 }
 
 
@@ -100,13 +104,13 @@ Commands static getCommand(char *ch) {
 //}
 
 // запуск проверки удаленных команд
-static void thread_RemoteCommands() {
-    REMOTE_COMMANDS_old::Remote remote;
-    if (remote.getCountCommand())
-    {
-        remote.startCommand();
-    }
-}
+//static void thread_RemoteCommands() {
+//    REMOTE_COMMANDS_old::Remote remote;
+//    if (remote.getCountCommand())
+//    {
+//        remote.startCommand();
+//    }
+//}
 
 // запуск очистки БД перенос в history
 static void thread_HouseKeeping() {
@@ -125,60 +129,60 @@ static void thread_HouseKeeping() {
 }
 
 
-static void stat() {
-    uint64_t TIK = 6000;
-    // int avg{0};
-    size_t all{ 0 };
-    uint64_t min{ 1000 };
-    uint64_t max{ 0 };
-
-    for (size_t i = 1; /*i <= TIK*/; ++i)
-    {
-
-        showVersionCore(i);
-        
-        auto start = std::chrono::steady_clock::now();
-        std::cout << "\n\n";
-       // std::cout << getCurrentDateTime() + "\t\titeration: \t" << i << "\n\n";
-
-        getStatistics();
-
-        
-        // проверка
-        REMOTE_COMMANDS_old::Remote remote;
-        if (remote.getCountCommand())
-        {
-            remote.startCommand();
-        }        
-
-        auto stop = std::chrono::steady_clock::now();
-
-        auto execute_ms = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-
-        std::cout << "\ntime execute code: " << execute_ms.count() << " ms\n";
-        all += execute_ms.count();
-
-        if (execute_ms.count() < min) { min = static_cast<uint64_t>(execute_ms.count()); }
-        if (execute_ms.count() > max) { max = static_cast<uint64_t>(execute_ms.count()); }
-
-        std::cout << "avg execute = " << all / i << " ms | min execute = " << min << " ms | max execute = " << max << " ms\n";
-               
-        if (execute_ms.count() < 1000)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000 - execute_ms.count()));
-        }
-
-        system("clear");
-
-        if (i >= 10800)
-        {
-            all = 0;
-            i = 1;
-            min = 1000;
-            max = 0;
-        }
-    }
-}
+//static void stat() {
+//    uint64_t TIK = 6000;
+//    // int avg{0};
+//    size_t all{ 0 };
+//    uint64_t min{ 1000 };
+//    uint64_t max{ 0 };
+//
+//    for (size_t i = 1; /*i <= TIK*/; ++i)
+//    {
+//
+//        showVersionCore(i);
+//        
+//        auto start = std::chrono::steady_clock::now();
+//        std::cout << "\n\n";
+//       // std::cout << getCurrentDateTime() + "\t\titeration: \t" << i << "\n\n";
+//
+//        getStatistics();
+//
+//        
+//        // проверка
+//       /* REMOTE_COMMANDS_old::Remote remote;
+//        if (remote.getCountCommand())
+//        {
+//            remote.startCommand();
+//        }   */     
+//
+//        auto stop = std::chrono::steady_clock::now();
+//
+//        auto execute_ms = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+//
+//        std::cout << "\ntime execute code: " << execute_ms.count() << " ms\n";
+//        all += execute_ms.count();
+//
+//        if (execute_ms.count() < min) { min = static_cast<uint64_t>(execute_ms.count()); }
+//        if (execute_ms.count() > max) { max = static_cast<uint64_t>(execute_ms.count()); }
+//
+//        std::cout << "avg execute = " << all / i << " ms | min execute = " << min << " ms | max execute = " << max << " ms\n";
+//               
+//        if (execute_ms.count() < 1000)
+//        {
+//            std::this_thread::sleep_for(std::chrono::milliseconds(1000 - execute_ms.count()));
+//        }
+//
+//        system("clear");
+//
+//        if (i >= 10800)
+//        {
+//            all = 0;
+//            i = 1;
+//            min = 1000;
+//            max = 0;
+//        }
+//    }
+//}
 
 static void collect() {
      //int TIK = 3600;  
@@ -197,7 +201,7 @@ static void collect() {
         std::cout << "\n\n";
         //std::thread th_ivr(getIVR);
        // std::thread th_Queue_ActiveSIP(thread_Queue_ActiveSIP);
-        std::thread th_RemoteCommand(thread_RemoteCommands);
+       // std::thread th_RemoteCommand(thread_RemoteCommands);
         std::thread th_HouseKeeping(thread_HouseKeeping);
 
         //if (th_ivr.joinable()) {
@@ -210,10 +214,10 @@ static void collect() {
         //    //th_Queue_ActiveSIP.detach();
         //}
 
-        // проверка удаленных команд
-        if (th_RemoteCommand.joinable()) {
-            th_RemoteCommand.join();
-        }       
+        //// проверка удаленных команд
+        //if (th_RemoteCommand.joinable()) {
+        //    th_RemoteCommand.join();
+        //}       
 
         // очистка БД
         if (th_HouseKeeping.joinable()) {
@@ -262,7 +266,7 @@ int main(int argc, char *argv[])
     // Перехватываем Ctrl+C
     std::signal(SIGINT, sigint_handler);
 
-    HeartbeatServer server(12345);
+    HeartbeatServer server(CONSTANTS::SERVER::PORT);
     server.set_on_ping([]()
         {
             std::cout << "[PING] got ping\n";
@@ -270,10 +274,10 @@ int main(int argc, char *argv[])
     
     if (!server.start())
     {
-        std::cerr << "Server not started on port 12345\n";
+        std::cerr << StringFormat("Server not started on port %u\n", CONSTANTS::SERVER::PORT);
         return 1;
     }
-    std::cout << "Server is running on port 12345. Press Ctrl+C to stop.\n";
+    std::cout << StringFormat("Server is running on port %u. Press Ctrl+C to stop.\n",CONSTANTS::SERVER::PORT);
    
    
     {        
@@ -288,9 +292,7 @@ int main(int argc, char *argv[])
 
             ivr->Parsing();
             queue->Parsing();
-            activeSession->Parsing();
-
-            changeStatus->Execute();
+            activeSession->Parsing();          
 
             auto stop = std::chrono::steady_clock::now();
             auto execute_ms = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
@@ -354,10 +356,10 @@ int main(int argc, char *argv[])
     // пошли запросики
     switch (ch)
     {
-    case(Commands::help): {
+    /*case(Commands::help): {
             showHelpInfo();
             break;
-        }
+        }*/
         //case(ivr): {                // запись в БД кто сейчас слушает IVR 
         //    // запрос
         //    getIVR();   
@@ -383,15 +385,15 @@ int main(int argc, char *argv[])
             collect();
             break;
         }    
-        case(Commands::statistics): {
+       /* case(Commands::statistics): {
             stat();
             break;
-        }
-        case(Commands::remote): {
-          /* REMOTE_COMMANDS::Remote remote;            
-            remote.chekNewCommand() ? std::cout << "New command EXIST\n" : std::cout << "New command NO EXIST\n";         
-            break;*/
-        }
+        }*/
+        //case(Commands::remote): {
+        //  /* REMOTE_COMMANDS::Remote remote;            
+        //    remote.chekNewCommand() ? std::cout << "New command EXIST\n" : std::cout << "New command NO EXIST\n";         
+        //    break;*/
+        //}
         case(Commands::housekeeping): {
             HOUSEKEEPING::HouseKeeping task;           
             std::cout << "create Task and execute -> TaskQueue\n";

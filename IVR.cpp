@@ -7,7 +7,7 @@
 #include "SQLRequest.h"
 #include <iterator>
 
-using namespace INTERNALFUNCTION;
+using namespace utils;
 
 // коструктор
 //IVR_OLD::Parsing::Parsing(const char *fileIVR)
@@ -285,7 +285,13 @@ void IVR::Parsing()
 		if (CreateCallers(line, caller)) 
 		{
 			m_listIvr.push_back(caller);
-		}		
+		}
+		else 		
+		{
+			// удаляем из сырых данных
+			DeleteRawLastData();
+			return;
+		}
 	}
 
 	// что то есть нужно теперь в БД запихнуть
@@ -305,8 +311,8 @@ bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 	std::vector<std::string> lines;
 	std::string current_str;
 
-	bool isNewLine = false;
-
+	bool isNewLine = false;	
+	
 	for (size_t i = 0; i != _lines.length(); ++i)
 	{
 		if (isNewLine)
@@ -331,20 +337,30 @@ bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 
 	if (!lines.empty())
 	{
-		_caller.phone = INTERNALFUNCTION::PhoneParsing(lines[7]);
+		// проверка на максимальное кол-во записей
+		if (lines.size() != MAX_IVR_PARSING_LINES) 
+		{
+			LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
+			std::string err = std::string(__PRETTY_FUNCTION__) + "\t" + _lines;
+			log.add(err);
+
+			return false;
+		}
+		
+		_caller.phone = utils::PhoneParsing(lines[7]);
 		_caller.waiting = lines[8];
 		_caller.callerID = StringToEnum(lines[0] + "," + lines[1]);
 		
 		// TODO тут в лог запись если не прошел по какой то причине 
 		if (!CheckCallers(_caller)) 
 		{
-			LOG_old::LogToFile log(LOG_old::eLogType_ERROR);
+			LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
 			std::string err = std::string(__PRETTY_FUNCTION__) +"\t"+ _lines;
 			log.add(err);
 
 			return false;
 		}		
-
+		
 		status = true;
 	}
 
@@ -353,16 +369,7 @@ bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 
 bool IVR::CheckCallers(const IvrCalls &_caller)
 {
-	// если в phone или waiting есть подстрока "null" 
-	// или callerID == eUnknown — сразу false
-	if (_caller.phone.find("null") != std::string::npos ||
-		_caller.waiting.find("null") != std::string::npos ||
-		_caller.callerID == ecCallerId::eUnknown)
-	{
-		return false;
-	}
-
-	return true;
+	return _caller.check();
 }
 
 bool IVR::IsExistListIvr()
@@ -370,29 +377,29 @@ bool IVR::IsExistListIvr()
 	return !m_listIvr.empty() ? true : false;
 }
 
-IVR::ecCallerId IVR::StringToEnum(const std::string &_str)
+IVR::ECallerId IVR::StringToEnum(const std::string &_str)
 {
-	if (_str.find("Dru_220000") != std::string::npos)		return ecCallerId::eDomru_220220;
-	if (_str.find("druOUT_220220") != std::string::npos)	return ecCallerId::eDomru_220220;
-	if (_str.find("ivr-13") != std::string::npos)			return ecCallerId::eDomru_220000;
-	if (_str.find("sts_") != std::string::npos)				return ecCallerId::eSts;
-	if (_str.find("221122") != std::string::npos)			return ecCallerId::eComagic;
-	if (_str.find("camaa") != std::string::npos)			return ecCallerId::eComagic;
-	if (_str.find("BeeIn") != std::string::npos)			return ecCallerId::eBeelineMih;
+	if (_str.find("Dru_220000") != std::string::npos)		return ECallerId::Domru_220220;
+	if (_str.find("druOUT_220220") != std::string::npos)	return ECallerId::Domru_220220;
+	if (_str.find("ivr-13") != std::string::npos)			return ECallerId::Domru_220000;
+	if (_str.find("sts_") != std::string::npos)				return ECallerId::Sts;
+	if (_str.find("221122") != std::string::npos)			return ECallerId::Comagic;
+	if (_str.find("camaa") != std::string::npos)			return ECallerId::Comagic;
+	if (_str.find("BeeIn") != std::string::npos)			return ECallerId::BeelineMih;
 	
-	return ecCallerId::eUnknown;
+	return ECallerId::Unknown;
 }
 
-std::string IVR::EnumToString(ecCallerId _caller)
+std::string IVR::EnumToString(ECallerId _caller)
 {
-	static std::map<ecCallerId, std::string> callers =
+	static std::map<ECallerId, std::string> callers =
 	{
-		{ecCallerId::eUnknown,		"Unknown"},
-		{ecCallerId::eDomru_220220, "220220"},
-		{ecCallerId::eDomru_220000, "220000"},
-		{ecCallerId::eSts,			"STS"},
-		{ecCallerId::eComagic,		"COMAGIC"},
-		{ecCallerId::eBeelineMih,	"MIH" }
+		{ECallerId::Unknown,		"Unknown"},
+		{ECallerId::Domru_220220, "220220"},
+		{ECallerId::Domru_220000, "220000"},
+		{ECallerId::Sts,			"STS"},
+		{ECallerId::Comagic,		"COMAGIC"},
+		{ECallerId::BeelineMih,	"MIH" }
 	};
 
 	auto it = callers.find(_caller);
