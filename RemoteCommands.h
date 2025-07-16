@@ -68,6 +68,7 @@ namespace remote
 		std::string sip;		// sip инициализировавший команду
 		ECommand	command;	// сама команда (int)
 		int			userId;		// id самого пользака
+		bool		delay;		// отложенная команда
 	};
 	using CommandList = std::vector<Command>;
 
@@ -127,6 +128,8 @@ namespace remote
 		bool CheckSendingCommand(ECommandType _commandType, std::string &_errorDesciption); // проверка успешно ли выполнена команда
 
 		bool UpdateNewStatus(const Command &_command, std::string &_errorDesciption); // обновление нового статуса оператора
+
+		bool IsTalkOperator(const std::string &_sip, std::string &_errorDesciption); // разговаривает ли оператор или нет
 
 		ECommandType GetCommandType(const Command &_command); // поиск какая команда пришла
 		EQueueNumber GetQueueNumber(const ECommand &_command); // поиск номера очереди		

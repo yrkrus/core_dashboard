@@ -18,10 +18,10 @@ namespace CONSTANTS
 {   
     namespace TIMEOUT
     {
-        static const unsigned int IVR   = 1000;             // timeout для проверки новых данных для ivr
-        static const unsigned int QUEUE = 1000;             // timeout для проверки новых данных для queue
-        static const unsigned int ACTIVE_SESSION = 1000;    // timeout для проверки новых данных для активной сесии операторов
-        static const unsigned int OPERATOR_STATUS = 100;    // timeout для проверки новых данных для смены статуса оператором
+        static const unsigned int IVR               = 1000;   // timeout для проверки новых данных для ivr
+        static const unsigned int QUEUE             = 1000;   // timeout для проверки новых данных для queue
+        static const unsigned int ACTIVE_SESSION    = 1000;   // timeout для проверки новых данных для активной сесии операторов
+        static const unsigned int OPERATOR_STATUS   = 100;    // timeout для проверки новых данных для смены статуса оператором
     }
 
     namespace SERVER 

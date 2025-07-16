@@ -171,7 +171,7 @@ bool Status::GetCommand(std::string &_errorDesciption)
 		m_commandList.clear();
 	}
 	
-	const std::string query = "select id,sip,command,user_id from remote_commands where error = '0' ";
+	const std::string query = "select id,sip,command,user_id,delay from remote_commands where error = '0' ";
 
 	if (!m_sql->Request(query, _errorDesciption))
 	{
@@ -190,10 +190,11 @@ bool Status::GetCommand(std::string &_errorDesciption)
 		{
 			switch (i)
 			{
-				case 0: command.id = std::stoi(row[i]);							break;
-				case 1: command.sip = row[i];									break;
-				case 2: command.command = getRemoteCommand(std::stoi(row[i]));	break;
-				case 3: command.userId = std::stoi(row[i]);						break;
+				case 0: command.id = std::stoi(row[i]);								break;
+				case 1: command.sip = row[i];										break;
+				case 2: command.command = getRemoteCommand(std::stoi(row[i]));		break;
+				case 3: command.userId = std::stoi(row[i]);							break;
+				case 4: command.delay  = (std::stoi(row[i]) == 1 ? true : false);	break;
 			}				
 		}
 
@@ -398,11 +399,14 @@ bool Status::UpdateNewStatus(const Command &_command, std::string &_errorDescipt
 	case ECommand::AddQueue5000:
 	case ECommand::AddQueue5050:	
 	case ECommand::AddQueue5000_5050:		
+		status = EStatus::Available;
+		break;
+
 	case ECommand::DelQueue5000:		
 	case ECommand::DelQueue5050:		
 	case ECommand::DelQueue5000_5050:
-		status = EStatus::Available;
-		break;
+		status = EStatus::Unknown;
+		break;		
 	
 	case ECommand::Home:		status = EStatus::Home;		break;
 	case ECommand::Exodus:		status = EStatus::Exodus;	break;	
@@ -434,6 +438,32 @@ bool Status::UpdateNewStatus(const Command &_command, std::string &_errorDescipt
 	m_sql->Disconnect();
 
 	return true;
+}
+
+bool Status::IsTalkOperator(const std::string &_sip, std::string &_errorDesciption)
+{
+	const std::string query = "select count(phone) from queue where date_time > '" + getCurrentStartDay() +
+																	"' and sip = '" + _sip + "' and answered = '1' and hash is null limit 1";
+	if (!m_sql->Request(query, _errorDesciption))
+	{
+		// TODO в лог
+		printf("%s", _errorDesciption.c_str());
+		m_sql->Disconnect();
+		// ошибка считаем что нет запись
+		return false;
+	}
+
+	// результат
+	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	MYSQL_ROW row = mysql_fetch_row(result);
+
+	bool exist;
+	std::stoi(row[0]) == 0 ? exist = false : exist = true;
+
+	mysql_free_result(result);
+	m_sql->Disconnect();
+
+	return exist;
 }
 
 // поиск какая команда пришла
@@ -529,20 +559,39 @@ bool Status::Execute()
 		for (const auto &command : m_commandList)
 		{
 			std::string error;
+
+			if (command.delay)	// отложенное выполнение команды
+			{
+				// проверим разговаривает ли еще оператор или нет
+				if (IsTalkOperator(command.sip, error)) 
+				{
+					// пропускаем команду, т.к. оператор еще разговаривает
+					continue;
+				}				
+			}
+						
 			if (!ExecuteCommand(command, error))
 			{
 				// TODO в лог наверно хз подумать
 				printf("%s", error.c_str());
 
+				
+				// не удачно выполнили команду, нужно удалить ее сразу т.к. у пользвака не будет надписи об ошибке
+				if (command.delay) 
+				{
+					DeleteCommand(command);
+					continue;
+				}
+
 				// инфо в БД что не успешно выполнили команду, дальше в gui это отображается у пользователя
 				ExecuteCommandFail(command, error);
 				continue;
 			}
-			else 
+			else
 			{
 				// успешно отработанная команда удаляем ее
 				DeleteCommand(command);
-			}			
+			}							
 		}
 	}
 

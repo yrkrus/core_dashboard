@@ -18,9 +18,9 @@ static std::string IVR_COMMANDS_EXT4	= "noservice";				// пропуск этой записи
 static std::string IVR_COMMANDS_EXT5	= "agent";					// пропуск этой записи 
 static std::string IVR_COMMANDS_EXT6	= "from-internal-xfer";		// пропуск этой записи (перевод звонка)
 
-static std::string IVR_COMMANDS_IK1 = "rec_IK_AllBusy";		// пропуск этой записи (IVR для ИК отдела)
-static std::string IVR_COMMANDS_IK2 = "rec_IK_Welcome";		// пропуск этой записи (IVR для ИК отдела)
-static std::string IVR_COMMANDS_IK3 = "rec_IK_WorkHours";	// пропуск этой записи (IVR для ИК отдела)
+static std::string IVR_COMMANDS_IK1 = "rec_IK_AllBusy";				// пропуск этой записи (IVR для ИК отдела)
+static std::string IVR_COMMANDS_IK2 = "rec_IK_Welcome";				// пропуск этой записи (IVR для ИК отдела)
+static std::string IVR_COMMANDS_IK3 = "rec_IK_WorkHours";			// пропуск этой записи (IVR для ИК отдела)
 
 static std::string IVR_REQUEST		= "asterisk -rx \"core show channels verbose\" | grep -E \"" + IVR_COMMANDS + "\" " 
 																			   + " | grep -v \"" + IVR_COMMANDS_EXT1 + "\" " 
@@ -89,9 +89,9 @@ private:
 	std::string EnumToString(ECallerId _caller);
 
 	void InsertIvrCalls();																// вставка в БД данных
-	void UpdateIvrCalls(int _id, const IvrCalls &_caller);						// обновдление звонка IVR по БД
+	void UpdateIvrCalls(int _id, const IvrCalls &_caller);								// обновдление звонка IVR по БД
 	bool IsExistIvrPhone(const IvrCalls &_caller, std::string &_errorDescription);		// есть ли такой номер в БД
-	int GetPhoneIDIvr(const std::string &_phone);								// id phone по БД
+	int GetPhoneIDIvr(const std::string &_phone);										// id phone по БД
 
 };
 
