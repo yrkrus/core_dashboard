@@ -6,12 +6,12 @@
 
 #include <string>
 #include <vector>
-//#include <iostream>
 #include <sstream>
 #include <map>
-
+#include "Log.h"
 #include "IAsteriskData.h"
 #include "ISQLConnect.h"
+
 
 static std::string QUEUE_COMMANDS		= "Queue|to-atsaero5005";
 static std::string QUEUE_COMMANDS_EXT1	= "App";
@@ -25,6 +25,7 @@ enum class EQueueNumber // ВАЖНО в методе bool Status::CreateCommand используетс
 	e5000_e5050,	// сочетение 5000+5050 
 	e5005,			// очередь для бабы железной
 };
+using QueueList = std::vector<EQueueNumber>;
 
 class Queue;
 using SP_Queue = std::shared_ptr<Queue>;
@@ -76,7 +77,7 @@ public:
 	private:
 	QueueCallsList		m_listQueue;
 	SP_SQL				m_sql;
-	
+	Log					m_log;
 	
 	void UpdateCalls(const QueueCallsList &_callList);  			// обновление звонков
 

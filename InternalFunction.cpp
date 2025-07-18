@@ -384,8 +384,8 @@ void utils::showErrorBD(const std::string str)
 	{
 		if (CONSTANTS::LOG_MODE_ERROR) 
 		{
-			LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
-			log.add(str +" -> Error: can't connect to database " + CONSTANTS::cHOST + ":" + CONSTANTS::cBD);
+			/*LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
+			log.add(str +" -> Error: can't connect to database " + CONSTANTS::cHOST + ":" + CONSTANTS::cBD);*/
 		}
 	}
 }
@@ -398,8 +398,8 @@ void utils::showErrorBD(const std::string str, MYSQL *mysql)
 	{
 		if (CONSTANTS::LOG_MODE_ERROR)	
 		{
-			LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
-			log.add(str + " " + mysql_error(mysql));
+			/*LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
+			log.add(str + " " + mysql_error(mysql));*/
 		}
 	}
 }

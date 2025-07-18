@@ -7,9 +7,13 @@
 #include "ISQLConnect.h"
 #include "Queue.h"
 
+
 static std::string SESSION_SIP_RESPONSE		= "asterisk -rx \"core show channels concise\"";
 static std::string SESSION_QUEUE_RESPONSE	= "asterisk -rx \"queue show %queue\"";
 
+class Queue;
+using SP_Queue = std::shared_ptr<Queue>;
+enum class EQueueNumber;
 using QueueList = std::vector<EQueueNumber>;
 
 
@@ -47,7 +51,7 @@ namespace active_sip
 	class ActiveSession : public IAsteriskData	// класс в котором будет жить данные по активным сессиям операторов 
 	{
 	public:
-		explicit ActiveSession(const SP_Queue &_queue);
+		ActiveSession(SP_Queue &_queue);
 		~ActiveSession() override;
 
 		void Start() override;
@@ -55,12 +59,14 @@ namespace active_sip
 		void Parsing() override;				// разбор сырых данных
 		
 	private:
-		const SP_Queue		&m_queueSession;	// ссылка на очереди
+		SP_Queue	&m_queueSession;	// ссылка на очереди
 		
-		OperatorList		m_listOperators;	// TODO может лучше в shared_ptr потом обернуть
-		ActiveCallList		m_listCall;			// TODO может лучше в shared_ptr потом обернуть
-		SP_SQL				m_sql;		
-		IFile				m_queue;			// запрос информации по текущим очередям
+		OperatorList	m_listOperators;	// TODO может лучше в shared_ptr потом обернуть
+		ActiveCallList	m_listCall;			// TODO может лучше в shared_ptr потом обернуть
+		SP_SQL			m_sql;		
+		IFile			m_queue;			// запрос информации по текущим очередям
+		Log				m_log;
+
 
 		void CreateListActiveSessionOperators();			// активные операторы в линии
 		void CreateListActiveSessionCalls();				// активные звонки в линии

@@ -15,6 +15,7 @@ using namespace utils;
 Queue::Queue()
 	:IAsteriskData(CONSTANTS::TIMEOUT::QUEUE)
 	, m_sql(std::make_shared<ISQLConnect>(false))
+	, m_log(CONSTANTS::LOG::QUEUE)
 {
 }
 
@@ -122,9 +123,9 @@ bool Queue::CreateQueueCallers(const std::string &_lines, QueueCalls &_queueCall
 		// TODO тут в лог запись если не прошел по какой то причине 
 		if (!CheckCallers(_queueCaller))
 		{
-			LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
+			/*LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
 			std::string err = std::string(__PRETTY_FUNCTION__) +"\t"+ _lines;
-			log.add(err);
+			log.add(err);*/
 
 			return false;
 		}

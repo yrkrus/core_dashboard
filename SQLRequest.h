@@ -107,7 +107,7 @@ namespace SQL_REQUEST
 
 
 	private:
-		MYSQL mysql;
+		MYSQL mysql;			  
 		void createMySQLConnect(MYSQL &mysql);												// подключаемся к БД MySQL
 	};	
 

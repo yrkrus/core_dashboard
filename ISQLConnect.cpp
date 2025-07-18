@@ -88,7 +88,7 @@ bool ISQLConnect::Request(const std::string &_request, std::string &_errorDescri
 
     if (mysql_query(&m_mysql, _request.c_str()) != 0)
     {
-        _errorDescription = StringFormat("%s mysql_query(%s) error: %s",
+        _errorDescription = StringFormat("%s query(%s) error: %s",
                                         METHOD_NAME,
                                         _request.c_str(),
                                         mysql_error(&m_mysql));

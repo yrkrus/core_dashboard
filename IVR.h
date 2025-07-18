@@ -5,6 +5,7 @@
 #include <vector>
 #include "IAsteriskData.h"
 #include "ISQLConnect.h"
+#include "Log.h"
 
 #define MAX_IVR_PARSING_LINES 9		// максимальное значение при парсинге сырых данных IVR
 
@@ -78,7 +79,7 @@ public:
 private:
 	std::vector<IvrCalls>	m_listIvr;	
 	SP_SQL					m_sql;
-
+	Log						m_log;
 
 	bool CreateCallers(const std::string&, IvrCalls&);
 	bool CheckCallers(const IvrCalls &);												// проверка корреткности стуктуры звонка

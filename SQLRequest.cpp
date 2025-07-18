@@ -32,8 +32,8 @@ void SQL_REQUEST::SQL::createMySQLConnect(MYSQL &mysql)
 		
 		if (CONSTANTS::SAFE_LOG) {
 			if (CONSTANTS::LOG_MODE_ERROR) {
-				LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
-				log.add("Error: can't create MySQL-descriptor");
+				/*LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
+				log.add("Error: can't create MySQL-descriptor");*/
 			}
 		}
 		return;
@@ -1324,7 +1324,7 @@ int SQL_REQUEST::SQL::getIVR_totalCalls()
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -1412,7 +1412,7 @@ int SQL_REQUEST::SQL::getQUEUE_Calls(bool answered)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+			/*LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);*/
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -1987,7 +1987,7 @@ void SQL_REQUEST::SQL::execTaskLogging()
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2084,7 +2084,7 @@ void SQL_REQUEST::SQL::execTaskIvr()
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2185,7 +2185,7 @@ void SQL_REQUEST::SQL::execTaskOnHold()
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2276,7 +2276,7 @@ void SQL_REQUEST::SQL::execTaskSmsSending()
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2482,7 +2482,7 @@ bool SQL_REQUEST::SQL::insertDataTaskLogging(HOUSEKEEPING::Logging_old &logging)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
@@ -2512,7 +2512,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskLogging(int ID)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2549,7 +2549,7 @@ bool SQL_REQUEST::SQL::insertDataTaskIvr(HOUSEKEEPING::IVR_ &ivr)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
@@ -2579,7 +2579,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskIvr(int ID)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2614,7 +2614,7 @@ bool SQL_REQUEST::SQL::insertDataTaskOnHold(HOUSEKEEPING::OnHold &onHold)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
@@ -2645,7 +2645,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskOnHold(int ID)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query);
 		}
 	}
@@ -2703,7 +2703,7 @@ bool SQL_REQUEST::SQL::insertDataTaskSmsSending(const HOUSEKEEPING::SmsSending &
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 		//	log.add(METHOD_NAME + " -> " + query_insert);
 		}
 	}
@@ -2734,7 +2734,7 @@ bool SQL_REQUEST::SQL::deleteDataTaskSmsSending(int _id)
 	{
 		if (CONSTANTS::LOG_MODE_DEBUG)
 		{
-			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
 			//log.add(METHOD_NAME + " -> " + query);
 		}
 	}

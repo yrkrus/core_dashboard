@@ -9,142 +9,6 @@
 using namespace utils;
 
 
-
-
-void LOG_old::LogToFile_old::add(std::string message)
-{
-	std::lock_guard<std::mutex> lock(mutex);	
-	std::string mess = GetCurrentDateTime() + "\t" + ELogType_to_string(current_type) + "\t" + message + "\n";
-
-	if (file_log->is_open()) 
-	{		
-		*file_log << mess;
-	}	
-}
-
-
-//void LOG::LogToFile_old::add(const std::shared_ptr<std::vector<ACTIVE_SIP_old::OnHold_old>> onhold, const std::vector<ACTIVE_SIP_old::Operators_old> *operators)
-//{
-//	std::lock_guard<std::mutex> lock(mutex);
-//
-//	std::ostringstream buffer;
-//
-//	buffer << "========================   " + GetCurrentDateTime() + "   ==========================\n";
-//
-//	unsigned int countHoldBase{ 0 };
-//	unsigned int countOperatorsOnHoldAsterisk{ 0 };
-//
-//	countHoldBase = onhold->size();
-//
-//	for (const auto &list : *operators)
-//	{
-//		if (list.isOnHold) ++countOperatorsOnHoldAsterisk;
-//	}
-//	buffer << "count OnHold Operators Base -> \t"			<< std::to_string(countHoldBase) << "\n";
-//	buffer << "count OnHold Asterisk -> \t"					<< std::to_string(countOperatorsOnHoldAsterisk) << "\n";
-//
-//	if (file_log->is_open())
-//	{
-//		*file_log << buffer.str();
-//	}
-//}
-
-//void LOG::LogToFile_old::add(const std::vector<ACTIVE_SIP_old::OnHold_old> *onhold)
-//{
-//	std::lock_guard<std::mutex> lock(mutex);
-//	
-//	std::ostringstream buffer;
-//
-//	buffer << "========================" + GetCurrentDateTime() + "   ==========================\n";
-//	
-//	unsigned int countHold{ 0 };
-//
-//	for (const auto &list : *onhold) {
-//		if (list.isOnHold) ++countHold;		
-//	}
-//	buffer << "count OnHold -> " << std::to_string(countHold) << "\n";
-//
-//	if (file_log->is_open())
-//	{
-//		*file_log << buffer.str();
-//	}
-//}
-
-LOG_old::LogToFile_old::LogToFile_old(ELogType_old type)
-{
-	this->file_log = new std::ofstream;
-	current_type = type;
-
-	switch (type)
-	{
-		case eLogType_DEBUG: {				
-			file_log->open(CONSTANTS::cFileLogDEBUG, std::ios_base::app);
-
-			break;
-		}
-		case eLogType_INFO: {
-			file_log->open(CONSTANTS::cFileLogINFO, std::ios_base::app);
-			break;
-		}
-		case eLogType_ERROR: {
-			file_log->open(CONSTANTS::cFileLogERROR, std::ios_base::app);
-			break;
-		}
-	}	
-	
-	if (file_log->is_open()) {
-		file_log->seekp(std::ios_base::end); // включаем дозапись лога
-	}
-	else {
-		switch (type)
-		{
-			case eLogType_DEBUG:
-			{
-				std::cerr << GetCurrentDateTime() << " Ошибка при открытии лог-файла: " << CONSTANTS::cFileLogDEBUG << "\n";
-				break;
-			}
-			case eLogType_INFO:
-			{
-				std::cerr << GetCurrentDateTime() << " Ошибка при открытии лог-файла: " << CONSTANTS::cFileLogINFO << "\n";
-				break;
-			}
-			case eLogType_ERROR:
-			{
-				std::cerr << GetCurrentDateTime() << " Ошибка при открытии лог-файла: " << CONSTANTS::cFileLogDEBUG << "\n";
-				break;
-			}
-		}
-	}	
-}
-
-std::string LOG_old::LogToFile_old::ELogType_to_string(const ELogType_old &elogtype)
-{
-	switch (elogtype)
-	{
-		case LOG_old::eLogType_DEBUG: {
-			return "DEBUG";
-			break;
-		}		
-		case LOG_old::eLogType_INFO: {
-			return "INFO";
-			break;
-		}		
-		case LOG_old::eLogType_ERROR: {
-			return "ERROR";
-			break;
-		}		
-	}
-}
-
-LOG_old::LogToFile_old::~LogToFile_old()
-{
-	if (file_log->is_open()) 
-	{
-		file_log->close();		
-	}
-	delete file_log;
-}
-
 bool Log::GetCommandInfoUser(CommandSendInfoUser &_userInfo, unsigned int _id, std::string &_errorDescription)
 {
 	// найдем все данные по пользователю 
@@ -184,22 +48,28 @@ bool Log::GetCommandInfoUser(CommandSendInfoUser &_userInfo, unsigned int _id, s
 
 void Log::OpenLogFile()
 {
-	if (!m_file->is_open()) 
+	// Открываем файл один раз, проверяем успех:
+	m_file.open(m_name, std::ios::out | std::ios::app);
+	if (!m_file.is_open())
 	{
-		m_file->open(m_name, std::ios_base::app);
-		m_file->seekp(std::ios_base::end);			// включаем дозапись лога
-
-		m_ready = true;
-	}	
+		std::cerr << GetCurrentDateTime() << " ERROR: cannot open log file '" << m_name << "'\n";
+		m_ready = false;
+	}
+	else
+	{
+		m_ready = true;		
+	}
 }
 
 void Log::CloseLogFile()
 {
-	if (m_file->is_open())
+	if (m_file.is_open())
 	{
-		m_file->close();
-		m_ready = false;
+		m_file.flush();
+		m_file.close();
 	}
+
+	m_ready = false;
 }
 
 bool Log::IsReady() const
@@ -208,20 +78,18 @@ bool Log::IsReady() const
 }
 
 
-Log::Log()
-	: m_sql(std::make_shared<ISQLConnect>(false))
-	, m_name(LOG_NAME_DEFAULT)
-	, m_ready(false)
-	, m_file(std::make_shared<std::ofstream>())
-{
-	OpenLogFile();
-}
+//Log::Log()
+//	: m_sql(std::make_shared<ISQLConnect>(false))
+//	, m_name(LOG_NAME_DEFAULT)
+//	, m_ready(false)
+//{
+//	OpenLogFile();
+//}
 
 Log::Log(const std::string &_name)
 	: m_sql(std::make_shared<ISQLConnect>(false))
 	, m_name(_name)
 	, m_ready(false)
-	, m_file(std::make_shared<std::ofstream>())
 {
 	OpenLogFile();
 }
@@ -256,7 +124,17 @@ void Log::ToBase(Command _command, std::string &_errorDescription)
 	m_sql->Disconnect();
 }
 
-bool Log::ToFile(ELogType _type, const std::string &_request)
-{
-	return false;
+void Log::ToFile(ELogType _type, const std::string &_message){
+	
+	if (!IsReady())
+	{
+		printf("Log file %s is not open!\n", m_name.c_str());
+		return;
+	}
+	
+	std::string message = GetCurrentDateTime() + "\t" + EnumToString<ELogType>(_type) + "\t" + _message + "\n";		
+		
+	std::lock_guard<std::mutex> lock(m_mutex);
+	m_file << message;
+	m_file.flush();
 }

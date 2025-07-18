@@ -28,11 +28,15 @@ namespace CONSTANTS
     namespace SERVER 
     {
         static const unsigned int PORT = 12345;
-        //static const unsigned int PORT = 12346;        
+       // static const unsigned int PORT = 12346;        
     }
 
     namespace LOG 
     {
+        static const std::string IVR = "ivr.log";
+        static const std::string QUEUE = "queue.log";
+        static const std::string ACTIVE_SESSION = "active_session.log";
+
         static const std::string REMOTE_COMMANDS = "remote_commands.log";        
     }
     

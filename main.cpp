@@ -210,10 +210,10 @@ static void collect() {
 int main(int argc, char *argv[])
 {
     
-    HistoryQueue history;
+    /*HistoryQueue history;
     history.Execute();
     
-    return 0;
+    return 0;*/
 
     // Перехватываем Ctrl+C
     std::signal(SIGINT, sigint_handler);
@@ -249,15 +249,7 @@ int main(int argc, char *argv[])
             auto stop = std::chrono::steady_clock::now();
             auto execute_ms = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
             std::cout << "\ntime execute code: " << execute_ms.count() << " ms\n";
-
-            if (activeSession->IsExistRawData())
-            {
-                printf("All RawData activeSession = %u\n ", activeSession->GetRawAllData().size());
-            }
-            else
-            {
-                std::cout << "null value " << _val << " (" << execute_ms.count()<<" ms)\n";
-            }
+           
          
           //  printf("After Del RawData activeSession = %u\n ", activeSession.GetRawAllData().size());
 
