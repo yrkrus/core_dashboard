@@ -5,13 +5,13 @@ void HOUSEKEEPING::HouseKeeping::createTask(TASKS task)
 {
 	switch (task)
 	{
-		case(TASKS::TaskQueue): {			
+		/*case(TASKS::TaskQueue): {			
 			
 			SQL_REQUEST::SQL base;
 			base.execTaskQueue();
 			
 			break;
-		}
+		}*/
 		case(TASKS::TaskLogging): {
 			
 			SQL_REQUEST::SQL base;

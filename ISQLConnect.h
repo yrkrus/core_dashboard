@@ -2,15 +2,14 @@
 //			виртуальный класс для SQL запросов
 // *************************************************************
 
+#ifndef ISQLCONNECT_H
+#define ISQLCONNECT_H
+
 #include <mysql/mysql.h>
 #include <string>
 #include <memory>
 #include "DEBUG.h"
 #include "AUTH.h"
-
-
-#ifndef ISQLCONNECT_H
-#define ISQLCONNECT_H
 
 #define HOST cHOST.c_str();
 #define BASE cBD.c_str();
@@ -45,6 +44,6 @@ private:
 	bool ConnectInternal(std::string &_errorDescription);
 };
 
-typedef std::shared_ptr<ISQLConnect> SP_SQL;
+using SP_SQL = std::shared_ptr<ISQLConnect>;
 
 #endif //ISQLCONNECT_H

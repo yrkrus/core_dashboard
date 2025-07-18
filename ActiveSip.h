@@ -1,23 +1,17 @@
+#ifndef ACTIVESIP_H
+#define ACTIVESIP_H
+
 #include <string>
 #include <vector>
-//#include <iostream>
-//#include <sstream>
-//#include <list>
-
 #include "IAsteriskData.h"
 #include "ISQLConnect.h"
 #include "Queue.h"
 
-#ifndef ACTIVESIP_H
-#define ACTIVESIP_H
-
 static std::string SESSION_SIP_RESPONSE		= "asterisk -rx \"core show channels concise\"";
 static std::string SESSION_QUEUE_RESPONSE	= "asterisk -rx \"queue show %queue\"";
 
-//class ActiveSession;
+using QueueList = std::vector<EQueueNumber>;
 
-
-typedef std::vector<EQueueNumber> QueueList;
 
 namespace active_sip 
 {

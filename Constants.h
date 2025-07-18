@@ -1,9 +1,9 @@
 //  CONSTANTS VALUE
 
-#include <string>
-
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
+
+#include <string>
 
 #if defined(_MSC_VER)
     #define METHOD_NAME std::string(__FUNCSIG__)
@@ -12,6 +12,7 @@
 #endif
 
 #define BUILD __DATE__ " " __TIME__
+
 
 
 namespace CONSTANTS
@@ -28,6 +29,11 @@ namespace CONSTANTS
     {
         static const unsigned int PORT = 12345;
         //static const unsigned int PORT = 12346;        
+    }
+
+    namespace LOG 
+    {
+        static const std::string REMOTE_COMMANDS = "remote_commands.log";        
     }
     
     
@@ -49,7 +55,7 @@ namespace CONSTANTS
     valgrind --leak-check=full --show-leak-kinds=all --leak-resolution=med --log-file=./core.log ./core_dashboard start
     valgrind --leak-check=full --leak-resolution=med --log-file=./core.log ./core_dashboard start
     
-    mysqldump -uzabbix -pUFGq4kZMNIMwxTzV -h10.34.222.19 dashboard > /root/core_dashboards/backup_bd/dashboard_20250716.sql
+    mysqldump -uzabbix -pUFGq4kZMNIMwxTzV -h10.34.222.19 dashboard > /root/core_dashboards/backup_bd/dashboard_20250717.sql
 
 
     asterisk -rx "core show channels verbose" | grep to-atsaero5005  кто сейчас разговаривает с бабой железной

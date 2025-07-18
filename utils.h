@@ -1,13 +1,10 @@
-#include <string>
-#include "RemoteCommands.h"
-#include "Queue.h"
-
 #ifndef UTILS_H
 #define UTILS_H
 
-using std::string;
-using remote::ECommand;
-using remote::ECommandType;
+#include <string>
+#include "RemoteCommands.h"
+#include "Queue.h"
+#include "Log.h"
 
 template<typename T>
 T StringToEnum(const std::string&);
@@ -19,14 +16,16 @@ template<>
 EQueueNumber StringToEnum<EQueueNumber>(const std::string&);
 
 template<>
-string EnumToString<EQueueNumber>(EQueueNumber);
+std::string EnumToString<EQueueNumber>(EQueueNumber);
 
 template<>
-string EnumToString<ECommand>(ECommand);
+std::string EnumToString<ECommand>(ECommand);
 
 template<>
-string EnumToString<ECommandType>(ECommandType);
+std::string EnumToString<ECommandType>(ECommandType);
+
+template<>
+std::string EnumToString<ELogType>(ELogType);
 
 
-
-#endif // 
+#endif // UTILS_H 

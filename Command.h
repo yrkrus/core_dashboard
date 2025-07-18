@@ -1,7 +1,7 @@
-#include <memory>
-
 #ifndef COMMAND_H 
 #define COMMAND_H
+
+#include <memory>
 
 class Command 
 {

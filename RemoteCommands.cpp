@@ -1,142 +1,16 @@
 #include "RemoteCommands.h"
-#include "SQLRequest.h"
+#include "Log.h"
 #include "InternalFunction.h"
+#include "Queue.h"
 #include "utils.h"
 
 using namespace utils;
-using namespace remote;
 
-// construct
-//REMOTE_COMMANDS_old::Remote::Remote()
-//{	
-//	// формируем лист команд при 
-//	createListCommands();
-//
-//}
-
-//bool REMOTE_COMMANDS_old::Remote::chekNewCommand()
-//{
-//	SQL_REQUEST::SQL base;
-//	if (base.isConnectedBD())
-//	{
-//		return base.remoteCheckNewCommads();
-//	}
-//}
-
-// создание списка команд
-//void REMOTE_COMMANDS_old::Remote::createListCommands()
-//{
-//	// если есть новые команды создаем список с текущими командами
-//	if (!chekNewCommand()) return;
-//
-//	// формируем лист команд
-//	SQL_REQUEST::SQL base;
-//	if (base.isConnectedBD())
-//	{
-//		base.createListRemoteCommands(list_commads);
-//	}
-//}
-
-// отработка команд
-//void REMOTE_COMMANDS_old::Remote::startCommand()
-//{
-//	if (!getCountCommand()) return;
-//
-//	for (const auto &list : list_commads) {
-//		SQL_REQUEST::SQL base;
-//		if (base.isConnectedBD())
-//		{
-//			base.startRemoteCommand(list.id,list.sip,list.command,list.user_id);
-//
-//			// проверяем успешно ли выполнили команду
-//			if (remoteCommandChekedExecution(list.command))
-//			{
-//				//SQL_REQUEST::SQL base;
-//				if (base.isConnectedBD()) 
-//				{
-//					// устанавливаем logging
-//					LOG_old::Logging_old log;
-//					log.createLog(list.command, list.id);
-//
-//					// обновляем текущий статус оператора					
-//				
-//					// новый статус оператора
-//					remote::EStatus status;
-//					
-//					
-//					// ВАЖНО!! адекватно работает только if else .. т.к. в кострукции swith case не находится почему то параметр!!!
-//					if (list.command == remote::ECommand::AddQueue5000) {
-//						status = remote::EStatus::Available;							
-//					}
-//					else if (list.command == remote::ECommand::AddQueue5050) {
-//						status = remote::EStatus::Available;
-//					}
-//					else if (list.command == remote::ECommand::AddQueue5000_5050) {
-//						status = remote::EStatus::Available;
-//					}
-//					else if (list.command == remote::ECommand::DelQueue5000) {
-//						status = remote::EStatus::Available;
-//					} 
-//					else if (list.command == remote::ECommand::DelQueue5050)	{
-//						status = remote::EStatus::Available;
-//					}
-//					else if (list.command == remote::ECommand::DelQueue5000_5050)	{
-//						status = remote::EStatus::Available;
-//					}
-//					else if (list.command == remote::ECommand::Home)	{
-//						status = remote::EStatus::Home;
-//					}
-//					else if (list.command == remote::ECommand::Exodus)	{
-//						status = remote::EStatus::Exodus;
-//					}
-//					else if (list.command == remote::ECommand::Break)	{
-//						status = remote::EStatus::Break;
-//					}
-//					else if (list.command == remote::ECommand::Dinner)	{
-//						status = remote::EStatus::Dinner;
-//					}
-//					else if (list.command == remote::ECommand::Postvyzov)	{
-//						status = remote::EStatus::Postvyzov;
-//					}
-//					else if (list.command == remote::ECommand::Studies)	{
-//						status = remote::EStatus::Studies;
-//					}
-//					else if (list.command == remote::ECommand::IT)
-//					{
-//						status = remote::EStatus::It;
-//					}
-//					else if (list.command == remote::ECommand::Transfer)
-//					{
-//						status = remote::EStatus::Transfer;
-//					}
-//					else if (list.command == remote::ECommand::Reserve)
-//					{
-//						status = remote::EStatus::Reserve;
-//					}
-//					else if (list.command == remote::ECommand::Callback)
-//					{
-//						status = remote::EStatus::Callback;
-//					}
-//					
-//					base.updateStatusOperators(list.user_id, status); 
-//
-//					// удаляем из БД
-//					base.deleteRemoteCommand(list.id);
-//				}
-//			}			
-//		}
-//	}
-//}
-
-// кол-во команд которые на данный момент есть в памяти
-//unsigned REMOTE_COMMANDS_old::Remote::getCountCommand() const
-//{
-//	return static_cast<unsigned>(list_commads.size());
-//}
 
 Status::Status()
 	: m_sql(std::make_shared<ISQLConnect>(false))
 	, m_dispether(CONSTANTS::TIMEOUT::OPERATOR_STATUS)
+	, m_log(std::make_shared<Log>(CONSTANTS::LOG::REMOTE_COMMANDS))
 {
 }
 
@@ -269,7 +143,7 @@ bool Status::ExecuteCommand(const Command &_command, std::string &_errorDescipti
 	}
 
 	// добавим в лог запрос
-	m_log.ToBase(_command, _errorDesciption);
+	m_log->ToBase(_command, _errorDesciption);
 
 	// обновим текущий статус оператора
 	if (!UpdateNewStatus(_command, _errorDesciption))
@@ -366,16 +240,16 @@ bool Status::CheckSendingCommand(ECommandType _commandType, std::string &_errorD
 	{
 		switch (_commandType)
 		{
-		case remote::ECommandType::Unknown:
+		case ECommandType::Unknown:
 			_errorDesciption = StringFormat("command %s not found", EnumToString<ECommandType>(_commandType).c_str());
 			break;
-		case remote::ECommandType::Del:
+		case ECommandType::Del:
 			if ((line.find("Removed") != std::string::npos) || (line.find("Not there") != std::string::npos)) 
 			{
 				status = true;
 			}
 			break;
-		case remote::ECommandType::Add:
+		case ECommandType::Add:
 			if ((line.find("Added") != std::string::npos) || (line.find("Already there") != std::string::npos)) 
 			{
 				status = true;

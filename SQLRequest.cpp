@@ -1863,114 +1863,114 @@ int SQL_REQUEST::SQL::getQUEUE_Calls()
 //}
 
 
-void SQL_REQUEST::SQL::execTaskQueue()
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
-
-	// найдем все данные 
-	const std::string query = "select * from queue where date_time < '" + GetCurrentStartDay() + "'";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		// ошибка считаем что есть запись		
-		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
-		return;
-	}	
-
-	// результат
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row;
-
-	std::vector<HOUSEKEEPING::Queue_old> listQueue;
-
-	while ((row = mysql_fetch_row(result)) != NULL)
-	{
-		HOUSEKEEPING::Queue_old queue;
-		
-		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
-		{
-			if (i == 0)			// id
-			{
-				queue.fileds.id = std::atoi(row[i]);
-			}
-			else if (i == 1)	// number_queue
-			{
-				queue.number_queue = std::atoi(row[i]);
-			}
-			else if (i == 2)   // phone
-			{
-				queue.fileds.phone = row[i];
-			}
-			else if (i == 3) // waiting_time
-			{
-				queue.fileds.waiting_time = row[i];
-			}
-			else if (i == 4) // date_time
-			{
-				queue.fileds.date_time = row[i];
-			}
-			else if (i == 5) // sip
-			{
-				queue.sip = std::atoi(row[i]);
-			}
-			else if (i == 6) { // talk_time (может быть NULL!)
-				if (row[i]) {
-					queue.talk_time = row[i];
-				}				
-			} 
-			else if (i == 7) { //answered
-				queue.answered = std::atoi(row[i]);
-			} 
-			else if (i == 8) { // fail
-				queue.fail = std::atoi(row[i]);
-			}
-			else if (i == 9) { // hash (может быть NULL!)
-				if (row[i]) {
-					queue.hash = string_to_size_t(row[i]);
-				}			
-			}
-		}
-
-		listQueue.emplace_back(queue);
-	}
-
-	if (!listQueue.empty()) { 
-		std::cout << "HouseKeeping.Queue work...\n";
-
-		// перекидывание 1 транзакции хза раз ? \ или по 100 надо подумать..
-		SQL_REQUEST::SQL base;
-
-		for (auto &list : listQueue)
-		{		
-			if (base.insertDataTaskQueue(list)) {
-				// удаляем текущий добавленный
-				base.deleteDataTaskQueue(list.fileds.id);
-			}	
-		}
-		
-		std::cout << "HouseKeeping.Queue work DONE!\n";
-
-		mysql_free_result(result);
-		mysql_close(&this->mysql);
-	}
-	else {
-		mysql_free_result(result);
-		mysql_close(&this->mysql);
-	}
-}
+//void SQL_REQUEST::SQL::execTaskQueue()
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//
+//	// найдем все данные 
+//	const std::string query = "select * from queue where date_time < '" + GetCurrentStartDay() + "'";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		// ошибка считаем что есть запись		
+//		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+//		return;
+//	}	
+//
+//	// результат
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row;
+//
+//	std::vector<HOUSEKEEPING::Queue_old> listQueue;
+//
+//	while ((row = mysql_fetch_row(result)) != NULL)
+//	{
+//		HOUSEKEEPING::Queue_old queue;
+//		
+//		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
+//		{
+//			if (i == 0)			// id
+//			{
+//				queue.fileds.id = std::atoi(row[i]);
+//			}
+//			else if (i == 1)	// number_queue
+//			{
+//				queue.number_queue = std::atoi(row[i]);
+//			}
+//			else if (i == 2)   // phone
+//			{
+//				queue.fileds.phone = row[i];
+//			}
+//			else if (i == 3) // waiting_time
+//			{
+//				queue.fileds.waiting_time = row[i];
+//			}
+//			else if (i == 4) // date_time
+//			{
+//				queue.fileds.date_time = row[i];
+//			}
+//			else if (i == 5) // sip
+//			{
+//				queue.sip = std::atoi(row[i]);
+//			}
+//			else if (i == 6) { // talk_time (может быть NULL!)
+//				if (row[i]) {
+//					queue.talk_time = row[i];
+//				}				
+//			} 
+//			else if (i == 7) { //answered
+//				queue.answered = std::atoi(row[i]);
+//			} 
+//			else if (i == 8) { // fail
+//				queue.fail = std::atoi(row[i]);
+//			}
+//			else if (i == 9) { // hash (может быть NULL!)
+//				if (row[i]) {
+//					queue.hash = string_to_size_t(row[i]);
+//				}			
+//			}
+//		}
+//
+//		listQueue.emplace_back(queue);
+//	}
+//
+//	if (!listQueue.empty()) { 
+//		std::cout << "HouseKeeping.Queue work...\n";
+//
+//		// перекидывание 1 транзакции хза раз ? \ или по 100 надо подумать..
+//		SQL_REQUEST::SQL base;
+//
+//		for (auto &list : listQueue)
+//		{		
+//			if (base.insertDataTaskQueue(list)) {
+//				// удаляем текущий добавленный
+//				base.deleteDataTaskQueue(list.fileds.id);
+//			}	
+//		}
+//		
+//		std::cout << "HouseKeeping.Queue work DONE!\n";
+//
+//		mysql_free_result(result);
+//		mysql_close(&this->mysql);
+//	}
+//	else {
+//		mysql_free_result(result);
+//		mysql_close(&this->mysql);
+//	}
+//}
 
 void SQL_REQUEST::SQL::execTaskLogging()
 {
@@ -2132,7 +2132,7 @@ void SQL_REQUEST::SQL::execTaskIvr()
 			{
 				ivr.to_queue = std::atoi(row[i]);
 			}
-			else if (i == 6)
+			else if (i == 6)	// to_robot
 			{
 				ivr.to_robot = std::atoi(row[i]);
 			}
@@ -2374,92 +2374,92 @@ void SQL_REQUEST::SQL::execTaskSmsSending()
 	}
 }
 
-bool SQL_REQUEST::SQL::insertDataTaskQueue(HOUSEKEEPING::Queue_old &queue)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return false;
-	}
+//bool SQL_REQUEST::SQL::insertDataTaskQueue(HOUSEKEEPING::Queue_old &queue)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return false;
+//	}
+//
+//	std::string query_insert;
+//	
+//	if (queue.sip != -1) {	 // на случай если нет NULL полей
+//
+//		// устанавливаем данные в history_queue
+//	 query_insert = "insert into history_queue (id,number_queue,phone,waiting_time,date_time,sip,talk_time,answered,fail,hash) values ('" + std::to_string(queue.fileds.id) +
+//			"','" + std::to_string(queue.number_queue) +
+//			"','" + queue.fileds.phone +
+//			"','" + queue.fileds.waiting_time +
+//			"','" + queue.fileds.date_time +
+//			"','" + std::to_string(queue.sip) +
+//			"','" + queue.talk_time +
+//			"','" + std::to_string(queue.answered) +
+//			"','" + std::to_string(queue.fail) +
+//			"','" + std::to_string(queue.hash) + "')";
+//	}
+//	else {					 // на случай если есть NULL поля
+//
+//	 query_insert = "insert into history_queue (id,number_queue,phone,waiting_time,date_time,sip,answered,fail) values ('" + std::to_string(queue.fileds.id) +
+//			"','" + std::to_string(queue.number_queue) +
+//			"','" + queue.fileds.phone +
+//			"','" + queue.fileds.waiting_time +
+//			"','" + queue.fileds.date_time +
+//			"','" + std::to_string(queue.sip) +
+//			"','" + std::to_string(queue.answered) +
+//			"','" + std::to_string(queue.fail) + "')";
+//	}
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+//			//log.add(METHOD_NAME + " -> " + query_insert);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
+//	{
+//		//showErrorBD(METHOD_NAME+" -> Data (insertDataTaskQueue) error -> query(" + query_insert + ")", &this->mysql);
+//		return false;
+//	}
+//
+//	mysql_close(&this->mysql);
+//	
+//	return true;
+//}
 
-	std::string query_insert;
-	
-	if (queue.sip != -1) {	 // на случай если нет NULL полей
 
-		// устанавливаем данные в history_queue
-	 query_insert = "insert into history_queue (id,number_queue,phone,waiting_time,date_time,sip,talk_time,answered,fail,hash) values ('" + std::to_string(queue.fileds.id) +
-			"','" + std::to_string(queue.number_queue) +
-			"','" + queue.fileds.phone +
-			"','" + queue.fileds.waiting_time +
-			"','" + queue.fileds.date_time +
-			"','" + std::to_string(queue.sip) +
-			"','" + queue.talk_time +
-			"','" + std::to_string(queue.answered) +
-			"','" + std::to_string(queue.fail) +
-			"','" + std::to_string(queue.hash) + "')";
-	}
-	else {					 // на случай если есть NULL поля
-
-	 query_insert = "insert into history_queue (id,number_queue,phone,waiting_time,date_time,sip,answered,fail) values ('" + std::to_string(queue.fileds.id) +
-			"','" + std::to_string(queue.number_queue) +
-			"','" + queue.fileds.phone +
-			"','" + queue.fileds.waiting_time +
-			"','" + queue.fileds.date_time +
-			"','" + std::to_string(queue.sip) +
-			"','" + std::to_string(queue.answered) +
-			"','" + std::to_string(queue.fail) + "')";
-	}
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query_insert);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
-	{
-		//showErrorBD(METHOD_NAME+" -> Data (insertDataTaskQueue) error -> query(" + query_insert + ")", &this->mysql);
-		return false;
-	}
-
-	mysql_close(&this->mysql);
-	
-	return true;
-}
-
-
-bool SQL_REQUEST::SQL::deleteDataTaskQueue(int ID)
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return false;
-	}
-
-	std::string query = "delete from queue where id = '"+std::to_string(ID)+"'";
-
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
-		//	log.add(METHOD_NAME + " -> " + query);
-		}
-	}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		//showErrorBD(METHOD_NAME+" -> Data (deleteDataTaskQueue) error -> query(" + query + ")", &this->mysql);
-		return false;
-	}
-
-	mysql_close(&this->mysql);
-
-	return true;
-}
+//bool SQL_REQUEST::SQL::deleteDataTaskQueue(int ID)
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return false;
+//	}
+//
+//	std::string query = "delete from queue where id = '"+std::to_string(ID)+"'";
+//
+//	if (CONSTANTS::SAFE_LOG)
+//	{
+//		if (CONSTANTS::LOG_MODE_DEBUG)
+//		{
+//			LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+//		//	log.add(METHOD_NAME + " -> " + query);
+//		}
+//	}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		//showErrorBD(METHOD_NAME+" -> Data (deleteDataTaskQueue) error -> query(" + query + ")", &this->mysql);
+//		return false;
+//	}
+//
+//	mysql_close(&this->mysql);
+//
+//	return true;
+//}
 
 bool SQL_REQUEST::SQL::insertDataTaskLogging(HOUSEKEEPING::Logging_old &logging)
 {

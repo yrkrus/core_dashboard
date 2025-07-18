@@ -1,14 +1,14 @@
 ﻿// Базовый класс для запросов к астериску
 // Чисто виртуальный
 
+#ifndef IASTERISKDATA_H
+#define IASTERISKDATA_H
+
 #include <shared_mutex>
 #include <deque>
 
 #include "IFile.h"
 #include "PotokDispether.h"
-
-#ifndef IASTERISKDATA_H
-#define IASTERISKDATA_H
 
 class IAsteriskData
 {

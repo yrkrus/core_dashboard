@@ -1,13 +1,13 @@
 // TCP Сервер
 
+#ifndef TCPSERVER_H
+#define	TCPSERVER_H
+
 #include <functional>
 #include <thread>
 #include <atomic>
 #include <vector>
 #include <mutex>
-
-#ifndef TCPSERVER_H
-#define	TCPSERVER_H
 
 class HeartbeatServer
 {

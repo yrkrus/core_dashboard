@@ -1,10 +1,11 @@
+#ifndef IVR_H
+#define IVR_H
+
 #include <string>
 #include <vector>
 #include "IAsteriskData.h"
 #include "ISQLConnect.h"
 
-#ifndef IVR_H
-#define IVR_H
 #define MAX_IVR_PARSING_LINES 9		// максимальное значение при парсинге сырых данных IVR
 
 static std::string IVR_COMMANDS			= "Playback|lukoil|ivr-3";	// ищем только эти слова при формировании IVR

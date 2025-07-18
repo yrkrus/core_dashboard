@@ -1,12 +1,12 @@
 ﻿// Базовый класс для многопоточности
 
+#ifndef POTOK_DISPETHER_H
+#define POTOK_DISPETHER_H
+
 #include <thread>
 #include <atomic>
 #include <chrono>
 #include <functional>
-
-#ifndef POTOK_DISPETHER_H
-#define POTOK_DISPETHER_H
 
 class IPotokDispether 
 {

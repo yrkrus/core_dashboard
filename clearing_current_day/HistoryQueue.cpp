@@ -14,7 +14,7 @@ HistoryQueue::~HistoryQueue()
 void HistoryQueue::Execute()
 {
 	// получим данные
-	if (!Get() && !IsExistData())
+	if (!Get() || !IsExistData())
 	{
 		return;
 	}
@@ -23,15 +23,11 @@ void HistoryQueue::Execute()
 	{
 		std::string error;
 
-		if (!Insert(field,error))
+		if (Insert(field,error))
 		{
-			// TODO в лог
-			printf("%s", error.c_str());			
-			continue;
-		}
-
-		Delete(field.id);
-		printf("%u - %s\n", field.id, field.phone.c_str());
+			Delete(field.id, ECheckInsert::Yes);
+			printf("\n%u - %s", field.id, field.phone.c_str());
+		}		
 	}
 }
 
@@ -39,6 +35,14 @@ bool HistoryQueue::Insert(const Table &_field, std::string &_errorDescription)
 {
 	_errorDescription.clear();
 
+	if (CheckInsert(_field.id))
+	{
+		// запись в history_queue есть значит ее удаляем из таблицы queue
+		// TODO в лог запись что такая запись уже есть
+		Delete(_field.id, ECheckInsert::No);
+		return false;
+	}
+	
 	std::string query;
 
 	if (_field.sip != -1)
@@ -70,7 +74,7 @@ bool HistoryQueue::Insert(const Table &_field, std::string &_errorDescription)
 	if (!m_sql->Request(query, _errorDescription))
 	{
 		// TODO в лог
-		printf("%s %s", METHOD_NAME, _errorDescription.c_str());
+		//printf("%s\n", _errorDescription.c_str());
 		m_sql->Disconnect();
 		return false;
 	}
@@ -80,8 +84,16 @@ bool HistoryQueue::Insert(const Table &_field, std::string &_errorDescription)
 	return true;
 }
 
-void HistoryQueue::Delete(int _id)
-{
+void HistoryQueue::Delete(int _id, ECheckInsert _check)
+{	
+	if (_check == ECheckInsert::Yes)
+	{
+		if (!CheckInsert(_id))
+		{
+			return;
+		}
+	}
+	
 	const std::string query = "delete from queue where id = '" + std::to_string(_id) + "'";
 	
 	std::string error;
@@ -147,4 +159,30 @@ bool HistoryQueue::Get()
 bool HistoryQueue::IsExistData()
 {
 	return !m_history.empty();
+}
+
+bool HistoryQueue::CheckInsert(int _id)
+{
+	std::string error;
+	const std::string query = "select count(id) from history_queue where id = '" + std::to_string(_id) + "'";
+
+	if (!m_sql->Request(query, error))
+	{
+		printf("%s", error.c_str());
+		m_sql->Disconnect();
+		// ошибка считаем что нет записи
+		return false;
+	}
+
+	// результат
+	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	MYSQL_ROW row = mysql_fetch_row(result);
+
+	bool existField;
+	(std::stoi(row[0]) == 0 ? existField = false : existField = true);
+
+	mysql_free_result(result);
+	m_sql->Disconnect();
+
+	return existField;
 }

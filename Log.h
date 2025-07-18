@@ -10,36 +10,49 @@
 #include "ActiveSip.h"
 #include "ISQLConnect.h"
 
-namespace remote
+
+#define LOG_NAME_DEFAULT "unnamed_log.log"
+
+struct Command;
+struct CommandSendInfoUser;
+
+enum class ELogType
 {
-    struct CommandSendInfoUser;
-    struct Command;
-    enum class ECommand;
-}
+    Debug,
+    Info,
+    Error,
+};
+
+using SP_FileLog = std::shared_ptr<std::ofstream>;
 
 class Log 
 {
 private:
-    SP_SQL		m_sql;
-   
-    bool GetCommandInfoUser(remote::CommandSendInfoUser &_userInfo, unsigned int _id, std::string &_errorDescription);
+    SP_SQL		m_sql;    
+    std::string m_name; // файл куда будем писать лог
+    std::mutex  m_mutex;    
+    SP_FileLog  m_file;    
 
-public:
-    enum class ELogType
-    {
-        Debug,
-        Info,
-        Error,
-    };
-    
+
+    bool        m_ready; // файл готов для записи
+
+    bool GetCommandInfoUser(CommandSendInfoUser &_userInfo, unsigned int _id, std::string &_errorDescription);
+
+    void OpenLogFile();
+    void CloseLogFile();
+
+    bool IsReady() const;    
+
+public:    
     Log();
+    Log(const std::string &_name);
     ~Log();   
     
-    void ToBase(remote::Command _command, std::string &_errorDescription);   // сохранение в БД
-    bool ToFile(ELogType _type, const std::string &_request);                           // сохранение в лог файл
+    void ToBase(Command _command, std::string &_errorDescription);      // сохранение в БД
+    bool ToFile(ELogType _type, const std::string &_request);                   // сохранение в лог файл
 
 };
-
+using SP_Log = std::shared_ptr<Log>;
 
 namespace LOG_old {	
 	

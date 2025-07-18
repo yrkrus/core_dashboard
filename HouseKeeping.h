@@ -1,16 +1,16 @@
-//#include "SQLRequest.h"
-#include <string>
-#include "IVR.h"
 
 #ifndef HOUSEKEEPING_H 
 #define HOUSEKEEPING_H
+
+#include <string>
+#include "IVR.h"
 
 
 namespace HOUSEKEEPING {
 	
 	enum class TASKS
 	{
-		TaskQueue,
+		//TaskQueue,
 		TaskLogging,
 		TaskIvr,
 		TaskOnHold,
@@ -44,7 +44,7 @@ namespace HOUSEKEEPING {
 			FieldsTable fileds;
 	};
 
-	class Queue_old final : public ExportTable
+	/*class Queue_old final : public ExportTable
 	{
 		public:
 			Queue_old()  = default;
@@ -56,7 +56,7 @@ namespace HOUSEKEEPING {
 			int			answered{ 0 };
 			int			fail{ 0 };
 			size_t		hash{ 0 };
-	};
+	};*/
 
 	class IVR_ final: public ExportTable
 	{
@@ -64,6 +64,8 @@ namespace HOUSEKEEPING {
 			IVR_()	= default;			
 			~IVR_()	= default;
 
+				
+			
 			std::string trunk{ "" };
 			int			to_queue{ 0 };
 			int			to_robot{ 0 };

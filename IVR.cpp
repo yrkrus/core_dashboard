@@ -150,9 +150,9 @@ bool IVR::IsExistListIvr()
 
 IVR::ECallerId IVR::StringToEnum(const std::string &_str)
 {
+	if (_str.find("ivr-13") != std::string::npos)			return ECallerId::Domru_220000;	
+	if (_str.find("druOUT_220220") != std::string::npos)	return ECallerId::Domru_220220;	
 	if (_str.find("Dru_220000") != std::string::npos)		return ECallerId::Domru_220220;
-	if (_str.find("druOUT_220220") != std::string::npos)	return ECallerId::Domru_220220;
-	if (_str.find("ivr-13") != std::string::npos)			return ECallerId::Domru_220000;
 	if (_str.find("sts_") != std::string::npos)				return ECallerId::Sts;
 	if (_str.find("221122") != std::string::npos)			return ECallerId::Comagic;
 	if (_str.find("camaa") != std::string::npos)			return ECallerId::Comagic;
@@ -238,7 +238,7 @@ void IVR::UpdateIvrCalls(int _id, const IvrCalls &_caller)
 
 	if (!m_sql->Request(query, error))
 	{
-		printf("%s %s", METHOD_NAME, error.c_str());
+		printf("%s\n", error.c_str());
 		m_sql->Disconnect();
 		return;
 	}

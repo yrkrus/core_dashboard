@@ -1,5 +1,8 @@
 // класс для выполнения перидических команд
 
+#ifndef DISPATHER_H 
+#define DISPATHER_H
+
 #include <string>
 #include <queue>
 #include <thread>
@@ -7,9 +10,6 @@
 
 #include "Command.h"
 #include "Event.h"
-
-#ifndef DISPATHER_H 
-#define DISPATHER_H
 
 class Dispather 
 {

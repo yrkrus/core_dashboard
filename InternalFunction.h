@@ -1,9 +1,5 @@
-//////////////////////////////////////////////////////
-//													//	        
-//			by Petrov Yuri 14.08.2024				//
-//		внутренние функции не вошедшие в классы 	//
-//													//	
-//////////////////////////////////////////////////////
+#ifndef INTERNALFUNCTION_H
+#define INTERNALFUNCTION_H
 
 #include <string>
 #include <list>
@@ -16,13 +12,8 @@
 #include <mysql/mysql.h>
 #include <map>
 
-
-#ifndef INTERNALFUNCTION_H
-#define INTERNALFUNCTION_H
-
-
-
-namespace utils {
+namespace utils 
+{
 	
 	//typedef std::shared_ptr<std::vector<ACTIVE_SIP_old::OnHold_old>> SP_OnHold;
 	typedef std::vector<ACTIVE_SIP_old::Operators_old> Operators_old;
@@ -54,9 +45,9 @@ namespace utils {
 	void showErrorBD(const std::string str); // отображжение инфо что не возможно подключитьс€ к бд
 	void showErrorBD(const std::string str, MYSQL *mysql); // отображение инфо что пошла кака€ то ошибка
 
-	remote::ECommand getRemoteCommand(int command);	// преобразование текущей удаленной комады из int -> LOG::Log
-	int getRemoteCommand(remote::ECommand command); // преобразование текущей удаленной комады из LOG::Log -> int
-	int getStatusOperators(remote::EStatus status); // преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
+	ECommand getRemoteCommand(int command);	// преобразование текущей удаленной комады из int -> LOG::Log
+	int getRemoteCommand(ECommand command); // преобразование текущей удаленной комады из LOG::Log -> int
+	int getStatusOperators(EStatus status); // преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
 	//bool isExistNewOnHoldOperators(const SP_OnHold &onHold, const Operators &operators); // проверка есть ли разница между onHold по Ѕƒ и active_sip->onHold
 	//SP_NewOnHoldOperators createNewOnHoldOperators(const SP_OnHold &onHold, const Operators &operators);			// создание списка с новыми операторами в OnHold
 

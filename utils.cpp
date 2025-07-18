@@ -1,5 +1,6 @@
-#include "utils.h"
 #include <map>
+#include "utils.h"
+
 
 template<>
 EQueueNumber StringToEnum<EQueueNumber>(const std::string &_str)
@@ -73,5 +74,19 @@ string EnumToString<ECommandType>(ECommandType _command)
 
 	auto it = command.find(_command);
 	return (it == command.end()) ? "Unknown" : it->second;
+}
+
+template<>
+string EnumToString<ELogType>(ELogType _type)
+{
+	static std::map<ELogType, string> type =
+	{
+		{ELogType::Debug,	"DEBUG"},
+		{ELogType::Error,	"ERROR"},
+		{ELogType::Info,	"INFO"},
+	};
+
+	auto it = type.find(_type);
+	return (it == type.end()) ? "Unknown" : it->second;
 }
 

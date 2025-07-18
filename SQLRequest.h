@@ -1,9 +1,6 @@
-//////////////////////////////////////////////////////
-//													//	        
-//			by Petrov Yuri 04.06.2024				//
-//				   SQL запросы	             		//
-//													//	
-//////////////////////////////////////////////////////
+#ifndef SQLREQUEST_H
+#define	SQLREQUEST_H
+
 #include <iostream>
 #include "Constants.h"
 #include <mysql/mysql.h>
@@ -16,10 +13,6 @@
 #include <vector>
 #include <memory>
 #include <unordered_map>
-
-
-#ifndef SQLREQUEST_H
-#define	SQLREQUEST_H
 
 
 namespace SQL_REQUEST
@@ -88,13 +81,13 @@ namespace SQL_REQUEST
 		
 		
 		// Housekeeping
-		void execTaskQueue();																// выполнение задачи очистка таблицы queue
+		//void execTaskQueue();																// выполнение задачи очистка таблицы queue
 		void execTaskLogging();																// выполнение задачи очистки таблицы Logging
 		void execTaskIvr();																	// выполнение задачи очистки таблицы Ivr
 		void execTaskOnHold();																// выполнение задачи очистки таблицы operators_onhold
 		void execTaskSmsSending();															// выполнение задачи очистки таблицы sms_sending	
-		bool insertDataTaskQueue(HOUSEKEEPING::Queue_old &queue);								// вставка данных для таблицы history_queue			
-		bool deleteDataTaskQueue(int ID);													// удаление данных из таблицы queue
+		//bool insertDataTaskQueue(HOUSEKEEPING::Queue_old &queue);								// вставка данных для таблицы history_queue			
+		//bool deleteDataTaskQueue(int ID);													// удаление данных из таблицы queue
 		bool insertDataTaskLogging(HOUSEKEEPING::Logging_old &logging);							// вставка данных для таблицы history_logging
 		bool deleteDataTaskLogging(int ID);													// удаление данных из таблицы logging
 		bool insertDataTaskIvr(HOUSEKEEPING::IVR_ &ivr);										// вставка данных из талицы history_ivr

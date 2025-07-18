@@ -1,11 +1,11 @@
 ﻿// Базовый класс для полочуния данных из запроса
 
+#ifndef IFILE_H
+#define	IFILE_H
+
 #include <string>
 #include <deque>
 #include <shared_mutex>
-
-#ifndef IFILE_H
-#define	IFILE_H
 
 using std::string;
 

@@ -1,6 +1,9 @@
   
 //	      парсинг звонков попадающих в Очередь		
 
+#ifndef QUEUE_H
+#define QUEUE_H
+
 #include <string>
 #include <vector>
 //#include <iostream>
@@ -9,9 +12,6 @@
 
 #include "IAsteriskData.h"
 #include "ISQLConnect.h"
-
-#ifndef QUEUE_H
-#define QUEUE_H
 
 static std::string QUEUE_COMMANDS		= "Queue|to-atsaero5005";
 static std::string QUEUE_COMMANDS_EXT1	= "App";
@@ -25,6 +25,7 @@ enum class EQueueNumber // ВАЖНО в методе bool Status::CreateCommand используетс
 	e5000_e5050,	// сочетение 5000+5050 
 	e5005,			// очередь для бабы железной
 };
+
 class Queue;
 using SP_Queue = std::shared_ptr<Queue>;
 

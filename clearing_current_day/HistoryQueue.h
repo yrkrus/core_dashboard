@@ -1,9 +1,9 @@
+#ifndef HISTORYQUEUE_H
+#define HISTORYQUEUE_H
+
 #include <string>
 #include <vector>
 #include "IClear.h"
-
-#ifndef HISTORYQUEUE_H
-#define HISTORYQUEUE_H
 
 class HistoryQueue : public IClear
 {
@@ -35,9 +35,10 @@ private:
 	HistoryQueueTable  m_history;
 
 	virtual bool Insert(const Table &_field, std::string &_errorDescription);
-	virtual void Delete(int _id) override;
+	virtual void Delete(int _id, ECheckInsert _check) override;
 	virtual bool Get() override;
 	virtual bool IsExistData() override;
+	virtual bool CheckInsert(int _id) override;
 
 };
 

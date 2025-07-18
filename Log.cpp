@@ -7,20 +7,7 @@
 #include "utils.h"
 
 using namespace utils;
-using remote::ECommand;
-using remote::CommandSendInfoUser;
 
-// создание лога
-//void LOG_old::Logging_old::createLog(remote::ECommand command, int base_id)
-//{
-//	SQL_REQUEST::SQL base;
-//
-//	// добавляем 
-//	if (base.isConnectedBD())
-//	{
-//		base.addLog(command, base_id);
-//	}
-//}
 
 
 
@@ -195,16 +182,56 @@ bool Log::GetCommandInfoUser(CommandSendInfoUser &_userInfo, unsigned int _id, s
 	return _userInfo.check();
 }
 
+void Log::OpenLogFile()
+{
+	if (!m_file->is_open()) 
+	{
+		m_file->open(m_name, std::ios_base::app);
+		m_file->seekp(std::ios_base::end);			// включаем дозапись лога
+
+		m_ready = true;
+	}	
+}
+
+void Log::CloseLogFile()
+{
+	if (m_file->is_open())
+	{
+		m_file->close();
+		m_ready = false;
+	}
+}
+
+bool Log::IsReady() const
+{
+	return m_ready;
+}
+
+
 Log::Log()
 	: m_sql(std::make_shared<ISQLConnect>(false))
+	, m_name(LOG_NAME_DEFAULT)
+	, m_ready(false)
+	, m_file(std::make_shared<std::ofstream>())
 {
+	OpenLogFile();
+}
+
+Log::Log(const std::string &_name)
+	: m_sql(std::make_shared<ISQLConnect>(false))
+	, m_name(_name)
+	, m_ready(false)
+	, m_file(std::make_shared<std::ofstream>())
+{
+	OpenLogFile();
 }
 
 Log::~Log()
 {
+	CloseLogFile();	
 }
 
-void Log::ToBase(remote::Command _command, std::string &_errorDescription)
+void Log::ToBase(Command _command, std::string &_errorDescription)
 {
 	CommandSendInfoUser userInfo;
 	if (!GetCommandInfoUser(userInfo, _command.id, _errorDescription))

@@ -40,7 +40,7 @@ static void Init()
     queue = std::make_shared<Queue>();
     activeSession = std::make_shared<active_sip::ActiveSession>(queue);
 
-    changeStatus = std::make_shared<remote::Status>();
+    changeStatus = std::make_shared<Status>();
 }
 
 static void Run() 
@@ -118,7 +118,7 @@ Commands static getCommand(char *ch) {
 static void thread_HouseKeeping() {
     HOUSEKEEPING::HouseKeeping task;
     
-    task.createTask(HOUSEKEEPING::TASKS::TaskQueue);    
+    //task.createTask(HOUSEKEEPING::TASKS::TaskQueue);    
 
     task.createTask(HOUSEKEEPING::TASKS::TaskLogging);   
 
@@ -210,8 +210,8 @@ static void collect() {
 int main(int argc, char *argv[])
 {
     
-    HistoryQueue historyQueue;
-    historyQueue.Execute();
+    HistoryQueue history;
+    history.Execute();
     
     return 0;
 
@@ -326,9 +326,9 @@ int main(int argc, char *argv[])
         //}
         case(Commands::housekeeping): {
             HOUSEKEEPING::HouseKeeping task;           
-            std::cout << "create Task and execute -> TaskQueue\n";
+            /*std::cout << "create Task and execute -> TaskQueue\n";
             task.createTask(HOUSEKEEPING::TASKS::TaskQueue);
-            std::cout << "done -> TaskQueue\n";
+            std::cout << "done -> TaskQueue\n";*/
             
             std::cout << "create Task and execute -> TaskLogging\n";
             task.createTask(HOUSEKEEPING::TASKS::TaskLogging); 

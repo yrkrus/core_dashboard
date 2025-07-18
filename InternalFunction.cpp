@@ -405,19 +405,19 @@ void utils::showErrorBD(const std::string str, MYSQL *mysql)
 }
 
 // преобразование текущей удаленной комады из int -> REMOTE_COMMANDS::Command 
-remote::ECommand utils::getRemoteCommand(int command) // TODO переделать на template IntegerToEnum
+ECommand utils::getRemoteCommand(int command) // TODO переделать на template IntegerToEnum
 {
-	return static_cast<remote::ECommand>(command);
+	return static_cast<ECommand>(command);
 }
 
 // преобразование текущей удаленной комады из LOG::Log -> int
-int utils::getRemoteCommand(remote::ECommand command)// TODO переделать на template EnumToInteger
+int utils::getRemoteCommand(ECommand command)// TODO переделать на template EnumToInteger
 {
 	return static_cast<int>(command);
 }
 
 // преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
-int utils::getStatusOperators(remote::EStatus status)// TODO переделать на template EnumToInteger
+int utils::getStatusOperators(EStatus status)// TODO переделать на template EnumToInteger
 {
 	return static_cast<int>(status);
 }
