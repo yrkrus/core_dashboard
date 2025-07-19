@@ -36,6 +36,10 @@ namespace CONSTANTS
         static const std::string IVR = "ivr.log";
         static const std::string QUEUE = "queue.log";
         static const std::string ACTIVE_SESSION = "active_session.log";
+        
+        // to_history
+        static const std::string HISTORY_IVR = "history_ivr.log";
+
 
         static const std::string REMOTE_COMMANDS = "remote_commands.log";        
     }
@@ -44,31 +48,30 @@ namespace CONSTANTS
     
     
     // DEBUG MODE 
-    static bool DEBUG_MODE = false;      // при этом режиме не создаются запросы до астериска
+   // static bool DEBUG_MODE = false;      // при этом режиме не создаются запросы до астериска
     
-    static bool SAFE_LOG        { true };       // записывать ли в лог работу ядра
-    static bool LOG_MODE_INFO   { true };       // режим записи лога INFO (при этой записи записываются отладочные ) 
-    static bool LOG_MODE_DEBUG  { false };       // режим записи лога DEBUG (при этой записи записываются запросы от и на сервер) 
-    static bool LOG_MODE_ERROR  { true };       // режим записи лога ERROR (включен постоянно, фиксируются все ошибки)
+   // static bool SAFE_LOG        { true };       // записывать ли в лог работу ядра    
+   // static bool LOG_MODE_DEBUG  { false };       // режим записи лога DEBUG (при этой записи записываются запросы от и на сервер) 
+   // static bool LOG_MODE_ERROR  { true };       // режим записи лога ERROR (включен постоянно, фиксируются все ошибки)
 
     // WKroot#791  old
     // *v0@|48lg*se  new
    
-    /*
     
-    valgrind --leak-check=full --show-leak-kinds=all --leak-resolution=med --log-file=./core.log ./core_dashboard start
-    valgrind --leak-check=full --leak-resolution=med --log-file=./core.log ./core_dashboard start
     
-    mysqldump -uzabbix -pUFGq4kZMNIMwxTzV -h10.34.222.19 dashboard > /root/core_dashboards/backup_bd/dashboard_20250717.sql
+    //valgrind --leak-check=full --show-leak-kinds=all --leak-resolution=med --log-file=./core.log ./core_dashboard start
+    //valgrind --leak-check=full --leak-resolution=med --log-file=./core.log ./core_dashboard start
+    //
+    //mysqldump -uzabbix -pUFGq4kZMNIMwxTzV -h10.34.222.19 dashboard > /root/core_dashboards/backup_bd/dashboard_20250719.sql
 
 
-    asterisk -rx "core show channels verbose" | grep to-atsaero5005  кто сейчас разговаривает с бабой железной
+    //asterisk -rx "core show channels verbose" | grep to-atsaero5005  кто сейчас разговаривает с бабой железной
 
-    // запуск gdbserver
-    scl enable gcc-toolset-10 bash
-    gdbserver :7777 ./core_dashboard start
+    //// запуск gdbserver
+    //scl enable gcc-toolset-10 bash
+    //gdbserver :7777 ./core_dashboard start
 
-    */
+    
 
     // при совершении звонка, в ivr добавить еще id_звонка из queue таблицы,
     // потом будет проще найти этот звонок + повторные звонки будут проще отслеживаться
@@ -76,43 +79,43 @@ namespace CONSTANTS
     // бэкапы базы будут тут жить \\srvbak\G$\dashboard_backup_COV
 
 // для будущей интеграции с телефонами!!!    
-/*   
-    // перезагрузка
-    https://admin:asz741@10.34.42.47/servlet?key=Reboot
-    // набор номера
-    http://admin:asz741@10.34.42.47/servlet?key=number=xxx&outgoing_uri=y 	Набор номера xxx
-    // завершить вызов
-    http://admin:asz741@10.34.42.47/servlet?key=CALLEND 
-    // скриншот
-    https://admin:asz741@10.34.42.47/servlet?m=mod_action&command=screenshot
-    // регистрация
-    https://admin:asz741@10.34.42.47/servlet?phonecfg=set[&account.1.label=64197][&account.1.display_name=64197][&account.1.auth_name=64197][&account.1.user_name=64197][&account.1.password=1240]
- 	
-	Лейбл 			 = &account.1.label=XXX
-	Отображаемое имя = &account.1.display_name=XXX
-	Имя регистрации  = &account.1.auth_name=XXX
-	Имя пользователя = &account.1.user_name=XXX
-	Пароль 			 = &account.1.password=XXX
-   
+ //  
+ //   // перезагрузка
+ //   https://admin:asz741@10.34.42.47/servlet?key=Reboot
+ //   // набор номера
+ //   http://admin:asz741@10.34.42.47/servlet?key=number=xxx&outgoing_uri=y 	Набор номера xxx
+ //   // завершить вызов
+ //   http://admin:asz741@10.34.42.47/servlet?key=CALLEND 
+ //   // скриншот
+ //   https://admin:asz741@10.34.42.47/servlet?m=mod_action&command=screenshot
+ //   // регистрация
+ //   https://admin:asz741@10.34.42.47/servlet?phonecfg=set[&account.1.label=64197][&account.1.display_name=64197][&account.1.auth_name=64197][&account.1.user_name=64197][&account.1.password=1240]
+ //	
+	//Лейбл 			 = &account.1.label=XXX
+	//Отображаемое имя = &account.1.display_name=XXX
+	//Имя регистрации  = &account.1.auth_name=XXX
+	//Имя пользователя = &account.1.user_name=XXX
+	//Пароль 			 = &account.1.password=XXX
+ //  
 
-	/var/spool/asterisk/outgoung/*.call
+	///var/spool/asterisk/outgoung/*.call
 
-	*.call
-	Channel: SIP/druOUT_220220/79275052333
-	CallerID: "Dasboard Missed Call" <79275052333>
-	WaitTime: 20
-	Extension: 64197
-	Priority: 1 
-    */ 
+	//*.call
+	//Channel: SIP/druOUT_220220/79275052333
+	//CallerID: "Dasboard Missed Call" <79275052333>
+	//WaitTime: 20
+	//Extension: 64197
+	//Priority: 1 
+ //    
 
 
-    /*
-    ВАЖНО! НЕ ЗАБЫТЬ
-    запуск на проде запускать из ./root/core_dashboard/core_dashboard/core_dashboard
+ //   
+ //   ВАЖНО! НЕ ЗАБЫТЬ
+ //   запуск на проде запускать из ./root/core_dashboard/core_dashboard/core_dashboard
 
-    когда через активные сессия сброс, если оператор в очереди то убираем его из нее!!!
+ //   когда через активные сессия сброс, если оператор в очереди то убираем его из нее!!!
 
-    */
+ //  
 
  // версия ядра
 /**

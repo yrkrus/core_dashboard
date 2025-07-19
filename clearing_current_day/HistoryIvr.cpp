@@ -1,9 +1,11 @@
 #include "HistoryIvr.h"
 #include "../InternalFunction.h"
+#include "../Constants.h"
 
 using namespace utils;
 
 HistoryIvr::HistoryIvr()
+	: m_log(CONSTANTS::LOG::HISTORY_IVR)
 {
 }
 

@@ -37,25 +37,26 @@ void active_sip::ActiveSession::Parsing()
 {
 	// разбираем что же там по звонкам активным
 	m_listCall.clear(); // TODO тут пока обнуление, потом подумать чтобы не делать так а работать с памятью !!
-	CreateListActiveSessionCalls();	
+	CreateListActiveSessionCalls();
 	
 	m_listOperators.clear(); // TODO тут пока обнуление, потом подумать, чтобы так не делать а работать уже с памятью!!!	
 	// найдем активных операторов в линии(смотрим текущие статичные очереди)
-	CreateListActiveSessionOperators();		
-
+	CreateListActiveSessionOperators();
+	
+	
 	// что то есть нужно теперь в БД запихнуть
 	if (IsExistListCalls())
 	{
 		UpdateActiveSessionCalls();
 	}
-	else 
-	{		
-		if (!IsExistListOperators()) 
+	else
+	{
+		if (!IsExistListOperators())
 		{
 			// вдруг никого не осталось, тогда еще раз проверим очнереди
 			m_queueSession->UpdateCallSuccess();
-		}		
-	}	
+		}
+	}		
 }
 
 // активные операторы в линии
@@ -708,6 +709,7 @@ void active_sip::ActiveSession::UpdateOnHoldStatusOperator()
 	}
 	else 
 	{
+		// TODO проверить
 		// проверка на случай если оператор потерялся а по БД он числиться как в onHold
 		//for (const auto &sip : m_listOperators) 
 		//{
@@ -738,10 +740,7 @@ void active_sip::ActiveSession::UpdateOnHoldStatusOperator()
 bool active_sip::ActiveSession::GetActiveOnHold(OnHoldList &_onHoldList, std::string &_errorDescription)
 {
 	_errorDescription.clear();
-	if (!_onHoldList.empty()) 
-	{
-		_onHoldList.clear();
-	}
+	_onHoldList.clear();
 	
 	// найдем все OnHold которые не завершенные 
 	const std::string query = "select id,sip,phone from operators_ohhold where date_time_stop is NULL order by date_time_start DESC";
@@ -765,9 +764,9 @@ bool active_sip::ActiveSession::GetActiveOnHold(OnHoldList &_onHoldList, std::st
 		{
 			switch (i)
 			{
-			case0:	onHold.id = std::atoi(row[i]);	break;	// id
-			case1:	onHold.sip = row[i];			break;	// sip
-			case2:	onHold.phone = row[i];			break;	// phone
+			case 0:	onHold.id = std::atoi(row[i]);	break;	// id
+			case 1:	onHold.sip = row[i];			break;	// sip
+			case 2:	onHold.phone = row[i];			break;	// phone
 			}
 		}
 		_onHoldList.push_back(onHold);

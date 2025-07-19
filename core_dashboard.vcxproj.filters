@@ -29,12 +29,6 @@
     <ClCompile Include="ISQLConnect.cpp">
       <Filter>include_cpp</Filter>
     </ClCompile>
-    <ClCompile Include="IResponseFileHandler.cpp">
-      <Filter>include_cpp</Filter>
-    </ClCompile>
-    <ClCompile Include="CreateFiles.cpp">
-      <Filter>include_cpp</Filter>
-    </ClCompile>
     <ClCompile Include="RemoteCommandsCallback.cpp">
       <Filter>include_cpp</Filter>
     </ClCompile>
@@ -112,12 +106,6 @@
       <Filter>include_h</Filter>
     </ClInclude>
     <ClInclude Include="AUTH.h">
-      <Filter>include_h</Filter>
-    </ClInclude>
-    <ClInclude Include="IResponseFileHandler.h">
-      <Filter>include_h</Filter>
-    </ClInclude>
-    <ClInclude Include="CreateFiles.h">
       <Filter>include_h</Filter>
     </ClInclude>
     <ClInclude Include="DEBUG.h">

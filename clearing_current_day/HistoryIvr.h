@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "IClear.h"
+#include "../Log.h"
 
 class HistoryIvr : public IClear
 {
@@ -30,6 +31,7 @@ public:
 private:
 
 	HistoryIvrTable  m_history;
+	Log				 m_log;
 
 	virtual bool Insert(const Table &_field, std::string &_errorDescription);
 	virtual void Delete(int _id, ECheckInsert _check) override;

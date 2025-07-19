@@ -307,33 +307,33 @@ std::string utils::GetCurrentDateTimeAfterMinutes(int minutes)
 //}
 
 // показ версии ядра
-void utils::showVersionCore(unsigned int iter)
-{
-	std::ostringstream buffer;
-	buffer << "==========================================================\n";
-	
-	if (CONSTANTS::DEBUG_MODE) // DEBUG
-	{
-		buffer << "###DEBUG### " + CONSTANTS::core_version << "\n";
-	}
-	else {					  // NO DEBUG
-		buffer << "\t" << CONSTANTS::core_version << "\n";
-	}	
-	
-	// логирование
-	if (CONSTANTS::SAFE_LOG) {
-		buffer << "\n";
-		buffer << "\tLOGGER: ON" << "\t";
-		buffer << "DEBUG: " << (to_string(CONSTANTS::LOG_MODE_DEBUG) == "true" ? "ON" : "OFF") << "\t";
-		buffer << "ERROR: " << (to_string(CONSTANTS::LOG_MODE_ERROR) == "true" ? "ON" : "OFF") << "\n";
-	}
-
-	// итерация какая по счету пошла
-	buffer << "\t"+GetCurrentDateTime() + "\t\titeration: " << iter <<"\n";
-
-	buffer << "==========================================================\n";
-	std::cout << buffer.str();
-}
+//void utils::showVersionCore(unsigned int iter)
+//{
+//	std::ostringstream buffer;
+//	buffer << "==========================================================\n";
+//	
+//	if (CONSTANTS::DEBUG_MODE) // DEBUG
+//	{
+//		buffer << "###DEBUG### " + CONSTANTS::core_version << "\n";
+//	}
+//	else {					  // NO DEBUG
+//		buffer << "\t" << CONSTANTS::core_version << "\n";
+//	}	
+//	
+//	// логирование
+//	if (CONSTANTS::SAFE_LOG) {
+//		buffer << "\n";
+//		buffer << "\tLOGGER: ON" << "\t";
+//		buffer << "DEBUG: " << (to_string(CONSTANTS::LOG_MODE_DEBUG) == "true" ? "ON" : "OFF") << "\t";
+//		buffer << "ERROR: " << (to_string(CONSTANTS::LOG_MODE_ERROR) == "true" ? "ON" : "OFF") << "\n";
+//	}
+//
+//	// итерация какая по счету пошла
+//	buffer << "\t"+GetCurrentDateTime() + "\t\titeration: " << iter <<"\n";
+//
+//	buffer << "==========================================================\n";
+//	std::cout << buffer.str();
+//}
 
 // статистика // пока без класса, может потом в отдельный класс сделать
 void utils::getStatistics()
@@ -380,28 +380,28 @@ void utils::getStatistics()
 void utils::showErrorBD(const std::string str)
 {
 	std::cerr << str << " -> Error: can't connect to database " << CONSTANTS::cHOST << ":" << CONSTANTS::cBD << "\n";
-	if (CONSTANTS::SAFE_LOG) 
-	{
-		if (CONSTANTS::LOG_MODE_ERROR) 
-		{
-			/*LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
-			log.add(str +" -> Error: can't connect to database " + CONSTANTS::cHOST + ":" + CONSTANTS::cBD);*/
-		}
-	}
+	//if (CONSTANTS::SAFE_LOG) 
+	//{
+	//	if (CONSTANTS::LOG_MODE_ERROR) 
+	//	{
+	//		/*LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
+	//		log.add(str +" -> Error: can't connect to database " + CONSTANTS::cHOST + ":" + CONSTANTS::cBD);*/
+	//	}
+	//}
 }
 
 // отображение инфо что пошла какая то ошибка
 void utils::showErrorBD(const std::string str, MYSQL *mysql)
 {
 	std::cerr << str <<" " << mysql_error(mysql) <<"\n";
-	if (CONSTANTS::SAFE_LOG) 
-	{
-		if (CONSTANTS::LOG_MODE_ERROR)	
-		{
-			/*LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
-			log.add(str + " " + mysql_error(mysql));*/
-		}
-	}
+	//if (CONSTANTS::SAFE_LOG) 
+	//{
+	//	if (CONSTANTS::LOG_MODE_ERROR)	
+	//	{
+	//		/*LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
+	//		log.add(str + " " + mysql_error(mysql));*/
+	//	}
+	//}
 }
 
 // преобразование текущей удаленной комады из int -> REMOTE_COMMANDS::Command 

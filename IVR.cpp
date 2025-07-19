@@ -124,7 +124,7 @@ bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 		_caller.callerID = StringToEnum(lines[0] + "," + lines[1]);
 		
 		// TODO тут в лог запись если не прошел по какой то причине 
-		std::string err = std::string(__PRETTY_FUNCTION__) + "\t" + _lines;
+		//std::string err = std::string(__PRETTY_FUNCTION__) + "\t" + _lines;
 		if (!CheckCallers(_caller)) 
 		{
 			/*LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
@@ -132,9 +132,9 @@ bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 			log.add(err);*/
 
 			return false;
-		}		
+		}	
 		
-		m_log.ToFile(ELogType::Info, err);
+		
 		status = true;
 	}
 

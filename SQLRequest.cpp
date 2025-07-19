@@ -30,12 +30,12 @@ void SQL_REQUEST::SQL::createMySQLConnect(MYSQL &mysql)
 		// Если дескриптор не получен — выводим сообщение об ошибке
 		std::cerr << "Error: can't create MySQL-descriptor\n";
 		
-		if (CONSTANTS::SAFE_LOG) {
-			if (CONSTANTS::LOG_MODE_ERROR) {
-				/*LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
-				log.add("Error: can't create MySQL-descriptor");*/
-			}
-		}
+		//if (CONSTANTS::SAFE_LOG) {
+		//	if (CONSTANTS::LOG_MODE_ERROR) {
+		//		/*LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
+		//		log.add("Error: can't create MySQL-descriptor");*/
+		//	}
+		//}
 		return;
 	}
 
@@ -53,11 +53,11 @@ void SQL_REQUEST::SQL::createMySQLConnect(MYSQL &mysql)
 bool SQL_REQUEST::SQL::isConnectedBD()
 {
 	// status = 0 значит коннект есть
-	if (mysql_ping(&this->mysql) != 0) {
-		
+	if (mysql_ping(&this->mysql) != 0)
+	{
 		createMySQLConnect(this->mysql);
 
-		isConnectedBD();
+		return isConnectedBD();
 	}
 	else
 	{
@@ -1320,14 +1320,14 @@ int SQL_REQUEST::SQL::getIVR_totalCalls()
 
 	const std::string query = "select count(phone) from ivr where date_time > '" + GetCurrentStartDay() + "'";
 
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
+	//if (CONSTANTS::SAFE_LOG)
+	//{
+	//	if (CONSTANTS::LOG_MODE_DEBUG)
+	//	{
+	//		//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+	//		//log.add(METHOD_NAME + " -> " + query);
+	//	}
+	//}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -1408,14 +1408,14 @@ int SQL_REQUEST::SQL::getQUEUE_Calls(bool answered)
 		}
 	}
 	
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			/*LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);*/
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
+	//if (CONSTANTS::SAFE_LOG)
+	//{
+	//	if (CONSTANTS::LOG_MODE_DEBUG)
+	//	{
+	//		/*LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);*/
+	//		//log.add(METHOD_NAME + " -> " + query);
+	//	}
+	//}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -1983,14 +1983,14 @@ void SQL_REQUEST::SQL::execTaskLogging()
 	// найдем все данные 
 	const std::string query = "select * from logging where date_time < '" + GetCurrentStartDay() + "'";
 
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
+	//if (CONSTANTS::SAFE_LOG)
+	//{
+	//	if (CONSTANTS::LOG_MODE_DEBUG)
+	//	{
+	//		//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+	//		//log.add(METHOD_NAME + " -> " + query);
+	//	}
+	//}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -2080,14 +2080,14 @@ void SQL_REQUEST::SQL::execTaskIvr()
 	// найдем все данные 
 	const std::string query = "select * from ivr where date_time < '" + GetCurrentStartDay() + "'";
 
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
+	//if (CONSTANTS::SAFE_LOG)
+	//{
+	//	if (CONSTANTS::LOG_MODE_DEBUG)
+	//	{
+	//		//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+	//		//log.add(METHOD_NAME + " -> " + query);
+	//	}
+	//}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -2181,14 +2181,14 @@ void SQL_REQUEST::SQL::execTaskOnHold()
 	// найдем все данные 
 	const std::string query = "select * from operators_ohhold where date_time_start < '" + GetCurrentStartDay() + "'";
 
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
+	//if (CONSTANTS::SAFE_LOG)
+	//{
+	//	if (CONSTANTS::LOG_MODE_DEBUG)
+	//	{
+	//		//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+	//		//log.add(METHOD_NAME + " -> " + query);
+	//	}
+	//}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -2272,14 +2272,14 @@ void SQL_REQUEST::SQL::execTaskSmsSending()
 	// найдем все данные 
 	const std::string query = "select * from sms_sending where date_time < '" + GetCurrentStartDay() + "'";
 
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
+	//if (CONSTANTS::SAFE_LOG)
+	//{
+	//	if (CONSTANTS::LOG_MODE_DEBUG)
+	//	{
+	//		//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+	//		//log.add(METHOD_NAME + " -> " + query);
+	//	}
+	//}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -2478,14 +2478,14 @@ bool SQL_REQUEST::SQL::insertDataTaskLogging(HOUSEKEEPING::Logging_old &logging)
 			"','" + logging.fileds.date_time +
 			"','" + std::to_string(logging.action) + "')";
 	
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
-		//	log.add(METHOD_NAME + " -> " + query_insert);
-		}
-	}
+	//if (CONSTANTS::SAFE_LOG)
+	//{
+	//	if (CONSTANTS::LOG_MODE_DEBUG)
+	//	{
+	//		//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+	//	//	log.add(METHOD_NAME + " -> " + query_insert);
+	//	}
+	//}
 
 	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
 	{
@@ -2508,14 +2508,14 @@ bool SQL_REQUEST::SQL::deleteDataTaskLogging(int ID)
 
 	std::string query = "delete from logging where id = '" + std::to_string(ID) + "'";
 
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
+	//if (CONSTANTS::SAFE_LOG)
+	//{
+	//	if (CONSTANTS::LOG_MODE_DEBUG)
+	//	{
+	//		//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+	//		//log.add(METHOD_NAME + " -> " + query);
+	//	}
+	//}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -2545,14 +2545,14 @@ bool SQL_REQUEST::SQL::insertDataTaskIvr(HOUSEKEEPING::IVR_ &ivr)
 		"','" + std::to_string(ivr.to_queue) +
 		"','" + std::to_string(ivr.to_robot) + "')";
 
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
-		//	log.add(METHOD_NAME + " -> " + query_insert);
-		}
-	}
+	//if (CONSTANTS::SAFE_LOG)
+	//{
+	//	if (CONSTANTS::LOG_MODE_DEBUG)
+	//	{
+	//		//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+	//	//	log.add(METHOD_NAME + " -> " + query_insert);
+	//	}
+	//}
 
 	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
 	{
@@ -2575,14 +2575,14 @@ bool SQL_REQUEST::SQL::deleteDataTaskIvr(int ID)
 
 	std::string query = "delete from ivr where id = '" + std::to_string(ID) + "'";
 
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
-		//	log.add(METHOD_NAME + " -> " + query);
-		}
-	}
+	//if (CONSTANTS::SAFE_LOG)
+	//{
+	//	if (CONSTANTS::LOG_MODE_DEBUG)
+	//	{
+	//		//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+	//	//	log.add(METHOD_NAME + " -> " + query);
+	//	}
+	//}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -2610,14 +2610,14 @@ bool SQL_REQUEST::SQL::insertDataTaskOnHold(HOUSEKEEPING::OnHold &onHold)
 																												"','" + onHold.date_time_stop +
 																												"','" + std::to_string(onHold.hash) +"')";
 
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
-		//	log.add(METHOD_NAME + " -> " + query_insert);
-		}
-	}
+	//if (CONSTANTS::SAFE_LOG)
+	//{
+	//	if (CONSTANTS::LOG_MODE_DEBUG)
+	//	{
+	//		//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+	//	//	log.add(METHOD_NAME + " -> " + query_insert);
+	//	}
+	//}
 
 	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
 	{
@@ -2641,14 +2641,14 @@ bool SQL_REQUEST::SQL::deleteDataTaskOnHold(int ID)
 
 	std::string query = "delete from operators_ohhold where id = '" + std::to_string(ID) + "'";
 
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
-		//	log.add(METHOD_NAME + " -> " + query);
-		}
-	}
+	//if (CONSTANTS::SAFE_LOG)
+	//{
+	//	if (CONSTANTS::LOG_MODE_DEBUG)
+	//	{
+	//		//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+	//	//	log.add(METHOD_NAME + " -> " + query);
+	//	}
+	//}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{
@@ -2699,14 +2699,14 @@ bool SQL_REQUEST::SQL::insertDataTaskSmsSending(const HOUSEKEEPING::SmsSending &
 			"','" + std::to_string(_smsSending.sms_type) + "')";
 	}	
 
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
-		//	log.add(METHOD_NAME + " -> " + query_insert);
-		}
-	}
+	//if (CONSTANTS::SAFE_LOG)
+	//{
+	//	if (CONSTANTS::LOG_MODE_DEBUG)
+	//	{
+	//		//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+	//	//	log.add(METHOD_NAME + " -> " + query_insert);
+	//	}
+	//}
 
 	if (mysql_query(&this->mysql, query_insert.c_str()) != 0)
 	{
@@ -2730,14 +2730,14 @@ bool SQL_REQUEST::SQL::deleteDataTaskSmsSending(int _id)
 
 	std::string query = "delete from sms_sending where id = '" + std::to_string(_id) + "'";
 
-	if (CONSTANTS::SAFE_LOG)
-	{
-		if (CONSTANTS::LOG_MODE_DEBUG)
-		{
-			//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
-			//log.add(METHOD_NAME + " -> " + query);
-		}
-	}
+	//if (CONSTANTS::SAFE_LOG)
+	//{
+	//	if (CONSTANTS::LOG_MODE_DEBUG)
+	//	{
+	//		//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+	//		//log.add(METHOD_NAME + " -> " + query);
+	//	}
+	//}
 
 	if (mysql_query(&this->mysql, query.c_str()) != 0)
 	{

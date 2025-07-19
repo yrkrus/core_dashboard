@@ -1,11 +1,11 @@
 ﻿#include <iostream>
 #include <string>
-#include <unistd.h>
+//#include <unistd.h>
 #include <thread>
 #include <csignal>
 
 #include "ISQLConnect.h"
-#include "CreateFiles.h"
+//#include "CreateFiles.h"
 #include "Constants.h"
 #include "InternalFunction.h"
 #include "SQLRequest.h"
@@ -27,20 +27,19 @@ using namespace utils;
 using namespace active_sip;
 
 // Global Score
-static SP_IVR ivr = nullptr;
-static SP_Queue queue = nullptr;
-static SP_ActiveSession activeSession = nullptr;
-static SP_Status changeStatus = nullptr;
+static SP_IVR ivr                       = nullptr;
+static SP_Queue queue                   = nullptr;
+static SP_ActiveSession activeSession   = nullptr;
+static SP_Status changeStatus           = nullptr;
 
 static std::atomic<bool> g_running(true);
 
 static void Init() 
 {
-    ivr = std::make_shared<IVR>();
-    queue = std::make_shared<Queue>();
-    activeSession = std::make_shared<active_sip::ActiveSession>(queue);
-
-    changeStatus = std::make_shared<Status>();
+    ivr             = std::make_shared<IVR>();
+    queue           = std::make_shared<Queue>();
+    activeSession   = std::make_shared<ActiveSession>(queue);
+    changeStatus    = std::make_shared<Status>();
 }
 
 static void Run() 
@@ -82,22 +81,23 @@ enum class Commands
 };
 
 // получить команду
-Commands static getCommand(char *ch) {
-    std::string commands = static_cast<std::string> (ch);
-
- //   if (commands == "help")              return Commands::help;
-   // if (commands == "ivr")               return ivr;
-   // if (commands == "queue")             return queue;
-  //  if (commands == "active_sip")        return active_sip_old;
-  //  if (commands == "connect_bd")        return connect_bd;
-    if (commands == "start")             return Commands::start;
-  //  if (commands == "statistics")        return Commands::statistics;
-  //  if (commands == "remote")            return Commands::remote;
-    if (commands == "housekeeping")      return Commands::housekeeping;
-   // if (commands == "test")              return Commands::test;
-
-  //  return Commands::help;                         // default;
-}
+//Commands static getCommand(char *ch)
+//{
+//    std::string commands = static_cast<std::string> (ch);
+//
+//    //   if (commands == "help")              return Commands::help;
+//      // if (commands == "ivr")               return ivr;
+//      // if (commands == "queue")             return queue;
+//     //  if (commands == "active_sip")        return active_sip_old;
+//     //  if (commands == "connect_bd")        return connect_bd;
+//    if (commands == "start")             return Commands::start;
+//    //  if (commands == "statistics")        return Commands::statistics;
+//    //  if (commands == "remote")            return Commands::remote;
+//    if (commands == "housekeeping")      return Commands::housekeeping;
+//    // if (commands == "test")              return Commands::test;
+//
+//   //  return Commands::help;                         // default;
+//}
 
 
 //static void thread_Queue_ActiveSIP() {
@@ -139,7 +139,7 @@ static void collect() {
 
     for (size_t i = 1; /*i <= TIK*/; ++i)
     {          
-        showVersionCore(i);
+       // showVersionCore(i);
 
         auto start = std::chrono::steady_clock::now();
 
@@ -210,7 +210,7 @@ static void collect() {
 int main(int argc, char *argv[])
 {
     
-    /*HistoryQueue history;
+   /* HistoryQueue history;
     history.Execute();
     
     return 0;*/
@@ -273,71 +273,71 @@ int main(int argc, char *argv[])
 
 
 
-    Commands ch = getCommand(argv[1]);
+   // Commands ch = getCommand(argv[1]);
 
-    // пошли запросики
-    switch (ch)
-    {
-    /*case(Commands::help): {
-            showHelpInfo();
-            break;
-        }*/
-        //case(ivr): {                // запись в БД кто сейчас слушает IVR 
-        //    // запрос
-        //    getIVR();   
-        //    break;
-        //}
-        //case(queue): {              // запись в БД кто ушел из IVR в очередь
-        //    // запрос
-        //    getQueue();
-        //    break;
-        //} 
-        //case(active_sip_old): {         // запись в БД кто сейчас с кем разговариваети сколько по времени
-        //    // запрос
-        //    getActiveSip();
-        //    break;
-        //}
-       /* case(connect_bd): {      
-            SQL_REQUEST::SQL base;            
-            std::cout << (base.isConnectedBD()) ? "Connect UP\n" : "Connect DOWN!\n";            
-                 
-            break;
-        }     */   
-        case(Commands::start):      {
-            collect();
-            break;
-        }    
-       /* case(Commands::statistics): {
-            stat();
-            break;
-        }*/
-        //case(Commands::remote): {
-        //  /* REMOTE_COMMANDS::Remote remote;            
-        //    remote.chekNewCommand() ? std::cout << "New command EXIST\n" : std::cout << "New command NO EXIST\n";         
-        //    break;*/
-        //}
-        case(Commands::housekeeping): {
-            HOUSEKEEPING::HouseKeeping task;           
-            /*std::cout << "create Task and execute -> TaskQueue\n";
-            task.createTask(HOUSEKEEPING::TASKS::TaskQueue);
-            std::cout << "done -> TaskQueue\n";*/
-            
-            std::cout << "create Task and execute -> TaskLogging\n";
-            task.createTask(HOUSEKEEPING::TASKS::TaskLogging); 
-            std::cout << "done -> TaskLogging\n";
+    //// пошли запросики
+    //switch (ch)
+    //{
+    ///*case(Commands::help): {
+    //        showHelpInfo();
+    //        break;
+    //    }*/
+    //    //case(ivr): {                // запись в БД кто сейчас слушает IVR 
+    //    //    // запрос
+    //    //    getIVR();   
+    //    //    break;
+    //    //}
+    //    //case(queue): {              // запись в БД кто ушел из IVR в очередь
+    //    //    // запрос
+    //    //    getQueue();
+    //    //    break;
+    //    //} 
+    //    //case(active_sip_old): {         // запись в БД кто сейчас с кем разговариваети сколько по времени
+    //    //    // запрос
+    //    //    getActiveSip();
+    //    //    break;
+    //    //}
+    //   /* case(connect_bd): {      
+    //        SQL_REQUEST::SQL base;            
+    //        std::cout << (base.isConnectedBD()) ? "Connect UP\n" : "Connect DOWN!\n";            
+    //             
+    //        break;
+    //    }     */   
+    //    case(Commands::start):      {
+    //        collect();
+    //        break;
+    //    }    
+    //   /* case(Commands::statistics): {
+    //        stat();
+    //        break;
+    //    }*/
+    //    //case(Commands::remote): {
+    //    //  /* REMOTE_COMMANDS::Remote remote;            
+    //    //    remote.chekNewCommand() ? std::cout << "New command EXIST\n" : std::cout << "New command NO EXIST\n";         
+    //    //    break;*/
+    //    //}
+    //    case(Commands::housekeeping): {
+    //        HOUSEKEEPING::HouseKeeping task;           
+    //        /*std::cout << "create Task and execute -> TaskQueue\n";
+    //        task.createTask(HOUSEKEEPING::TASKS::TaskQueue);
+    //        std::cout << "done -> TaskQueue\n";*/
+    //        
+    //        std::cout << "create Task and execute -> TaskLogging\n";
+    //        task.createTask(HOUSEKEEPING::TASKS::TaskLogging); 
+    //        std::cout << "done -> TaskLogging\n";
 
-            std::cout << "create Task and execute -> TaskIvr\n";
-            task.createTask(HOUSEKEEPING::TASKS::TaskIvr);
-            std::cout << "done -> TaskIvr\n";
+    //        std::cout << "create Task and execute -> TaskIvr\n";
+    //        task.createTask(HOUSEKEEPING::TASKS::TaskIvr);
+    //        std::cout << "done -> TaskIvr\n";
 
-            // TODO тут еще onHold, но там баг есть с задвоением данным, так что пока отключен
+    //        // TODO тут еще onHold, но там баг есть с задвоением данным, так что пока отключен
 
-            std::cout << "create Task and execute -> TaskSms\n";
-            task.createTask(HOUSEKEEPING::TASKS::TaskSmsSending);
-            std::cout << "done -> TaskSMS\n";
+    //        std::cout << "create Task and execute -> TaskSms\n";
+    //        task.createTask(HOUSEKEEPING::TASKS::TaskSmsSending);
+    //        std::cout << "done -> TaskSMS\n";
 
-            break;
-        }
+    //        break;
+    //    }
         //case(Commands::test): {
         //    
         //    SQL_REQUEST::SQL base;
@@ -348,6 +348,6 @@ int main(int argc, char *argv[])
 
         //    break;
         //}
-    }
-     return 0;
+ //   }
+ //    return 0;
 };

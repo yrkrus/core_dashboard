@@ -37,7 +37,7 @@ namespace utils
 	std::string GetCurrentDateTimeAfterMinutes(int minutes);	// текущее время - (МИНУС) указанная минута 
 	//std::string getCurrentDateTimeAfter20hours();				// текущее время после 20:00 
 
-	void showVersionCore(unsigned int iter);					// показ версии ядра
+	//void showVersionCore(unsigned int iter);					// показ версии ядра
 
 	// статистика // пока без класса, может потом в отдельный класс сделать
 	void getStatistics();
