@@ -44,6 +44,17 @@ namespace active_sip
 		int id = 0;						// id по БД
 		std::string sip = "null";		// sip с которым был разговор
 		std::string phone = "null";		// телефон 		
+	
+		inline bool check() const noexcept
+		{
+			if (id == 0 ||
+				sip.find("null") != std::string::npos ||
+				phone.find("null") != std::string::npos)
+			{
+				return false;
+			}
+			return true;
+		}
 	};
 	using OnHoldList = std::vector<OnHold>;
 

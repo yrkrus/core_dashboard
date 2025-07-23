@@ -143,7 +143,7 @@ bool Status::ExecuteCommand(const Command &_command, std::string &_errorDescipti
 	}
 
 	// добавим в лог запрос
-	m_log->ToBase(_command, _errorDesciption);
+	m_log->ToBase(_command);
 
 	// обновим текущий статус оператора
 	if (!UpdateNewStatus(_command, _errorDesciption))
@@ -177,8 +177,8 @@ void Status::DeleteCommand(const Command &_command)
 	std::string error;
 	if (!m_sql->Request(query, error)) 
 	{
-		// todo в лог писать
-		printf("%s", error.c_str());
+		error += METHOD_NAME + StringFormat("\tquery -> %s", query);
+		m_log->ToFile(ELogType::Error, error);
 	}
 
 	m_sql->Disconnect();	
@@ -194,9 +194,10 @@ void Status::ExecuteCommandFail(const Command &_command, const std::string &_err
 
 	if (!m_sql->Request(query, error))
 	{
-		m_sql->Disconnect();
-		// TODO тут запись в лог
-		printf("%s", error.c_str());		
+		error += METHOD_NAME + StringFormat("\tquery -> %s", query);
+		m_log->ToFile(ELogType::Error, error);
+
+		m_sql->Disconnect();				
 	}
 
 	m_sql->Disconnect();	

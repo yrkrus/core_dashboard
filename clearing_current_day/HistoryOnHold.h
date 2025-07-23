@@ -1,12 +1,12 @@
-#ifndef HISTORY_IVR_H
-#define HISTORY_IVR_H
+#ifndef HISTORY_ONHOLD_H
+#define HISTORY_ONHOLD_H
 
 #include <string>
 #include <vector>
 #include "IClear.h"
 #include "../Log.h"
 
-class HistoryIvr : public IClear
+class HistoryOnHold : public IClear
 {
 
 public:
@@ -14,32 +14,29 @@ public:
 	struct Table
 	{
 		int			id;
+		int			sip;
+		std::string	date_time_start;		
+		std::string date_time_stop;
 		std::string phone;
-		std::string waiting_time;
-		std::string date_time;
-		std::string trunk;
-		int			to_queue;
-		int			to_robot;
 	};
-	using HistoryIvrTable = std::vector<Table>;
+	using HistoryOnHoldTable = std::vector<Table>;
 
-
-	HistoryIvr();
-	~HistoryIvr() override;
+	HistoryOnHold();
+	~HistoryOnHold() override;
 
 	virtual void Execute() override;
 
 private:
-	HistoryIvrTable  m_history;
-	Log				 m_log;
+	HistoryOnHoldTable		m_history;
+	Log						m_log;
 
 	virtual bool Insert(const Table &_field, std::string &_errorDescription);
 	virtual void Delete(int _id, ECheckInsert _check) override;
 	virtual bool Get() override;
 	virtual bool IsExistData() override;
 	virtual bool CheckInsert(int _id) override;
-	virtual int Count() override;	
+	virtual int Count() override;
 };
 
 
-#endif // HISTORY_IVR_H
+#endif // HISTORY_ONHOLD_H

@@ -12,20 +12,20 @@ void HOUSEKEEPING::HouseKeeping::createTask(TASKS task)
 			
 			break;
 		}*/
-		case(TASKS::TaskLogging): {
+		/*case(TASKS::TaskLogging): {
 			
 			SQL_REQUEST::SQL base;
 			base.execTaskLogging();
 			
 			break;
-		}
-		case(TASKS::TaskIvr): {
+		}*/
+		/*case(TASKS::TaskIvr): {
 			
 			SQL_REQUEST::SQL base;
 			base.execTaskIvr();
 			
 			break;
-		}
+		}*/
 		case(TASKS::TaskOnHold):
 		{
 

@@ -4,6 +4,7 @@
 using namespace utils;
 
 HistoryQueue::HistoryQueue()
+	: m_log(CONSTANTS::LOG::HISTORY_QUEUE)
 {
 }
 
@@ -19,16 +20,40 @@ void HistoryQueue::Execute()
 		return;
 	}
 
-	for (const auto &field : m_history) 
+	std::string info = StringFormat("Clear table queue. Fields count = %u", Count());
+
+	m_log.ToPrint(info);
+	m_log.ToFile(ELogType::Info, info);
+
+	int errorCount = 0;
+	int successCount = 0;
+
+	for (const auto &field : m_history)
 	{
 		std::string error;
 
-		if (Insert(field,error))
+		if (Insert(field, error))
 		{
 			Delete(field.id, ECheckInsert::Yes);
-			printf("\n%u - %s", field.id, field.phone.c_str());
-		}		
+			successCount++;
+		}
+		else
+		{
+			errorCount++;
+			m_log.ToFile(ELogType::Error, error);
+		}
+
+		// success or error
+		m_log.ToPrint(error);
 	}
+
+	if (Count() == 0)
+	{
+		return;
+	}
+
+	info = StringFormat("Success = %u Error = %u", successCount, errorCount);
+	m_log.ToFile(ELogType::Info, info);
 }
 
 bool HistoryQueue::Insert(const Table &_field, std::string &_errorDescription)
@@ -37,8 +62,16 @@ bool HistoryQueue::Insert(const Table &_field, std::string &_errorDescription)
 
 	if (CheckInsert(_field.id))
 	{
-		// запись в history_queue есть значит ее удаляем из таблицы queue
-		// TODO в лог запись что такая запись уже есть
+	 // запись в history_queue есть значит ее удаляем из таблицы queue
+		_errorDescription = StringFormat("queue %d is exist in table history_queue %d %d %s %s %s",
+																				_field.id,
+																				_field.sip,
+																				_field.number_queue,
+																				_field.date_time.c_str(),
+																				_field.phone.c_str(),
+																				_field.waiting_time.c_str());
+
+
 		Delete(_field.id, ECheckInsert::No);
 		return false;
 	}
@@ -73,13 +106,22 @@ bool HistoryQueue::Insert(const Table &_field, std::string &_errorDescription)
 
 	if (!m_sql->Request(query, _errorDescription))
 	{
-		// TODO в лог
-		//printf("%s\n", _errorDescription.c_str());
+		_errorDescription += METHOD_NAME + StringFormat("query -> %s", query);
+		m_log.ToFile(ELogType::Error, _errorDescription);
+
 		m_sql->Disconnect();
 		return false;
 	}
 
 	m_sql->Disconnect();
+
+	_errorDescription = StringFormat("queue %d sucessfully inserted %d %d %s %s %s",
+																	_field.id,
+																	_field.sip,
+																	_field.number_queue,
+																	_field.date_time.c_str(),
+																	_field.phone.c_str(),
+																	_field.waiting_time.c_str());
 
 	return true;
 }
@@ -99,8 +141,8 @@ void HistoryQueue::Delete(int _id, ECheckInsert _check)
 	std::string error;
 	if (!m_sql->Request(query, error))
 	{
-		// TODO в лог
-		printf("%s", error.c_str());		
+		error += METHOD_NAME + StringFormat("\tquery -> %s", query);
+		m_log.ToFile(ELogType::Error, error);
 	}
 
 	m_sql->Disconnect();	
@@ -115,8 +157,9 @@ bool HistoryQueue::Get()
 	std::string error;
 	if (!m_sql->Request(query, error))
 	{
-		// TODO в лог
-		printf("%s", error.c_str());
+		error += METHOD_NAME + StringFormat("\tquery -> %s", query);
+		m_log.ToFile(ELogType::Error, error);
+
 		m_sql->Disconnect();
 		return false;
 	}
@@ -168,7 +211,9 @@ bool HistoryQueue::CheckInsert(int _id)
 
 	if (!m_sql->Request(query, error))
 	{
-		printf("%s", error.c_str());
+		error += METHOD_NAME + StringFormat("\tquery -> %s", query);
+		m_log.ToFile(ELogType::Error, error);
+
 		m_sql->Disconnect();
 		// ошибка считаем что нет записи
 		return false;
@@ -185,4 +230,9 @@ bool HistoryQueue::CheckInsert(int _id)
 	m_sql->Disconnect();
 
 	return existField;
+}
+
+int HistoryQueue::Count()
+{
+	return m_history.size();
 }

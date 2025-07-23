@@ -39,6 +39,9 @@ namespace CONSTANTS
         
         // to_history
         static const std::string HISTORY_IVR = "history_ivr.log";
+        static const std::string HISTORY_QUEUE = "history_queue.log";
+        static const std::string HISTORY_LOGGING = "history_logging.log";
+        static const std::string HISTORY_ONHOLD = "history_onhold.log";
 
 
         static const std::string REMOTE_COMMANDS = "remote_commands.log";        
@@ -62,7 +65,7 @@ namespace CONSTANTS
     //valgrind --leak-check=full --show-leak-kinds=all --leak-resolution=med --log-file=./core.log ./core_dashboard start
     //valgrind --leak-check=full --leak-resolution=med --log-file=./core.log ./core_dashboard start
     //
-    //mysqldump -uzabbix -pUFGq4kZMNIMwxTzV -h10.34.222.19 dashboard > /root/core_dashboards/backup_bd/dashboard_20250719.sql
+    //mysqldump -uzabbix -pUFGq4kZMNIMwxTzV -h10.34.222.19 dashboard > /root/core_dashboards/backup_bd/dashboard_20250723.sql
 
 
     //asterisk -rx "core show channels verbose" | grep to-atsaero5005  кто сейчас разговаривает с бабой железной

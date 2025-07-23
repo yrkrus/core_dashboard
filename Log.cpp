@@ -16,8 +16,10 @@ bool Log::GetCommandInfoUser(CommandSendInfoUser &_userInfo, unsigned int _id, s
 
 	if (!m_sql->Request(query, _errorDescription))
 	{
-		m_sql->Disconnect();
-		// TODO тут потом в лог писать
+		_errorDescription += METHOD_NAME + StringFormat("query -> %s", query);
+		ToFile(ELogType::Error, _errorDescription);
+
+		m_sql->Disconnect();		
 		return false;
 	}
 
@@ -77,15 +79,6 @@ bool Log::IsReady() const
 	return m_ready;
 }
 
-
-//Log::Log()
-//	: m_sql(std::make_shared<ISQLConnect>(false))
-//	, m_name(LOG_NAME_DEFAULT)
-//	, m_ready(false)
-//{
-//	OpenLogFile();
-//}
-
 Log::Log(const std::string &_name)
 	: m_sql(std::make_shared<ISQLConnect>(false))
 	, m_name(_name)
@@ -99,12 +92,15 @@ Log::~Log()
 	CloseLogFile();	
 }
 
-void Log::ToBase(Command _command, std::string &_errorDescription)
+void Log::ToBase(Command _command)
 {
+	std::string error;
 	CommandSendInfoUser userInfo;
-	if (!GetCommandInfoUser(userInfo, _command.id, _errorDescription))
+	if (!GetCommandInfoUser(userInfo, _command.id, error))
 	{
-		_errorDescription = StringFormat("not found field %u remote command %s", _command.id, EnumToString<ECommand>(_command.command).c_str());
+		error += METHOD_NAME;
+		error += StringFormat("not found field %u remote command %s", _command.id, EnumToString<ECommand>(_command.command).c_str());
+		ToFile(ELogType::Error, error);
 		return;
 	}	
 
@@ -114,10 +110,12 @@ void Log::ToBase(Command _command, std::string &_errorDescription)
 																					   "','" + userInfo.user_login_pc +
 																					   "','" + userInfo.pc +
 																					   "','" + std::to_string(static_cast<int>(_command.command)) + "')";
-	if (!m_sql->Request(query, _errorDescription))
+	if (!m_sql->Request(query, error))
 	{
+		error += METHOD_NAME + StringFormat("\tquery -> %s", query);
+		ToFile(ELogType::Error, error);
+
 		m_sql->Disconnect();
-		// TODO тут потом в лог писать
 		return;
 	}
 
@@ -137,4 +135,10 @@ void Log::ToFile(ELogType _type, const std::string &_message){
 	std::lock_guard<std::mutex> lock(m_mutex);
 	m_file << message;
 	m_file.flush();
+}
+
+void Log::ToPrint(const std::string &_message)
+{
+	printf("%s\n", _message.c_str());
+	fflush(stdout);
 }

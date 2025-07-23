@@ -8,7 +8,7 @@
 //#include "CreateFiles.h"
 #include "Constants.h"
 #include "InternalFunction.h"
-#include "SQLRequest.h"
+//#include "SQLRequest.h"
 #include "RemoteCommands.h"
 #include "HouseKeeping.h"
 #include "TCPServer.h"
@@ -16,7 +16,7 @@
 #include "IVR.h"
 #include "ActiveSip.h"
 
-#include "clearing_current_day/HistoryQueue.h"
+#include "clearing_current_day/HistoryOnHold.h"
 
 // эти include потом убрать, они нужны для отладки только
 #include <stdio.h>
@@ -115,105 +115,106 @@ enum class Commands
 //}
 
 // запуск очистки БД перенос в history
-static void thread_HouseKeeping() {
+static void thread_HouseKeeping() 
+{
     HOUSEKEEPING::HouseKeeping task;
     
     //task.createTask(HOUSEKEEPING::TASKS::TaskQueue);    
 
-    task.createTask(HOUSEKEEPING::TASKS::TaskLogging);   
+   // task.createTask(HOUSEKEEPING::TASKS::TaskLogging);   
 
-    task.createTask(HOUSEKEEPING::TASKS::TaskIvr);
+  //  task.createTask(HOUSEKEEPING::TASKS::TaskIvr);
 
-   // task.createTask(HOUSEKEEPING::TASKS::TaskOnHold);
+    task.createTask(HOUSEKEEPING::TASKS::TaskOnHold);
 
    task.createTask(HOUSEKEEPING::TASKS::TaskSmsSending);
     
 }
 
 
-static void collect() {
-     //int TIK = 3600;  
-    static size_t   all{ 0 };
-    static int      min{ 1000 };
-    static int      max{ 0 };    
-
-    for (size_t i = 1; /*i <= TIK*/; ++i)
-    {          
-       // showVersionCore(i);
-
-        auto start = std::chrono::steady_clock::now();
-
-        //std::cout << GetCurrentDateTime() + "\t\titeration: \t" << i << "\n\n";       
-
-        std::cout << "\n\n";
-        //std::thread th_ivr(getIVR);
-       // std::thread th_Queue_ActiveSIP(thread_Queue_ActiveSIP);
-       // std::thread th_RemoteCommand(thread_RemoteCommands);
-        std::thread th_HouseKeeping(thread_HouseKeeping);
-
-        //if (th_ivr.joinable()) {
-        //    th_ivr.join();
-        //    //th_ivr.detach();
-        //} 
-        
-        //if (th_Queue_ActiveSIP.joinable()) {
-        //    th_Queue_ActiveSIP.join();
-        //    //th_Queue_ActiveSIP.detach();
-        //}
-
-        //// проверка удаленных команд
-        //if (th_RemoteCommand.joinable()) {
-        //    th_RemoteCommand.join();
-        //}       
-
-        // очистка БД
-        if (th_HouseKeeping.joinable()) {
-            th_HouseKeeping.join();
-        }
-
-        auto stop = std::chrono::steady_clock::now();
-
-        auto execute_ms = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-
-        std::cout  << "\ntime execute code: " << execute_ms.count() << " ms\n";       
-
-        all += execute_ms.count();
-
-        if (execute_ms.count() < min) { min = static_cast<int>(execute_ms.count()); }
-        if (execute_ms.count() > max) { max = static_cast<int>(execute_ms.count()); }
-
-        std::cout  << "avg execute = " << all / i << " ms | min execute = " << min << " ms | max execute = " << max << " ms\n";       
-
-        if (execute_ms.count() < 1000)
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(1000 - execute_ms.count()));
-        }
-        else
-        {
-            // Поток уже заблокирован на 1000 миллисекунд или более, поэтому разблокируем его немедленно.
-            std::this_thread::sleep_for(std::chrono::milliseconds(0));
-        }
-
-        system("clear");
-
-        if (i >= 10800)
-        {
-            all = 0;
-            i = 1;
-            min = 1000;
-            max = 0;
-        }        
-    }
-}
+//static void collect() {
+//     //int TIK = 3600;  
+//    static size_t   all{ 0 };
+//    static int      min{ 1000 };
+//    static int      max{ 0 };    
+//
+//    for (size_t i = 1; /*i <= TIK*/; ++i)
+//    {          
+//       // showVersionCore(i);
+//
+//        auto start = std::chrono::steady_clock::now();
+//
+//        //std::cout << GetCurrentDateTime() + "\t\titeration: \t" << i << "\n\n";       
+//
+//        std::cout << "\n\n";
+//        //std::thread th_ivr(getIVR);
+//       // std::thread th_Queue_ActiveSIP(thread_Queue_ActiveSIP);
+//       // std::thread th_RemoteCommand(thread_RemoteCommands);
+//        std::thread th_HouseKeeping(thread_HouseKeeping);
+//
+//        //if (th_ivr.joinable()) {
+//        //    th_ivr.join();
+//        //    //th_ivr.detach();
+//        //} 
+//        
+//        //if (th_Queue_ActiveSIP.joinable()) {
+//        //    th_Queue_ActiveSIP.join();
+//        //    //th_Queue_ActiveSIP.detach();
+//        //}
+//
+//        //// проверка удаленных команд
+//        //if (th_RemoteCommand.joinable()) {
+//        //    th_RemoteCommand.join();
+//        //}       
+//
+//        // очистка БД
+//        if (th_HouseKeeping.joinable()) {
+//            th_HouseKeeping.join();
+//        }
+//
+//        auto stop = std::chrono::steady_clock::now();
+//
+//        auto execute_ms = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
+//
+//        std::cout  << "\ntime execute code: " << execute_ms.count() << " ms\n";       
+//
+//        all += execute_ms.count();
+//
+//        if (execute_ms.count() < min) { min = static_cast<int>(execute_ms.count()); }
+//        if (execute_ms.count() > max) { max = static_cast<int>(execute_ms.count()); }
+//
+//        std::cout  << "avg execute = " << all / i << " ms | min execute = " << min << " ms | max execute = " << max << " ms\n";       
+//
+//        if (execute_ms.count() < 1000)
+//        {
+//            std::this_thread::sleep_for(std::chrono::milliseconds(1000 - execute_ms.count()));
+//        }
+//        else
+//        {
+//            // Поток уже заблокирован на 1000 миллисекунд или более, поэтому разблокируем его немедленно.
+//            std::this_thread::sleep_for(std::chrono::milliseconds(0));
+//        }
+//
+//        system("clear");
+//
+//        if (i >= 10800)
+//        {
+//            all = 0;
+//            i = 1;
+//            min = 1000;
+//            max = 0;
+//        }        
+//    }
+//}
 
 
 int main(int argc, char *argv[])
 {
     
-   /* HistoryQueue history;
+    HistoryOnHold history;
     history.Execute();
     
-    return 0;*/
+    return 0;
 
     // Перехватываем Ctrl+C
     std::signal(SIGINT, sigint_handler);

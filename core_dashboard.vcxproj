@@ -161,6 +161,8 @@
   <ItemGroup>
     <ClCompile Include="ActiveSip.cpp" />
     <ClCompile Include="clearing_current_day\HistoryIvr.cpp" />
+    <ClCompile Include="clearing_current_day\HistoryLogging.cpp" />
+    <ClCompile Include="clearing_current_day\HistoryOnHold.cpp" />
     <ClCompile Include="clearing_current_day\HistoryQueue.cpp" />
     <ClCompile Include="clearing_current_day\IClear.cpp" />
     <ClCompile Include="Command.cpp" />
@@ -186,6 +188,8 @@
     <ClInclude Include="ActiveSip.h" />
     <ClInclude Include="AUTH.h" />
     <ClInclude Include="clearing_current_day\HistoryIvr.h" />
+    <ClInclude Include="clearing_current_day\HistoryLogging.h" />
+    <ClInclude Include="clearing_current_day\HistoryOnHold.h" />
     <ClInclude Include="clearing_current_day\HistoryQueue.h" />
     <ClInclude Include="clearing_current_day\IClear.h" />
     <ClInclude Include="Command.h" />

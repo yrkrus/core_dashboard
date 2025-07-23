@@ -15,27 +15,46 @@ HistoryIvr::~HistoryIvr()
 
 void HistoryIvr::Execute()
 {
-	static int count = 0;
 	// получим данные
 	if (!Get() || !IsExistData())
 	{
 		return;
 	}
 
+	std::string info = StringFormat("Clear table ivr. Fields count = %u", Count());
+	
+	//m_log.ToPrint(info);
+	m_log.ToFile(ELogType::Info, info);
+
+	int errorCount = 0;
+	int successCount = 0;
+
 	for (const auto &field : m_history)
 	{
-		std::string error;
-
-		if (Insert(field, error))
-		{
-			Delete(field.id, ECheckInsert::Yes);
-			printf("\n%u - %s", field.id, field.phone.c_str());
-			count++;
-
-			std::cout << std::endl << count << std::endl;
-		}
+		std::string error;		
 		
+		if (Insert(field, error))
+		{			
+			Delete(field.id, ECheckInsert::Yes);
+			successCount++;
+		}
+		else 
+		{
+			errorCount++;
+			m_log.ToFile(ELogType::Error, error);
+		}
+
+		// success or error
+		//m_log.ToPrint(error);
 	}
+
+	if (Count() == 0) 
+	{
+		return;
+	}
+
+	info = StringFormat("Success = %u Error = %u", successCount, errorCount);
+	m_log.ToFile(ELogType::Info, info);
 }
 
 bool HistoryIvr::Insert(const Table &_field, std::string &_errorDescription)
@@ -46,7 +65,12 @@ bool HistoryIvr::Insert(const Table &_field, std::string &_errorDescription)
 	if (CheckInsert(_field.id)) 
 	{
 		// запись в history_ivr есть значит ее удаляем из таблицы ivr
-		// TODO в лог запись что такая запись уже есть
+		_errorDescription = StringFormat("ivr %d is exist in table history_ivr %s %s %s", 
+																				_field.id, 
+																				_field.date_time.c_str(), 
+																				_field.phone.c_str(), 
+																				_field.waiting_time.c_str());
+
 		Delete(_field.id, ECheckInsert::No);
 		return false;
 	}
@@ -62,14 +86,21 @@ bool HistoryIvr::Insert(const Table &_field, std::string &_errorDescription)
 
 	if (!m_sql->Request(query, _errorDescription))
 	{
-		// TODO в лог
-				
+		_errorDescription += METHOD_NAME + StringFormat("\tquery -> %s", query);
+		m_log.ToFile(ELogType::Error, _errorDescription);
+
 		m_sql->Disconnect();
 		return false;
 	}
 
 	m_sql->Disconnect();
 
+	
+	_errorDescription = StringFormat("ivr %d sucessfully inserted %s %s %s", 
+																	_field.id, 
+																	_field.date_time.c_str(), 
+																	_field.phone.c_str(), 
+																	_field.waiting_time.c_str());
 	return true;
 }
 
@@ -88,8 +119,8 @@ void HistoryIvr::Delete(int _id, ECheckInsert _check)
 	std::string error;
 	if (!m_sql->Request(query, error))
 	{
-		// TODO в лог
-		printf("%s\n", error.c_str());
+		error += METHOD_NAME + StringFormat("\tquery -> %s", query);
+		m_log.ToFile(ELogType::Error, error);
 	}
 
 	m_sql->Disconnect();
@@ -104,8 +135,9 @@ bool HistoryIvr::Get()
 	std::string error;
 	if (!m_sql->Request(query, error))
 	{
-		// TODO в лог
-		printf("%s", error.c_str());
+		error += METHOD_NAME + StringFormat("\tquery -> %s", query);
+		m_log.ToFile(ELogType::Error, error);
+
 		m_sql->Disconnect();
 		return false;
 	}
@@ -154,7 +186,9 @@ bool HistoryIvr::CheckInsert(int _id)
 
 	if (!m_sql->Request(query, error))
 	{
-		printf("%s", error.c_str());
+		error += METHOD_NAME + StringFormat("\tquery -> %s", query);
+		m_log.ToFile(ELogType::Error, error);
+
 		m_sql->Disconnect();
 		// ошибка считаем что нет записи
 		return false;
@@ -171,4 +205,9 @@ bool HistoryIvr::CheckInsert(int _id)
 	m_sql->Disconnect();
 
 	return existField;
+}
+
+int HistoryIvr::Count()
+{
+	return m_history.size();
 }

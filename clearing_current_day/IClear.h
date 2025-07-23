@@ -13,8 +13,7 @@ enum class ECheckInsert
 class IClear 
 {
 protected:	
-	SP_SQL		m_sql;
-	
+	SP_SQL		m_sql;	
 
 public:
 	IClear();
@@ -27,6 +26,7 @@ public:
 	virtual bool Get() = 0;
 	virtual bool IsExistData() = 0;
 	virtual bool CheckInsert(int _id) = 0;
+	virtual int Count() = 0;
 };
 
 #endif //ICLEAR_H

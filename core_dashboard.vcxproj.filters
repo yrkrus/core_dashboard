@@ -65,6 +65,12 @@
     <ClCompile Include="clearing_current_day\HistoryIvr.cpp">
       <Filter>include_cpp</Filter>
     </ClCompile>
+    <ClCompile Include="clearing_current_day\HistoryLogging.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="clearing_current_day\HistoryOnHold.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include_cpp">
@@ -145,6 +151,12 @@
       <Filter>include_h</Filter>
     </ClInclude>
     <ClInclude Include="clearing_current_day\HistoryIvr.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="clearing_current_day\HistoryLogging.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="clearing_current_day\HistoryOnHold.h">
       <Filter>include_h</Filter>
     </ClInclude>
   </ItemGroup>

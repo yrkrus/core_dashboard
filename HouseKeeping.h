@@ -11,8 +11,8 @@ namespace HOUSEKEEPING {
 	enum class TASKS
 	{
 		//TaskQueue,
-		TaskLogging,
-		TaskIvr,
+		//TaskLogging,
+		//TaskIvr,
 		TaskOnHold,
 		TaskSmsSending,
 	};

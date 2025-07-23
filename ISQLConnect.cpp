@@ -67,7 +67,7 @@ bool ISQLConnect::ConnectInternal(std::string &_errorDescription)
 
     if (!mysql_real_connect(&m_mysql, host, login, pwd, bd, 0, 0, 0))
     {
-        _errorDescription = StringFormat("%s Error: can't connect to database: %s",METHOD_NAME, mysql_error(&m_mysql));
+        _errorDescription = StringFormat("Can't connect to database: %s",mysql_error(&m_mysql));
         return false;
     }
 

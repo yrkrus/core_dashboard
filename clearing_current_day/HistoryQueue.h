@@ -32,13 +32,15 @@ public:
 
 private:
 
-	HistoryQueueTable  m_history;
+	HistoryQueueTable	m_history;
+	Log					m_log;
 
 	virtual bool Insert(const Table &_field, std::string &_errorDescription);
 	virtual void Delete(int _id, ECheckInsert _check) override;
 	virtual bool Get() override;
 	virtual bool IsExistData() override;
 	virtual bool CheckInsert(int _id) override;
+	virtual int Count() override;
 
 };
 
