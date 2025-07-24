@@ -8,7 +8,7 @@
 #include <mysql/mysql.h>
 #include <string>
 #include <memory>
-#include "DEBUG.h"
+//#include "DEBUG.h"
 #include "AUTH.h"
 
 #define HOST cHOST.c_str();
@@ -19,6 +19,13 @@
 
 class ISQLConnect 
 {
+private:
+	MYSQL	m_mysql;
+	bool	m_connected;
+	bool	m_initialized;  // был ли вызван mysql_init
+
+	// подключаемся к БД MySQL
+	bool ConnectInternal(std::string &_errorDescription);
 
 public:
 	ISQLConnect(bool _autoConnect = false);
@@ -32,18 +39,10 @@ public:
 	bool Request(const std::string &_request, std::string &_errorDescription);
 	bool Request(const std::string &_request);
 
-	// доступ к сырым MYSQL*
+	// доступ к сырым данным MYSQL*
 	MYSQL *Get();
 
-private:
-	MYSQL	m_mysql;	
-	bool	m_connected;
-	bool	m_initialized;  // был ли вызван mysql_init
-
-	// подключаемся к БД MySQL
-	bool ConnectInternal(std::string &_errorDescription);
 };
-
 using SP_SQL = std::shared_ptr<ISQLConnect>;
 
 #endif //ISQLCONNECT_H

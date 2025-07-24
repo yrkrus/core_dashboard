@@ -1,13 +1,11 @@
 #include <vector>
 #include "Log.h"
-#include "SQLRequest.h"
 #include "Constants.h"
 #include "InternalFunction.h"
 #include "RemoteCommands.h"
 #include "utils.h"
 
 using namespace utils;
-
 
 bool Log::GetCommandInfoUser(CommandSendInfoUser &_userInfo, unsigned int _id, std::string &_errorDescription)
 {

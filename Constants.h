@@ -33,34 +33,23 @@ namespace CONSTANTS
 
     namespace LOG 
     {
-        static const std::string IVR = "ivr.log";
-        static const std::string QUEUE = "queue.log";
-        static const std::string ACTIVE_SESSION = "active_session.log";
+        static const std::string IVR                = "ivr.log";
+        static const std::string QUEUE              = "queue.log";
+        static const std::string ACTIVE_SESSION     = "active_session.log";
         
         // to_history
-        static const std::string HISTORY_IVR = "history_ivr.log";
-        static const std::string HISTORY_QUEUE = "history_queue.log";
-        static const std::string HISTORY_LOGGING = "history_logging.log";
-        static const std::string HISTORY_ONHOLD = "history_onhold.log";
-        static const std::string HISTORY_SMS = "history_sms.log";
+        static const std::string HISTORY_IVR        = "history_ivr.log";
+        static const std::string HISTORY_QUEUE      = "history_queue.log";
+        static const std::string HISTORY_LOGGING    = "history_logging.log";
+        static const std::string HISTORY_ONHOLD     = "history_onhold.log";
+        static const std::string HISTORY_SMS        = "history_sms.log";
 
-
-        static const std::string REMOTE_COMMANDS = "remote_commands.log";        
+        static const std::string REMOTE_COMMANDS    = "remote_commands.log";        
     }
     
     
-    
-    
-    // DEBUG MODE 
-   // static bool DEBUG_MODE = false;      // при этом режиме не создаются запросы до астериска
-    
-   // static bool SAFE_LOG        { true };       // записывать ли в лог работу ядра    
-   // static bool LOG_MODE_DEBUG  { false };       // режим записи лога DEBUG (при этой записи записываются запросы от и на сервер) 
-   // static bool LOG_MODE_ERROR  { true };       // режим записи лога ERROR (включен постоянно, фиксируются все ошибки)
-
     // WKroot#791  old
-    // *v0@|48lg*se  new
-   
+    // *v0@|48lg*se  new  
     
     
     //valgrind --leak-check=full --show-leak-kinds=all --leak-resolution=med --log-file=./core.log ./core_dashboard start
@@ -122,62 +111,8 @@ namespace CONSTANTS
  //  
 
  // версия ядра
-/**
-* 
-* 
-*   @param
-*/
- static std::string core_version = "CORE DASHBOARD | version 2.17 " BUILD;
+ //static std::string core_version = "CORE DASHBOARD | version 2.17 " BUILD;
  
-
-// asterisk очереди  удалить потом
-//enum AsteriskQueue
-//{
-//    main,       // основная очередь     5000
-//    lukoil,     // очередь лукой        5050
-//    COUNT = 2,
-//};
-
-
-// шпаргалка
-// IVREXT - уход на оцените обслуживание
-// после IVREXT -> Spasibo - уход на спасибо что оценили
-
-// for IVR 
-//static std::string cIVRCommands_old	    = "Playback|lukoil|ivr-3";
-//static std::string cIVRCommandsEx1_old  = "IVREXT";
-//static std::string cIVRCommandsEx2_old  = "Spasibo";
-//static std::string cIVRName_old         = "IVR.txt";
-//static std::string cIVRResponse_old     = "asterisk -rx \"core show channels verbose\" | grep -E \"" + cIVRCommands_old + "\" " + " | grep -v \"" + cIVRCommandsEx1_old + "\" " + " | grep -v \"" + cIVRCommandsEx2_old + "\" > " + cIVRName_old;
-
-// for QUEUE
-//static std::string cQueueCommands	= "Queue";
-//static std::string cQueueCommandsEx	= "App";
-//static std::string cQueueName		= "Queue.txt";
-//static std::string cQueueResponse	= "asterisk -rx \"core show channels verbose\" | grep -E \"" + cQueueCommands + "\" " + " | grep -v \"" + cQueueCommandsEx + "\" > " + cQueueName;
-
-// for ActiveSIP
-//static std::string cActiveSipName				= "ActiveSip.txt";
-//static std::string cActiveSipResponse			= "asterisk -rx \"core show channels concise\" > " + cActiveSipName;
-//static std::string cActiveSipOperatorsName		= "ActiveSipOperators.txt";
-//static std::string cActiveSipOperatorsResponse	= "asterisk -rx \"queue show %queue\" > " + cActiveSipOperatorsName;
-
-//for MySQL Connect
-static std::string cHOST       = "10.34.222.19";
-static std::string cBD         = "dashboard";
-static std::string cLOGIN      = "zabbix";
-static std::string cPASSWORD   = "UFGq4kZMNIMwxTzV";
-
-//for Remote Connect
-//static std::string cRemoteCommandName           = "RemoteCommand.txt";
-//static std::string cRemoteCommandResponseAdd    = "asterisk -rx \"queue add member Local/%sip@from-queue/n to %queue penalty 0 as %sip state_interface hint:%sip@ext-local\" > " + cRemoteCommandName;
-//static std::string cRemoteCommandResponseDel    = "asterisk -rx \"queue remove member Local/%sip@from-queue/n from %queue\" > " + cRemoteCommandName;
-
-// for FileLog (типы логов)
-static std::string cFileLogDEBUG    = "Log_DEBUG.log";
-static std::string cFileLogINFO     = "Log_INFO.log";
-static std::string cFileLogERROR    = "Log_ERROR.log";
-
 };
 
 

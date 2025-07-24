@@ -1,5 +1,6 @@
 #include "HistoryQueue.h"
 #include "../InternalFunction.h"
+#include "../Constants.h"
 
 using namespace utils;
 

@@ -1,6 +1,7 @@
 #include "RemoteCommands.h"
 #include "Log.h"
 #include "InternalFunction.h"
+#include "Constants.h"
 #include "Queue.h"
 #include "utils.h"
 

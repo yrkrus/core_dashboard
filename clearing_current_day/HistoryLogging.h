@@ -4,7 +4,6 @@
 #include <string>
 #include <vector>
 #include "IClear.h"
-#include "../Log.h"
 
 class HistoryLogging : public IClear
 {

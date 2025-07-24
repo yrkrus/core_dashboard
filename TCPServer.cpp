@@ -1,12 +1,12 @@
-﻿#include "TCPServer.h"
-
-#include <sys/types.h>
+﻿#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
 #include <cstring>
 #include <iostream>
 #include <algorithm>
+#include "TCPServer.h"
+
 
 HeartbeatServer::HeartbeatServer(unsigned short port)
     : port_(port)

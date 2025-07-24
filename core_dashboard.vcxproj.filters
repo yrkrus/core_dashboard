@@ -14,9 +14,6 @@
     <ClCompile Include="InternalFunction.cpp">
       <Filter>include_cpp</Filter>
     </ClCompile>
-    <ClCompile Include="SQLRequest.cpp">
-      <Filter>include_cpp</Filter>
-    </ClCompile>
     <ClCompile Include="RemoteCommands.cpp">
       <Filter>include_cpp</Filter>
     </ClCompile>
@@ -94,9 +91,6 @@
       <Filter>include_h</Filter>
     </ClInclude>
     <ClInclude Include="InternalFunction.h">
-      <Filter>include_h</Filter>
-    </ClInclude>
-    <ClInclude Include="SQLRequest.h">
       <Filter>include_h</Filter>
     </ClInclude>
     <ClInclude Include="RemoteCommands.h">

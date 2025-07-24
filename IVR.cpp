@@ -1,11 +1,8 @@
 #include <vector>
-#include <fstream>
-#include <iostream>
 #include <string>
-#include "SQLRequest.h"
-#include <iterator>
 #include "IVR.h"
 #include "InternalFunction.h"
+#include "Constants.h"
 
 using namespace utils;
 

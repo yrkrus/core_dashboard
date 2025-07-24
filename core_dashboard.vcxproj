@@ -180,7 +180,6 @@
     <ClCompile Include="Queue.cpp" />
     <ClCompile Include="RemoteCommands.cpp" />
     <ClCompile Include="RemoteCommandsCallback.cpp" />
-    <ClCompile Include="SQLRequest.cpp" />
     <ClCompile Include="TCPServer.cpp" />
     <ClCompile Include="utils.cpp" />
   </ItemGroup>
@@ -208,7 +207,6 @@
     <ClInclude Include="Queue.h" />
     <ClInclude Include="RemoteCommands.h" />
     <ClInclude Include="RemoteCommandsCallback.h" />
-    <ClInclude Include="SQLRequest.h" />
     <ClInclude Include="TCPServer.h" />
     <ClInclude Include="utils.h" />
   </ItemGroup>
