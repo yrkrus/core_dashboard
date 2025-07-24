@@ -16,7 +16,7 @@
 #include "IVR.h"
 #include "ActiveSip.h"
 
-#include "clearing_current_day/HistoryOnHold.h"
+#include "clearing_current_day/HistorySms.h"
 
 // эти include потом убрать, они нужны для отладки только
 #include <stdio.h>
@@ -125,7 +125,7 @@ static void thread_HouseKeeping()
 
   //  task.createTask(HOUSEKEEPING::TASKS::TaskIvr);
 
-    task.createTask(HOUSEKEEPING::TASKS::TaskOnHold);
+   // task.createTask(HOUSEKEEPING::TASKS::TaskOnHold);
 
    task.createTask(HOUSEKEEPING::TASKS::TaskSmsSending);
     
@@ -211,7 +211,7 @@ static void thread_HouseKeeping()
 int main(int argc, char *argv[])
 {
     
-    HistoryOnHold history;
+    HistorySms history;
     history.Execute();
     
     return 0;

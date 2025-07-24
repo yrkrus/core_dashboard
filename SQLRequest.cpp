@@ -1972,293 +1972,293 @@ int SQL_REQUEST::SQL::getQUEUE_Calls()
 //	}
 //}
 
-void SQL_REQUEST::SQL::execTaskLogging()
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
+//void SQL_REQUEST::SQL::execTaskLogging()
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//
+//	// найдем все данные 
+//	const std::string query = "select * from logging where date_time < '" + GetCurrentStartDay() + "'";
+//
+//	//if (CONSTANTS::SAFE_LOG)
+//	//{
+//	//	if (CONSTANTS::LOG_MODE_DEBUG)
+//	//	{
+//	//		//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+//	//		//log.add(METHOD_NAME + " -> " + query);
+//	//	}
+//	//}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		// ошибка считаем что есть запись		
+//		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+//		return;
+//	}
+//
+//	// результат
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row;
+//
+//	std::vector<HOUSEKEEPING::Logging_old> listLogging;
+//
+//	while ((row = mysql_fetch_row(result)) != NULL)
+//	{
+//		HOUSEKEEPING::Logging_old logging;
+//
+//		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
+//		{
+//			if (i == 0)			// id
+//			{
+//				logging.fileds.id = std::atoi(row[i]);
+//			}
+//			else if (i == 1)	// ip
+//			{
+//				logging.ip = row[i];
+//			}
+//			else if (i == 2)   // user_id
+//			{
+//				logging.user_id = std::atoi(row[i]);
+//			}
+//			else if (i == 3) // user_login_pc
+//			{
+//				logging.user_login_pc = row[i];
+//			}
+//			else if (i == 4) // pc
+//			{
+//				logging.pc = row[i];
+//			}
+//			else if (i == 5) // date_time
+//			{
+//				logging.fileds.date_time = row[i];
+//			}
+//			else if (i == 6)
+//			{ 		
+//				logging.action = std::atoi(row[i]);				
+//			}			
+//		}
+//
+//		listLogging.emplace_back(logging);
+//	}
+//
+//	if (!listLogging.empty())
+//	{
+//		std::cout << "HouseKeeping.Logging work...\n";
+//		// перекидывание 1 транзакции хза раз ? \ или по 100 надо подумать..
+//		SQL_REQUEST::SQL base;
+//
+//		for (auto &list : listLogging)
+//		{
+//			if (base.insertDataTaskLogging(list))
+//			{
+//				// удаляем текущий добавленный
+//				base.deleteDataTaskLogging(list.fileds.id);
+//			}
+//		}
+//		std::cout << "HouseKeeping.Logging work DONE!\n";
+//
+//		mysql_free_result(result);
+//		mysql_close(&this->mysql);
+//	}
+//	else {
+//		mysql_free_result(result);
+//		mysql_close(&this->mysql);
+//	}
+//}
 
-	// найдем все данные 
-	const std::string query = "select * from logging where date_time < '" + GetCurrentStartDay() + "'";
+//void SQL_REQUEST::SQL::execTaskIvr()
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//
+//	// найдем все данные 
+//	const std::string query = "select * from ivr where date_time < '" + GetCurrentStartDay() + "'";
+//
+//	//if (CONSTANTS::SAFE_LOG)
+//	//{
+//	//	if (CONSTANTS::LOG_MODE_DEBUG)
+//	//	{
+//	//		//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+//	//		//log.add(METHOD_NAME + " -> " + query);
+//	//	}
+//	//}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		// ошибка считаем что есть запись		
+//		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+//		return;
+//	}
+//
+//	// результат
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row;
+//
+//	std::vector<HOUSEKEEPING::IVR_> listIvr;
+//
+//	while ((row = mysql_fetch_row(result)) != NULL)
+//	{
+//		HOUSEKEEPING::IVR_ ivr;
+//
+//		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
+//		{
+//			if (i == 0)			// id
+//			{
+//				ivr.fileds.id = std::atoi(row[i]);
+//			}
+//			else if (i == 1)	// phone
+//			{
+//				ivr.fileds.phone = row[i];
+//			}
+//			else if (i == 2)   // waiting_time
+//			{
+//				ivr.fileds.waiting_time = row[i];
+//			}
+//			else if (i == 3) // date_time
+//			{
+//				ivr.fileds.date_time = row[i];
+//			}
+//			else if (i == 4) // trunk
+//			{
+//				ivr.trunk = row[i];
+//			}
+//			else if (i == 5) // to_queue
+//			{
+//				ivr.to_queue = std::atoi(row[i]);
+//			}
+//			else if (i == 6)	// to_robot
+//			{
+//				ivr.to_robot = std::atoi(row[i]);
+//			}
+//		}
+//
+//		listIvr.emplace_back(ivr);
+//	}
+//
+//
+//	if (!listIvr.empty())
+//	{
+//		std::cout << "HouseKeeping.Ivr work...\n";
+//
+//		// перекидывание 1 транзакции хза раз ? \ или по 100 надо подумать..
+//		SQL_REQUEST::SQL base;
+//
+//		for (auto &list : listIvr)
+//		{
+//			if (base.insertDataTaskIvr(list))
+//			{
+//				// удаляем текущий добавленный
+//				base.deleteDataTaskIvr(list.fileds.id);
+//			}
+//		}
+//
+//		std::cout << "HouseKeeping.Ivr work DONE!\n";
+//
+//		mysql_free_result(result);
+//		mysql_close(&this->mysql);
+//	}
+//	else {
+//		mysql_free_result(result);
+//		mysql_close(&this->mysql);
+//	}
+//
+//}
 
-	//if (CONSTANTS::SAFE_LOG)
-	//{
-	//	if (CONSTANTS::LOG_MODE_DEBUG)
-	//	{
-	//		//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
-	//		//log.add(METHOD_NAME + " -> " + query);
-	//	}
-	//}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		// ошибка считаем что есть запись		
-		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
-		return;
-	}
-
-	// результат
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row;
-
-	std::vector<HOUSEKEEPING::Logging_old> listLogging;
-
-	while ((row = mysql_fetch_row(result)) != NULL)
-	{
-		HOUSEKEEPING::Logging_old logging;
-
-		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
-		{
-			if (i == 0)			// id
-			{
-				logging.fileds.id = std::atoi(row[i]);
-			}
-			else if (i == 1)	// ip
-			{
-				logging.ip = row[i];
-			}
-			else if (i == 2)   // user_id
-			{
-				logging.user_id = std::atoi(row[i]);
-			}
-			else if (i == 3) // user_login_pc
-			{
-				logging.user_login_pc = row[i];
-			}
-			else if (i == 4) // pc
-			{
-				logging.pc = row[i];
-			}
-			else if (i == 5) // date_time
-			{
-				logging.fileds.date_time = row[i];
-			}
-			else if (i == 6)
-			{ 		
-				logging.action = std::atoi(row[i]);				
-			}			
-		}
-
-		listLogging.emplace_back(logging);
-	}
-
-	if (!listLogging.empty())
-	{
-		std::cout << "HouseKeeping.Logging work...\n";
-		// перекидывание 1 транзакции хза раз ? \ или по 100 надо подумать..
-		SQL_REQUEST::SQL base;
-
-		for (auto &list : listLogging)
-		{
-			if (base.insertDataTaskLogging(list))
-			{
-				// удаляем текущий добавленный
-				base.deleteDataTaskLogging(list.fileds.id);
-			}
-		}
-		std::cout << "HouseKeeping.Logging work DONE!\n";
-
-		mysql_free_result(result);
-		mysql_close(&this->mysql);
-	}
-	else {
-		mysql_free_result(result);
-		mysql_close(&this->mysql);
-	}
-}
-
-void SQL_REQUEST::SQL::execTaskIvr()
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
-
-	// найдем все данные 
-	const std::string query = "select * from ivr where date_time < '" + GetCurrentStartDay() + "'";
-
-	//if (CONSTANTS::SAFE_LOG)
-	//{
-	//	if (CONSTANTS::LOG_MODE_DEBUG)
-	//	{
-	//		//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
-	//		//log.add(METHOD_NAME + " -> " + query);
-	//	}
-	//}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		// ошибка считаем что есть запись		
-		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
-		return;
-	}
-
-	// результат
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row;
-
-	std::vector<HOUSEKEEPING::IVR_> listIvr;
-
-	while ((row = mysql_fetch_row(result)) != NULL)
-	{
-		HOUSEKEEPING::IVR_ ivr;
-
-		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
-		{
-			if (i == 0)			// id
-			{
-				ivr.fileds.id = std::atoi(row[i]);
-			}
-			else if (i == 1)	// phone
-			{
-				ivr.fileds.phone = row[i];
-			}
-			else if (i == 2)   // waiting_time
-			{
-				ivr.fileds.waiting_time = row[i];
-			}
-			else if (i == 3) // date_time
-			{
-				ivr.fileds.date_time = row[i];
-			}
-			else if (i == 4) // trunk
-			{
-				ivr.trunk = row[i];
-			}
-			else if (i == 5) // to_queue
-			{
-				ivr.to_queue = std::atoi(row[i]);
-			}
-			else if (i == 6)	// to_robot
-			{
-				ivr.to_robot = std::atoi(row[i]);
-			}
-		}
-
-		listIvr.emplace_back(ivr);
-	}
-
-
-	if (!listIvr.empty())
-	{
-		std::cout << "HouseKeeping.Ivr work...\n";
-
-		// перекидывание 1 транзакции хза раз ? \ или по 100 надо подумать..
-		SQL_REQUEST::SQL base;
-
-		for (auto &list : listIvr)
-		{
-			if (base.insertDataTaskIvr(list))
-			{
-				// удаляем текущий добавленный
-				base.deleteDataTaskIvr(list.fileds.id);
-			}
-		}
-
-		std::cout << "HouseKeeping.Ivr work DONE!\n";
-
-		mysql_free_result(result);
-		mysql_close(&this->mysql);
-	}
-	else {
-		mysql_free_result(result);
-		mysql_close(&this->mysql);
-	}
-
-}
-
-void SQL_REQUEST::SQL::execTaskOnHold()
-{
-	if (!isConnectedBD())
-	{
-		showErrorBD(METHOD_NAME);
-		return;
-	}
-
-	// найдем все данные 
-	const std::string query = "select * from operators_ohhold where date_time_start < '" + GetCurrentStartDay() + "'";
-
-	//if (CONSTANTS::SAFE_LOG)
-	//{
-	//	if (CONSTANTS::LOG_MODE_DEBUG)
-	//	{
-	//		//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
-	//		//log.add(METHOD_NAME + " -> " + query);
-	//	}
-	//}
-
-	if (mysql_query(&this->mysql, query.c_str()) != 0)
-	{
-		// ошибка считаем что есть запись		
-		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
-		return;
-	}
-
-	// результат
-	MYSQL_RES *result = mysql_store_result(&this->mysql);
-	MYSQL_ROW row;
-
-	std::vector<HOUSEKEEPING::OnHold> listOnHold;
-
-	while ((row = mysql_fetch_row(result)) != NULL)
-	{
-		HOUSEKEEPING::OnHold onHold;
-
-		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
-		{
-			if (i == 0)			// id
-			{
-				onHold.id = std::atoi(row[i]);				
-			}
-			else if (i == 1)	// sip
-			{
-				onHold.sip = std::atoi(row[i]);
-			}
-			else if (i == 2)   // date_time_start
-			{
-				onHold.date_time_start = row[i];
-			}
-			else if (i == 3) // date_time_stop
-			{
-				onHold.date_time_stop = row[i];
-			}
-			else if (i == 4) // hash
-			{
-				onHold.hash = string_to_size_t(row[i]);
-			}
-		}
-
-		listOnHold.emplace_back(onHold);
-	}
-
-	if (!listOnHold.empty())
-	{
-		std::cout << "HouseKeeping.OnHold work...\n";
-		// перекидывание 1 транзакции хза раз ? \ или по 100 надо подумать..
-		SQL_REQUEST::SQL base;
-
-		for (auto &list : listOnHold)
-		{
-			if (base.insertDataTaskOnHold(list))
-			{
-				// удаляем текущий добавленный
-				base.deleteDataTaskOnHold(list.id);
-			}
-		}
-		std::cout << "HouseKeeping.OnHold work DONE!\n";
-
-		mysql_free_result(result);
-		mysql_close(&this->mysql);
-	}
-	else
-	{
-		mysql_free_result(result);
-		mysql_close(&this->mysql);
-	}
-}
+//void SQL_REQUEST::SQL::execTaskOnHold()
+//{
+//	if (!isConnectedBD())
+//	{
+//		showErrorBD(METHOD_NAME);
+//		return;
+//	}
+//
+//	// найдем все данные 
+//	const std::string query = "select * from operators_ohhold where date_time_start < '" + GetCurrentStartDay() + "'";
+//
+//	//if (CONSTANTS::SAFE_LOG)
+//	//{
+//	//	if (CONSTANTS::LOG_MODE_DEBUG)
+//	//	{
+//	//		//LOG_old::LogToFile_old log(LOG_old::eLogType_DEBUG);
+//	//		//log.add(METHOD_NAME + " -> " + query);
+//	//	}
+//	//}
+//
+//	if (mysql_query(&this->mysql, query.c_str()) != 0)
+//	{
+//		// ошибка считаем что есть запись		
+//		//showErrorBD(METHOD_NAME+" -> query(" + query + ")", &this->mysql);
+//		return;
+//	}
+//
+//	// результат
+//	MYSQL_RES *result = mysql_store_result(&this->mysql);
+//	MYSQL_ROW row;
+//
+//	std::vector<HOUSEKEEPING::OnHold> listOnHold;
+//
+//	while ((row = mysql_fetch_row(result)) != NULL)
+//	{
+//		HOUSEKEEPING::OnHold onHold;
+//
+//		for (unsigned int i = 0; i < mysql_num_fields(result); ++i)
+//		{
+//			if (i == 0)			// id
+//			{
+//				onHold.id = std::atoi(row[i]);				
+//			}
+//			else if (i == 1)	// sip
+//			{
+//				onHold.sip = std::atoi(row[i]);
+//			}
+//			else if (i == 2)   // date_time_start
+//			{
+//				onHold.date_time_start = row[i];
+//			}
+//			else if (i == 3) // date_time_stop
+//			{
+//				onHold.date_time_stop = row[i];
+//			}
+//			else if (i == 4) // hash
+//			{
+//				onHold.hash = string_to_size_t(row[i]);
+//			}
+//		}
+//
+//		listOnHold.emplace_back(onHold);
+//	}
+//
+//	if (!listOnHold.empty())
+//	{
+//		std::cout << "HouseKeeping.OnHold work...\n";
+//		// перекидывание 1 транзакции хза раз ? \ или по 100 надо подумать..
+//		SQL_REQUEST::SQL base;
+//
+//		for (auto &list : listOnHold)
+//		{
+//			if (base.insertDataTaskOnHold(list))
+//			{
+//				// удаляем текущий добавленный
+//				base.deleteDataTaskOnHold(list.id);
+//			}
+//		}
+//		std::cout << "HouseKeeping.OnHold work DONE!\n";
+//
+//		mysql_free_result(result);
+//		mysql_close(&this->mysql);
+//	}
+//	else
+//	{
+//		mysql_free_result(result);
+//		mysql_close(&this->mysql);
+//	}
+//}
 
 
 void SQL_REQUEST::SQL::execTaskSmsSending()

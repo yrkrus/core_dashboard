@@ -21,9 +21,9 @@ void HistoryOnHold::Execute()
 		return;
 	}
 
-	std::string info = StringFormat("Clear operators_ohhold logging. Fields count = %u", Count());
+	std::string info = StringFormat("Clear operators_ohhold. Fields count = %u", Count());
 
-	m_log.ToPrint(info);
+	//m_log.ToPrint(info);
 	m_log.ToFile(ELogType::Info, info);
 
 	int errorCount = 0;
@@ -54,6 +54,8 @@ void HistoryOnHold::Execute()
 	}
 
 	info = StringFormat("Success = %u Error = %u", successCount, errorCount);
+	//m_log.ToPrint(info);
+
 	m_log.ToFile(ELogType::Info, info);
 }
 

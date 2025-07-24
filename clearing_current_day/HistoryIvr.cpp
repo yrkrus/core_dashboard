@@ -54,6 +54,8 @@ void HistoryIvr::Execute()
 	}
 
 	info = StringFormat("Success = %u Error = %u", successCount, errorCount);
+	//m_log.ToPrint(info);
+
 	m_log.ToFile(ELogType::Info, info);
 }
 

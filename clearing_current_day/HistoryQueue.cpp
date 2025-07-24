@@ -22,7 +22,7 @@ void HistoryQueue::Execute()
 
 	std::string info = StringFormat("Clear table queue. Fields count = %u", Count());
 
-	m_log.ToPrint(info);
+	//m_log.ToPrint(info);
 	m_log.ToFile(ELogType::Info, info);
 
 	int errorCount = 0;
@@ -53,6 +53,8 @@ void HistoryQueue::Execute()
 	}
 
 	info = StringFormat("Success = %u Error = %u", successCount, errorCount);
+	//m_log.ToPrint(info);
+
 	m_log.ToFile(ELogType::Info, info);
 }
 

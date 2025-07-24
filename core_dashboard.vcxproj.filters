@@ -23,9 +23,6 @@
     <ClCompile Include="Log.cpp">
       <Filter>include_cpp</Filter>
     </ClCompile>
-    <ClCompile Include="HouseKeeping.cpp">
-      <Filter>include_cpp</Filter>
-    </ClCompile>
     <ClCompile Include="ISQLConnect.cpp">
       <Filter>include_cpp</Filter>
     </ClCompile>
@@ -71,6 +68,9 @@
     <ClCompile Include="clearing_current_day\HistoryOnHold.cpp">
       <Filter>include_cpp</Filter>
     </ClCompile>
+    <ClCompile Include="clearing_current_day\HistorySms.cpp">
+      <Filter>include_cpp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include_cpp">
@@ -103,9 +103,6 @@
       <Filter>include_h</Filter>
     </ClInclude>
     <ClInclude Include="Log.h">
-      <Filter>include_h</Filter>
-    </ClInclude>
-    <ClInclude Include="HouseKeeping.h">
       <Filter>include_h</Filter>
     </ClInclude>
     <ClInclude Include="ISQLConnect.h">
@@ -157,6 +154,9 @@
       <Filter>include_h</Filter>
     </ClInclude>
     <ClInclude Include="clearing_current_day\HistoryOnHold.h">
+      <Filter>include_h</Filter>
+    </ClInclude>
+    <ClInclude Include="clearing_current_day\HistorySms.h">
       <Filter>include_h</Filter>
     </ClInclude>
   </ItemGroup>

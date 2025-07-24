@@ -82,9 +82,9 @@ namespace SQL_REQUEST
 		
 		// Housekeeping
 		//void execTaskQueue();																// выполнение задачи очистка таблицы queue
-		void execTaskLogging();																// выполнение задачи очистки таблицы Logging
-		void execTaskIvr();																	// выполнение задачи очистки таблицы Ivr
-		void execTaskOnHold();																// выполнение задачи очистки таблицы operators_onhold
+		//void execTaskLogging();																// выполнение задачи очистки таблицы Logging
+		//void execTaskIvr();																	// выполнение задачи очистки таблицы Ivr
+		//void execTaskOnHold();																// выполнение задачи очистки таблицы operators_onhold
 		void execTaskSmsSending();															// выполнение задачи очистки таблицы sms_sending	
 		//bool insertDataTaskQueue(HOUSEKEEPING::Queue_old &queue);								// вставка данных для таблицы history_queue			
 		//bool deleteDataTaskQueue(int ID);													// удаление данных из таблицы queue

@@ -164,13 +164,13 @@
     <ClCompile Include="clearing_current_day\HistoryLogging.cpp" />
     <ClCompile Include="clearing_current_day\HistoryOnHold.cpp" />
     <ClCompile Include="clearing_current_day\HistoryQueue.cpp" />
+    <ClCompile Include="clearing_current_day\HistorySms.cpp" />
     <ClCompile Include="clearing_current_day\IClear.cpp" />
     <ClCompile Include="Command.cpp" />
     <ClCompile Include="Dispather.cpp" />
     <ClCompile Include="Event.cpp" />
     <ClCompile Include="IAsteriskData.cpp" />
     <ClCompile Include="IFile.cpp" />
-    <ClCompile Include="HouseKeeping.cpp" />
     <ClCompile Include="InternalFunction.cpp" />
     <ClCompile Include="ISQLConnect.cpp" />
     <ClCompile Include="IVR.cpp" />
@@ -191,6 +191,7 @@
     <ClInclude Include="clearing_current_day\HistoryLogging.h" />
     <ClInclude Include="clearing_current_day\HistoryOnHold.h" />
     <ClInclude Include="clearing_current_day\HistoryQueue.h" />
+    <ClInclude Include="clearing_current_day\HistorySms.h" />
     <ClInclude Include="clearing_current_day\IClear.h" />
     <ClInclude Include="Command.h" />
     <ClInclude Include="Constants.h" />
@@ -199,7 +200,6 @@
     <ClInclude Include="Event.h" />
     <ClInclude Include="IAsteriskData.h" />
     <ClInclude Include="IFile.h" />
-    <ClInclude Include="HouseKeeping.h" />
     <ClInclude Include="InternalFunction.h" />
     <ClInclude Include="ISQLConnect.h" />
     <ClInclude Include="IVR.h" />
