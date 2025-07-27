@@ -23,7 +23,7 @@ void HistorySms::Execute()
 
 	std::string info = StringFormat("Clear table sms_sending. Fields count = %u", Count());
 
-	//m_log.ToPrint(info);
+	m_log.ToPrint(info);
 	m_log.ToFile(ELogType::Info, info);
 
 	int errorCount = 0;
@@ -54,7 +54,7 @@ void HistorySms::Execute()
 	}
 
 	info = StringFormat("Success = %u Error = %u", successCount, errorCount);
-	//m_log.ToPrint(info);
+	m_log.ToPrint(info);
 
 	m_log.ToFile(ELogType::Info, info);
 }
@@ -112,7 +112,7 @@ bool HistorySms::Insert(const Table &_field, std::string &_errorDescription)
 
 	if (!m_sql->Request(query, _errorDescription))
 	{
-		_errorDescription += METHOD_NAME + StringFormat("query -> %s", query);
+		_errorDescription += METHOD_NAME + StringFormat("query -> %s", query.c_str());
 		m_log.ToFile(ELogType::Error, _errorDescription);
 
 		m_sql->Disconnect();
@@ -145,7 +145,7 @@ void HistorySms::Delete(int _id, ECheckInsert _check)
 	std::string error;
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query);
+		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 	}
 
@@ -161,7 +161,7 @@ bool HistorySms::Get()
 	std::string error;
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query);
+		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();
@@ -215,7 +215,7 @@ bool HistorySms::CheckInsert(int _id)
 
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query);
+		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();
@@ -236,7 +236,7 @@ bool HistorySms::CheckInsert(int _id)
 	return existField;
 }
 
-int HistorySms::Count()
+size_t HistorySms::Count()
 {
 	return m_history.size();
 }

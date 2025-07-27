@@ -23,7 +23,7 @@ void HistoryOnHold::Execute()
 
 	std::string info = StringFormat("Clear operators_ohhold. Fields count = %u", Count());
 
-	//m_log.ToPrint(info);
+	m_log.ToPrint(info);
 	m_log.ToFile(ELogType::Info, info);
 
 	int errorCount = 0;
@@ -54,7 +54,7 @@ void HistoryOnHold::Execute()
 	}
 
 	info = StringFormat("Success = %u Error = %u", successCount, errorCount);
-	//m_log.ToPrint(info);
+	m_log.ToPrint(info);
 
 	m_log.ToFile(ELogType::Info, info);
 }
@@ -88,7 +88,7 @@ bool HistoryOnHold::Insert(const Table &_field, std::string &_errorDescription)
 
 	if (!m_sql->Request(query, _errorDescription))
 	{
-		_errorDescription += METHOD_NAME + StringFormat("query -> %s", query);
+		_errorDescription += METHOD_NAME + StringFormat("query -> %s", query.c_str());
 		m_log.ToFile(ELogType::Error, _errorDescription);
 
 		m_sql->Disconnect();
@@ -120,7 +120,7 @@ void HistoryOnHold::Delete(int _id, ECheckInsert _check)
 	std::string error;
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query);
+		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 	}
 
@@ -136,7 +136,7 @@ bool HistoryOnHold::Get()
 	std::string error;
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query);
+		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();
@@ -185,7 +185,7 @@ bool HistoryOnHold::CheckInsert(int _id)
 
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query);
+		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();
@@ -206,7 +206,7 @@ bool HistoryOnHold::CheckInsert(int _id)
 	return existField;
 }
 
-int HistoryOnHold::Count()
+size_t HistoryOnHold::Count()
 {
 	return m_history.size();
 }

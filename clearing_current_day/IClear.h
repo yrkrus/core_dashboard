@@ -26,7 +26,7 @@ public:
 	virtual bool Get() = 0;
 	virtual bool IsExistData() = 0;
 	virtual bool CheckInsert(int _id) = 0;
-	virtual int Count() = 0;
+	virtual size_t Count() = 0;
 };
 
 #endif //ICLEAR_H

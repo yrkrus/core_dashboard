@@ -216,7 +216,7 @@ void IVR::InsertIvrCalls()
 
 			if (!m_sql->Request(query, _errorDescription))
 			{
-				_errorDescription += METHOD_NAME + StringFormat("query -> %s", query);
+				_errorDescription += METHOD_NAME + StringFormat("query -> %s", query.c_str());
 				m_log.ToFile(ELogType::Error, _errorDescription);
 
 				m_sql->Disconnect();
@@ -240,7 +240,7 @@ void IVR::UpdateIvrCalls(int _id, const IvrCalls &_caller)
 
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query);
+		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();
@@ -260,7 +260,7 @@ bool IVR::IsExistIvrPhone(const IvrCalls &_caller, std::string &_errorDescriptio
 
 	if (!m_sql->Request(query, _errorDescription))
 	{	
-		_errorDescription += METHOD_NAME + StringFormat("query -> %s", query);
+		_errorDescription += METHOD_NAME + StringFormat("query -> %s", query.c_str());
 		m_log.ToFile(ELogType::Error, _errorDescription);
 
 		m_sql->Disconnect();

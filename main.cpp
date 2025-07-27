@@ -11,7 +11,7 @@
 #include "IVR.h"
 #include "ActiveSip.h"
 
-#include "clearing_current_day/HistorySms.h"
+#include "clearing_current_day/ClearingCurrentDay.h"
 
 // эти include потом убрать, они нужны для отладки только
 #include <stdio.h>
@@ -26,15 +26,17 @@ static SP_IVR ivr                       = nullptr;
 static SP_Queue queue                   = nullptr;
 static SP_ActiveSession activeSession   = nullptr;
 static SP_Status changeStatus           = nullptr;
+static SP_ClearingCurrentDay clearingCurrentDay = nullptr;  // вставка в таблицы history
 
 static std::atomic<bool> g_running(true);
 
 static void _Init() 
 {
-    ivr             = std::make_shared<IVR>();
-    queue           = std::make_shared<Queue>();
-    activeSession   = std::make_shared<ActiveSession>(queue);
-    changeStatus    = std::make_shared<Status>();
+    ivr                 = std::make_shared<IVR>();
+    queue               = std::make_shared<Queue>();
+    activeSession       = std::make_shared<ActiveSession>(queue);
+    changeStatus        = std::make_shared<Status>();
+    clearingCurrentDay  = std::make_shared<ClearingCurrentDay>();   // встаква в таблицы history_*
 }
 
 static void _Run() 
@@ -43,7 +45,9 @@ static void _Run()
     queue->Start();
     activeSession->Start();
 
-    changeStatus->Start();
+    changeStatus->Start();  // изменение статуса оператора
+
+    clearingCurrentDay->Start();    // очистка текущего дня в таблицу history_*
 }
 
 static void _Destroy()
@@ -53,6 +57,7 @@ static void _Destroy()
     activeSession->Stop();
 
     changeStatus->Stop();
+    clearingCurrentDay->Stop();
 }
 
 static void _sigint_handler(int)
@@ -64,12 +69,6 @@ static void _sigint_handler(int)
 
 int main(int argc, char *argv[])
 {
-    
-   /* HistorySms history;
-    history.Execute();
-    
-    return 0;*/
-
     // Перехватываем Ctrl+C
     std::signal(SIGINT, _sigint_handler);
 
@@ -87,9 +86,8 @@ int main(int argc, char *argv[])
     std::cout << StringFormat("Server is running on port %u. Press Ctrl+C to stop.\n",CONSTANTS::SERVER::PORT);
    
     _Init();        
-    _Run();       
-      
-
+    _Run();
+    
     while (g_running) 
     {
         auto start = std::chrono::steady_clock::now();

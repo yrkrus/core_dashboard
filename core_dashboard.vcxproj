@@ -160,6 +160,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ClCompile Include="ActiveSip.cpp" />
+    <ClCompile Include="clearing_current_day\ClearingCurrentDay.cpp" />
     <ClCompile Include="clearing_current_day\HistoryIvr.cpp" />
     <ClCompile Include="clearing_current_day\HistoryLogging.cpp" />
     <ClCompile Include="clearing_current_day\HistoryOnHold.cpp" />
@@ -186,6 +187,7 @@
   <ItemGroup>
     <ClInclude Include="ActiveSip.h" />
     <ClInclude Include="AUTH.h" />
+    <ClInclude Include="clearing_current_day\ClearingCurrentDay.h" />
     <ClInclude Include="clearing_current_day\HistoryIvr.h" />
     <ClInclude Include="clearing_current_day\HistoryLogging.h" />
     <ClInclude Include="clearing_current_day\HistoryOnHold.h" />
@@ -216,12 +218,13 @@
     <ClCompile>
       <AdditionalIncludeDirectories>Z:\mysql;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CppLanguageStandard>c++17</CppLanguageStandard>
-      <Verbose>false</Verbose>
+      <Verbose>true</Verbose>
       <AdditionalOptions>-g %(AdditionalOptions)</AdditionalOptions>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>~/core_dashboards/core_dashboard/mysql;C:\c++\РАБОЧЕ ПРОГРАММЫ\dashboard_for_astrerisk\core_dashboard\mysql;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>-lmysqlclient;-pthread;-lstdc++fs;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>-lmysqlclient;-pthread;-lstdc++fs;-lrt;-lpthread;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -243,12 +246,13 @@
     <ClCompile>
       <AdditionalIncludeDirectories>Z:\mysql;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CppLanguageStandard>c++17</CppLanguageStandard>
-      <Verbose>false</Verbose>
+      <Verbose>true</Verbose>
       <AdditionalOptions>-g %(AdditionalOptions)</AdditionalOptions>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>~/core_dashboards/core_dashboard/mysql;C:\c++\РАБОЧЕ ПРОГРАММЫ\dashboard_for_astrerisk\core_dashboard\mysql;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>-lmysqlclient;-pthread;-lstdc++fs;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>-lmysqlclient;-pthread;-lstdc++fs;-lrt;-lpthread;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -270,12 +274,13 @@
     <ClCompile>
       <AdditionalIncludeDirectories>Z:\mysql;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CppLanguageStandard>c++17</CppLanguageStandard>
-      <Verbose>false</Verbose>
+      <Verbose>true</Verbose>
       <AdditionalOptions>-g %(AdditionalOptions)</AdditionalOptions>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>~/core_dashboards/core_dashboard/mysql;C:\c++\РАБОЧЕ ПРОГРАММЫ\dashboard_for_astrerisk\core_dashboard\mysql;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>-lmysqlclient;-pthread;-lstdc++fs;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>-lmysqlclient;-pthread;-lstdc++fs;-lrt;-lpthread;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -297,12 +302,13 @@
     <ClCompile>
       <AdditionalIncludeDirectories>Z:\mysql;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CppLanguageStandard>c++17</CppLanguageStandard>
-      <Verbose>false</Verbose>
+      <Verbose>true</Verbose>
       <AdditionalOptions>-g %(AdditionalOptions)</AdditionalOptions>
+      <TreatWarningAsError>true</TreatWarningAsError>
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>~/core_dashboards/core_dashboard/mysql;C:\c++\РАБОЧЕ ПРОГРАММЫ\dashboard_for_astrerisk\core_dashboard\mysql;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>-lmysqlclient;-pthread;-lstdc++fs;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>-lmysqlclient;-pthread;-lstdc++fs;-lrt;-lpthread;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">

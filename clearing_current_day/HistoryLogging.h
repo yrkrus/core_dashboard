@@ -37,7 +37,7 @@ private:
 	virtual bool Get() override;
 	virtual bool IsExistData() override;
 	virtual bool CheckInsert(int _id) override;
-	virtual int Count() override;
+	virtual size_t Count() override;
 };
 
 

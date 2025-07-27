@@ -21,8 +21,9 @@ namespace CONSTANTS
     {
         static const unsigned int IVR               = 1000;   // timeout для проверки новых данных для ivr
         static const unsigned int QUEUE             = 1000;   // timeout для проверки новых данных для queue
-        static const unsigned int ACTIVE_SESSION    = 1000;   // timeout для проверки новых данных для активной сесии операторов
+        static const unsigned int ACTIVE_SESSION    = 1000;   // timeout для проверки новых данных для активной сеcсии операторов
         static const unsigned int OPERATOR_STATUS   = 100;    // timeout для проверки новых данных для смены статуса оператором
+        static const unsigned int CLEARING_CURRENT_DAY = 60000; // timeout для проверки нужно ли очищать текущий день таблицы history_*
     }
 
     namespace SERVER 
@@ -55,7 +56,7 @@ namespace CONSTANTS
     //valgrind --leak-check=full --show-leak-kinds=all --leak-resolution=med --log-file=./core.log ./core_dashboard start
     //valgrind --leak-check=full --leak-resolution=med --log-file=./core.log ./core_dashboard start
     //
-    //mysqldump -uzabbix -pUFGq4kZMNIMwxTzV -h10.34.222.19 dashboard > /root/core_dashboards/backup_bd/dashboard_20250723.sql
+    //mysqldump -uzabbix -pUFGq4kZMNIMwxTzV -h10.34.222.19 dashboard > /root/core_dashboards/backup_bd/dashboard_20250726.sql
 
 
     //asterisk -rx "core show channels verbose" | grep to-atsaero5005  кто сейчас разговаривает с бабой железной

@@ -178,7 +178,7 @@ void Status::DeleteCommand(const Command &_command)
 	std::string error;
 	if (!m_sql->Request(query, error)) 
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query);
+		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
 		m_log->ToFile(ELogType::Error, error);
 	}
 
@@ -195,7 +195,7 @@ void Status::ExecuteCommandFail(const Command &_command, const std::string &_err
 
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query);
+		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
 		m_log->ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();				
