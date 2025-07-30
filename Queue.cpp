@@ -118,9 +118,8 @@ bool Queue::CreateQueueCallers(const std::string &_lines, QueueCalls &_queueCall
 		// TODO тут в лог запись если не прошел по какой то причине 
 		if (!CheckCallers(_queueCaller))
 		{
-			/*LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
-			std::string err = std::string(__PRETTY_FUNCTION__) +"\t"+ _lines;
-			log.add(err);*/
+			std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines);
+			m_log.ToFile(ELogType::Error, error.c_str());
 
 			return false;
 		}
@@ -133,7 +132,7 @@ bool Queue::CreateQueueCallers(const std::string &_lines, QueueCalls &_queueCall
 
 bool Queue::CheckCallers(const QueueCalls &_caller)
 {
-	return _caller.check();
+	return _caller.check();	
 }
 
 bool Queue::IsExistQueueCalls()
@@ -285,6 +284,12 @@ void Queue::UpdateCallFail(const QueueCallsList &_calls)
 {	
 	// найдем текущие номера которые мы не будет трогать при обновлении
 	std::string phoneDoNotTouch;
+	
+	// TODO вдруг пустой список, смысл проверять!?
+	if (_calls.empty()) 
+	{
+		return;
+	}
 
 	for (const auto &list : _calls)
 	{

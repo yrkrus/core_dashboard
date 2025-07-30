@@ -47,7 +47,7 @@ public:
 			if (phone.find("null")		!= std::string::npos ||
 				waiting.find("null")	!= std::string::npos ||
 				queue					== EQueueNumber::Unknown)
-			{
+			{				 
 				return false;
 			}
 

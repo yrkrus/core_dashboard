@@ -54,7 +54,7 @@ public:
 		std::string waiting = "null";					// время в (сек) которое он слушает	
 		ECallerId callerID = ECallerId::Unknown;		// откуда пришел звонок		
 	
-		inline bool check() const noexcept 
+		inline bool check() const noexcept
 		{
 			// если в phone или waiting есть подстрока "null" 
 			// или callerID == Unknown — сразу false

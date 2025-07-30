@@ -48,7 +48,7 @@ public:
     
     void ToBase(Command _command);                                // сохранение в БД
     void ToFile(ELogType _type, const std::string &_message);     // сохранение в лог файл
-    void ToPrint(const std::string &_message);                     // только отображение в cout<<
+    void ToPrint(const std::string &_message);                    // только отображение в cout<<
 
 };
 

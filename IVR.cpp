@@ -109,9 +109,8 @@ bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 		// проверка на максимальное кол-во записей
 		if (lines.size() != MAX_IVR_PARSING_LINES) 
 		{
-			/*LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
-			std::string err = std::string(__PRETTY_FUNCTION__) + "\t" + _lines;
-			log.add(err);*/
+			std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines);	
+			m_log.ToFile(ELogType::Error, error.c_str());			
 
 			return false;
 		}
@@ -121,16 +120,13 @@ bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 		_caller.callerID = StringToEnum(lines[0] + "," + lines[1]);
 		
 		// TODO тут в лог запись если не прошел по какой то причине 
-		//std::string err = std::string(__PRETTY_FUNCTION__) + "\t" + _lines;
 		if (!CheckCallers(_caller)) 
 		{
-			/*LOG_old::LogToFile_old log(LOG_old::eLogType_ERROR);
-			err = std::string(__PRETTY_FUNCTION__) +"\t"+ _lines;
-			log.add(err);*/
+			std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines);
+			m_log.ToFile(ELogType::Error, error.c_str());
 
 			return false;
-		}	
-		
+		}			
 		
 		status = true;
 	}

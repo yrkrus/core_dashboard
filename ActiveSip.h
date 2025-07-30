@@ -50,9 +50,10 @@ namespace active_sip
 			if (id == 0 ||
 				sip.find("null") != std::string::npos ||
 				phone.find("null") != std::string::npos)
-			{
+			{				
 				return false;
 			}
+
 			return true;
 		}
 	};

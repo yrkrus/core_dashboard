@@ -753,10 +753,10 @@ bool active_sip::ActiveSession::GetActiveOnHold(OnHoldList &_onHoldList, std::st
 			}
 		}
 		
-		if (onHold.check()) 
+		if (onHold.check())
 		{
 			_onHoldList.push_back(onHold);
-		}  		
+		}		
 	}
 
 	mysql_free_result(result);	
