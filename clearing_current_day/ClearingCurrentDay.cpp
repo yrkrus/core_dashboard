@@ -22,8 +22,7 @@ bool ClearingCurrentDay::Execute()
 	if (!CheckNewDay()) 
 	{
 		return false;
-	}	
-	
+	}		
 	m_ivr.Execute();
 	m_logging.Execute();
 	m_onHold.Execute();
@@ -44,4 +43,5 @@ void ClearingCurrentDay::Start()
 void ClearingCurrentDay::Stop()
 {
 	m_dispether.Stop();
+	printf("ClearingCurrentDay stopped!\n");
 }

@@ -7,13 +7,17 @@
 #include <atomic>
 #include <chrono>
 #include <functional>
+#include <condition_variable>
+#include <mutex>
 
 class IPotokDispether 
 {
 private:
-	unsigned int m_timer;					// время периодичности с которой будет запускаться поток
-	std::atomic<bool> m_running;			// флаг для управления потоком
-	std::thread m_thread;					// сам поток
+	unsigned int			m_timer;					// время периодичности с которой будет запускаться поток
+	std::atomic<bool>		m_running;			// флаг для управления потоком
+	std::thread				m_thread;					// сам поток
+	std::mutex				m_mutex;
+	std::condition_variable m_cv;
 
 	void Run(std::function<bool()> func);	// процесс выполнения
 

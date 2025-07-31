@@ -31,6 +31,7 @@ void active_sip::ActiveSession::Start()
 void active_sip::ActiveSession::Stop()
 {
 	m_dispether.Stop();
+	printf("ActiveSession stopped!\n");
 }
 
 void active_sip::ActiveSession::Parsing()

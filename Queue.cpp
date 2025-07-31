@@ -32,6 +32,7 @@ void Queue::Start()
 void Queue::Stop()
 {
 	m_dispether.Stop();
+	printf("Queue stopped!\n");
 }
 
 void Queue::Parsing()
@@ -119,7 +120,7 @@ bool Queue::CreateQueueCallers(const std::string &_lines, QueueCalls &_queueCall
 		if (!CheckCallers(_queueCaller))
 		{
 			std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines);
-			m_log.ToFile(ELogType::Error, error.c_str());
+			m_log.ToFile(ELogType::Error, error);
 
 			return false;
 		}

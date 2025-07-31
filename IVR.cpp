@@ -31,6 +31,7 @@ void IVR::Start()
 void IVR::Stop()
 {
 	m_dispether.Stop();
+	printf("IVR stopped!\n");
 }
 
 
@@ -110,7 +111,7 @@ bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 		if (lines.size() != MAX_IVR_PARSING_LINES) 
 		{
 			std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines);	
-			m_log.ToFile(ELogType::Error, error.c_str());			
+			m_log.ToFile(ELogType::Error, error);			
 
 			return false;
 		}
@@ -123,7 +124,7 @@ bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 		if (!CheckCallers(_caller)) 
 		{
 			std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines);
-			m_log.ToFile(ELogType::Error, error.c_str());
+			m_log.ToFile(ELogType::Error, error);
 
 			return false;
 		}			

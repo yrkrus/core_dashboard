@@ -69,6 +69,10 @@ static void _sigint_handler(int)
 
 int main(int argc, char *argv[])
 {
+    // bild
+    printf("BUILD %s\n\n", BUILD);
+
+
     // Перехватываем Ctrl+C
     std::signal(SIGINT, _sigint_handler);
 

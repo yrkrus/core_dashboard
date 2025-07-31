@@ -30,6 +30,7 @@ void Status::Start()
 void Status::Stop()
 {
 	m_dispether.Stop();
+	printf("Status stopped!\n");
 }
 
 bool Status::IsExistCommand()
