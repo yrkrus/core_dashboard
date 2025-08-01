@@ -1,4 +1,4 @@
-// класс для выполнения перидических команд
+// РєР»Р°СЃСЃ РґР»СЏ РІС‹РїРѕР»РЅРµРЅРёСЏ РїРµСЂРёРґРёС‡РµСЃРєРёС… РєРѕРјР°РЅРґ
 
 #ifndef DISPATHER_H 
 #define DISPATHER_H
@@ -14,9 +14,9 @@
 class Dispather 
 {
 private:
-	std::string						m_name;			// имя диспетчера
-	std::queue<SP_Command>			m_commandQueue; // список с командами
-	std::queue<SP_Event>			m_eventQueue;	// список с выполненными запросами
+	std::string						m_name;			// РёРјСЏ РґРёСЃРїРµС‚С‡РµСЂР°
+	std::queue<SP_Command>			m_commandQueue; // СЃРїРёСЃРѕРє СЃ РєРѕРјР°РЅРґР°РјРё
+	std::queue<SP_Event>			m_eventQueue;	// СЃРїРёСЃРѕРє СЃ РІС‹РїРѕР»РЅРµРЅРЅС‹РјРё Р·Р°РїСЂРѕСЃР°РјРё
 
 	bool							m_isRunnnig;	
 

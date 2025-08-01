@@ -1,5 +1,5 @@
 // *************************************************************
-//			виртуальный класс для SQL запросов
+//			РІРёСЂС‚СѓР°Р»СЊРЅС‹Р№ РєР»Р°СЃСЃ РґР»СЏ SQL Р·Р°РїСЂРѕСЃРѕРІ
 // *************************************************************
 
 #ifndef ISQLCONNECT_H
@@ -22,9 +22,9 @@ class ISQLConnect
 private:
 	MYSQL	m_mysql;
 	bool	m_connected;
-	bool	m_initialized;  // был ли вызван mysql_init
+	bool	m_initialized;  // Р±С‹Р» Р»Рё РІС‹Р·РІР°РЅ mysql_init
 
-	// подключаемся к БД MySQL
+	// РїРѕРґРєР»СЋС‡Р°РµРјСЃСЏ Рє Р‘Р” MySQL
 	bool ConnectInternal(std::string &_errorDescription);
 
 public:
@@ -39,7 +39,7 @@ public:
 	bool Request(const std::string &_request, std::string &_errorDescription);
 	bool Request(const std::string &_request);
 
-	// доступ к сырым данным MYSQL*
+	// РґРѕСЃС‚СѓРї Рє СЃС‹СЂС‹Рј РґР°РЅРЅС‹Рј MYSQL*
 	MYSQL *Get();
 
 };
