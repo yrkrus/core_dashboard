@@ -28,7 +28,7 @@ void Dispather::DispatheringThread()
 		SP_Command command;
 		SP_Event event;
 		
-		// достаем новую команду
+		// РґРѕСЃС‚Р°РµРј РЅРѕРІСѓСЋ РєРѕРјР°РЅРґСѓ
 		while (PopCommand(command, event)) 
 		{
 			command->Execute();
@@ -91,7 +91,7 @@ void Dispather::Stop()
 	std::lock_guard<std::recursive_mutex> lock(m_mutex);
 	m_isRunnnig = false;
 
-	// очистка команд
+	// РѕС‡РёСЃС‚РєР° РєРѕРјР°РЅРґ
 	ClearCommandQueue();
 
 	m_queueIsNotEmptyEvent.Set();

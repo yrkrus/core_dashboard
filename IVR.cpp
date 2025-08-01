@@ -37,7 +37,7 @@ void IVR::Stop()
 
 void IVR::Parsing()
 {
-	m_listIvr.clear(); // îáíóëèì òåêóùèé ñïèñîê	
+	m_listIvr.clear(); // Ð¾Ð±Ð½ÑƒÐ»Ð¸Ð¼ Ñ‚ÐµÐºÑƒÑ‰Ð¸Ð¹ ÑÐ¿Ð¸ÑÐ¾Ðº	
 	
 	std::string rawLines = GetRawLastData();
 	if (rawLines.empty()) 
@@ -58,18 +58,18 @@ void IVR::Parsing()
 		}
 		else 		
 		{
-			// óäàëÿåì èç ñûðûõ äàííûõ
+			// ÑƒÐ´Ð°Ð»ÑÐµÐ¼ Ð¸Ð· ÑÑ‹Ñ€Ñ‹Ñ… Ð´Ð°Ð½Ð½Ñ‹Ñ…
 			DeleteRawLastData();
 			return;
 		}
 	}
 
-	// ÷òî òî åñòü íóæíî òåïåðü â ÁÄ çàïèõíóòü
+	// Ñ‡Ñ‚Ð¾ Ñ‚Ð¾ ÐµÑÑ‚ÑŒ Ð½ÑƒÐ¶Ð½Ð¾ Ñ‚ÐµÐ¿ÐµÑ€ÑŒ Ð² Ð‘Ð” Ð·Ð°Ð¿Ð¸Ñ…Ð½ÑƒÑ‚ÑŒ
 	if (IsExistListIvr())
 	{		
 		InsertIvrCalls();
 		
-		// óäàëÿåì èç ñûðûõ äàííûõ
+		// ÑƒÐ´Ð°Ð»ÑÐµÐ¼ Ð¸Ð· ÑÑ‹Ñ€Ñ‹Ñ… Ð´Ð°Ð½Ð½Ñ‹Ñ…
 		DeleteRawLastData();
 	}
 }
@@ -94,7 +94,7 @@ bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 			}
 		}
 
-		if (_lines[i] != ' ') // èùåì ðàçäåëèòü (ðàçäåëèòü ïóñòàÿ ñòðîêà)
+		if (_lines[i] != ' ') // Ð¸Ñ‰ÐµÐ¼ Ñ€Ð°Ð·Ð´ÐµÐ»Ð¸Ñ‚ÑŒ (Ñ€Ð°Ð·Ð´ÐµÐ»Ð¸Ñ‚ÑŒ Ð¿ÑƒÑÑ‚Ð°Ñ ÑÑ‚Ñ€Ð¾ÐºÐ°)
 		{
 			current_str += _lines[i];
 			isNewLine = false;
@@ -107,7 +107,7 @@ bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 
 	if (!lines.empty())
 	{
-		// ïðîâåðêà íà ìàêñèìàëüíîå êîë-âî çàïèñåé
+		// Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð½Ð° Ð¼Ð°ÐºÑÐ¸Ð¼Ð°Ð»ÑŒÐ½Ð¾Ðµ ÐºÐ¾Ð»-Ð²Ð¾ Ð·Ð°Ð¿Ð¸ÑÐµÐ¹
 		if (lines.size() != MAX_IVR_PARSING_LINES) 
 		{
 			std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
@@ -191,7 +191,7 @@ void IVR::InsertIvrCalls()
 
 	for (const auto &list : m_listIvr) 
 	{
-		// ïðîâåðèì åñòü ëè òàêîé íîìåð â áä
+		// Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ð¼ ÐµÑÑ‚ÑŒ Ð»Ð¸ Ñ‚Ð°ÐºÐ¾Ð¹ Ð½Ð¾Ð¼ÐµÑ€ Ð² Ð±Ð´
 		if (IsExistIvrPhone(list, _errorDescription)) 
 		{
 			int id = GetPhoneIDIvr(list.phone);
@@ -204,7 +204,7 @@ void IVR::InsertIvrCalls()
 		}
 		else  
 		{ 
-			// íîìåðà òàêîãî íåò íóæíî äîáàâèòü â ÁÄ
+			// Ð½Ð¾Ð¼ÐµÑ€Ð° Ñ‚Ð°ÐºÐ¾Ð³Ð¾ Ð½ÐµÑ‚ Ð½ÑƒÐ¶Ð½Ð¾ Ð´Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ Ð² Ð‘Ð”
 			const std::string query = "insert into ivr (phone,waiting_time,trunk) values ('" 
 									+ list.phone + "','" 
 									+ list.waiting + "','" 
@@ -263,7 +263,7 @@ bool IVR::IsExistIvrPhone(const IvrCalls &_caller, std::string &_errorDescriptio
 		return true;
 	}
 
-	// ðåçóëüòàò
+	// Ñ€ÐµÐ·ÑƒÐ»ÑŒÑ‚Ð°Ñ‚
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 	MYSQL_ROW row = mysql_fetch_row(result);
 
@@ -285,7 +285,7 @@ int IVR::GetPhoneIDIvr(const std::string &_phone)
 	
 	if (!m_sql->Request(query))
 	{
-		// åñòü îøèáêà		
+		// ÐµÑÑ‚ÑŒ Ð¾ÑˆÐ¸Ð±ÐºÐ°		
 		m_sql->Disconnect();
 		return -1;
 	}	

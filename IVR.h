@@ -7,19 +7,19 @@
 #include "ISQLConnect.h"
 #include "Log.h"
 
-#define MAX_IVR_PARSING_LINES 9		// максимальное значение при парсинге сырых данных IVR
+#define MAX_IVR_PARSING_LINES 9		// РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РїСЂРё РїР°СЂСЃРёРЅРіРµ СЃС‹СЂС‹С… РґР°РЅРЅС‹С… IVR
 
-static std::string IVR_COMMANDS			= "Playback|lukoil|ivr-3";	// ищем только эти слова при формировании IVR
-static std::string IVR_COMMANDS_EXT1	= "IVREXT";					// пропуск этой записи
-static std::string IVR_COMMANDS_EXT2	= "Spasibo";				// пропуск этой записи
-static std::string IVR_COMMANDS_EXT3	= "recOfficeOffline";		// пропуск этой записи
-static std::string IVR_COMMANDS_EXT4	= "noservice";				// пропуск этой записи 
-static std::string IVR_COMMANDS_EXT5	= "agent";					// пропуск этой записи 
-static std::string IVR_COMMANDS_EXT6	= "from-internal-xfer";		// пропуск этой записи (перевод звонка)
+static std::string IVR_COMMANDS			= "Playback|lukoil|ivr-3";	// РёС‰РµРј С‚РѕР»СЊРєРѕ СЌС‚Рё СЃР»РѕРІР° РїСЂРё С„РѕСЂРјРёСЂРѕРІР°РЅРёРё IVR
+static std::string IVR_COMMANDS_EXT1	= "IVREXT";					// РїСЂРѕРїСѓСЃРє СЌС‚РѕР№ Р·Р°РїРёСЃРё
+static std::string IVR_COMMANDS_EXT2	= "Spasibo";				// РїСЂРѕРїСѓСЃРє СЌС‚РѕР№ Р·Р°РїРёСЃРё
+static std::string IVR_COMMANDS_EXT3	= "recOfficeOffline";		// РїСЂРѕРїСѓСЃРє СЌС‚РѕР№ Р·Р°РїРёСЃРё
+static std::string IVR_COMMANDS_EXT4	= "noservice";				// РїСЂРѕРїСѓСЃРє СЌС‚РѕР№ Р·Р°РїРёСЃРё 
+static std::string IVR_COMMANDS_EXT5	= "agent";					// РїСЂРѕРїСѓСЃРє СЌС‚РѕР№ Р·Р°РїРёСЃРё 
+static std::string IVR_COMMANDS_EXT6	= "from-internal-xfer";		// РїСЂРѕРїСѓСЃРє СЌС‚РѕР№ Р·Р°РїРёСЃРё (РїРµСЂРµРІРѕРґ Р·РІРѕРЅРєР°)
 
-static std::string IVR_COMMANDS_IK1 = "rec_IK_AllBusy";				// пропуск этой записи (IVR для ИК отдела)
-static std::string IVR_COMMANDS_IK2 = "rec_IK_Welcome";				// пропуск этой записи (IVR для ИК отдела)
-static std::string IVR_COMMANDS_IK3 = "rec_IK_WorkHours";			// пропуск этой записи (IVR для ИК отдела)
+static std::string IVR_COMMANDS_IK1 = "rec_IK_AllBusy";				// РїСЂРѕРїСѓСЃРє СЌС‚РѕР№ Р·Р°РїРёСЃРё (IVR РґР»СЏ РРљ РѕС‚РґРµР»Р°)
+static std::string IVR_COMMANDS_IK2 = "rec_IK_Welcome";				// РїСЂРѕРїСѓСЃРє СЌС‚РѕР№ Р·Р°РїРёСЃРё (IVR РґР»СЏ РРљ РѕС‚РґРµР»Р°)
+static std::string IVR_COMMANDS_IK3 = "rec_IK_WorkHours";			// РїСЂРѕРїСѓСЃРє СЌС‚РѕР№ Р·Р°РїРёСЃРё (IVR РґР»СЏ РРљ РѕС‚РґРµР»Р°)
 
 static std::string IVR_REQUEST		= "asterisk -rx \"core show channels verbose\" | grep -E \"" + IVR_COMMANDS + "\" " 
 																			   + " | grep -v \"" + IVR_COMMANDS_EXT1 + "\" " 
@@ -40,24 +40,24 @@ class IVR : public IAsteriskData
 public:	
 	enum class ECallerId
 	{
-		Unknown = 0,		// неизвестный
+		Unknown = 0,		// РЅРµРёР·РІРµСЃС‚РЅС‹Р№
 		Domru_220220,		// 220-220
 		Domru_220000,		// 220-000
 		Sts,				// STS
 		Comagic,			// COMAGIC
-		BeelineMih,			// MIH (михайловка)
+		BeelineMih,			// MIH (РјРёС…Р°Р№Р»РѕРІРєР°)
 	};
 
 	struct IvrCalls
 	{
-		std::string phone	= "null";					// текущий номер телефона который в IVR слушает
-		std::string waiting = "null";					// время в (сек) которое он слушает	
-		ECallerId callerID = ECallerId::Unknown;		// откуда пришел звонок		
+		std::string phone	= "null";					// С‚РµРєСѓС‰РёР№ РЅРѕРјРµСЂ С‚РµР»РµС„РѕРЅР° РєРѕС‚РѕСЂС‹Р№ РІ IVR СЃР»СѓС€Р°РµС‚
+		std::string waiting = "null";					// РІСЂРµРјСЏ РІ (СЃРµРє) РєРѕС‚РѕСЂРѕРµ РѕРЅ СЃР»СѓС€Р°РµС‚	
+		ECallerId callerID = ECallerId::Unknown;		// РѕС‚РєСѓРґР° РїСЂРёС€РµР» Р·РІРѕРЅРѕРє		
 	
 		inline bool check() const noexcept
 		{
-			// если в phone или waiting есть подстрока "null" 
-			// или callerID == Unknown — сразу false
+			// РµСЃР»Рё РІ phone РёР»Рё waiting РµСЃС‚СЊ РїРѕРґСЃС‚СЂРѕРєР° "null" 
+			// РёР»Рё callerID == Unknown вЂ” СЃСЂР°Р·Сѓ false
 			if (phone.find("null")		!= std::string::npos	||
 				waiting.find("null")	!= std::string::npos	||
 				callerID				== ECallerId::Unknown)
@@ -74,7 +74,7 @@ public:
 
 	void Start() override;
 	void Stop() override;
-	void Parsing() override;							// разбор сырых данных	
+	void Parsing() override;							// СЂР°Р·Р±РѕСЂ СЃС‹СЂС‹С… РґР°РЅРЅС‹С…	
 
 private:
 	std::vector<IvrCalls>	m_listIvr;	
@@ -82,15 +82,15 @@ private:
 	Log						m_log;
 
 	bool CreateCallers(const std::string&, IvrCalls&);
-	bool CheckCallers(const IvrCalls &);												// проверка корреткности стуктуры звонка
+	bool CheckCallers(const IvrCalls &);												// РїСЂРѕРІРµСЂРєР° РєРѕСЂСЂРµС‚РєРЅРѕСЃС‚Рё СЃС‚СѓРєС‚СѓСЂС‹ Р·РІРѕРЅРєР°
 	bool IsExistListIvr();
 	ECallerId StringToEnum(const std::string &_str);
 	std::string EnumToString(ECallerId _caller);
 
-	void InsertIvrCalls();																// вставка в БД данных
-	void UpdateIvrCalls(int _id, const IvrCalls &_caller);								// обновдление звонка IVR по БД
-	bool IsExistIvrPhone(const IvrCalls &_caller, std::string &_errorDescription);		// есть ли такой номер в БД
-	int GetPhoneIDIvr(const std::string &_phone);										// id phone по БД
+	void InsertIvrCalls();																// РІСЃС‚Р°РІРєР° РІ Р‘Р” РґР°РЅРЅС‹С…
+	void UpdateIvrCalls(int _id, const IvrCalls &_caller);								// РѕР±РЅРѕРІРґР»РµРЅРёРµ Р·РІРѕРЅРєР° IVR РїРѕ Р‘Р”
+	bool IsExistIvrPhone(const IvrCalls &_caller, std::string &_errorDescription);		// РµСЃС‚СЊ Р»Рё С‚Р°РєРѕР№ РЅРѕРјРµСЂ РІ Р‘Р”
+	int GetPhoneIDIvr(const std::string &_phone);										// id phone РїРѕ Р‘Р”
 
 };
 
