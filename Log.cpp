@@ -120,7 +120,8 @@ void Log::ToBase(Command _command)
 	m_sql->Disconnect();
 }
 
-void Log::ToFile(ELogType _type, const std::string &_message){
+void Log::ToFile(ELogType _type, const std::string &_message)
+{
 	
 	if (!IsReady())
 	{

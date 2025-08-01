@@ -88,7 +88,7 @@ bool HistoryIvr::Insert(const Table &_field, std::string &_errorDescription)
 
 	if (!m_sql->Request(query, _errorDescription))
 	{
-		_errorDescription += METHOD_NAME + StringFormat("\tquery -> %s", query);
+		_errorDescription += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
 		m_log.ToFile(ELogType::Error, _errorDescription);
 
 		m_sql->Disconnect();

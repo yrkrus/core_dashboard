@@ -66,7 +66,6 @@ static void _sigint_handler(int)
 }
 
 
-
 int main(int argc, char *argv[])
 {
     // bild
@@ -102,17 +101,18 @@ int main(int argc, char *argv[])
 
         auto stop = std::chrono::steady_clock::now();
         auto execute_ms = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-        std::cout << "\ntime execute code: " << execute_ms.count() << " ms\n";         
+        
+        printf("\n%s time execute code: %u ms", GetCurrentDateTime().c_str(), execute_ms.count());
 
         std::this_thread::sleep_for(std::chrono::milliseconds(10));   
     }
        
-    std::cout << "\nStopping server...\n";
+    std::cout << "\nServer stopping ...";
         
     _Destroy();
         
     server.stop();
-    std::cout << "Server stopped.\n";
+    std::cout << "\nServer stopped\n";
     return 0;   
 
    

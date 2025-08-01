@@ -119,7 +119,7 @@ bool Queue::CreateQueueCallers(const std::string &_lines, QueueCalls &_queueCall
 		// TODO тут в лог запись если не прошел по какой то причине 
 		if (!CheckCallers(_queueCaller))
 		{
-			std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines);
+			std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
 			m_log.ToFile(ELogType::Error, error);
 
 			return false;
