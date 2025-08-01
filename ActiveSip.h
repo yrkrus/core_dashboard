@@ -19,31 +19,31 @@ using QueueList = std::vector<EQueueNumber>;
 
 namespace active_sip 
 {
-	// структура оператора 
+	// СЃС‚СЂСѓРєС‚СѓСЂР° РѕРїРµСЂР°С‚РѕСЂР° 
 	struct Operator 
 	{
-		std::string sipNumber = "null";		// номер sip орератора
-		QueueList	queueList;				// очереди в которых сидит орператор
-		bool isOnHold = false ;             // находится ли оператор в статусе OnHold
-		std::string phoneOnHold = "null";	// телефон с которым идет onHold		
+		std::string sipNumber = "null";		// РЅРѕРјРµСЂ sip РѕСЂРµСЂР°С‚РѕСЂР°
+		QueueList	queueList;				// РѕС‡РµСЂРµРґРё РІ РєРѕС‚РѕСЂС‹С… СЃРёРґРёС‚ РѕСЂРїРµСЂР°С‚РѕСЂ
+		bool isOnHold = false ;             // РЅР°С…РѕРґРёС‚СЃСЏ Р»Рё РѕРїРµСЂР°С‚РѕСЂ РІ СЃС‚Р°С‚СѓСЃРµ OnHold
+		std::string phoneOnHold = "null";	// С‚РµР»РµС„РѕРЅ СЃ РєРѕС‚РѕСЂС‹Рј РёРґРµС‚ onHold		
 	};
 	using OperatorList = std::vector<Operator>;
 	
-	// структура текущего звонка
+	// СЃС‚СЂСѓРєС‚СѓСЂР° С‚РµРєСѓС‰РµРіРѕ Р·РІРѕРЅРєР°
 	struct ActiveCall 
 	{
-		std::string phone = "null";			// текущий номер телфеона с которым ведется беседа
-		std::string sip = "null";			// внутренний sip который ведет беседу
-		std::string talkTime = "null";		// время развговора  //TODO потом в int переделать		
+		std::string phone = "null";			// С‚РµРєСѓС‰РёР№ РЅРѕРјРµСЂ С‚РµР»С„РµРѕРЅР° СЃ РєРѕС‚РѕСЂС‹Рј РІРµРґРµС‚СЃСЏ Р±РµСЃРµРґР°
+		std::string sip = "null";			// РІРЅСѓС‚СЂРµРЅРЅРёР№ sip РєРѕС‚РѕСЂС‹Р№ РІРµРґРµС‚ Р±РµСЃРµРґСѓ
+		std::string talkTime = "null";		// РІСЂРµРјСЏ СЂР°Р·РІРіРѕРІРѕСЂР°  //TODO РїРѕС‚РѕРј РІ int РїРµСЂРµРґРµР»Р°С‚СЊ		
 	};
 	using ActiveCallList = std::vector<ActiveCall>;
 
-	// структура onHold
+	// СЃС‚СЂСѓРєС‚СѓСЂР° onHold
 	struct OnHold 
 	{
-		int id = 0;						// id по БД
-		std::string sip = "null";		// sip с которым был разговор
-		std::string phone = "null";		// телефон 		
+		int id = 0;						// id РїРѕ Р‘Р”
+		std::string sip = "null";		// sip СЃ РєРѕС‚РѕСЂС‹Рј Р±С‹Р» СЂР°Р·РіРѕРІРѕСЂ
+		std::string phone = "null";		// С‚РµР»РµС„РѕРЅ 		
 	
 		inline bool check() const noexcept
 		{
@@ -60,7 +60,7 @@ namespace active_sip
 	using OnHoldList = std::vector<OnHold>;
 
 
-	class ActiveSession : public IAsteriskData	// класс в котором будет жить данные по активным сессиям операторов 
+	class ActiveSession : public IAsteriskData	// РєР»Р°СЃСЃ РІ РєРѕС‚РѕСЂРѕРј Р±СѓРґРµС‚ Р¶РёС‚СЊ РґР°РЅРЅС‹Рµ РїРѕ Р°РєС‚РёРІРЅС‹Рј СЃРµСЃСЃРёСЏРј РѕРїРµСЂР°С‚РѕСЂРѕРІ 
 	{
 	public:
 		ActiveSession(SP_Queue &_queue);
@@ -68,59 +68,59 @@ namespace active_sip
 
 		void Start() override;
 		void Stop() override;
-		void Parsing() override;				// разбор сырых данных
+		void Parsing() override;				// СЂР°Р·Р±РѕСЂ СЃС‹СЂС‹С… РґР°РЅРЅС‹С…
 		
 	private:
-		SP_Queue	&m_queueSession;	// ссылка на очереди
+		SP_Queue	&m_queueSession;	// СЃСЃС‹Р»РєР° РЅР° РѕС‡РµСЂРµРґРё
 		
-		OperatorList	m_listOperators;	// TODO может лучше в shared_ptr потом обернуть
-		ActiveCallList	m_listCall;			// TODO может лучше в shared_ptr потом обернуть
+		OperatorList	m_listOperators;	// TODO РјРѕР¶РµС‚ Р»СѓС‡С€Рµ РІ shared_ptr РїРѕС‚РѕРј РѕР±РµСЂРЅСѓС‚СЊ
+		ActiveCallList	m_listCall;			// TODO РјРѕР¶РµС‚ Р»СѓС‡С€Рµ РІ shared_ptr РїРѕС‚РѕРј РѕР±РµСЂРЅСѓС‚СЊ
 		SP_SQL			m_sql;		
-		IFile			m_queue;			// запрос информации по текущим очередям
+		IFile			m_queue;			// Р·Р°РїСЂРѕСЃ РёРЅС„РѕСЂРјР°С†РёРё РїРѕ С‚РµРєСѓС‰РёРј РѕС‡РµСЂРµРґСЏРј
 		Log				m_log;
 
 
-		void CreateListActiveSessionOperators();			// активные операторы в линии
-		void CreateListActiveSessionCalls();				// активные звонки в линии
+		void CreateListActiveSessionOperators();			// Р°РєС‚РёРІРЅС‹Рµ РѕРїРµСЂР°С‚РѕСЂС‹ РІ Р»РёРЅРёРё
+		void CreateListActiveSessionCalls();				// Р°РєС‚РёРІРЅС‹Рµ Р·РІРѕРЅРєРё РІ Р»РёРЅРёРё
 
-		void CreateActiveOperators(const EQueueNumber _queue);	// найдем активных операторов в линии
-		void CreateOperator(const std::string &_lines, Operator &, EQueueNumber);	// создание структуры Operator					
-		std::string FindSipNumber(const std::string &_lines);	// парсинг нахождения активного sip оператора
-		bool FindOnHoldStatus(const std::string &_lines);		// парсинг нахождения статуса onHold
+		void CreateActiveOperators(const EQueueNumber _queue);	// РЅР°Р№РґРµРј Р°РєС‚РёРІРЅС‹С… РѕРїРµСЂР°С‚РѕСЂРѕРІ РІ Р»РёРЅРёРё
+		void CreateOperator(const std::string &_lines, Operator &, EQueueNumber);	// СЃРѕР·РґР°РЅРёРµ СЃС‚СЂСѓРєС‚СѓСЂС‹ Operator					
+		std::string FindSipNumber(const std::string &_lines);	// РїР°СЂСЃРёРЅРі РЅР°С…РѕР¶РґРµРЅРёСЏ Р°РєС‚РёРІРЅРѕРіРѕ sip РѕРїРµСЂР°С‚РѕСЂР°
+		bool FindOnHoldStatus(const std::string &_lines);		// РїР°СЂСЃРёРЅРі РЅР°С…РѕР¶РґРµРЅРёСЏ СЃС‚Р°С‚СѓСЃР° onHold
 		
-		void InsertAndUpdateQueueNumberOperators(); // добавление\обновление номена очереди оператора в БД
-		bool IsExistListOperators();		// есть ли данные в m_listOperators
-		bool IsExistListOperatorsOnHold();	// есть ли данные в m_listOperators.onHold
-		bool IsExistListCalls();			// есть ли данные в m_listCall
+		void InsertAndUpdateQueueNumberOperators(); // РґРѕР±Р°РІР»РµРЅРёРµ\РѕР±РЅРѕРІР»РµРЅРёРµ РЅРѕРјРµРЅР° РѕС‡РµСЂРµРґРё РѕРїРµСЂР°С‚РѕСЂР° РІ Р‘Р”
+		bool IsExistListOperators();		// РµСЃС‚СЊ Р»Рё РґР°РЅРЅС‹Рµ РІ m_listOperators
+		bool IsExistListOperatorsOnHold();	// РµСЃС‚СЊ Р»Рё РґР°РЅРЅС‹Рµ РІ m_listOperators.onHold
+		bool IsExistListCalls();			// РµСЃС‚СЊ Р»Рё РґР°РЅРЅС‹Рµ РІ m_listCall
 
-		bool IsExistOperatorsQueue();	// существует ли хоть 1 запись в БД sip+очередь
-		bool IsExistOperatorsQueue(const std::string &_sip, const std::string &_queue);	// существует ли хоть запись в БД sip+очередь
-		void ClearOperatorsQueue();		// очистка таблицы operators_queue
-		void CheckOperatorsQueue();		// проверка есть ли оператор еще в очереди
-		bool GetActiveQueueOperators(OperatorList &_activeList, std::string &_errorDescription); // активные очереди операторов в БД
-		void DeleteOperatorsQueue(const std::string &_sip, const std::string &_queue);	// удаление очереди оператора из БД таблицы operators_queue
-		void DeleteOperatorsQueue(const std::string &_sip);								// удаление очереди оператора из БД таблицы operators_queue весь sip
-		void InsertOperatorsQueue(const std::string &_sip, const std::string &_queue);	// добавление очереди оператору в БД таблицы operators_queue
+		bool IsExistOperatorsQueue();	// СЃСѓС‰РµСЃС‚РІСѓРµС‚ Р»Рё С…РѕС‚СЊ 1 Р·Р°РїРёСЃСЊ РІ Р‘Р” sip+РѕС‡РµСЂРµРґСЊ
+		bool IsExistOperatorsQueue(const std::string &_sip, const std::string &_queue);	// СЃСѓС‰РµСЃС‚РІСѓРµС‚ Р»Рё С…РѕС‚СЊ Р·Р°РїРёСЃСЊ РІ Р‘Р” sip+РѕС‡РµСЂРµРґСЊ
+		void ClearOperatorsQueue();		// РѕС‡РёСЃС‚РєР° С‚Р°Р±Р»РёС†С‹ operators_queue
+		void CheckOperatorsQueue();		// РїСЂРѕРІРµСЂРєР° РµСЃС‚СЊ Р»Рё РѕРїРµСЂР°С‚РѕСЂ РµС‰Рµ РІ РѕС‡РµСЂРµРґРё
+		bool GetActiveQueueOperators(OperatorList &_activeList, std::string &_errorDescription); // Р°РєС‚РёРІРЅС‹Рµ РѕС‡РµСЂРµРґРё РѕРїРµСЂР°С‚РѕСЂРѕРІ РІ Р‘Р”
+		void DeleteOperatorsQueue(const std::string &_sip, const std::string &_queue);	// СѓРґР°Р»РµРЅРёРµ РѕС‡РµСЂРµРґРё РѕРїРµСЂР°С‚РѕСЂР° РёР· Р‘Р” С‚Р°Р±Р»РёС†С‹ operators_queue
+		void DeleteOperatorsQueue(const std::string &_sip);								// СѓРґР°Р»РµРЅРёРµ РѕС‡РµСЂРµРґРё РѕРїРµСЂР°С‚РѕСЂР° РёР· Р‘Р” С‚Р°Р±Р»РёС†С‹ operators_queue РІРµСЃСЊ sip
+		void InsertOperatorsQueue(const std::string &_sip, const std::string &_queue);	// РґРѕР±Р°РІР»РµРЅРёРµ РѕС‡РµСЂРµРґРё РѕРїРµСЂР°С‚РѕСЂСѓ РІ Р‘Р” С‚Р°Р±Р»РёС†С‹ operators_queue
 	
-		bool CreateActiveCall(const std::string &_lines, const std::string &_sipNumber, ActiveCall &_caller); // парсинг и нахождение активного звонка с которым разговаривает оператор
-		bool CheckActiveCall(const ActiveCall &_caller); // проверка корректности структуры звонка
+		bool CreateActiveCall(const std::string &_lines, const std::string &_sipNumber, ActiveCall &_caller); // РїР°СЂСЃРёРЅРі Рё РЅР°С…РѕР¶РґРµРЅРёРµ Р°РєС‚РёРІРЅРѕРіРѕ Р·РІРѕРЅРєР° СЃ РєРѕС‚РѕСЂС‹Рј СЂР°Р·РіРѕРІР°СЂРёРІР°РµС‚ РѕРїРµСЂР°С‚РѕСЂ
+		bool CheckActiveCall(const ActiveCall &_caller); // РїСЂРѕРІРµСЂРєР° РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚Рё СЃС‚СЂСѓРєС‚СѓСЂС‹ Р·РІРѕРЅРєР°
 
-		void UpdateActiveSessionCalls(); // обновление текущих звонков операторов
+		void UpdateActiveSessionCalls(); // РѕР±РЅРѕРІР»РµРЅРёРµ С‚РµРєСѓС‰РёС… Р·РІРѕРЅРєРѕРІ РѕРїРµСЂР°С‚РѕСЂРѕРІ
 		
-		void UpdateTalkCallOperator();								// обновление данных таблицы queue о том с кем сейчас разговаривает оператор
-		bool IsExistTalkCallOperator(const std::string &_phone);	// существует ли такой номер в таблице queue чтобы добавить sip оператора который с разговор ведет
-		int  GetLastTalkCallOperatorID(const std::string &_phone);	// получение последнего ID актуального разговора текущего оператора в таблице queue
+		void UpdateTalkCallOperator();								// РѕР±РЅРѕРІР»РµРЅРёРµ РґР°РЅРЅС‹С… С‚Р°Р±Р»РёС†С‹ queue Рѕ С‚РѕРј СЃ РєРµРј СЃРµР№С‡Р°СЃ СЂР°Р·РіРѕРІР°СЂРёРІР°РµС‚ РѕРїРµСЂР°С‚РѕСЂ
+		bool IsExistTalkCallOperator(const std::string &_phone);	// СЃСѓС‰РµСЃС‚РІСѓРµС‚ Р»Рё С‚Р°РєРѕР№ РЅРѕРјРµСЂ РІ С‚Р°Р±Р»РёС†Рµ queue С‡С‚РѕР±С‹ РґРѕР±Р°РІРёС‚СЊ sip РѕРїРµСЂР°С‚РѕСЂР° РєРѕС‚РѕСЂС‹Р№ СЃ СЂР°Р·РіРѕРІРѕСЂ РІРµРґРµС‚
+		int  GetLastTalkCallOperatorID(const std::string &_phone);	// РїРѕР»СѓС‡РµРЅРёРµ РїРѕСЃР»РµРґРЅРµРіРѕ ID Р°РєС‚СѓР°Р»СЊРЅРѕРіРѕ СЂР°Р·РіРѕРІРѕСЂР° С‚РµРєСѓС‰РµРіРѕ РѕРїРµСЂР°С‚РѕСЂР° РІ С‚Р°Р±Р»РёС†Рµ queue
 	
 		// onHold 
-		void UpdateOnHoldStatusOperator();					// обновление статуса onHold
-		void AddPhoneOnHoldInOperator(Operator &); // добавление номера телефона который на onHold сейчас		
-		bool GetActiveOnHold(OnHoldList &_onHoldList, std::string &_errorDescription);	// получение всех onHold стаутсов которые есть в БД
+		void UpdateOnHoldStatusOperator();					// РѕР±РЅРѕРІР»РµРЅРёРµ СЃС‚Р°С‚СѓСЃР° onHold
+		void AddPhoneOnHoldInOperator(Operator &); // РґРѕР±Р°РІР»РµРЅРёРµ РЅРѕРјРµСЂР° С‚РµР»РµС„РѕРЅР° РєРѕС‚РѕСЂС‹Р№ РЅР° onHold СЃРµР№С‡Р°СЃ		
+		bool GetActiveOnHold(OnHoldList &_onHoldList, std::string &_errorDescription);	// РїРѕР»СѓС‡РµРЅРёРµ РІСЃРµС… onHold СЃС‚Р°СѓС‚СЃРѕРІ РєРѕС‚РѕСЂС‹Рµ РµСЃС‚СЊ РІ Р‘Р”
 		
-		void DisableOnHold(const OnHoldList &_onHoldList);		// очистка всех операторов которые в статусе onHold по БД 
-		bool DisableHold(const OnHold &_hold, std::string &_errorDescription);	// отключение onHold в БД
-		bool AddHold(const Operator&, std::string &_errorDescription);	// добавление нового onHold в БД
+		void DisableOnHold(const OnHoldList &_onHoldList);		// РѕС‡РёСЃС‚РєР° РІСЃРµС… РѕРїРµСЂР°С‚РѕСЂРѕРІ РєРѕС‚РѕСЂС‹Рµ РІ СЃС‚Р°С‚СѓСЃРµ onHold РїРѕ Р‘Р” 
+		bool DisableHold(const OnHold &_hold, std::string &_errorDescription);	// РѕС‚РєР»СЋС‡РµРЅРёРµ onHold РІ Р‘Р”
+		bool AddHold(const Operator&, std::string &_errorDescription);	// РґРѕР±Р°РІР»РµРЅРёРµ РЅРѕРІРѕРіРѕ onHold РІ Р‘Р”
 
-		void CheckOnHold(OnHoldList &_onHoldList);		// Основная проверка отключение\добавление onHold 
+		void CheckOnHold(OnHoldList &_onHoldList);		// РћСЃРЅРѕРІРЅР°СЏ РїСЂРѕРІРµСЂРєР° РѕС‚РєР»СЋС‡РµРЅРёРµ\РґРѕР±Р°РІР»РµРЅРёРµ onHold 
 	};
 }
 using SP_ActiveSession = std::shared_ptr<active_sip::ActiveSession>;

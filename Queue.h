@@ -1,5 +1,5 @@
   
-//	      парсинг звонков попадающих в Очередь		
+//	      РїР°СЂСЃРёРЅРі Р·РІРѕРЅРєРѕРІ РїРѕРїР°РґР°СЋС‰РёС… РІ РћС‡РµСЂРµРґСЊ		
 
 #ifndef QUEUE_H
 #define QUEUE_H
@@ -17,13 +17,13 @@ static std::string QUEUE_COMMANDS		= "Queue|to-atsaero5005";
 static std::string QUEUE_COMMANDS_EXT1	= "App";
 static std::string QUEUE_REQUEST		= "asterisk -rx \"core show channels verbose\" | grep -E \"" + QUEUE_COMMANDS + "\" " + " | grep -v \"" + QUEUE_COMMANDS_EXT1 + "\"";
 
-enum class EQueueNumber // ВАЖНО в методе bool Status::CreateCommand используется for 1..2 
+enum class EQueueNumber // Р’РђР–РќРћ РІ РјРµС‚РѕРґРµ bool Status::CreateCommand РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ for 1..2 
 {
 	Unknown = 0,
 	e5000,	
 	e5050,
-	e5000_e5050,	// сочетение 5000+5050 
-	e5005,			// очередь для бабы железной
+	e5000_e5050,	// СЃРѕС‡РµС‚РµРЅРёРµ 5000+5050 
+	e5005,			// РѕС‡РµСЂРµРґСЊ РґР»СЏ Р±Р°Р±С‹ Р¶РµР»РµР·РЅРѕР№
 };
 using QueueList = std::vector<EQueueNumber>;
 
@@ -36,14 +36,14 @@ class Queue : public IAsteriskData
 public:	
 	struct QueueCalls
 	{
-		std::string phone	= "null";					// текущий номер телефона который в очереди сейчас
-		std::string waiting = "null";					// время в (сек) которое сейчас в очереди находится
-		EQueueNumber queue	= EQueueNumber::Unknown;	// номер очереди
+		std::string phone	= "null";					// С‚РµРєСѓС‰РёР№ РЅРѕРјРµСЂ С‚РµР»РµС„РѕРЅР° РєРѕС‚РѕСЂС‹Р№ РІ РѕС‡РµСЂРµРґРё СЃРµР№С‡Р°СЃ
+		std::string waiting = "null";					// РІСЂРµРјСЏ РІ (СЃРµРє) РєРѕС‚РѕСЂРѕРµ СЃРµР№С‡Р°СЃ РІ РѕС‡РµСЂРµРґРё РЅР°С…РѕРґРёС‚СЃСЏ
+		EQueueNumber queue	= EQueueNumber::Unknown;	// РЅРѕРјРµСЂ РѕС‡РµСЂРµРґРё
 	
 		inline bool check() const noexcept
 		{
-			// если в phone или waiting есть подстрока "null" 
-			// или callerID == Unknown — сразу false
+			// РµСЃР»Рё РІ phone РёР»Рё waiting РµСЃС‚СЊ РїРѕРґСЃС‚СЂРѕРєР° "null" 
+			// РёР»Рё callerID == Unknown вЂ” СЃСЂР°Р·Сѓ false
 			if (phone.find("null")		!= std::string::npos ||
 				waiting.find("null")	!= std::string::npos ||
 				queue					== EQueueNumber::Unknown)
@@ -56,7 +56,7 @@ public:
 	};
 	using QueueCallsList = std::vector<QueueCalls>;
 	
-	struct CallsInBase	// структура из БД
+	struct CallsInBase	// СЃС‚СЂСѓРєС‚СѓСЂР° РёР· Р‘Р”
 	{
 		std::string id			= "-1";
 		std::string phone		= "null";
@@ -71,53 +71,53 @@ public:
 
 	void Start() override;
 	void Stop() override;
-	void Parsing() override;							// разбор сырых данных
+	void Parsing() override;							// СЂР°Р·Р±РѕСЂ СЃС‹СЂС‹С… РґР°РЅРЅС‹С…
 
-	void UpdateCallSuccess();							// обновление данных когда нет активных операторов на линии
+	void UpdateCallSuccess();							// РѕР±РЅРѕРІР»РµРЅРёРµ РґР°РЅРЅС‹С… РєРѕРіРґР° РЅРµС‚ Р°РєС‚РёРІРЅС‹С… РѕРїРµСЂР°С‚РѕСЂРѕРІ РЅР° Р»РёРЅРёРё
 	private:
 	QueueCallsList		m_listQueue;
 	SP_SQL				m_sql;
 	Log					m_log;
 	
-	void UpdateCalls(const QueueCallsList &_callList);  			// обновление звонков
+	void UpdateCalls(const QueueCallsList &_callList);  			// РѕР±РЅРѕРІР»РµРЅРёРµ Р·РІРѕРЅРєРѕРІ
 
-	bool FindQueueCallers();									// поиск текущих активных звонков
+	bool FindQueueCallers();									// РїРѕРёСЃРє С‚РµРєСѓС‰РёС… Р°РєС‚РёРІРЅС‹С… Р·РІРѕРЅРєРѕРІ
 
 	bool CreateQueueCallers(const std::string&, QueueCalls&);
-	bool CheckCallers(const QueueCalls&);						// проверка корреткности стуктуры звонка
+	bool CheckCallers(const QueueCalls&);						// РїСЂРѕРІРµСЂРєР° РєРѕСЂСЂРµС‚РєРЅРѕСЃС‚Рё СЃС‚СѓРєС‚СѓСЂС‹ Р·РІРѕРЅРєР°
 
-	bool IsExistQueueCalls();									// есть ли звонки в памяти
+	bool IsExistQueueCalls();									// РµСЃС‚СЊ Р»Рё Р·РІРѕРЅРєРё РІ РїР°РјСЏС‚Рё
 
-	void InsertQueueCalls();							// добавление данных в БД
-	void InsertCall(const QueueCalls &_call);			// добавление нового звонка
-	void InsertCallVirtualOperator(const QueueCalls &_call);	// добавление нового звонка (виртуальный оператор лиза)
-	bool UpdateCall(int _id, const QueueCalls &_call, std::string &_errorDescription); // обновление существующего звонка
-	bool UpdateCallVirualOperator(int _id, const QueueCalls &_call, std::string &_errorDescription); // обновление существующего звонка (виртуальный оператор)
-	void UpdateCallFail(const QueueCallsList &_calls);	// обновление данных если звонок был в очереди, но не дождался ответа от оператора
-	//void UpdateCallFail();								// обновление данных если звонок был в очереди, но не дождался ответа от оператора
-	void UpdateCallIvr(const QueueCallsList &_calls);	// обновление данных когда у нас звонок из IVR попал в очередь или на виртуального оператора
-	void UpdateCallIvrToQueue(const QueueCallsList &_calls);	// звонок из IVR попал в очередь
-	void UpdateCallIvrToVirtualOperator (const QueueCallsList &_calls);	// звонок из IVR попал на виртуального оператора
+	void InsertQueueCalls();							// РґРѕР±Р°РІР»РµРЅРёРµ РґР°РЅРЅС‹С… РІ Р‘Р”
+	void InsertCall(const QueueCalls &_call);			// РґРѕР±Р°РІР»РµРЅРёРµ РЅРѕРІРѕРіРѕ Р·РІРѕРЅРєР°
+	void InsertCallVirtualOperator(const QueueCalls &_call);	// РґРѕР±Р°РІР»РµРЅРёРµ РЅРѕРІРѕРіРѕ Р·РІРѕРЅРєР° (РІРёСЂС‚СѓР°Р»СЊРЅС‹Р№ РѕРїРµСЂР°С‚РѕСЂ Р»РёР·Р°)
+	bool UpdateCall(int _id, const QueueCalls &_call, std::string &_errorDescription); // РѕР±РЅРѕРІР»РµРЅРёРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РµРіРѕ Р·РІРѕРЅРєР°
+	bool UpdateCallVirualOperator(int _id, const QueueCalls &_call, std::string &_errorDescription); // РѕР±РЅРѕРІР»РµРЅРёРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РµРіРѕ Р·РІРѕРЅРєР° (РІРёСЂС‚СѓР°Р»СЊРЅС‹Р№ РѕРїРµСЂР°С‚РѕСЂ)
+	void UpdateCallFail(const QueueCallsList &_calls);	// РѕР±РЅРѕРІР»РµРЅРёРµ РґР°РЅРЅС‹С… РµСЃР»Рё Р·РІРѕРЅРѕРє Р±С‹Р» РІ РѕС‡РµСЂРµРґРё, РЅРѕ РЅРµ РґРѕР¶РґР°Р»СЃСЏ РѕС‚РІРµС‚Р° РѕС‚ РѕРїРµСЂР°С‚РѕСЂР°
+	//void UpdateCallFail();								// РѕР±РЅРѕРІР»РµРЅРёРµ РґР°РЅРЅС‹С… РµСЃР»Рё Р·РІРѕРЅРѕРє Р±С‹Р» РІ РѕС‡РµСЂРµРґРё, РЅРѕ РЅРµ РґРѕР¶РґР°Р»СЃСЏ РѕС‚РІРµС‚Р° РѕС‚ РѕРїРµСЂР°С‚РѕСЂР°
+	void UpdateCallIvr(const QueueCallsList &_calls);	// РѕР±РЅРѕРІР»РµРЅРёРµ РґР°РЅРЅС‹С… РєРѕРіРґР° Сѓ РЅР°СЃ Р·РІРѕРЅРѕРє РёР· IVR РїРѕРїР°Р» РІ РѕС‡РµСЂРµРґСЊ РёР»Рё РЅР° РІРёСЂС‚СѓР°Р»СЊРЅРѕРіРѕ РѕРїРµСЂР°С‚РѕСЂР°
+	void UpdateCallIvrToQueue(const QueueCallsList &_calls);	// Р·РІРѕРЅРѕРє РёР· IVR РїРѕРїР°Р» РІ РѕС‡РµСЂРµРґСЊ
+	void UpdateCallIvrToVirtualOperator (const QueueCallsList &_calls);	// Р·РІРѕРЅРѕРє РёР· IVR РїРѕРїР°Р» РЅР° РІРёСЂС‚СѓР°Р»СЊРЅРѕРіРѕ РѕРїРµСЂР°С‚РѕСЂР°
 	
-	void UpdateCallSuccess(const QueueCallsList &_calls);				// обновление данных когда разговор успешно состоялся
-	void UpdateCallSuccessRealOperator(const QueueCallsList &_calls);	// разговор успешно состоялся реальный оператор
-	void UpdateCallSuccessVirtualOperator(const QueueCallsList &_calls);// разговор успешно состоялся виртуальный оператор
+	void UpdateCallSuccess(const QueueCallsList &_calls);				// РѕР±РЅРѕРІР»РµРЅРёРµ РґР°РЅРЅС‹С… РєРѕРіРґР° СЂР°Р·РіРѕРІРѕСЂ СѓСЃРїРµС€РЅРѕ СЃРѕСЃС‚РѕСЏР»СЃСЏ
+	void UpdateCallSuccessRealOperator(const QueueCallsList &_calls);	// СЂР°Р·РіРѕРІРѕСЂ СѓСЃРїРµС€РЅРѕ СЃРѕСЃС‚РѕСЏР»СЃСЏ СЂРµР°Р»СЊРЅС‹Р№ РѕРїРµСЂР°С‚РѕСЂ
+	void UpdateCallSuccessVirtualOperator(const QueueCallsList &_calls);// СЂР°Р·РіРѕРІРѕСЂ СѓСЃРїРµС€РЅРѕ СЃРѕСЃС‚РѕСЏР»СЃСЏ РІРёСЂС‚СѓР°Р»СЊРЅС‹Р№ РѕРїРµСЂР°С‚РѕСЂ
 	
-	bool IsExistCall(EQueueNumber _queue, const std::string &_phone);	// есть ли уже такой номер в БД
-	bool IsExistCallVirtualOperator(EQueueNumber _queue, const std::string &_phone);	// есть ли уже такой номер в БД (виртуальный оператор)
+	bool IsExistCall(EQueueNumber _queue, const std::string &_phone);	// РµСЃС‚СЊ Р»Рё СѓР¶Рµ С‚Р°РєРѕР№ РЅРѕРјРµСЂ РІ Р‘Р”
+	bool IsExistCallVirtualOperator(EQueueNumber _queue, const std::string &_phone);	// РµСЃС‚СЊ Р»Рё СѓР¶Рµ С‚Р°РєРѕР№ РЅРѕРјРµСЂ РІ Р‘Р” (РІРёСЂС‚СѓР°Р»СЊРЅС‹Р№ РѕРїРµСЂР°С‚РѕСЂ)
 
-	int GetLastQueueCallId(const std::string &_phone);					// id записи по БД о звонке
-	int GetLastQueueVirtualOperatorCallId(const std::string &_phone);	// id записи по БД о звонке(виртуальный оператор)
+	int GetLastQueueCallId(const std::string &_phone);					// id Р·Р°РїРёСЃРё РїРѕ Р‘Р” Рѕ Р·РІРѕРЅРєРµ
+	int GetLastQueueVirtualOperatorCallId(const std::string &_phone);	// id Р·Р°РїРёСЃРё РїРѕ Р‘Р” Рѕ Р·РІРѕРЅРєРµ(РІРёСЂС‚СѓР°Р»СЊРЅС‹Р№ РѕРїРµСЂР°С‚РѕСЂ)
 
-	bool GetCallsInBase(CallsInBaseList &_vcalls, const QueueCallsList &_queueCalls, std::string &_errorDescription); // получение записей из БД 
-	bool GetCallsInBase(CallsInBaseList &_vcalls, std::string &_errorDescription);						// получение записей из БД 
-	bool GetCallsInBaseVirtualOperator(CallsInBaseList &_vcalls, const QueueCallsList &_queueCalls, std::string &_errorDescription); // получение записей из БД (виртуальный оператор)
-	bool GetCallsInBaseVirtualOperator(CallsInBaseList &_vcalls, std::string &_errorDescription);	// получение записей из БД (виртуальный оператор)
+	bool GetCallsInBase(CallsInBaseList &_vcalls, const QueueCallsList &_queueCalls, std::string &_errorDescription); // РїРѕР»СѓС‡РµРЅРёРµ Р·Р°РїРёСЃРµР№ РёР· Р‘Р” 
+	bool GetCallsInBase(CallsInBaseList &_vcalls, std::string &_errorDescription);						// РїРѕР»СѓС‡РµРЅРёРµ Р·Р°РїРёСЃРµР№ РёР· Р‘Р” 
+	bool GetCallsInBaseVirtualOperator(CallsInBaseList &_vcalls, const QueueCallsList &_queueCalls, std::string &_errorDescription); // РїРѕР»СѓС‡РµРЅРёРµ Р·Р°РїРёСЃРµР№ РёР· Р‘Р” (РІРёСЂС‚СѓР°Р»СЊРЅС‹Р№ РѕРїРµСЂР°С‚РѕСЂ)
+	bool GetCallsInBaseVirtualOperator(CallsInBaseList &_vcalls, std::string &_errorDescription);	// РїРѕР»СѓС‡РµРЅРёРµ Р·Р°РїРёСЃРµР№ РёР· Р‘Р” (РІРёСЂС‚СѓР°Р»СЊРЅС‹Р№ РѕРїРµСЂР°С‚РѕСЂ)
 
-	//bool IsExistCallAfter20Hours(std::string &_errorDescription);			// есть ли звонок после 20:00
-	//void UpdateCallsAfter20hours();											// есть потеряшки которые звонили после 20:00, обновить их
-	bool IsExistAnyAnsweredCall();					// есть ли не про hash'нные номера, когда оператор уже закончил разговор и ушел из линии
-	void UpdateAllAnyAnsweredCalls();				// есть не про hash'нные номера обновляем их (ВСЕ!)
+	//bool IsExistCallAfter20Hours(std::string &_errorDescription);			// РµСЃС‚СЊ Р»Рё Р·РІРѕРЅРѕРє РїРѕСЃР»Рµ 20:00
+	//void UpdateCallsAfter20hours();											// РµСЃС‚СЊ РїРѕС‚РµСЂСЏС€РєРё РєРѕС‚РѕСЂС‹Рµ Р·РІРѕРЅРёР»Рё РїРѕСЃР»Рµ 20:00, РѕР±РЅРѕРІРёС‚СЊ РёС…
+	bool IsExistAnyAnsweredCall();					// РµСЃС‚СЊ Р»Рё РЅРµ РїСЂРѕ hash'РЅРЅС‹Рµ РЅРѕРјРµСЂР°, РєРѕРіРґР° РѕРїРµСЂР°С‚РѕСЂ СѓР¶Рµ Р·Р°РєРѕРЅС‡РёР» СЂР°Р·РіРѕРІРѕСЂ Рё СѓС€РµР» РёР· Р»РёРЅРёРё
+	void UpdateAllAnyAnsweredCalls();				// РµСЃС‚СЊ РЅРµ РїСЂРѕ hash'РЅРЅС‹Рµ РЅРѕРјРµСЂР° РѕР±РЅРѕРІР»СЏРµРј РёС… (Р’РЎР•!)
 
 };
 

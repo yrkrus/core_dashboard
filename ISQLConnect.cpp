@@ -10,7 +10,7 @@ ISQLConnect::ISQLConnect(bool _autoConnect)
 {
     if (!mysql_init(&m_mysql))
     {
-        // не получилось выделить дескриптор MySQL
+        // РЅРµ РїРѕР»СѓС‡РёР»РѕСЃСЊ РІС‹РґРµР»РёС‚СЊ РґРµСЃРєСЂРёРїС‚РѕСЂ MySQL
         throw std::runtime_error("ISQLConnect: mysql_init failed");
     }
     m_initialized = true;
@@ -24,8 +24,8 @@ ISQLConnect::ISQLConnect(bool _autoConnect)
 
 ISQLConnect::~ISQLConnect()
 {
-    // даже если не удалось подключиться, но инициализация была —
-    // закрываем дескриптор, чтобы не было утечки
+    // РґР°Р¶Рµ РµСЃР»Рё РЅРµ СѓРґР°Р»РѕСЃСЊ РїРѕРґРєР»СЋС‡РёС‚СЊСЃСЏ, РЅРѕ РёРЅРёС†РёР°Р»РёР·Р°С†РёСЏ Р±С‹Р»Р° вЂ”
+    // Р·Р°РєСЂС‹РІР°РµРј РґРµСЃРєСЂРёРїС‚РѕСЂ, С‡С‚РѕР±С‹ РЅРµ Р±С‹Р»Рѕ СѓС‚РµС‡РєРё
     if (m_initialized)
     {
         mysql_close(&m_mysql);
@@ -51,10 +51,10 @@ void ISQLConnect::Disconnect()
     if (m_initialized && m_connected)
     {
         mysql_close(&m_mysql);
-        // если хотим дать возможность повторно Connect() вызывать,
-        // надо снова проинициализировать:
+        // РµСЃР»Рё С…РѕС‚РёРј РґР°С‚СЊ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ РїРѕРІС‚РѕСЂРЅРѕ Connect() РІС‹Р·С‹РІР°С‚СЊ,
+        // РЅР°РґРѕ СЃРЅРѕРІР° РїСЂРѕРёРЅРёС†РёР°Р»РёР·РёСЂРѕРІР°С‚СЊ:
         mysql_init(&m_mysql);
-        // m_initialized остаётся true
+        // m_initialized РѕСЃС‚Р°С‘С‚СЃСЏ true
     }
     m_connected = false;
 }

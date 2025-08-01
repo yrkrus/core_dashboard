@@ -9,7 +9,7 @@ using namespace utils;
 
 bool Log::GetCommandInfoUser(CommandSendInfoUser &_userInfo, unsigned int _id, std::string &_errorDescription)
 {
-	// найдем все данные по пользователю 
+	// РЅР°Р№РґРµРј РІСЃРµ РґР°РЅРЅС‹Рµ РїРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЋ 
 	const std::string query = "select sip,ip,user_id,user_login_pc,pc from remote_commands where id = '" + std::to_string(_id) + "' limit 1";
 
 	if (!m_sql->Request(query, _errorDescription))
@@ -21,7 +21,7 @@ bool Log::GetCommandInfoUser(CommandSendInfoUser &_userInfo, unsigned int _id, s
 		return false;
 	}
 
-	// результат
+	// СЂРµР·СѓР»СЊС‚Р°С‚
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 	MYSQL_ROW row;	
 
@@ -48,7 +48,7 @@ bool Log::GetCommandInfoUser(CommandSendInfoUser &_userInfo, unsigned int _id, s
 
 void Log::OpenLogFile()
 {
-	// Открываем файл один раз, проверяем успех:
+	// РћС‚РєСЂС‹РІР°РµРј С„Р°Р№Р» РѕРґРёРЅ СЂР°Р·, РїСЂРѕРІРµСЂСЏРµРј СѓСЃРїРµС…:
 	m_file.open(m_name, std::ios::out | std::ios::app);
 	if (!m_file.is_open())
 	{
@@ -102,7 +102,7 @@ void Log::ToBase(Command _command)
 		return;
 	}	
 
-	// записываем в лог БД
+	// Р·Р°РїРёСЃС‹РІР°РµРј РІ Р»РѕРі Р‘Р”
 	std::string query = "insert into logging (ip,user_id,user_login_pc,pc,action) values ('" + userInfo.ip +
 																					   "','" + std::to_string(userInfo.id) +
 																					   "','" + userInfo.user_login_pc +

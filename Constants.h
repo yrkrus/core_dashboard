@@ -19,17 +19,17 @@ namespace CONSTANTS
 {   
     namespace TIMEOUT
     {
-        static const unsigned int IVR               = 1000;   // timeout для проверки новых данных для ivr
-        static const unsigned int QUEUE             = 1000;   // timeout для проверки новых данных для queue
-        static const unsigned int ACTIVE_SESSION    = 1000;   // timeout для проверки новых данных для активной сеcсии операторов
-        static const unsigned int OPERATOR_STATUS   = 100;    // timeout для проверки новых данных для смены статуса оператором
-        static const unsigned int CLEARING_CURRENT_DAY = 60000; // timeout для проверки нужно ли очищать текущий день таблицы history_*
+        static const unsigned int IVR               = 1000;   // timeout РґР»СЏ РїСЂРѕРІРµСЂРєРё РЅРѕРІС‹С… РґР°РЅРЅС‹С… РґР»СЏ ivr
+        static const unsigned int QUEUE             = 1000;   // timeout РґР»СЏ РїСЂРѕРІРµСЂРєРё РЅРѕРІС‹С… РґР°РЅРЅС‹С… РґР»СЏ queue
+        static const unsigned int ACTIVE_SESSION    = 1000;   // timeout РґР»СЏ РїСЂРѕРІРµСЂРєРё РЅРѕРІС‹С… РґР°РЅРЅС‹С… РґР»СЏ Р°РєС‚РёРІРЅРѕР№ СЃРµcСЃРёРё РѕРїРµСЂР°С‚РѕСЂРѕРІ
+        static const unsigned int OPERATOR_STATUS   = 100;    // timeout РґР»СЏ РїСЂРѕРІРµСЂРєРё РЅРѕРІС‹С… РґР°РЅРЅС‹С… РґР»СЏ СЃРјРµРЅС‹ СЃС‚Р°С‚СѓСЃР° РѕРїРµСЂР°С‚РѕСЂРѕРј
+        static const unsigned int CLEARING_CURRENT_DAY = 60000; // timeout РґР»СЏ РїСЂРѕРІРµСЂРєРё РЅСѓР¶РЅРѕ Р»Рё РѕС‡РёС‰Р°С‚СЊ С‚РµРєСѓС‰РёР№ РґРµРЅСЊ С‚Р°Р±Р»РёС†С‹ history_*
     }
 
     namespace SERVER 
     {
-       // static const unsigned int PORT = 12345;
-        static const unsigned int PORT = 12346;        
+        static const unsigned int PORT = 12345;
+       // static const unsigned int PORT = 12346;        
     }
 
     namespace LOG 
@@ -59,37 +59,37 @@ namespace CONSTANTS
     //mysqldump -uzabbix -pUFGq4kZMNIMwxTzV -h10.34.222.19 dashboard > /root/core_dashboards/backup_bd/dashboard_20250730.sql
 
 
-    //asterisk -rx "core show channels verbose" | grep to-atsaero5005  кто сейчас разговаривает с бабой железной
+    //asterisk -rx "core show channels verbose" | grep to-atsaero5005  РєС‚Рѕ СЃРµР№С‡Р°СЃ СЂР°Р·РіРѕРІР°СЂРёРІР°РµС‚ СЃ Р±Р°Р±РѕР№ Р¶РµР»РµР·РЅРѕР№
 
-    //// запуск gdbserver
+    //// Р·Р°РїСѓСЃРє gdbserver
     //scl enable gcc-toolset-10 bash
     //gdbserver :7777 ./core_dashboard start
 
     
 
-    // при совершении звонка, в ivr добавить еще id_звонка из queue таблицы,
-    // потом будет проще найти этот звонок + повторные звонки будут проще отслеживаться
+    // РїСЂРё СЃРѕРІРµСЂС€РµРЅРёРё Р·РІРѕРЅРєР°, РІ ivr РґРѕР±Р°РІРёС‚СЊ РµС‰Рµ id_Р·РІРѕРЅРєР° РёР· queue С‚Р°Р±Р»РёС†С‹,
+    // РїРѕС‚РѕРј Р±СѓРґРµС‚ РїСЂРѕС‰Рµ РЅР°Р№С‚Рё СЌС‚РѕС‚ Р·РІРѕРЅРѕРє + РїРѕРІС‚РѕСЂРЅС‹Рµ Р·РІРѕРЅРєРё Р±СѓРґСѓС‚ РїСЂРѕС‰Рµ РѕС‚СЃР»РµР¶РёРІР°С‚СЊСЃСЏ
 
-    // бэкапы базы будут тут жить \\srvbak\G$\dashboard_backup_COV
+    // Р±СЌРєР°РїС‹ Р±Р°Р·С‹ Р±СѓРґСѓС‚ С‚СѓС‚ Р¶РёС‚СЊ \\srvbak\G$\dashboard_backup_COV
 
-// для будущей интеграции с телефонами!!!    
+// РґР»СЏ Р±СѓРґСѓС‰РµР№ РёРЅС‚РµРіСЂР°С†РёРё СЃ С‚РµР»РµС„РѕРЅР°РјРё!!!    
  //  
- //   // перезагрузка
+ //   // РїРµСЂРµР·Р°РіСЂСѓР·РєР°
  //   https://admin:asz741@10.34.42.47/servlet?key=Reboot
- //   // набор номера
- //   http://admin:asz741@10.34.42.47/servlet?key=number=xxx&outgoing_uri=y 	Набор номера xxx
- //   // завершить вызов
+ //   // РЅР°Р±РѕСЂ РЅРѕРјРµСЂР°
+ //   http://admin:asz741@10.34.42.47/servlet?key=number=xxx&outgoing_uri=y 	РќР°Р±РѕСЂ РЅРѕРјРµСЂР° xxx
+ //   // Р·Р°РІРµСЂС€РёС‚СЊ РІС‹Р·РѕРІ
  //   http://admin:asz741@10.34.42.47/servlet?key=CALLEND 
- //   // скриншот
+ //   // СЃРєСЂРёРЅС€РѕС‚
  //   https://admin:asz741@10.34.42.47/servlet?m=mod_action&command=screenshot
- //   // регистрация
+ //   // СЂРµРіРёСЃС‚СЂР°С†РёСЏ
  //   https://admin:asz741@10.34.42.47/servlet?phonecfg=set[&account.1.label=64197][&account.1.display_name=64197][&account.1.auth_name=64197][&account.1.user_name=64197][&account.1.password=1240]
  //	
-	//Лейбл 			 = &account.1.label=XXX
-	//Отображаемое имя = &account.1.display_name=XXX
-	//Имя регистрации  = &account.1.auth_name=XXX
-	//Имя пользователя = &account.1.user_name=XXX
-	//Пароль 			 = &account.1.password=XXX
+	//Р›РµР№Р±Р» 			 = &account.1.label=XXX
+	//РћС‚РѕР±СЂР°Р¶Р°РµРјРѕРµ РёРјСЏ = &account.1.display_name=XXX
+	//РРјСЏ СЂРµРіРёСЃС‚СЂР°С†РёРё  = &account.1.auth_name=XXX
+	//РРјСЏ РїРѕР»СЊР·РѕРІР°С‚РµР»СЏ = &account.1.user_name=XXX
+	//РџР°СЂРѕР»СЊ 			 = &account.1.password=XXX
  //  
 
 	///var/spool/asterisk/outgoung/*.call
@@ -104,14 +104,14 @@ namespace CONSTANTS
 
 
  //   
- //   ВАЖНО! НЕ ЗАБЫТЬ
- //   запуск на проде запускать из ./root/core_dashboard/core_dashboard/core_dashboard
+ //   Р’РђР–РќРћ! РќР• Р—РђР‘Р«РўР¬
+ //   Р·Р°РїСѓСЃРє РЅР° РїСЂРѕРґРµ Р·Р°РїСѓСЃРєР°С‚СЊ РёР· ./root/core_dashboard/core_dashboard/core_dashboard
 
- //   когда через активные сессия сброс, если оператор в очереди то убираем его из нее!!!
+ //   РєРѕРіРґР° С‡РµСЂРµР· Р°РєС‚РёРІРЅС‹Рµ СЃРµСЃСЃРёСЏ СЃР±СЂРѕСЃ, РµСЃР»Рё РѕРїРµСЂР°С‚РѕСЂ РІ РѕС‡РµСЂРµРґРё С‚Рѕ СѓР±РёСЂР°РµРј РµРіРѕ РёР· РЅРµРµ!!!
 
  //  
 
- // версия ядра
+ // РІРµСЂСЃРёСЏ СЏРґСЂР°
  //static std::string core_version = "CORE DASHBOARD | version 2.17 " BUILD;
  
 };

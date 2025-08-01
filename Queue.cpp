@@ -8,7 +8,7 @@
 using namespace utils;
 
 Queue::Queue()
-	:IAsteriskData(CONSTANTS::TIMEOUT::QUEUE)
+	: IAsteriskData(CONSTANTS::TIMEOUT::QUEUE)
 	, m_sql(std::make_shared<ISQLConnect>(false))
 	, m_log(CONSTANTS::LOG::QUEUE)
 {
@@ -37,25 +37,25 @@ void Queue::Stop()
 
 void Queue::Parsing()
 {	
-	if (FindQueueCallers())	// ждем сырые данные 
+	if (FindQueueCallers())	// Р¶РґРµРј СЃС‹СЂС‹Рµ РґР°РЅРЅС‹Рµ 
 	{		
-		// есть данные добавляем\обновляем в БД
+		// РµСЃС‚СЊ РґР°РЅРЅС‹Рµ РґРѕР±Р°РІР»СЏРµРј\РѕР±РЅРѕРІР»СЏРµРј РІ Р‘Р”
 		InsertQueueCalls();
 
-		// обновляем очереди (по списку)
+		// РѕР±РЅРѕРІР»СЏРµРј РѕС‡РµСЂРµРґРё (РїРѕ СЃРїРёСЃРєСѓ)
 		if (IsExistQueueCalls()) 
 		{
 			UpdateCalls(m_listQueue);
 		}		
 	}	
 
-	// удаляем из сырых данных
+	// СѓРґР°Р»СЏРµРј РёР· СЃС‹СЂС‹С… РґР°РЅРЅС‹С…
 	DeleteRawLastData();
 }
 
 bool Queue::FindQueueCallers()
 {	
-	m_listQueue.clear(); // обнулим текущий список
+	m_listQueue.clear(); // РѕР±РЅСѓР»РёРј С‚РµРєСѓС‰РёР№ СЃРїРёСЃРѕРє
 	
 	std::string rawLines = GetRawLastData();
 	if (rawLines.empty())
@@ -99,7 +99,7 @@ bool Queue::CreateQueueCallers(const std::string &_lines, QueueCalls &_queueCall
 			}
 		}
 
-		if (_lines[i] != ' ') // ищем разделить (разделить пустая строка)
+		if (_lines[i] != ' ') // РёС‰РµРј СЂР°Р·РґРµР»РёС‚СЊ (СЂР°Р·РґРµР»РёС‚СЊ РїСѓСЃС‚Р°СЏ СЃС‚СЂРѕРєР°)
 		{
 			current_str += _lines[i];
 			isNewLine = false;
@@ -116,7 +116,7 @@ bool Queue::CreateQueueCallers(const std::string &_lines, QueueCalls &_queueCall
 		_queueCaller.waiting = lines[8];
 		_queueCaller.queue = StringToEnum<EQueueNumber>(lines[2]);
 
-		// TODO тут в лог запись если не прошел по какой то причине 
+		// TODO С‚СѓС‚ РІ Р»РѕРі Р·Р°РїРёСЃСЊ РµСЃР»Рё РЅРµ РїСЂРѕС€РµР» РїРѕ РєР°РєРѕР№ С‚Рѕ РїСЂРёС‡РёРЅРµ 
 		if (!CheckCallers(_queueCaller))
 		{
 			std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
@@ -145,8 +145,8 @@ void Queue::InsertQueueCalls()
 {	
 	for (const auto &list : m_listQueue) 
 	{	
-		list.queue != EQueueNumber::e5005	? InsertCall(list)						// для очереди из живых операторо											
-											: InsertCallVirtualOperator(list);		// для виртуалной бабы				
+		list.queue != EQueueNumber::e5005	? InsertCall(list)						// РґР»СЏ РѕС‡РµСЂРµРґРё РёР· Р¶РёРІС‹С… РѕРїРµСЂР°С‚РѕСЂРѕ											
+											: InsertCallVirtualOperator(list);		// РґР»СЏ РІРёСЂС‚СѓР°Р»РЅРѕР№ Р±Р°Р±С‹				
 	}	
 }
 
@@ -157,13 +157,13 @@ void Queue::UpdateCalls(const QueueCallsList &_callList)
 		return;
 	}*/
 	
-	// находим и обновляем данные если звонок был в очереди, но не дождался ответа от оператора
+	// РЅР°С…РѕРґРёРј Рё РѕР±РЅРѕРІР»СЏРµРј РґР°РЅРЅС‹Рµ РµСЃР»Рё Р·РІРѕРЅРѕРє Р±С‹Р» РІ РѕС‡РµСЂРµРґРё, РЅРѕ РЅРµ РґРѕР¶РґР°Р»СЃСЏ РѕС‚РІРµС‚Р° РѕС‚ РѕРїРµСЂР°С‚РѕСЂР°
 	UpdateCallFail(_callList);
 
-	// находим и обновляем данные когда у нас звонок из IVR попал в очередь\на виртаульного оператора
+	// РЅР°С…РѕРґРёРј Рё РѕР±РЅРѕРІР»СЏРµРј РґР°РЅРЅС‹Рµ РєРѕРіРґР° Сѓ РЅР°СЃ Р·РІРѕРЅРѕРє РёР· IVR РїРѕРїР°Р» РІ РѕС‡РµСЂРµРґСЊ\РЅР° РІРёСЂС‚Р°СѓР»СЊРЅРѕРіРѕ РѕРїРµСЂР°С‚РѕСЂР°
 	UpdateCallIvr(_callList);
 
-	// находим и обновляем данные когда разговор успешно состоялся 
+	// РЅР°С…РѕРґРёРј Рё РѕР±РЅРѕРІР»СЏРµРј РґР°РЅРЅС‹Рµ РєРѕРіРґР° СЂР°Р·РіРѕРІРѕСЂ СѓСЃРїРµС€РЅРѕ СЃРѕСЃС‚РѕСЏР»СЃСЏ 
 	UpdateCallSuccess(_callList);
 }
 
@@ -173,7 +173,7 @@ void Queue::InsertCall(const QueueCalls &_call)
 
 	if (IsExistCall(_call.queue, _call.phone)) 
 	{
-		// номер существует, обновляем данные
+		// РЅРѕРјРµСЂ СЃСѓС‰РµСЃС‚РІСѓРµС‚, РѕР±РЅРѕРІР»СЏРµРј РґР°РЅРЅС‹Рµ
 		unsigned int id = GetLastQueueCallId(_call.phone);
 		
 		if (!UpdateCall(id, _call, error))
@@ -183,7 +183,7 @@ void Queue::InsertCall(const QueueCalls &_call)
 	}
 	else 
 	{		
-		// нет такого звонка добавляем
+		// РЅРµС‚ С‚Р°РєРѕРіРѕ Р·РІРѕРЅРєР° РґРѕР±Р°РІР»СЏРµРј
 		const std::string query = "insert into queue (number_queue,phone,waiting_time) values ('"
 									+ EnumToString(_call.queue) + "','"
 									+ _call.phone + "','"
@@ -201,14 +201,14 @@ void Queue::InsertCall(const QueueCalls &_call)
 	}		
 }
 
-// добавление нового звонка (виртуальный оператор лиза)
+// РґРѕР±Р°РІР»РµРЅРёРµ РЅРѕРІРѕРіРѕ Р·РІРѕРЅРєР° (РІРёСЂС‚СѓР°Р»СЊРЅС‹Р№ РѕРїРµСЂР°С‚РѕСЂ Р»РёР·Р°)
 void Queue::InsertCallVirtualOperator(const QueueCalls &_call)
 {
 	std::string error;
 
 	if (IsExistCallVirtualOperator(_call.queue, _call.phone))
 	{
-		// номер существует, обновляем данные
+		// РЅРѕРјРµСЂ СЃСѓС‰РµСЃС‚РІСѓРµС‚, РѕР±РЅРѕРІР»СЏРµРј РґР°РЅРЅС‹Рµ
 		unsigned int id = GetLastQueueVirtualOperatorCallId(_call.phone);
 
 		if (!UpdateCallVirualOperator(id, _call, error))
@@ -218,7 +218,7 @@ void Queue::InsertCallVirtualOperator(const QueueCalls &_call)
 	}
 	else
 	{
-		// нет такого звонка добавляем
+		// РЅРµС‚ С‚Р°РєРѕРіРѕ Р·РІРѕРЅРєР° РґРѕР±Р°РІР»СЏРµРј
 		const std::string query = "insert into queue_robot (number_queue,phone,talk_time) values ('"
 			+ EnumToString(_call.queue) + "','"
 			+ _call.phone + "','"
@@ -258,7 +258,7 @@ bool Queue::UpdateCall(int _id, const QueueCalls &_call, std::string &_errorDesc
 	return true;
 }
 
-// обновление существующего звонка (виртуальный оператор)
+// РѕР±РЅРѕРІР»РµРЅРёРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РµРіРѕ Р·РІРѕРЅРєР° (РІРёСЂС‚СѓР°Р»СЊРЅС‹Р№ РѕРїРµСЂР°С‚РѕСЂ)
 bool Queue::UpdateCallVirualOperator(int _id, const QueueCalls &_call, std::string &_errorDescription)
 {
 	std::string error;
@@ -283,10 +283,10 @@ bool Queue::UpdateCallVirualOperator(int _id, const QueueCalls &_call, std::stri
 
 void Queue::UpdateCallFail(const QueueCallsList &_calls)
 {	
-	// найдем текущие номера которые мы не будет трогать при обновлении
+	// РЅР°Р№РґРµРј С‚РµРєСѓС‰РёРµ РЅРѕРјРµСЂР° РєРѕС‚РѕСЂС‹Рµ РјС‹ РЅРµ Р±СѓРґРµС‚ С‚СЂРѕРіР°С‚СЊ РїСЂРё РѕР±РЅРѕРІР»РµРЅРёРё
 	std::string phoneDoNotTouch;
 	
-	// TODO вдруг пустой список, смысл проверять!?
+	// TODO РІРґСЂСѓРі РїСѓСЃС‚РѕР№ СЃРїРёСЃРѕРє, СЃРјС‹СЃР» РїСЂРѕРІРµСЂСЏС‚СЊ!?
 	if (_calls.empty()) 
 	{
 		return;
@@ -300,11 +300,11 @@ void Queue::UpdateCallFail(const QueueCallsList &_calls)
 		}
 		else
 		{
-			phoneDoNotTouch += ",'" + list.phone + "'";	// TODO тут проверить 
+			phoneDoNotTouch += ",'" + list.phone + "'";	// TODO С‚СѓС‚ РїСЂРѕРІРµСЂРёС‚СЊ 
 		}
 	}	
 	
-	// обновляем данные	
+	// РѕР±РЅРѕРІР»СЏРµРј РґР°РЅРЅС‹Рµ	
 	const std::string query = "update queue set fail = '1' where date_time > '"
 										+ GetCurrentStartDay()
 										+ "' and answered = '0'"
@@ -324,7 +324,7 @@ void Queue::UpdateCallFail(const QueueCallsList &_calls)
 
 //void Queue::UpdateCallFail()
 //{
-//	// обновляем данные
+//	// РѕР±РЅРѕРІР»СЏРµРј РґР°РЅРЅС‹Рµ
 //	const std::string query = "update queue set fail = '1' where date_time > '" 
 //								+ getCurrentDateTimeAfter20hours() 
 //								+ "' and answered = '0' and sip = '-1' ";
@@ -338,22 +338,22 @@ void Queue::UpdateCallFail(const QueueCallsList &_calls)
 //	m_sql->Disconnect();
 //}
 
-	// обновление данных когда у нас звонок из IVR попал в очередь или на виртуального оператора
+	// РѕР±РЅРѕРІР»РµРЅРёРµ РґР°РЅРЅС‹С… РєРѕРіРґР° Сѓ РЅР°СЃ Р·РІРѕРЅРѕРє РёР· IVR РїРѕРїР°Р» РІ РѕС‡РµСЂРµРґСЊ РёР»Рё РЅР° РІРёСЂС‚СѓР°Р»СЊРЅРѕРіРѕ РѕРїРµСЂР°С‚РѕСЂР°
 void Queue::UpdateCallIvr(const QueueCallsList &_calls)
 {	
-	if (_calls.empty()) return; // на всякий случай
+	if (_calls.empty()) return; // РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№
 	
-	// звонок ушел на очередь с живыми операторами
+	// Р·РІРѕРЅРѕРє СѓС€РµР» РЅР° РѕС‡РµСЂРµРґСЊ СЃ Р¶РёРІС‹РјРё РѕРїРµСЂР°С‚РѕСЂР°РјРё
 	UpdateCallIvrToQueue(_calls);
 
-	// звонок ушел на виртуального оператора
+	// Р·РІРѕРЅРѕРє СѓС€РµР» РЅР° РІРёСЂС‚СѓР°Р»СЊРЅРѕРіРѕ РѕРїРµСЂР°С‚РѕСЂР°
 	UpdateCallIvrToVirtualOperator(_calls);	
 }
 
-// звонок из IVR попал в очередь
+// Р·РІРѕРЅРѕРє РёР· IVR РїРѕРїР°Р» РІ РѕС‡РµСЂРµРґСЊ
 void Queue::UpdateCallIvrToQueue(const QueueCallsList &_calls)
 {
-	// найдем текущие номера которые будем трогать при обновлении
+	// РЅР°Р№РґРµРј С‚РµРєСѓС‰РёРµ РЅРѕРјРµСЂР° РєРѕС‚РѕСЂС‹Рµ Р±СѓРґРµРј С‚СЂРѕРіР°С‚СЊ РїСЂРё РѕР±РЅРѕРІР»РµРЅРёРё
 	std::string phoneTouch;
 
 	for (const auto &call : _calls)
@@ -390,10 +390,10 @@ void Queue::UpdateCallIvrToQueue(const QueueCallsList &_calls)
 	m_sql->Disconnect();
 }
 
-// звонок из IVR попал на виртуального оператора
+// Р·РІРѕРЅРѕРє РёР· IVR РїРѕРїР°Р» РЅР° РІРёСЂС‚СѓР°Р»СЊРЅРѕРіРѕ РѕРїРµСЂР°С‚РѕСЂР°
 void Queue::UpdateCallIvrToVirtualOperator(const QueueCallsList &_calls)
 {
-	// найдем текущие номера которые будем трогать при обновлении
+	// РЅР°Р№РґРµРј С‚РµРєСѓС‰РёРµ РЅРѕРјРµСЂР° РєРѕС‚РѕСЂС‹Рµ Р±СѓРґРµРј С‚СЂРѕРіР°С‚СЊ РїСЂРё РѕР±РЅРѕРІР»РµРЅРёРё
 	std::string phoneTouch;
 
 	for (const auto &call : _calls)
@@ -432,14 +432,14 @@ void Queue::UpdateCallIvrToVirtualOperator(const QueueCallsList &_calls)
 
 void Queue::UpdateCallSuccess(const QueueCallsList &_calls)
 {
-	// разговор успешно состоялся реальный оператор
+	// СЂР°Р·РіРѕРІРѕСЂ СѓСЃРїРµС€РЅРѕ СЃРѕСЃС‚РѕСЏР»СЃСЏ СЂРµР°Р»СЊРЅС‹Р№ РѕРїРµСЂР°С‚РѕСЂ
 	UpdateCallSuccessRealOperator(_calls);
 
-	// разговор успешно состоялся виртуальный оператор
+	// СЂР°Р·РіРѕРІРѕСЂ СѓСЃРїРµС€РЅРѕ СЃРѕСЃС‚РѕСЏР»СЃСЏ РІРёСЂС‚СѓР°Р»СЊРЅС‹Р№ РѕРїРµСЂР°С‚РѕСЂ
 	UpdateCallSuccessVirtualOperator(_calls);
 }
 
-// разговор успешно состоялся реальный оператор
+// СЂР°Р·РіРѕРІРѕСЂ СѓСЃРїРµС€РЅРѕ СЃРѕСЃС‚РѕСЏР»СЃСЏ СЂРµР°Р»СЊРЅС‹Р№ РѕРїРµСЂР°С‚РѕСЂ
 void Queue::UpdateCallSuccessRealOperator(const QueueCallsList &_calls)
 {
 	CallsInBaseList callsInBase;
@@ -450,7 +450,7 @@ void Queue::UpdateCallSuccessRealOperator(const QueueCallsList &_calls)
 		return;
 	}
 
-	// обновляем	
+	// РѕР±РЅРѕРІР»СЏРµРј	
 	for (const auto &call : callsInBase)
 	{
 		std::string error;
@@ -472,7 +472,7 @@ void Queue::UpdateCallSuccessRealOperator(const QueueCallsList &_calls)
 	m_sql->Disconnect();
 }
 
-// разговор успешно состоялся виртуальный оператор
+// СЂР°Р·РіРѕРІРѕСЂ СѓСЃРїРµС€РЅРѕ СЃРѕСЃС‚РѕСЏР»СЃСЏ РІРёСЂС‚СѓР°Р»СЊРЅС‹Р№ РѕРїРµСЂР°С‚РѕСЂ
 void Queue::UpdateCallSuccessVirtualOperator(const QueueCallsList &_calls)
 {
 	CallsInBaseList callsInBase;
@@ -483,7 +483,7 @@ void Queue::UpdateCallSuccessVirtualOperator(const QueueCallsList &_calls)
 		return;
 	}
 
-	// обновляем	
+	// РѕР±РЅРѕРІР»СЏРµРј	
 	for (const auto &call : callsInBase)
 	{
 		std::string error;
@@ -505,7 +505,7 @@ void Queue::UpdateCallSuccessVirtualOperator(const QueueCallsList &_calls)
 	m_sql->Disconnect();
 }
 
-// обновление данных когда нет активных операторов на линии
+// РѕР±РЅРѕРІР»РµРЅРёРµ РґР°РЅРЅС‹С… РєРѕРіРґР° РЅРµС‚ Р°РєС‚РёРІРЅС‹С… РѕРїРµСЂР°С‚РѕСЂРѕРІ РЅР° Р»РёРЅРёРё
 void Queue::UpdateCallSuccess()
 {
 	if (IsExistAnyAnsweredCall())
@@ -520,7 +520,7 @@ void Queue::UpdateCallSuccess()
 bool Queue::IsExistCall(EQueueNumber _queue, const std::string &_phone)
 {
 	std::string error;
-	// правильней проверять сначало разговор	
+	// РїСЂР°РІРёР»СЊРЅРµР№ РїСЂРѕРІРµСЂСЏС‚СЊ СЃРЅР°С‡Р°Р»Рѕ СЂР°Р·РіРѕРІРѕСЂ	
 	const std::string query = "select count(phone) from queue where number_queue = '" +EnumToString(_queue)
 								+ "' and phone = '" + _phone + "'"
 								+ " and date_time > '" + GetCurrentDateTimeAfterMinutes(60) + "'"
@@ -532,11 +532,11 @@ bool Queue::IsExistCall(EQueueNumber _queue, const std::string &_phone)
 		m_log.ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();		
-		// при ошибке считаем что запись есть
+		// РїСЂРё РѕС€РёР±РєРµ СЃС‡РёС‚Р°РµРј С‡С‚Рѕ Р·Р°РїРёСЃСЊ РµСЃС‚СЊ
 		return true;
 	}	
 
-	// результат
+	// СЂРµР·СѓР»СЊС‚Р°С‚
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 	MYSQL_ROW row = mysql_fetch_row(result);
 
@@ -550,7 +550,7 @@ bool Queue::IsExistCall(EQueueNumber _queue, const std::string &_phone)
 	}
 	else
 	{
-		// проверяем вдруг в очереди сейчас находится звонок
+		// РїСЂРѕРІРµСЂСЏРµРј РІРґСЂСѓРі РІ РѕС‡РµСЂРµРґРё СЃРµР№С‡Р°СЃ РЅР°С…РѕРґРёС‚СЃСЏ Р·РІРѕРЅРѕРє
 		const std::string query = "select count(phone) from queue where number_queue = '" +EnumToString(_queue)
 								+ "' and phone = '" + _phone + "'"
 								+ " and answered ='0' and fail='0' and sip='-1' and hash is NULL order by date_time desc limit 1";
@@ -561,11 +561,11 @@ bool Queue::IsExistCall(EQueueNumber _queue, const std::string &_phone)
 			m_log.ToFile(ELogType::Error, error);
 
 			m_sql->Disconnect();			
-			// при ошибке считаем что запись есть
+			// РїСЂРё РѕС€РёР±РєРµ СЃС‡РёС‚Р°РµРј С‡С‚Рѕ Р·Р°РїРёСЃСЊ РµСЃС‚СЊ
 			return true;
 		}
 
-		// результат
+		// СЂРµР·СѓР»СЊС‚Р°С‚
 		MYSQL_RES *result = mysql_store_result(m_sql->Get());
 		MYSQL_ROW row = mysql_fetch_row(result);
 		int countPhone = std::stoi(row[0]);
@@ -579,10 +579,10 @@ bool Queue::IsExistCall(EQueueNumber _queue, const std::string &_phone)
 		}
 		else
 		{
-			// нет разговора проверяем повтрность
+			// РЅРµС‚ СЂР°Р·РіРѕРІРѕСЂР° РїСЂРѕРІРµСЂСЏРµРј РїРѕРІС‚СЂРЅРѕСЃС‚СЊ
 			const std::string query = "select count(phone) from queue where number_queue = '" + EnumToString(_queue)
 				+ "' and phone = '" + _phone + "'"
-				+ " and date_time > '" + GetCurrentDateTimeAfterMinutes(60) + "'" //тут типа ок, но время не затрагивается последние 15 мин
+				+ " and date_time > '" + GetCurrentDateTimeAfterMinutes(60) + "'" //С‚СѓС‚ С‚РёРїР° РѕРє, РЅРѕ РІСЂРµРјСЏ РЅРµ Р·Р°С‚СЂР°РіРёРІР°РµС‚СЃСЏ РїРѕСЃР»РµРґРЅРёРµ 15 РјРёРЅ
 				+ " and answered ='0' and fail='1' and sip = '-1' and hash is NULL order by date_time desc limit 1";
 		
 			if (!m_sql->Request(query, error))
@@ -591,11 +591,11 @@ bool Queue::IsExistCall(EQueueNumber _queue, const std::string &_phone)
 				m_log.ToFile(ELogType::Error, error);
 
 				m_sql->Disconnect();				
-				// при ошибке считаем что запись есть
+				// РїСЂРё РѕС€РёР±РєРµ СЃС‡РёС‚Р°РµРј С‡С‚Рѕ Р·Р°РїРёСЃСЊ РµСЃС‚СЊ
 				return true;
 			}
 
-			// результат
+			// СЂРµР·СѓР»СЊС‚Р°С‚
 			MYSQL_RES *result = mysql_store_result(m_sql->Get());
 			MYSQL_ROW row = mysql_fetch_row(result);
 			int countPhone = std::stoi(row[0]);
@@ -606,11 +606,11 @@ bool Queue::IsExistCall(EQueueNumber _queue, const std::string &_phone)
 			if (countPhone >= 1)
 			{
 				printf("Boooo!!\n");
-				return false; // считаем как новый вызов!!!
+				return false; // СЃС‡РёС‚Р°РµРј РєР°Рє РЅРѕРІС‹Р№ РІС‹Р·РѕРІ!!!
 			}
 			else
 			{
-				// проверка на повторность, вдруг еще раз перезвонили после того как поговорили уже	
+				// РїСЂРѕРІРµСЂРєР° РЅР° РїРѕРІС‚РѕСЂРЅРѕСЃС‚СЊ, РІРґСЂСѓРі РµС‰Рµ СЂР°Р· РїРµСЂРµР·РІРѕРЅРёР»Рё РїРѕСЃР»Рµ С‚РѕРіРѕ РєР°Рє РїРѕРіРѕРІРѕСЂРёР»Рё СѓР¶Рµ	
 				const std::string query = "select count(phone) from queue where number_queue = '" + EnumToString(_queue)
 					+ "' and phone = '" + _phone + "'"
 					+ " and date_time > '" + GetCurrentDateTimeAfterMinutes(60) + "'"
@@ -623,11 +623,11 @@ bool Queue::IsExistCall(EQueueNumber _queue, const std::string &_phone)
 					m_log.ToFile(ELogType::Error, error);
 
 					m_sql->Disconnect();					
-					// при ошибке считаем что запись есть
+					// РїСЂРё РѕС€РёР±РєРµ СЃС‡РёС‚Р°РµРј С‡С‚Рѕ Р·Р°РїРёСЃСЊ РµСЃС‚СЊ
 					return true;
 				}
 
-				// результат
+				// СЂРµР·СѓР»СЊС‚Р°С‚
 				MYSQL_RES *result = mysql_store_result(m_sql->Get());
 				MYSQL_ROW row = mysql_fetch_row(result);
 
@@ -637,7 +637,7 @@ bool Queue::IsExistCall(EQueueNumber _queue, const std::string &_phone)
 
 				if (countPhone >= 1)
 				{
-					return false;	// если есть запись, значит повторный звонок
+					return false;	// РµСЃР»Рё РµСЃС‚СЊ Р·Р°РїРёСЃСЊ, Р·РЅР°С‡РёС‚ РїРѕРІС‚РѕСЂРЅС‹Р№ Р·РІРѕРЅРѕРє
 				}
 
 				return (countPhone == 0 ? false : true);
@@ -646,11 +646,11 @@ bool Queue::IsExistCall(EQueueNumber _queue, const std::string &_phone)
 	}
 }
 
-// есть ли уже такой номер в БД (виртуальный оператор)
+// РµСЃС‚СЊ Р»Рё СѓР¶Рµ С‚Р°РєРѕР№ РЅРѕРјРµСЂ РІ Р‘Р” (РІРёСЂС‚СѓР°Р»СЊРЅС‹Р№ РѕРїРµСЂР°С‚РѕСЂ)
 bool Queue::IsExistCallVirtualOperator(EQueueNumber _queue, const std::string &_phone)
 {
 	std::string error;
-	// правильней проверять сначало разговор	
+	// РїСЂР°РІРёР»СЊРЅРµР№ РїСЂРѕРІРµСЂСЏС‚СЊ СЃРЅР°С‡Р°Р»Рѕ СЂР°Р·РіРѕРІРѕСЂ	
 	const std::string query = "select count(phone) from queue_robot where number_queue = '" + EnumToString(_queue)
 		+ "' and phone = '" + _phone + "'"
 		+ " and date_time > '" + GetCurrentDateTimeAfterMinutes(60) + "'"
@@ -662,11 +662,11 @@ bool Queue::IsExistCallVirtualOperator(EQueueNumber _queue, const std::string &_
 		m_log.ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();		
-		// при ошибке считаем что запись есть
+		// РїСЂРё РѕС€РёР±РєРµ СЃС‡РёС‚Р°РµРј С‡С‚Рѕ Р·Р°РїРёСЃСЊ РµСЃС‚СЊ
 		return true;
 	}
 
-	// результат
+	// СЂРµР·СѓР»СЊС‚Р°С‚
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 	MYSQL_ROW row = mysql_fetch_row(result);
 
@@ -680,10 +680,10 @@ bool Queue::IsExistCallVirtualOperator(EQueueNumber _queue, const std::string &_
 	}
 	else
 	{		
-		// нет разговора проверяем повтрность
+		// РЅРµС‚ СЂР°Р·РіРѕРІРѕСЂР° РїСЂРѕРІРµСЂСЏРµРј РїРѕРІС‚СЂРЅРѕСЃС‚СЊ
 		const std::string query = "select count(phone) from queue_robot where number_queue = '" + EnumToString(_queue)
 			+ "' and phone = '" + _phone + "'"
-			+ " and date_time > '" + GetCurrentDateTimeAfterMinutes(60) + "'" //тут типа ок, но время не затрагивается последние 15 мин
+			+ " and date_time > '" + GetCurrentDateTimeAfterMinutes(60) + "'" //С‚СѓС‚ С‚РёРїР° РѕРє, РЅРѕ РІСЂРµРјСЏ РЅРµ Р·Р°С‚СЂР°РіРёРІР°РµС‚СЃСЏ РїРѕСЃР»РµРґРЅРёРµ 15 РјРёРЅ
 			+ " and hash is NULL order by date_time desc limit 1";
 
 		if (!m_sql->Request(query, error))
@@ -692,11 +692,11 @@ bool Queue::IsExistCallVirtualOperator(EQueueNumber _queue, const std::string &_
 			m_log.ToFile(ELogType::Error, error);
 
 			m_sql->Disconnect();			
-			// при ошибке считаем что запись есть
+			// РїСЂРё РѕС€РёР±РєРµ СЃС‡РёС‚Р°РµРј С‡С‚Рѕ Р·Р°РїРёСЃСЊ РµСЃС‚СЊ
 			return true;
 		}
 
-		// результат
+		// СЂРµР·СѓР»СЊС‚Р°С‚
 		MYSQL_RES *result = mysql_store_result(m_sql->Get());
 		MYSQL_ROW row = mysql_fetch_row(result);
 		int countPhone = std::stoi(row[0]);
@@ -706,11 +706,11 @@ bool Queue::IsExistCallVirtualOperator(EQueueNumber _queue, const std::string &_
 
 		if (countPhone >= 1)
 		{			
-			return false; // считаем как новый вызов!!!
+			return false; // СЃС‡РёС‚Р°РµРј РєР°Рє РЅРѕРІС‹Р№ РІС‹Р·РѕРІ!!!
 		}
 		else
 		{
-			// проверка на повторность, вдруг еще раз перезвонили после того как поговорили уже	
+			// РїСЂРѕРІРµСЂРєР° РЅР° РїРѕРІС‚РѕСЂРЅРѕСЃС‚СЊ, РІРґСЂСѓРі РµС‰Рµ СЂР°Р· РїРµСЂРµР·РІРѕРЅРёР»Рё РїРѕСЃР»Рµ С‚РѕРіРѕ РєР°Рє РїРѕРіРѕРІРѕСЂРёР»Рё СѓР¶Рµ	
 			const std::string query = "select count(phone) from queue_robot where number_queue = '" + EnumToString(_queue)
 				+ "' and phone = '" + _phone + "'"
 				+ " and date_time > '" + GetCurrentDateTimeAfterMinutes(60) + "'"			
@@ -722,11 +722,11 @@ bool Queue::IsExistCallVirtualOperator(EQueueNumber _queue, const std::string &_
 				m_log.ToFile(ELogType::Error, error);
 
 				m_sql->Disconnect();				
-				// при ошибке считаем что запись есть
+				// РїСЂРё РѕС€РёР±РєРµ СЃС‡РёС‚Р°РµРј С‡С‚Рѕ Р·Р°РїРёСЃСЊ РµСЃС‚СЊ
 				return true;
 			}
 
-			// результат
+			// СЂРµР·СѓР»СЊС‚Р°С‚
 			MYSQL_RES *result = mysql_store_result(m_sql->Get());
 			MYSQL_ROW row = mysql_fetch_row(result);
 
@@ -736,7 +736,7 @@ bool Queue::IsExistCallVirtualOperator(EQueueNumber _queue, const std::string &_
 
 			if (countPhone >= 1)
 			{
-				return false;	// если есть запись, значит повторный звонок
+				return false;	// РµСЃР»Рё РµСЃС‚СЊ Р·Р°РїРёСЃСЊ, Р·РЅР°С‡РёС‚ РїРѕРІС‚РѕСЂРЅС‹Р№ Р·РІРѕРЅРѕРє
 			}
 
 			return (countPhone == 0 ? false : true);
@@ -767,7 +767,7 @@ int Queue::GetLastQueueCallId(const std::string &_phone)
 	return id;
 }
 
-// id записи по БД о звонке(виртуальный оператор)
+// id Р·Р°РїРёСЃРё РїРѕ Р‘Р” Рѕ Р·РІРѕРЅРєРµ(РІРёСЂС‚СѓР°Р»СЊРЅС‹Р№ РѕРїРµСЂР°С‚РѕСЂ)
 int Queue::GetLastQueueVirtualOperatorCallId(const std::string &_phone)
 {
 	const std::string query = "select id from queue_robot where phone = "
@@ -793,7 +793,7 @@ int Queue::GetLastQueueVirtualOperatorCallId(const std::string &_phone)
 bool Queue::GetCallsInBase(CallsInBaseList &_vcalls, const QueueCallsList &_queueCalls, std::string &_errorDescription)
 {
 	_errorDescription = "";
-	// найдем текущие номера которые будем трогать при обновлении
+	// РЅР°Р№РґРµРј С‚РµРєСѓС‰РёРµ РЅРѕРјРµСЂР° РєРѕС‚РѕСЂС‹Рµ Р±СѓРґРµРј С‚СЂРѕРіР°С‚СЊ РїСЂРё РѕР±РЅРѕРІР»РµРЅРёРё
 	std::string phoneTouch;
 
 	for (const auto &list : _queueCalls)
@@ -804,7 +804,7 @@ bool Queue::GetCallsInBase(CallsInBaseList &_vcalls, const QueueCallsList &_queu
 		}
 		else
 		{
-			phoneTouch += ",'" + list.phone + "'"; // TODO проверить
+			phoneTouch += ",'" + list.phone + "'"; // TODO РїСЂРѕРІРµСЂРёС‚СЊ
 		}
 	}
 
@@ -831,7 +831,7 @@ bool Queue::GetCallsInBase(CallsInBaseList &_vcalls, const QueueCallsList &_queu
 		return false;
 	}
 
-	// результат
+	// СЂРµР·СѓР»СЊС‚Р°С‚
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 	MYSQL_ROW row;
 
@@ -877,7 +877,7 @@ bool Queue::GetCallsInBase(CallsInBaseList &_vcalls, std::string &_errorDescript
 		return false;
 	}
 
-	// результат
+	// СЂРµР·СѓР»СЊС‚Р°С‚
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 	MYSQL_ROW row;
 
@@ -907,11 +907,11 @@ bool Queue::GetCallsInBase(CallsInBaseList &_vcalls, std::string &_errorDescript
 	return status;
 }
 
-// получение записей из БД (виртуальный оператор)
+// РїРѕР»СѓС‡РµРЅРёРµ Р·Р°РїРёСЃРµР№ РёР· Р‘Р” (РІРёСЂС‚СѓР°Р»СЊРЅС‹Р№ РѕРїРµСЂР°С‚РѕСЂ)
 bool Queue::GetCallsInBaseVirtualOperator(CallsInBaseList &_vcalls, const QueueCallsList &_queueCalls, std::string &_errorDescription)
 {
 	_errorDescription.clear();
-	// найдем текущие номера которые будем трогать при обновлении
+	// РЅР°Р№РґРµРј С‚РµРєСѓС‰РёРµ РЅРѕРјРµСЂР° РєРѕС‚РѕСЂС‹Рµ Р±СѓРґРµРј С‚СЂРѕРіР°С‚СЊ РїСЂРё РѕР±РЅРѕРІР»РµРЅРёРё
 	std::string phoneTouch;
 
 	for (const auto &call : _queueCalls)
@@ -952,7 +952,7 @@ bool Queue::GetCallsInBaseVirtualOperator(CallsInBaseList &_vcalls, const QueueC
 		return false;
 	}
 
-	// результат
+	// СЂРµР·СѓР»СЊС‚Р°С‚
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 	MYSQL_ROW row;
 
@@ -982,7 +982,7 @@ bool Queue::GetCallsInBaseVirtualOperator(CallsInBaseList &_vcalls, const QueueC
 	return status;
 }
 
-// получение записей из БД (виртуальный оператор)
+// РїРѕР»СѓС‡РµРЅРёРµ Р·Р°РїРёСЃРµР№ РёР· Р‘Р” (РІРёСЂС‚СѓР°Р»СЊРЅС‹Р№ РѕРїРµСЂР°С‚РѕСЂ)
 bool Queue::GetCallsInBaseVirtualOperator(CallsInBaseList &_vcalls, std::string &_errorDescription)
 {
 	const std::string query = "select id,phone,date_time from queue_robot where date_time > '"
@@ -999,7 +999,7 @@ bool Queue::GetCallsInBaseVirtualOperator(CallsInBaseList &_vcalls, std::string 
 		return false;
 	}
 
-	// результат
+	// СЂРµР·СѓР»СЊС‚Р°С‚
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 	MYSQL_ROW row;
 
@@ -1041,11 +1041,11 @@ bool Queue::GetCallsInBaseVirtualOperator(CallsInBaseList &_vcalls, std::string 
 //	{
 //		m_sql->Disconnect();
 //		printf("%s", _errorDescription.c_str());
-//		// ошибка считаем что есть запись
+//		// РѕС€РёР±РєР° СЃС‡РёС‚Р°РµРј С‡С‚Рѕ РµСЃС‚СЊ Р·Р°РїРёСЃСЊ
 //		return true;
 //	}	
 //
-//	// результат
+//	// СЂРµР·СѓР»СЊС‚Р°С‚
 //	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 //	MYSQL_ROW row = mysql_fetch_row(result);
 //
@@ -1075,11 +1075,11 @@ bool Queue::IsExistAnyAnsweredCall()
 		m_log.ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();		
-		// ошибка считаем что есть запись
+		// РѕС€РёР±РєР° СЃС‡РёС‚Р°РµРј С‡С‚Рѕ РµСЃС‚СЊ Р·Р°РїРёСЃСЊ
 		return true;
 	}	
 
-	// результат
+	// СЂРµР·СѓР»СЊС‚Р°С‚
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 	MYSQL_ROW row = mysql_fetch_row(result);
 
@@ -1103,7 +1103,7 @@ void Queue::UpdateAllAnyAnsweredCalls()
 		return;
 	}	
 
-	// обновляем
+	// РѕР±РЅРѕРІР»СЏРµРј
 	for (const auto &call : callsList)
 	{
 		const std::string query = "update queue set hash = '" + std::to_string(call.hash)

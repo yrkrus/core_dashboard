@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
         std::this_thread::sleep_for(std::chrono::milliseconds(10));   
     }
        
-    std::cout << "\nServer stopping ...";
+    std::cout << "\nServer stopping ...\n";
         
     _Destroy();
         
