@@ -22,32 +22,32 @@ using namespace utils;
 using namespace active_sip;
 
 // Global Score
-static SP_IVR ivr                       = nullptr;
-static SP_Queue queue                   = nullptr;
-static SP_ActiveSession activeSession   = nullptr;
-static SP_Status changeStatus           = nullptr;
-static SP_ClearingCurrentDay clearingCurrentDay = nullptr;  // вставка в таблицы history
+static SP_IVR ivr = nullptr;
+static SP_Queue queue = nullptr;
+static SP_ActiveSession activeSession = nullptr;
+static SP_Status changeStatus = nullptr;
+static SP_ClearingCurrentDay clearingCurrentDay = nullptr; // вставка в таблицы history
 
 static std::atomic<bool> g_running(true);
 
-static void _Init() 
+static void _Init()
 {
-    ivr                 = std::make_shared<IVR>();
-    queue               = std::make_shared<Queue>();
-    activeSession       = std::make_shared<ActiveSession>(queue);
-    changeStatus        = std::make_shared<Status>();
-    clearingCurrentDay  = std::make_shared<ClearingCurrentDay>();   // встаква в таблицы history_*
+    ivr = std::make_shared<IVR>();
+    queue = std::make_shared<Queue>();
+    activeSession = std::make_shared<ActiveSession>(queue);
+    changeStatus = std::make_shared<Status>();
+    clearingCurrentDay = std::make_shared<ClearingCurrentDay>(); // встаква в таблицы history_*
 }
 
-static void _Run() 
+static void _Run()
 {
     ivr->Start();
     queue->Start();
     activeSession->Start();
 
-    changeStatus->Start();  // изменение статуса оператора
+    changeStatus->Start(); // изменение статуса оператора
 
-    clearingCurrentDay->Start();    // очистка текущего дня в таблицу history_*
+    clearingCurrentDay->Start(); // очистка текущего дня в таблицу history_*
 }
 
 static void _Destroy()
@@ -65,55 +65,49 @@ static void _sigint_handler(int)
     g_running = false;
 }
 
-
 int main(int argc, char *argv[])
 {
     // bild
     printf("BUILD %s\n\n", BUILD);
-
 
     // Перехватываем Ctrl+C
     std::signal(SIGINT, _sigint_handler);
 
     HeartbeatServer server(CONSTANTS::SERVER::PORT);
     server.set_on_ping([]()
-        {
-            std::cout << "[PING] got ping\n";
-        });
-    
+                       { std::cout << "[PING] got ping\n"; });
+
     if (!server.start())
     {
         std::cerr << StringFormat("Server not started on port %u\n", CONSTANTS::SERVER::PORT);
         return 1;
     }
-    std::cout << StringFormat("Server is running on port %u. Press Ctrl+C to stop.\n",CONSTANTS::SERVER::PORT);
-   
-    _Init();        
+    std::cout << StringFormat("Server is running on port %u. Press Ctrl+C to stop.\n", CONSTANTS::SERVER::PORT);
+
+    _Init();
     _Run();
-    
-    while (g_running) 
+
+    while (g_running)
     {
         auto start = std::chrono::steady_clock::now();
 
         ivr->Parsing();
         queue->Parsing();
-        activeSession->Parsing();          
+        activeSession->Parsing();
 
         auto stop = std::chrono::steady_clock::now();
         auto execute_ms = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);
-        
-        printf("\n%s time execute code: %u ms", GetCurrentDateTime().c_str(), execute_ms.count());
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));   
+        printf("\n%s time execute code: %ld ms", GetCurrentDateTime().c_str(), execute_ms.count());
+
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
-       
+
     std::cout << "\nServer stopping ...\n";
-        
+
     _Destroy();
-        
+
     server.stop();
     std::cout << "\nServer stopped\n";
-    return 0;   
-
-   
+    return 0;
 };

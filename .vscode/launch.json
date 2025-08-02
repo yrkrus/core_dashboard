@@ -4,7 +4,7 @@
         {
             "name": "start core_dashboard",
             "type": "cppdbg",
-            "request": "launch", 
+            "request": "launch",
             "program": "${workspaceFolder}/core_dashboard",
             "miDebuggerPath": "/usr/bin/gdb",
             "miDebuggerServerAddress": "127.0.0.1:7777",
@@ -21,6 +21,16 @@
                 {
                     "description": "Set disassembly flavor to Intel",
                     "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Run the program",
+                    "text": "run",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Detach from the process",
+                    "text": "detach",
                     "ignoreFailures": true
                 }
             ]
