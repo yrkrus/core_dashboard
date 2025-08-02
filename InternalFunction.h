@@ -7,26 +7,28 @@
 namespace utils 
 {
 	std::string StringFormat(const char *format, ...);
-	std::string PhoneParsing(std::string &phone);					// парсинг номера телефона в нормальный вид
-	std::string getTalkTime(std::string talk);						// перевод временни из сек -> 00:00:00
+	std::string PhoneParsing(std::string &phone);					// РїР°СЂСЃРёРЅРі РЅРѕРјРµСЂР° С‚РµР»РµС„РѕРЅР° РІ РЅРѕСЂРјР°Р»СЊРЅС‹Р№ РІРёРґ
+	std::string GetTalkTime(std::string talk);						// РїРµСЂРµРІРѕРґ РІСЂРµРјРµРЅРЅРё РёР· СЃРµРє -> 00:00:00
 
-	// функции работы со временем (формат год-месяц-день 00:00:00 )
-	std::string GetCurrentDateTime();							// текущее время 
-	std::string GetCurrentStartDay();							// текущее начало дня
-	std::string GetCurrentDateTimeAfterMinutes(int minutes);	// текущее время - (МИНУС) указанная минута 
-	//std::string getCurrentDateTimeAfter20hours();				// текущее время после 20:00 	
+	// С„СѓРЅРєС†РёРё СЂР°Р±РѕС‚С‹ СЃРѕ РІСЂРµРјРµРЅРµРј (С„РѕСЂРјР°С‚ РіРѕРґ-РјРµСЃСЏС†-РґРµРЅСЊ 00:00:00 )
+	std::string GetCurrentDateTime();							// С‚РµРєСѓС‰РµРµ РІСЂРµРјСЏ 
+	std::string GetCurrentStartDay();							// С‚РµРєСѓС‰РµРµ РЅР°С‡Р°Р»Рѕ РґРЅСЏ
+	std::string GetCurrentDateTimeAfterMinutes(int minutes);	// С‚РµРєСѓС‰РµРµ РІСЂРµРјСЏ - (РњРРќРЈРЎ) СѓРєР°Р·Р°РЅРЅР°СЏ РјРёРЅСѓС‚Р° 
+	//std::string getCurrentDateTimeAfter20hours();				// С‚РµРєСѓС‰РµРµ РІСЂРµРјСЏ РїРѕСЃР»Рµ 20:00 	
 
-	ECommand getRemoteCommand(int command);	// преобразование текущей удаленной комады из int -> LOG::Log
-	int getRemoteCommand(ECommand command); // преобразование текущей удаленной комады из LOG::Log -> int
-	int getStatusOperators(EStatus status); // преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
+	ECommand GetRemoteCommand(int _command);	// РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ С‚РµРєСѓС‰РµР№ СѓРґР°Р»РµРЅРЅРѕР№ РєРѕРјР°РґС‹ РёР· int -> LOG::Log
+	int GetRemoteCommand(ECommand _command); // РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ С‚РµРєСѓС‰РµР№ СѓРґР°Р»РµРЅРЅРѕР№ РєРѕРјР°РґС‹ РёР· LOG::Log -> int
+	int GetStatusOperators(EStatus status); // РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ С‚РµРєСѓС‰РµР№ СѓРґР°Р»РµРЅРЅРѕР№ РєРѕРјР°РґС‹ РёР· REMOTE_COMMANDS::StatusOperators -> int
 
-	bool to_bool(const std::string &str);				// конвертер из std::string -> bool
-	std::string to_string(bool value);					// конвертер из bool -> std::string 
-	size_t string_to_size_t(const std::string &str);	// конвертер std::string->size_t
+	bool to_bool(const std::string &str);				// РєРѕРЅРІРµСЂС‚РµСЂ РёР· std::string -> bool
+	std::string to_string(bool value);					// РєРѕРЅРІРµСЂС‚РµСЂ РёР· bool -> std::string 
+	size_t string_to_size_t(const std::string &str);	// РєРѕРЅРІРµСЂС‚РµСЂ std::string->size_t
 
-	//@param &_replacmentResponse - изменяемая строка
-	//@param &_find - параметр который ищем
-	//@param &_repl - параметр НА которой будем заменять
+	void Sleep(uint64_t _time);
+
+	//@param &_replacmentResponse - РёР·РјРµРЅСЏРµРјР°СЏ СЃС‚СЂРѕРєР°
+	//@param &_find - РїР°СЂР°РјРµС‚СЂ РєРѕС‚РѕСЂС‹Р№ РёС‰РµРј
+	//@param &_repl - РїР°СЂР°РјРµС‚СЂ РќРђ РєРѕС‚РѕСЂРѕР№ Р±СѓРґРµРј Р·Р°РјРµРЅСЏС‚СЊ
 	void ReplaceResponseStatus(std::string &_replacmentResponse, const std::string &_find, const std::string &_repl);
 
 } // utils

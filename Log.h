@@ -27,12 +27,12 @@ class Log
 {
 private:
     SP_SQL		    m_sql;    
-    std::string     m_name; // файл куда будем писать лог
+    std::string     m_name; // С„Р°Р№Р» РєСѓРґР° Р±СѓРґРµРј РїРёСЃР°С‚СЊ Р»РѕРі
     std::mutex      m_mutex;    
     std::ofstream   m_file;
 
 
-    bool            m_ready; // файл готов для записи
+    bool            m_ready; // С„Р°Р№Р» РіРѕС‚РѕРІ РґР»СЏ Р·Р°РїРёСЃРё
 
     bool GetCommandInfoUser(CommandSendInfoUser &_userInfo, unsigned int _id, std::string &_errorDescription);
 
@@ -46,9 +46,9 @@ public:
     Log(const std::string &_name);
     ~Log();   
     
-    void ToBase(Command _command);                                // сохранение в БД
-    void ToFile(ELogType _type, const std::string &_message);     // сохранение в лог файл
-    void ToPrint(const std::string &_message);                    // только отображение в cout<<
+    void ToBase(Command _command);                                // СЃРѕС…СЂР°РЅРµРЅРёРµ РІ Р‘Р”
+    void ToFile(ELogType _type, const std::string &_message);     // СЃРѕС…СЂР°РЅРµРЅРёРµ РІ Р»РѕРі С„Р°Р№Р»
+    void ToPrint(const std::string &_message);                    // С‚РѕР»СЊРєРѕ РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ РІ cout<<
 
 };
 

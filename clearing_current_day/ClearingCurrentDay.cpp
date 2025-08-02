@@ -23,6 +23,7 @@ bool ClearingCurrentDay::Execute()
 	{
 		return false;
 	}		
+	
 	m_ivr.Execute();
 	m_logging.Execute();
 	m_onHold.Execute();
@@ -46,24 +47,34 @@ void ClearingCurrentDay::Stop()
 	printf("ClearingCurrentDay stopped!\n");
 }
 
-
 bool Day::CheckNewDay()
+{
+	std::time_t now = m_current;
+    std::tm currentTm = toLocalTm(now);
+    std::tm startTm = toLocalTm(m_started);
+
+    // Проверка года.  Это самый быстрый способ определить новый день.
+    if (currentTm.tm_year != startTm.tm_year) 
 	{
-		std::tm tm_start = toLocalTm(m_started);
-		std::tm tm_current = toLocalTm(m_current);
+        m_started = now;
+        return true;
+    }
 
-		// если год изменился — автоматически новый год → новый день
-		if (tm_current.tm_year != tm_start.tm_year)
-		{
-			m_started = m_current;
-			return true;
-		}
-		// если номер дня в году (0–365) изменился
-		if (tm_current.tm_yday > tm_start.tm_yday) 
-		{
-			m_started = m_current;
-			return true;
-		}			
+    // Проверка дня года.  Эффективнее, чем проверка часов/минут/секунд.
+    if (currentTm.tm_yday > startTm.tm_yday) 
+	{
+        m_started = now;
+        return true;
+    }
 
-		return false;
-	}
+    // Теперь проверяем часы, минуты и секунды только если день тот же.
+    if (currentTm.tm_hour > startTm.tm_hour ||
+        (currentTm.tm_hour == startTm.tm_hour && currentTm.tm_min > startTm.tm_min) ||
+        (currentTm.tm_hour == startTm.tm_hour && currentTm.tm_min == startTm.tm_min && currentTm.tm_sec > startTm.tm_sec)) 
+	{
+        m_started = now;
+        return true;
+    }
+
+    return false;
+}

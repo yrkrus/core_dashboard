@@ -8,7 +8,7 @@ EQueueNumber StringToEnum<EQueueNumber>(const std::string &_str)
 	if (_str.find("5000") != std::string::npos)				return EQueueNumber::e5000;
 	if (_str.find("5005") != std::string::npos)				return EQueueNumber::e5005;
 	if (_str.find("5050") != std::string::npos)				return EQueueNumber::e5050;
-	if (_str.find("5000 и 5050") != std::string::npos)		return EQueueNumber::e5000_e5050;
+	if (_str.find("5000 Рё 5050") != std::string::npos)		return EQueueNumber::e5000_e5050;
 
 	return EQueueNumber::Unknown;
 }
@@ -22,7 +22,7 @@ string EnumToString<EQueueNumber>(EQueueNumber _queue)
 		{EQueueNumber::e5000,		"5000"},
 		{EQueueNumber::e5005,		"5005"},
 		{EQueueNumber::e5050,		"5050"},
-		{EQueueNumber::e5000_e5050,	"5000 и 5050"},
+		{EQueueNumber::e5000_e5050,	"5000 Рё 5050"},
 	};
 
 	auto it = queueNumber.find(_queue);	
@@ -35,26 +35,26 @@ string EnumToString<ECommand>(ECommand _command)
 {
 	static std::map<ECommand, string> command =
 	{
-		{ECommand::Enter,				"Enter"},				// Вход
-		{ECommand::Exit,				"Exit"},				// Выход
-		{ECommand::AuthError,			"AuthError"},			// не успешная авторизация
-		{ECommand::ExitForce,			"ExitForce"},			// Выход (через команду force_closed)
-		{ECommand::AddQueue5000,		"AddQueue5000"},        // добавление в очередь 5000
-		{ECommand::AddQueue5050,		"AddQueue5050"},        // добавление в очередь 5050
-		{ECommand::AddQueue5000_5050,	"AddQueue5000_5050"},	// добавление в очередь 5000 и 5050
-		{ECommand::DelQueue5000,		"DelQueue500"},         // удаление из очереди 5000
-		{ECommand::DelQueue5050,		"DelQueue5050"},        // удаление из очереди 5050
-		{ECommand::DelQueue5000_5050,	"DelQueue5000_5050"},   // удаление из очереди 5000 и 5050
-		{ECommand::Available,			"Available"},			// доступен
-		{ECommand::Home,				"Home"},				// домой        
-		{ECommand::Exodus,				"Exodus"},				// исход
-		{ECommand::Break,				"Break"},				// перерыв
-		{ECommand::Dinner,				"Dinner"},				// обед
-		{ECommand::Postvyzov,			"Postvyzov"},			// поствызов
-		{ECommand::Studies,				"Studies"},				// учеба
-		{ECommand::IT,					"IT"},					// ИТ
-		{ECommand::Transfer,			"Transfer"},			// переносы
-		{ECommand::Reserve,				"Reserve"},				// резерв
+		{ECommand::Enter,				"Enter"},				// Р’С…РѕРґ
+		{ECommand::Exit,				"Exit"},				// Р’С‹С…РѕРґ
+		{ECommand::AuthError,			"AuthError"},			// РЅРµ СѓСЃРїРµС€РЅР°СЏ Р°РІС‚РѕСЂРёР·Р°С†РёСЏ
+		{ECommand::ExitForce,			"ExitForce"},			// Р’С‹С…РѕРґ (С‡РµСЂРµР· РєРѕРјР°РЅРґСѓ force_closed)
+		{ECommand::AddQueue5000,		"AddQueue5000"},        // РґРѕР±Р°РІР»РµРЅРёРµ РІ РѕС‡РµСЂРµРґСЊ 5000
+		{ECommand::AddQueue5050,		"AddQueue5050"},        // РґРѕР±Р°РІР»РµРЅРёРµ РІ РѕС‡РµСЂРµРґСЊ 5050
+		{ECommand::AddQueue5000_5050,	"AddQueue5000_5050"},	// РґРѕР±Р°РІР»РµРЅРёРµ РІ РѕС‡РµСЂРµРґСЊ 5000 Рё 5050
+		{ECommand::DelQueue5000,		"DelQueue500"},         // СѓРґР°Р»РµРЅРёРµ РёР· РѕС‡РµСЂРµРґРё 5000
+		{ECommand::DelQueue5050,		"DelQueue5050"},        // СѓРґР°Р»РµРЅРёРµ РёР· РѕС‡РµСЂРµРґРё 5050
+		{ECommand::DelQueue5000_5050,	"DelQueue5000_5050"},   // СѓРґР°Р»РµРЅРёРµ РёР· РѕС‡РµСЂРµРґРё 5000 Рё 5050
+		{ECommand::Available,			"Available"},			// РґРѕСЃС‚СѓРїРµРЅ
+		{ECommand::Home,				"Home"},				// РґРѕРјРѕР№        
+		{ECommand::Exodus,				"Exodus"},				// РёСЃС…РѕРґ
+		{ECommand::Break,				"Break"},				// РїРµСЂРµСЂС‹РІ
+		{ECommand::Dinner,				"Dinner"},				// РѕР±РµРґ
+		{ECommand::Postvyzov,			"Postvyzov"},			// РїРѕСЃС‚РІС‹Р·РѕРІ
+		{ECommand::Studies,				"Studies"},				// СѓС‡РµР±Р°
+		{ECommand::IT,					"IT"},					// РРў
+		{ECommand::Transfer,			"Transfer"},			// РїРµСЂРµРЅРѕСЃС‹
+		{ECommand::Reserve,				"Reserve"},				// СЂРµР·РµСЂРІ
 		{ECommand::Callback,			"Callback"},			// callback
 	};
 

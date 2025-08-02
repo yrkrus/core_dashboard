@@ -38,7 +38,7 @@ bool Status::IsExistCommand()
 	return !m_commandList.empty() ? true : false;
 }
 
-// получение новых команд из БД
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅ
 bool Status::GetCommand(std::string &_errorDesciption)
 {
 	_errorDesciption.clear();
@@ -55,7 +55,7 @@ bool Status::GetCommand(std::string &_errorDesciption)
 		return false;
 	}	
 
-	// результат
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 	MYSQL_ROW row;
 
@@ -68,13 +68,13 @@ bool Status::GetCommand(std::string &_errorDesciption)
 			{
 				case 0: command.id = std::stoi(row[i]);								break;
 				case 1: command.sip = row[i];										break;
-				case 2: command.command = getRemoteCommand(std::stoi(row[i]));		break;
+				case 2: command.command = GetRemoteCommand(std::stoi(row[i]));		break;
 				case 3: command.userId = std::stoi(row[i]);							break;
 				case 4: command.delay  = (std::stoi(row[i]) == 1 ? true : false);	break;
 			}				
 		}
 
-		// добавим найденные команды
+		// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		m_commandList.push_back(command);
 	}
 
@@ -84,20 +84,20 @@ bool Status::GetCommand(std::string &_errorDesciption)
 	return true;
 }
 
-// выполнение команды
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 bool Status::ExecuteCommand(const Command &_command, std::string &_errorDesciption)
 {	
-	// найдем команду (add\del)
+	// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ (add\del)
 	ECommandType commandType = GetCommandType(_command);
 	
-	// такого быть не должно но все же
+	// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ
 	if (commandType == ECommandType::Unknown) 
 	{
 		_errorDesciption = StringFormat("remote command %s not support",EnumToString<ECommand>(_command.command).c_str());
 		return false;
 	}
 	
-	std::string rawCommandStr;	// команда по умолчанию на отправку
+	std::string rawCommandStr;	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
 	switch (commandType)
 	{
@@ -107,19 +107,19 @@ bool Status::ExecuteCommand(const Command &_command, std::string &_errorDescipti
 			return false;
 	}
 
-	// найдем очередь
+	// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	EQueueNumber queue = GetQueueNumber(_command.command);
 
-	// такого не должно быть но все же
+	// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ
 	if (queue == EQueueNumber::Unknown)
 	{
-		// TODO в лог не забыть писать
+		// TODO пїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		return false;
 	}
 
 	std::string request;
 
-	// для двойной очереди или для входа в статус не связанный с очередью 
+	// пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 
 	if (queue == EQueueNumber::e5000_e5050)
 	{
 		for (size_t i = 1; i < 3; ++i)
@@ -144,13 +144,13 @@ bool Status::ExecuteCommand(const Command &_command, std::string &_errorDescipti
 		}
 	}
 
-	// добавим в лог запрос
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	m_log->ToBase(_command);
 
-	// обновим текущий статус оператора
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	if (!UpdateNewStatus(_command, _errorDesciption))
 	{
-		// TODO запись в лог что неуспешно, поставить в лог strErr в БД инфо об ошибки чтобы показать пользаку
+		// TODO пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ strErr пїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		return false;
 	}
 
@@ -161,10 +161,10 @@ std::string Status::CreateCommand(const Command &_command, const EQueueNumber _q
 {
 	std::string request = _rawCommand;
 
-	// сформируем строку (номер очереди)
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 	ReplaceResponseStatus(request, "%queue", EnumToString<EQueueNumber>(_queue));
 
-	// сформируем строку (sip очереди)
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ (sip пїЅпїЅпїЅпїЅпїЅпїЅпїЅ)
 	ReplaceResponseStatus(request, "%sip", _command.sip);	
 
 	return request;
@@ -186,7 +186,7 @@ void Status::DeleteCommand(const Command &_command)
 	m_sql->Disconnect();	
 }
 
-// не удачное выполнение команды
+// пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 void Status::ExecuteCommandFail(const Command &_command, const std::string &_errorStr)
 {
 	std::string error;	
@@ -207,7 +207,7 @@ void Status::ExecuteCommandFail(const Command &_command, const std::string &_err
 
 bool Status::SendCommand(ECommandType commandType, std::string &_request, std::string &_errorDesciption)
 {
-	m_register.DeleteRawAll(); // очистим все текущие данные 
+	m_register.DeleteRawAll(); // пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ 
 
 	if (!m_register.CreateData(_request, _errorDesciption))
 	{
@@ -217,12 +217,12 @@ bool Status::SendCommand(ECommandType commandType, std::string &_request, std::s
 	return CheckSendingCommand(commandType, _errorDesciption);
 }
 
-// проверка успешно ли выполнена команда
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 bool Status::CheckSendingCommand(ECommandType _commandType, std::string &_errorDesciption)
 {
 	bool status = false;
 
-	// проверим ответ
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 	if (!m_register.IsExistRaw())
 	{
 		_errorDesciption = "not respond asterisk command";
@@ -232,7 +232,7 @@ bool Status::CheckSendingCommand(ECommandType _commandType, std::string &_errorD
 	std::string rawLines = m_register.GetRawFirst();
 	if (rawLines.empty())
 	{
-		// TODO тут подумать, что делать!
+		// TODO пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ!
 		return true;
 	}
 
@@ -260,7 +260,7 @@ bool Status::CheckSendingCommand(ECommandType _commandType, std::string &_errorD
 			break;
 		}
 	}
-	// очищаем
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	m_register.DeleteRawAll();
 
 	return status;
@@ -268,7 +268,7 @@ bool Status::CheckSendingCommand(ECommandType _commandType, std::string &_errorD
 
 bool Status::UpdateNewStatus(const Command &_command, std::string &_errorDesciption)
 {	
-	// новый статус оператора
+	// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	EStatus status;
 
 	switch (_command.command)
@@ -308,7 +308,7 @@ bool Status::UpdateNewStatus(const Command &_command, std::string &_errorDescipt
 	if (!m_sql->Request(query, _errorDesciption))
 	{
 		m_sql->Disconnect();
-		// TODO тут запись в лог
+		// TODO пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅ
 		return false;
 	}
 
@@ -323,14 +323,14 @@ bool Status::IsTalkOperator(const std::string &_sip, std::string &_errorDescipti
 																	"' and sip = '" + _sip + "' and answered = '1' and hash is null limit 1";
 	if (!m_sql->Request(query, _errorDesciption))
 	{
-		// TODO в лог
+		// TODO пїЅ пїЅпїЅпїЅ
 		printf("%s", _errorDesciption.c_str());
 		m_sql->Disconnect();
-		// ошибка считаем что нет запись
+		// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 		return false;
 	}
 
-	// результат
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 	MYSQL_ROW row = mysql_fetch_row(result);
 
@@ -343,10 +343,10 @@ bool Status::IsTalkOperator(const std::string &_sip, std::string &_errorDescipti
 	return exist;
 }
 
-// поиск какая команда пришла
+// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 ECommandType Status::GetCommandType(const Command &_command)
 {	
-	// TODO может в будущем потом на std::map и static переделать
+	// TODO пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ std::map пїЅ static пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	
 	switch (_command.command)
 	{
@@ -382,7 +382,7 @@ ECommandType Status::GetCommandType(const Command &_command)
 	}	
 }
 
-// поиск номера очереди
+// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 EQueueNumber Status::GetQueueNumber(const ECommand &_command)
 {
 	switch (_command)
@@ -419,54 +419,54 @@ EQueueNumber Status::GetQueueNumber(const ECommand &_command)
 //	return EStatus();
 //}
 
-// выполнение команд
+// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 bool Status::Execute()
 {
 	std::string error;
 	if (!GetCommand(error)) 
 	{
-		// TODO в лог наверно хз подумать
+		// TODO пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 		printf("%s", error.c_str());
 		return false;
 	}
 	
-	// выполнение команд
+	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 	if (IsExistCommand()) 
 	{
 		for (const auto &command : m_commandList)
 		{
 			std::string error;
 
-			if (command.delay)	// отложенное выполнение команды
+			if (command.delay)	// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			{
-				// проверим разговаривает ли еще оператор или нет
+				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅ
 				if (IsTalkOperator(command.sip, error)) 
 				{
-					// пропускаем команду, т.к. оператор еще разговаривает
+					// пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅ.пїЅ. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 					continue;
 				}				
 			}
 						
 			if (!ExecuteCommand(command, error))
 			{
-				// TODO в лог наверно хз подумать
+				// TODO пїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 				printf("%s", error.c_str());
 
 				
-				// не удачно выполнили команду, нужно удалить ее сразу т.к. у пользвака не будет надписи об ошибке
+				// пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ.пїЅ. пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 				if (command.delay) 
 				{
 					DeleteCommand(command);
 					continue;
 				}
 
-				// инфо в БД что не успешно выполнили команду, дальше в gui это отображается у пользователя
+				// пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ gui пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 				ExecuteCommandFail(command, error);
 				continue;
 			}
 			else
 			{
-				// успешно отработанная команда удаляем ее
+				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ
 				DeleteCommand(command);
 			}							
 		}

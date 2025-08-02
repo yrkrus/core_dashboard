@@ -84,7 +84,7 @@ std::string utils::PhoneParsing(std::string &phone)
 
 
 // перевод общего кол-ва секунда в 00:00:00 формат
-std::string utils::getTalkTime(std::string talk)
+std::string utils::GetTalkTime(std::string talk)
 {
 	const unsigned int daysCount	= 24 * 3600;
 	const unsigned short hourCount	= 3600;
@@ -209,19 +209,19 @@ std::string utils::GetCurrentDateTimeAfterMinutes(int minutes)
 //}
 
 // преобразование текущей удаленной комады из int -> REMOTE_COMMANDS::Command 
-ECommand utils::getRemoteCommand(int command) // TODO переделать на template IntegerToEnum
+ECommand utils::GetRemoteCommand(int _command) // TODO переделать на template IntegerToEnum
 {
-	return static_cast<ECommand>(command);
+	return static_cast<ECommand>(_command);
 }
 
 // преобразование текущей удаленной комады из LOG::Log -> int
-int utils::getRemoteCommand(ECommand command)// TODO переделать на template EnumToInteger
+int utils::GetRemoteCommand(ECommand _command)// TODO переделать на template EnumToInteger
 {
-	return static_cast<int>(command);
+	return static_cast<int>(_command);
 }
 
 // преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
-int utils::getStatusOperators(EStatus status)// TODO переделать на template EnumToInteger
+int utils::GetStatusOperators(EStatus status)// TODO переделать на template EnumToInteger
 {
 	return static_cast<int>(status);
 }
@@ -243,6 +243,11 @@ size_t utils::string_to_size_t(const std::string &str)
 	stream >> output;
 
 	return output;
+}
+
+void utils::Sleep(uint64_t _time)
+{
+	std::this_thread::sleep_for(std::chrono::milliseconds(_time));
 }
 
 

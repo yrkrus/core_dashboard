@@ -68,7 +68,8 @@ static void _sigint_handler(int)
 int main(int argc, char *argv[])
 {
     // bild
-    printf("BUILD %s\n\n", BUILD);
+    printf("%s\n\n", CONSTANTS::VERSION::CORE.c_str());
+    Sleep(2000);
 
     // Перехватываем Ctrl+C
     std::signal(SIGINT, _sigint_handler);
@@ -100,7 +101,7 @@ int main(int argc, char *argv[])
 
         printf("\n%s time execute code: %ld ms", GetCurrentDateTime().c_str(), execute_ms.count());
 
-        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        Sleep(10);
     }
 
     std::cout << "\nServer stopping ...\n";

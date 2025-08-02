@@ -48,9 +48,13 @@ namespace CONSTANTS
         static const std::string REMOTE_COMMANDS    = "remote_commands.log";        
     }
     
-    
-    // WKroot#791  old
-    // *v0@|48lg*se  new  
+    // версия ядра
+    namespace VERSION
+    {          
+        static const std::string CORE = "CORE | version 3.0 " BUILD; 
+    }
+       
+    // *v0@|48lg*se  
     
     
     //valgrind --leak-check=full --show-leak-kinds=all --leak-resolution=med --log-file=./core.log ./core_dashboard start
@@ -109,11 +113,6 @@ namespace CONSTANTS
 
  //   когда через активные сессия сброс, если оператор в очереди то убираем его из нее!!!
 
- //  
-
- // версия ядра
- //static std::string core_version = "CORE DASHBOARD | version 2.17 " BUILD;
- 
 };
 
 

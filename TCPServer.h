@@ -1,4 +1,4 @@
-// TCP Сервер
+// TCP РЎРµСЂРІРµСЂ
 
 #ifndef TCPSERVER_H
 #define	TCPSERVER_H
@@ -17,12 +17,12 @@ public:
 	explicit HeartbeatServer(unsigned short port);
 	~HeartbeatServer();
 
-	// Запустить сервер (фоновый поток для accept)
+	// Р—Р°РїСѓСЃС‚РёС‚СЊ СЃРµСЂРІРµСЂ (С„РѕРЅРѕРІС‹Р№ РїРѕС‚РѕРє РґР»СЏ accept)
 	bool start();
-	// Остановить сервер (закрывает слушающий сокет и все клиенты)
+	// РћСЃС‚Р°РЅРѕРІРёС‚СЊ СЃРµСЂРІРµСЂ (Р·Р°РєСЂС‹РІР°РµС‚ СЃР»СѓС€Р°СЋС‰РёР№ СЃРѕРєРµС‚ Рё РІСЃРµ РєР»РёРµРЅС‚С‹)
 	void stop();
 
-	// Установить callback, вызываемый при каждом PING
+	// РЈСЃС‚Р°РЅРѕРІРёС‚СЊ callback, РІС‹Р·С‹РІР°РµРјС‹Р№ РїСЂРё РєР°Р¶РґРѕРј PING
 	void set_on_ping(OnPingCallback cb);
 
 private:
@@ -35,7 +35,7 @@ private:
 	std::thread           accept_thread_;
 	OnPingCallback        on_ping_;
 
-	// Для корректного закрытия всех клиентских сокетов
+	// Р”Р»СЏ РєРѕСЂСЂРµРєС‚РЅРѕРіРѕ Р·Р°РєСЂС‹С‚РёСЏ РІСЃРµС… РєР»РёРµРЅС‚СЃРєРёС… СЃРѕРєРµС‚РѕРІ
 	std::mutex            clients_mtx_;
 	std::vector<int>      client_fds_;
 };

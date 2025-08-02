@@ -15,7 +15,7 @@ HistoryIvr::~HistoryIvr()
 
 void HistoryIvr::Execute()
 {
-	// ïîëó÷èì äàííûå
+	// Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ð¼ Ð´Ð°Ð½Ð½Ñ‹Ðµ
 	if (!Get() || !IsExistData())
 	{
 		return;
@@ -63,10 +63,10 @@ bool HistoryIvr::Insert(const Table &_field, std::string &_errorDescription)
 {
 	_errorDescription.clear();
 
-	// ïåðåä âñòàâêîé ïðîâåðèì åñòü ëè òàêàÿ çàïèñü â history_ivr ÷òîáû 2îé ðàç åå íå äîáàâëÿòü
+	// Ð¿ÐµÑ€ÐµÐ´ Ð²ÑÑ‚Ð°Ð²ÐºÐ¾Ð¹ Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ð¼ ÐµÑÑ‚ÑŒ Ð»Ð¸ Ñ‚Ð°ÐºÐ°Ñ Ð·Ð°Ð¿Ð¸ÑÑŒ Ð² history_ivr Ñ‡Ñ‚Ð¾Ð±Ñ‹ 2Ð¾Ð¹ Ñ€Ð°Ð· ÐµÐµ Ð½Ðµ Ð´Ð¾Ð±Ð°Ð²Ð»ÑÑ‚ÑŒ
 	if (CheckInsert(_field.id)) 
 	{
-		// çàïèñü â history_ivr åñòü çíà÷èò åå óäàëÿåì èç òàáëèöû ivr
+		// Ð·Ð°Ð¿Ð¸ÑÑŒ Ð² history_ivr ÐµÑÑ‚ÑŒ Ð·Ð½Ð°Ñ‡Ð¸Ñ‚ ÐµÐµ ÑƒÐ´Ð°Ð»ÑÐµÐ¼ Ð¸Ð· Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹ ivr
 		_errorDescription = StringFormat("ivr %d is exist in table history_ivr %s %s %s", 
 																				_field.id, 
 																				_field.date_time.c_str(), 
@@ -144,7 +144,7 @@ bool HistoryIvr::Get()
 		return false;
 	}
 
-	// ðåçóëüòàò
+	// Ñ€ÐµÐ·ÑƒÐ»ÑŒÑ‚Ð°Ñ‚
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 	MYSQL_ROW row;
 
@@ -192,11 +192,11 @@ bool HistoryIvr::CheckInsert(int _id)
 		m_log.ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();
-		// îøèáêà ñ÷èòàåì ÷òî íåò çàïèñè
+		// Ð¾ÑˆÐ¸Ð±ÐºÐ° ÑÑ‡Ð¸Ñ‚Ð°ÐµÐ¼ Ñ‡Ñ‚Ð¾ Ð½ÐµÑ‚ Ð·Ð°Ð¿Ð¸ÑÐ¸
 		return false;
 	}
 
-	// ðåçóëüòàò
+	// Ñ€ÐµÐ·ÑƒÐ»ÑŒÑ‚Ð°Ñ‚
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 	MYSQL_ROW row = mysql_fetch_row(result);
 

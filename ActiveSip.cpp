@@ -595,7 +595,7 @@ void active_sip::ActiveSession::UpdateTalkCallOperator()
 
 		const std::string query = "update queue set sip = '"
 									+ call.sip + "', talk_time = '"
-									+ getTalkTime(call.talkTime)
+									+ GetTalkTime(call.talkTime)
 									+ "', answered ='1' where phone = '"
 									+ call.phone + "' and id ='"
 									+ id + "'";
