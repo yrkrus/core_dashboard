@@ -1,8 +1,13 @@
+# компилятор
 CXX       := g++
-#CXXFLAGS  := -std=c++17 -Wall -Werror -fsanitize=address -I. -I./clearing_current_day -pthread -g -Og -O0 
-CXXFLAGS  := -std=c++17 -Wall -fsanitize=address -I. -I./clearing_current_day -pthread -g -Og -O0 
-YSQL_CFLAGS := $(shell mysql_config --cflags)
-MYSQL_LIBS   := $(shell mysql_config --libs) -lmysqlclient
+CXXVERSION := $(shell g++ -dumpversion | sed -E 's/^([0-9]+)\..*/\1/')
+
+# флаги для компиляции
+CXXFLAGS  := -std=c++17 -Wall -Werror -fsanitize=address -g -Og -O0 \
+              -pthread $(shell mysql_config --cflags)
+
+# флаги для линковки
+LDFLAGS   := -pthread $(shell mysql_config --libs) -lstdc++fs
 
 SRC_ROOT  := $(wildcard *.cpp)
 SRC_AST   := $(wildcard clearing_current_day/*.cpp)
@@ -15,7 +20,7 @@ TARGET    := core_dashboard
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $@ $(MYSQL_LIBS)
+	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $@ $(LDFLAGS)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@

@@ -11,6 +11,7 @@
 
 
 #define LOG_NAME_DEFAULT "unnamed_log.log"
+#define LOG_FOLDER "./log"
 
 struct Command;
 struct CommandSendInfoUser;
@@ -39,7 +40,9 @@ private:
     void OpenLogFile();
     void CloseLogFile();
 
-    bool IsReady() const;    
+    bool IsReady() const;  
+    
+    void CreteFolderLog(const std::string &_name);  // проверка что есть папка с логами
 
 public:    
     Log() = delete;

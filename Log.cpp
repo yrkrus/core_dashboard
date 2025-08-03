@@ -1,4 +1,5 @@
 #include <vector>
+#include <filesystem>
 #include "Log.h"
 #include "Constants.h"
 #include "InternalFunction.h"
@@ -6,6 +7,7 @@
 #include "utils.h"
 
 using namespace utils;
+namespace fs = std::filesystem;
 
 bool Log::GetCommandInfoUser(CommandSendInfoUser &_userInfo, unsigned int _id, std::string &_errorDescription)
 {
@@ -77,11 +79,23 @@ bool Log::IsReady() const
 	return m_ready;
 }
 
-Log::Log(const std::string &_name)
-	: m_sql(std::make_shared<ISQLConnect>(false))
-	, m_name(_name)
-	, m_ready(false)
+void Log::CreteFolderLog(const std::string &_name)
 {
+	fs::path directory(LOG_FOLDER);
+	if (!fs::exists(directory)) 
+	{
+		fs::create_directories(directory);
+	}	
+
+	fs::path file = directory / _name;
+    m_name = file.string();	
+}
+
+Log::Log(const std::string &_name)
+	: m_sql(std::make_shared<ISQLConnect>(false))	
+	, m_ready(false)
+{	
+	CreteFolderLog(_name);
 	OpenLogFile();
 }
 
