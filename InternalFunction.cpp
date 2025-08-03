@@ -1,6 +1,11 @@
 ﻿#include "InternalFunction.h"
 #include <cmath>
-
+#include <ctime>
+#include <iostream>
+#include <string>
+#include <chrono>
+#include <ctime>
+#include <iomanip>
 
 std::string utils::StringFormat(const char *format, ...)
 {
@@ -18,13 +23,13 @@ std::string utils::StringFormat(const char *format, ...)
 			format++;
 			switch (*format)
 			{
-			case 'd':	 // Для целых чисел
-			{ 
+			case 'd': // Для целых чисел
+			{
 				int i = va_arg(args, int);
 				oss << i;
 				break;
 			}
-			case 'u':	// беззнаковое целое
+			case 'u': // беззнаковое целое
 			{
 				unsigned int u = va_arg(args, unsigned int);
 				oss << u;
@@ -64,79 +69,93 @@ std::string utils::PhoneParsing(std::string &phone)
 {
 	const auto n = phone.size();
 
-	if (n == 10) 
+	if (n == 10)
 	{
-		return "+7" + phone;  // 10 цифр → добавляем +7
-	}                                   
-		
-	if (n == 11) 
+		return "+7" + phone; // 10 цифр → добавляем +7
+	}
+
+	if (n == 11)
 	{
 		return "+" + phone; // 11 цифр → просто + перед номером
-	}                                   
-		
+	}
+
 	if (n == 12 && phone.rfind("+7", 0) == 0) // 12 символов и начинается с "+7" → уже в норме
 	{
 		return phone;
-	}		
-	
-	return "null";	// всё остальное — «null»
-};
+	}
 
+	return "null"; // всё остальное — «null»
+};
 
 // перевод общего кол-ва секунда в 00:00:00 формат
 std::string utils::GetTalkTime(std::string talk)
 {
-	const unsigned int daysCount	= 24 * 3600;
-	const unsigned short hourCount	= 3600;
-	const unsigned short minCount	= 60;
+	const unsigned int daysCount = 24 * 3600;
+	const unsigned short hourCount = 3600;
+	const unsigned short minCount = 60;
 
 	std::string resultat;
 
 	int talk_time = std::stoi(talk);
 
-	int days, hour, min,sec;
+	int days, hour, min, sec;
 	std::string shour, smin, ssec;
 
 	days = hour = min = sec = 0;
 
-	days = static_cast<int>(std::floor((talk_time / daysCount)));		
-	hour = static_cast<int>(std::floor(((talk_time - (days * daysCount)) / hourCount)));	
-	min = static_cast<int>(std::floor(((talk_time - ((days * daysCount) + (hour * hourCount) )) / minCount)));
+	days = static_cast<int>(std::floor((talk_time / daysCount)));
+	hour = static_cast<int>(std::floor(((talk_time - (days * daysCount)) / hourCount)));
+	min = static_cast<int>(std::floor(((talk_time - ((days * daysCount) + (hour * hourCount))) / minCount)));
 	sec = static_cast<int>(std::floor((talk_time - ((days * daysCount) + (hour * hourCount) + (min * minCount)))));
-		
+
 	(hour < 10) ? shour = "0" + std::to_string(hour) : shour = std::to_string(hour);
 	(min < 10) ? smin = "0" + std::to_string(min) : smin = std::to_string(min);
 	(sec < 10) ? ssec = "0" + std::to_string(sec) : ssec = std::to_string(sec);
-	
-	resultat = shour + ":" + smin + ":" + ssec;	
-	return ((days == 0) ? resultat : resultat += std::to_string(days)+"d "+ resultat);	
+
+	resultat = shour + ":" + smin + ":" + ssec;
+	return ((days == 0) ? resultat : resultat += std::to_string(days) + "d " + resultat);
 }
 
-// текущее время 
+// текущее время
 std::string utils::GetCurrentDateTime()
-{	
+{
 	auto now = std::chrono::system_clock::now();
 	std::time_t now_c = std::chrono::system_clock::to_time_t(now);
-	struct std::tm *now_tm = std::localtime(&now_c);		
+	struct std::tm *now_tm = std::localtime(&now_c);
 
-	//формат год-месяц-день 00:00:00
+	// формат год-месяц-день 00:00:00
 	std::string year = std::to_string((now_tm->tm_year + 1900));
 
 	std::string mon = std::to_string((now_tm->tm_mon + 1));
-	if (mon.length() == 1) { mon = "0" + mon; }
+	if (mon.length() == 1)
+	{
+		mon = "0" + mon;
+	}
 
 	std::string day = std::to_string(now_tm->tm_mday);
-	if (day.length() == 1) { day = "0" + day; }
+	if (day.length() == 1)
+	{
+		day = "0" + day;
+	}
 
 	std::string hour = std::to_string(now_tm->tm_hour);
-	if (hour.length() == 1) { hour = "0" + hour; }
+	if (hour.length() == 1)
+	{
+		hour = "0" + hour;
+	}
 
 	std::string min = std::to_string(now_tm->tm_min);
-	if (min.length() == 1) { min = "0" + min; }
+	if (min.length() == 1)
+	{
+		min = "0" + min;
+	}
 
 	std::string sec = std::to_string(now_tm->tm_sec);
-	if (sec.length() == 1) { sec = "0" + sec; }
-		
+	if (sec.length() == 1)
+	{
+		sec = "0" + sec;
+	}
+
 	return year + "-" + mon + "-" + day + " " + hour + ":" + min + ":" + sec;
 }
 
@@ -147,50 +166,71 @@ std::string utils::GetCurrentStartDay()
 	std::time_t now_c = std::chrono::system_clock::to_time_t(now);
 	struct std::tm *now_tm = std::localtime(&now_c);
 
-	//формат год-месяц-день 00:00:00
+	// формат год-месяц-день 00:00:00
 	std::string year = std::to_string((now_tm->tm_year + 1900));
 
 	std::string mon = std::to_string((now_tm->tm_mon + 1));
-	if (mon.length() == 1) { mon = "0" + mon; }
+	if (mon.length() == 1)
+	{
+		mon = "0" + mon;
+	}
 
 	std::string day = std::to_string(now_tm->tm_mday);
-	if (day.length() == 1) { day = "0" + day; }	
+	if (day.length() == 1)
+	{
+		day = "0" + day;
+	}
 
-	return year + "-" + mon + "-" + day + " 00:00:00" ;
+	return year + "-" + mon + "-" + day + " 00:00:00";
 }
 
-// текущее время - 2 минута 
+// текущее время - 2 минута
 std::string utils::GetCurrentDateTimeAfterMinutes(int minutes)
 {
 	auto now = std::chrono::system_clock::now();
 	auto minute = std::chrono::minutes(minutes);
 
-	std::time_t now_c = std::chrono::system_clock::to_time_t(now-minute);
+	std::time_t now_c = std::chrono::system_clock::to_time_t(now - minute);
 	struct std::tm *now_tm = std::localtime(&now_c);
 
-	//формат год-месяц-день 00:00:00
+	// формат год-месяц-день 00:00:00
 	std::string year = std::to_string((now_tm->tm_year + 1900));
 
 	std::string mon = std::to_string((now_tm->tm_mon + 1));
-	if (mon.length() == 1) { mon = "0" + mon; }
+	if (mon.length() == 1)
+	{
+		mon = "0" + mon;
+	}
 
 	std::string day = std::to_string(now_tm->tm_mday);
-	if (day.length() == 1) { day = "0" + day; }	
+	if (day.length() == 1)
+	{
+		day = "0" + day;
+	}
 
 	std::string hour = std::to_string(now_tm->tm_hour);
-	if (hour.length() == 1) { hour = "0" + hour; }
+	if (hour.length() == 1)
+	{
+		hour = "0" + hour;
+	}
 
 	std::string min = std::to_string(now_tm->tm_min);
-	if (min.length() == 1) { min = "0" + min; }
+	if (min.length() == 1)
+	{
+		min = "0" + min;
+	}
 
 	std::string sec = std::to_string(now_tm->tm_sec);
-	if (sec.length() == 1) { sec = "0" + sec; }
+	if (sec.length() == 1)
+	{
+		sec = "0" + sec;
+	}
 
 	return year + "-" + mon + "-" + day + " " + hour + ":" + min + ":" + sec;
 }
 
-// текущее время после 20:00 
-//std::string utils::getCurrentDateTimeAfter20hours()
+// текущее время после 20:00
+// std::string utils::getCurrentDateTimeAfter20hours()
 //{
 //	auto now = std::chrono::system_clock::now();
 //	std::time_t now_c = std::chrono::system_clock::to_time_t(now);
@@ -208,20 +248,20 @@ std::string utils::GetCurrentDateTimeAfterMinutes(int minutes)
 //	return year + "-" + mon + "-" + day + " 20:00:00";
 //}
 
-// преобразование текущей удаленной комады из int -> REMOTE_COMMANDS::Command 
+// преобразование текущей удаленной комады из int -> REMOTE_COMMANDS::Command
 ECommand utils::GetRemoteCommand(int _command) // TODO переделать на template IntegerToEnum
 {
 	return static_cast<ECommand>(_command);
 }
 
 // преобразование текущей удаленной комады из LOG::Log -> int
-int utils::GetRemoteCommand(ECommand _command)// TODO переделать на template EnumToInteger
+int utils::GetRemoteCommand(ECommand _command) // TODO переделать на template EnumToInteger
 {
 	return static_cast<int>(_command);
 }
 
 // преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
-int utils::GetStatusOperators(EStatus status)// TODO переделать на template EnumToInteger
+int utils::GetStatusOperators(EStatus status) // TODO переделать на template EnumToInteger
 {
 	return static_cast<int>(status);
 }
@@ -245,21 +285,37 @@ size_t utils::string_to_size_t(const std::string &str)
 	return output;
 }
 
+time_t utils::string_to_unix_timeshtamp(const std::string &_time)
+{
+	std::tm tm{};
+	std::istringstream ss(_time);
+
+	// Важно: Используйте std::get_time для корректного парсинга
+	ss >> std::get_time(&tm, "%Y-%m-%d %H:%M:%S");
+
+	if (ss.fail())
+	{
+		// некорректный формат даты
+		return -1;
+	}
+
+	return mktime(&tm);
+}
+
 void utils::Sleep(uint64_t _time)
 {
 	std::this_thread::sleep_for(std::chrono::milliseconds(_time));
 }
 
-
 void utils::ReplaceResponseStatus(std::string &_replacmentResponse, const std::string &_find, const std::string &_repl)
 {
 	// замена для номера очереди
-	if (_find.find("%queue") != std::string::npos) 
+	if (_find.find("%queue") != std::string::npos)
 	{
 		size_t position = _replacmentResponse.find(_find);
 		_replacmentResponse.replace(position, _find.length(), _repl);
-	}	
-	
+	}
+
 	// замена для sip
 	if (_find.find("%sip") != std::string::npos)
 	{
@@ -271,13 +327,3 @@ void utils::ReplaceResponseStatus(std::string &_replacmentResponse, const std::s
 		}
 	}
 }
-
-
-
-
-
-
-
-
-
-

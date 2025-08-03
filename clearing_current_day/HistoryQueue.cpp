@@ -15,7 +15,7 @@ HistoryQueue::~HistoryQueue()
 
 void HistoryQueue::Execute()
 {
-	// ïîëó÷èì äàííûå
+	// Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ð¼ Ð´Ð°Ð½Ð½Ñ‹Ðµ
 	if (!Get() || !IsExistData())
 	{
 		return;
@@ -65,7 +65,7 @@ bool HistoryQueue::Insert(const Table &_field, std::string &_errorDescription)
 
 	if (CheckInsert(_field.id))
 	{
-	 // çàïèñü â history_queue åñòü çíà÷èò åå óäàëÿåì èç òàáëèöû queue
+	 // Ð·Ð°Ð¿Ð¸ÑÑŒ Ð² history_queue ÐµÑÑ‚ÑŒ Ð·Ð½Ð°Ñ‡Ð¸Ñ‚ ÐµÐµ ÑƒÐ´Ð°Ð»ÑÐµÐ¼ Ð¸Ð· Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹ queue
 		_errorDescription = StringFormat("queue %d is exist in table history_queue %d %d %s %s %s",
 																				_field.id,
 																				_field.sip,
@@ -82,7 +82,7 @@ bool HistoryQueue::Insert(const Table &_field, std::string &_errorDescription)
 	std::string query;
 
 	if (_field.sip != -1)
-	{	 // íà ñëó÷àé åñëè íåò NULL ïîëåé		
+	{	 // Ð½Ð° ÑÐ»ÑƒÑ‡Ð°Ð¹ ÐµÑÐ»Ð¸ Ð½ÐµÑ‚ NULL Ð¿Ð¾Ð»ÐµÐ¹		
 		query = "insert into history_queue (id,number_queue,phone,waiting_time,date_time,sip,talk_time,answered,fail,hash) values ('" + std::to_string(_field.id) +
 						"','" + std::to_string(_field.number_queue) +
 						"','" + _field.phone +
@@ -95,7 +95,7 @@ bool HistoryQueue::Insert(const Table &_field, std::string &_errorDescription)
 						"','" + std::to_string(_field.hash) + "')";
 	}
 	else
-	{	 // íà ñëó÷àé åñëè åñòü NULL ïîëÿ
+	{	 // Ð½Ð° ÑÐ»ÑƒÑ‡Ð°Ð¹ ÐµÑÐ»Ð¸ ÐµÑÑ‚ÑŒ NULL Ð¿Ð¾Ð»Ñ
 
 		query = "insert into history_queue (id,number_queue,phone,waiting_time,date_time,sip,answered,fail) values ('" + std::to_string(_field.id) +
 			"','" + std::to_string(_field.number_queue) +
@@ -167,7 +167,7 @@ bool HistoryQueue::Get()
 		return false;
 	}
 
-	// ðåçóëüòàò
+	// Ñ€ÐµÐ·ÑƒÐ»ÑŒÑ‚Ð°Ñ‚
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 	MYSQL_ROW row;
 
@@ -218,11 +218,11 @@ bool HistoryQueue::CheckInsert(int _id)
 		m_log.ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();
-		// îøèáêà ñ÷èòàåì ÷òî íåò çàïèñè
+		// Ð¾ÑˆÐ¸Ð±ÐºÐ° ÑÑ‡Ð¸Ñ‚Ð°ÐµÐ¼ Ñ‡Ñ‚Ð¾ Ð½ÐµÑ‚ Ð·Ð°Ð¿Ð¸ÑÐ¸
 		return false;
 	}
 
-	// ðåçóëüòàò
+	// Ñ€ÐµÐ·ÑƒÐ»ÑŒÑ‚Ð°Ñ‚
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 	MYSQL_ROW row = mysql_fetch_row(result);
 

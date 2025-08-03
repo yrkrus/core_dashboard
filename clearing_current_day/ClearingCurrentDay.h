@@ -8,17 +8,17 @@
 #include "HistorySms.h"
 #include "../PotokDispether.h"
 
-#define YESTERDAY 86400
+#define FULL_DAY 86400
 
-struct Day 
+struct Day
 {
-	std::time_t		m_started;
-	std::time_t		m_current;
+	std::time_t m_beginDay;	// текущее начало дня отсчет с yyyy-mm-dd 00:00:00	
+	bool m_firstRun; // флаг того что первый раз запустили и нужно провериться
 
-	Day(const std::time_t &_started)
-		: m_started(_started)
-		, m_current(std::time(nullptr))
-	{		
+	Day(const std::time_t &_beginDay)
+		: m_beginDay(_beginDay)		
+		, m_firstRun(true) 
+	{
 	};
 
 	static std::tm toLocalTm(std::time_t t)
@@ -32,22 +32,22 @@ struct Day
 		return tm;
 	}
 
-	bool CheckNewDay();	
+	bool CheckNewDay();
 };
 
-class ClearingCurrentDay 
+class ClearingCurrentDay
 {
 private:
-	HistoryIvr		m_ivr;
-	HistoryLogging	m_logging;
-	HistoryOnHold	m_onHold;
-	HistoryQueue	m_queue;
-	HistorySms		m_sms;
-	IPotokDispether	m_dispether;
-
-	Day				m_day;
+	HistoryIvr 		m_ivr;
+	HistoryLogging 	m_logging;
+	HistoryOnHold 	m_onHold;
+	HistoryQueue 	m_queue;
+	HistorySms 		m_sms;
+	IPotokDispether m_dispether;
 	
-	bool CheckNewDay();			// проверка дня что нужно запустить очистку 
+	Day 			m_day;
+
+	bool CheckNewDay(); // проверка дня что нужно запустить очистку
 	bool Execute();
 
 public:
@@ -56,7 +56,6 @@ public:
 
 	void Start();
 	void Stop();
-
 };
 using SP_ClearingCurrentDay = std::shared_ptr<ClearingCurrentDay>;
 

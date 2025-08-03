@@ -366,3 +366,6 @@ FodyWeavers.xsd
 # disabled not used files
 !DISABLED_NOT_USED!/
 
+# exec
+core_dashboard
+

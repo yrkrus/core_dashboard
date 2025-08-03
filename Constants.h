@@ -103,13 +103,7 @@ namespace CONSTANTS
 	//CallerID: "Dasboard Missed Call" <79275052333>
 	//WaitTime: 20
 	//Extension: 64197
-	//Priority: 1 
- //    
-
-
- //   
- //   ВАЖНО! НЕ ЗАБЫТЬ
- //   запуск на проде запускать из ./root/core_dashboard/core_dashboard/core_dashboard
+	//Priority: 1      
 
  //   когда через активные сессия сброс, если оператор в очереди то убираем его из нее!!!
 

@@ -4,25 +4,27 @@
 #include <string>
 #include "RemoteCommands.h"
 
-namespace utils 
+namespace utils
 {
 	std::string StringFormat(const char *format, ...);
-	std::string PhoneParsing(std::string &phone);					// парсинг номера телефона в нормальный вид
-	std::string GetTalkTime(std::string talk);						// перевод временни из сек -> 00:00:00
+	std::string PhoneParsing(std::string &phone); // парсинг номера телефона в нормальный вид
+	std::string GetTalkTime(std::string talk);	  // перевод временни из сек -> 00:00:00
 
 	// функции работы со временем (формат год-месяц-день 00:00:00 )
-	std::string GetCurrentDateTime();							// текущее время 
-	std::string GetCurrentStartDay();							// текущее начало дня
-	std::string GetCurrentDateTimeAfterMinutes(int minutes);	// текущее время - (МИНУС) указанная минута 
-	//std::string getCurrentDateTimeAfter20hours();				// текущее время после 20:00 	
+	std::string GetCurrentDateTime();						 // текущее время
+	std::string GetCurrentStartDay();						 // текущее начало дня
+	std::string GetCurrentDateTimeAfterMinutes(int minutes); // текущее время - (МИНУС) указанная минута
 
-	ECommand GetRemoteCommand(int _command);	// преобразование текущей удаленной комады из int -> LOG::Log
+	// std::string getCurrentDateTimeAfter20hours();				// текущее время после 20:00
+
+	ECommand GetRemoteCommand(int _command); // преобразование текущей удаленной комады из int -> LOG::Log
 	int GetRemoteCommand(ECommand _command); // преобразование текущей удаленной комады из LOG::Log -> int
-	int GetStatusOperators(EStatus status); // преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
+	int GetStatusOperators(EStatus status);	 // преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
 
-	bool to_bool(const std::string &str);				// конвертер из std::string -> bool
-	std::string to_string(bool value);					// конвертер из bool -> std::string 
-	size_t string_to_size_t(const std::string &str);	// конвертер std::string->size_t
+	bool to_bool(const std::string &str);						// конвертер из std::string -> bool
+	std::string to_string(bool value);							// конвертер из bool -> std::string
+	size_t string_to_size_t(const std::string &str);			// конвертер std::string->size_t
+	time_t string_to_unix_timeshtamp(const std::string &_time); // перевод времени в unixtimestamp
 
 	void Sleep(uint64_t _time);
 
@@ -32,5 +34,5 @@ namespace utils
 	void ReplaceResponseStatus(std::string &_replacmentResponse, const std::string &_find, const std::string &_repl);
 
 } // utils
-	
-#endif //INTERNALFUNCTION_H
+
+#endif // INTERNALFUNCTION_H

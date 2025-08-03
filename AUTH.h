@@ -13,5 +13,3 @@ static const std::string cLOGIN		= "zabbix";
 static const std::string cPASSWORD	= "UFGq4kZMNIMwxTzV";
 
 #endif // AUTH_H
-
-

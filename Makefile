@@ -1,5 +1,6 @@
 CXX       := g++
-CXXFLAGS  := -std=c++17 -Wall -Werror -fsanitize=address -I. -I./clearing_current_day -pthread -g -Og 
+#CXXFLAGS  := -std=c++17 -Wall -Werror -fsanitize=address -I. -I./clearing_current_day -pthread -g -Og -O0 
+CXXFLAGS  := -std=c++17 -Wall -fsanitize=address -I. -I./clearing_current_day -pthread -g -Og -O0 
 YSQL_CFLAGS := $(shell mysql_config --cflags)
 MYSQL_LIBS   := $(shell mysql_config --libs) -lmysqlclient
 
