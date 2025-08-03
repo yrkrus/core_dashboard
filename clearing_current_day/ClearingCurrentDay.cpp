@@ -5,7 +5,7 @@
 using namespace utils;
 
 ClearingCurrentDay::ClearingCurrentDay()
-	: m_dispether(CONSTANTS::TIMEOUT::CLEARING_CURRENT_DAY)
+	: m_dispether("ClearingCurrentDay",CONSTANTS::TIMEOUT::CLEARING_CURRENT_DAY)
 	, m_day(string_to_unix_timeshtamp(GetCurrentStartDay()))
 {	
 }

@@ -6,18 +6,22 @@
 
 #include <shared_mutex>
 #include <deque>
+#include <string>
 
 #include "IFile.h"
 #include "PotokDispether.h"
 
 class IAsteriskData
 {
+private:
+	std::string m_name;
+	
 protected:
 	IFile				m_rawData;				// список с данными 
 	IPotokDispether		m_dispether;			// отдельный поток который отвечает за получение данных 		
 
 public:
-	IAsteriskData(unsigned int _timer);
+	IAsteriskData(const std::string &_name, unsigned int _timer);
 	virtual ~IAsteriskData();
 
 	virtual void Start() = 0;	

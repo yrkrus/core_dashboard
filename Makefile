@@ -1,6 +1,6 @@
 # компилятор
 CXX       := g++
-CXXVERSION := $(shell g++ -dumpversion | sed -E 's/^([0-9]+)\..*/\1/')
+#CXXVERSION := $(shell g++ -dumpversion | sed -E 's/^([0-9]+)\..*/\1/')
 
 # флаги для компиляции
 CXXFLAGS  := -std=c++17 -Wall -Werror -fsanitize=address -g -Og -O0 \

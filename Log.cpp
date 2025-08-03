@@ -22,7 +22,7 @@ bool Log::GetCommandInfoUser(CommandSendInfoUser &_userInfo, unsigned int _id, s
 		m_sql->Disconnect();		
 		return false;
 	}
-
+  
 	// результат
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 	MYSQL_ROW row;	

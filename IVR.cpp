@@ -7,7 +7,7 @@
 using namespace utils;
 
 IVR::IVR()
-	:IAsteriskData(CONSTANTS::TIMEOUT::IVR)
+	:IAsteriskData("IVR",CONSTANTS::TIMEOUT::IVR)
 	, m_sql(std::make_shared<ISQLConnect>(false))
 	, m_log(CONSTANTS::LOG::IVR)
 {

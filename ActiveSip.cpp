@@ -6,7 +6,7 @@
 using namespace utils;
 
 active_sip::ActiveSession::ActiveSession(SP_Queue &_queue)
-	:IAsteriskData(CONSTANTS::TIMEOUT::ACTIVE_SESSION)
+	: IAsteriskData("ActiveSession",CONSTANTS::TIMEOUT::ACTIVE_SESSION)
 	, m_queueSession(_queue)
 	, m_sql(std::make_shared<ISQLConnect>(false))
 	, m_log(CONSTANTS::LOG::ACTIVE_SESSION)

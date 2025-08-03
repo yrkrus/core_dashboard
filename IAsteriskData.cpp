@@ -1,9 +1,10 @@
 ﻿#include "IAsteriskData.h"
 
 
-IAsteriskData::IAsteriskData(unsigned int _timer)
-	: m_rawData()
-	, m_dispether(_timer)
+IAsteriskData::IAsteriskData(const std::string &_name, unsigned int _timer)
+	: m_name(_name) 
+	, m_rawData()
+	, m_dispether(_name, _timer)
 {
 }
 

@@ -13,6 +13,7 @@
 class IPotokDispether
 {
 private:
+	std::string m_name;		 	// текущее имя потока
 	unsigned int m_timer;		 // время периодичности с которой будет запускаться поток
 	std::atomic<bool> m_running; // флаг для управления потоком
 	std::thread m_thread;		 // сам поток
@@ -24,7 +25,7 @@ private:
 public:
 	IPotokDispether() = delete; // конструктор по умолчанию не нужен, т.к. нужно обязательно timeout передавать
 
-	IPotokDispether(unsigned int _timer);
+	IPotokDispether(const std::string &_name, unsigned int _timer);
 	virtual ~IPotokDispether();
 
 	void Start(std::function<bool()> func); // запуск потока

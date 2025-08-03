@@ -8,7 +8,7 @@
 using namespace utils;
 
 Queue::Queue()
-	: IAsteriskData(CONSTANTS::TIMEOUT::QUEUE)
+	: IAsteriskData("Queue",CONSTANTS::TIMEOUT::QUEUE)
 	, m_sql(std::make_shared<ISQLConnect>(false))
 	, m_log(CONSTANTS::LOG::QUEUE)
 {
@@ -65,7 +65,7 @@ bool Queue::FindQueueCallers()
 
 	std::istringstream ss(rawLines);
 	std::string line;
-
+ 
 	while (std::getline(ss, line))
 	{
 		QueueCalls queueCaller;

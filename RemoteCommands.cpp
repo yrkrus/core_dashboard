@@ -10,7 +10,7 @@ using namespace utils;
 
 Status::Status()
 	: m_sql(std::make_shared<ISQLConnect>(false))
-	, m_dispether(CONSTANTS::TIMEOUT::OPERATOR_STATUS)
+	, m_dispether("status",CONSTANTS::TIMEOUT::OPERATOR_STATUS)
 	, m_log(std::make_shared<Log>(CONSTANTS::LOG::REMOTE_COMMANDS))
 {
 }
