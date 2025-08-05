@@ -53,6 +53,8 @@ namespace CONSTANTS
     {          
         static const std::string CORE = "CORE | version 3.0 " BUILD; 
     }
+
+    
        
     // *v0@|48lg*se  
     

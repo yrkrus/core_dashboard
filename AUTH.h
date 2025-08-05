@@ -6,10 +6,24 @@
 
 #include <string>
 
-static const std::string cHOST		= "10.34.222.19";
-//static const std::string cBD		= "dashboard";
-static const std::string cBD		= "dashboard_test";
-static const std::string cLOGIN		= "zabbix";
-static const std::string cPASSWORD	= "UFGq4kZMNIMwxTzV";
+namespace AUTH 
+{
+    namespace MYSQL 
+    {
+         static const std::string HOST		= "10.34.222.19";
+        //static const std::string cBD		= "dashboard";
+        static const std::string BD		= "dashboard_test";
+        static const std::string LOGIN		= "zabbix";
+        static const std::string PASSWORD	= "UFGq4kZMNIMwxTzV";
+    }
+   
+    namespace FIREBIRD 
+    {
+
+    }   
+}
+
+
+
 
 #endif // AUTH_H

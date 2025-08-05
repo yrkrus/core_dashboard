@@ -8,13 +8,12 @@
 #include <mysql/mysql.h>
 #include <string>
 #include <memory>
-//#include "DEBUG.h"
 #include "AUTH.h"
 
-#define HOST cHOST.c_str();
-#define BASE cBD.c_str();
-#define LOGIN cLOGIN.c_str();
-#define PWD cPASSWORD.c_str();
+#define HOST AUTH::MYSQL::HOST.c_str();
+#define BASE AUTH::MYSQL::BD.c_str();
+#define LOGIN AUTH::MYSQL::LOGIN.c_str();
+#define PWD AUTH::MYSQL::PASSWORD.c_str();
 
 
 class ISQLConnect 
