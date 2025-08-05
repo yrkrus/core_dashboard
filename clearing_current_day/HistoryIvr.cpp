@@ -13,50 +13,52 @@ HistoryIvr::~HistoryIvr()
 {
 }
 
-void HistoryIvr::Execute()
+bool HistoryIvr::Execute()
 {
 	// получим данные
-	if (!Get() || !IsExistData())
-	{
-		return;
-	}
+	 if (!Get() || !IsExistData())
+	 {
+	 	return true;
+	 }
 
-	std::string info = StringFormat("Clear table ivr. Fields count = %u", Count());
+	 std::string info = StringFormat("Clear table ivr. Fields count = %u", Count());
 	
-	m_log.ToPrint(info);
-	m_log.ToFile(ELogType::Info, info);
+	 m_log.ToPrint(info);
+	 m_log.ToFile(ELogType::Info, info);
 
 	int errorCount = 0;
 	int successCount = 0;
 
-	for (const auto &field : m_history)
-	{
-		std::string error;		
+	 for (const auto &field : m_history)
+	 {
+	 	std::string error;		
 		
-		if (Insert(field, error))
-		{			
-			Delete(field.id, ECheckInsert::Yes);
-			successCount++;
-		}
-		else 
-		{
-			errorCount++;
-			m_log.ToFile(ELogType::Error, error);
-		}
+	 	if (Insert(field, error))
+	 	{			
+	 		Delete(field.id, ECheckInsert::Yes);
+	 		successCount++;
+	 	}
+	 	else 
+	 	{
+	 		errorCount++;
+	 		m_log.ToFile(ELogType::Error, error);
+	 	}
 
-		// success or error
-		m_log.ToPrint(error);
+	 	// success or error
+	 	m_log.ToPrint(error);
 	}
 
-	if (Count() == 0) 
-	{
-		return;
-	}
+	 if (Count() == 0) 
+	 {
+	 	return true;
+	 }
 
-	info = StringFormat("Success = %u Error = %u", successCount, errorCount);
-	m_log.ToPrint(info);
+	 info = StringFormat("Success = %u Error = %u", successCount, errorCount);
+	 m_log.ToPrint(info);
 
-	m_log.ToFile(ELogType::Info, info);
+	 m_log.ToFile(ELogType::Info, info);
+
+	return (errorCount != 0 ? false :  true); 
 }
 
 bool HistoryIvr::Insert(const Table &_field, std::string &_errorDescription)
@@ -88,7 +90,7 @@ bool HistoryIvr::Insert(const Table &_field, std::string &_errorDescription)
 
 	if (!m_sql->Request(query, _errorDescription))
 	{
-		_errorDescription += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
+		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, _errorDescription);
 
 		m_sql->Disconnect();
@@ -121,7 +123,7 @@ void HistoryIvr::Delete(int _id, ECheckInsert _check)
 	std::string error;
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
+		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 	}
 
@@ -137,7 +139,7 @@ bool HistoryIvr::Get()
 	std::string error;
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
+		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();
@@ -188,7 +190,7 @@ bool HistoryIvr::CheckInsert(int _id)
 
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
+		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();

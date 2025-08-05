@@ -46,6 +46,7 @@ private:
 	IPotokDispether m_dispether;
 	
 	Day 			m_day;
+	bool 			is_error;	// флаг того что была ли ошибка при выполнении
 
 	bool CheckNewDay(); // проверка дня что нужно запустить очистку
 	bool Execute();

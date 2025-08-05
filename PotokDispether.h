@@ -9,6 +9,7 @@
 #include <functional>
 #include <condition_variable>
 #include <mutex>
+#include <string>
 
 class IPotokDispether
 {

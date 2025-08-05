@@ -31,7 +31,7 @@ public:
 	HistorySms();
 	~HistorySms() override;
 
-	virtual void Execute() override;
+	virtual bool Execute() override;
 
 private:
 	HistorySmsTable		m_history;

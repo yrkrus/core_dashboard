@@ -26,7 +26,7 @@ public:
 	HistoryLogging();
 	~HistoryLogging() override;
 
-	virtual void Execute() override;
+	virtual bool Execute() override;
 
 private:
 	HistoryLoggingTable		m_history;

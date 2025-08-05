@@ -28,7 +28,7 @@ public:
 	HistoryQueue();
 	~HistoryQueue() override;
 
-	virtual void Execute() override;
+	virtual bool Execute() override;
 
 private:
 

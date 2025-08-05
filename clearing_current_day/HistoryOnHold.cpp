@@ -13,12 +13,12 @@ HistoryOnHold::~HistoryOnHold()
 {
 }
 
-void HistoryOnHold::Execute()
+bool HistoryOnHold::Execute()
 {
-	// ïîëó÷èì äàííûå
+	// Ð¿Ð¾Ð»ÑƒÑ‡Ð¸Ð¼ Ð´Ð°Ð½Ð½Ñ‹Ðµ
 	if (!Get() || !IsExistData())
 	{
-		return;
+		return true;
 	}
 
 	std::string info = StringFormat("Clear operators_ohhold. Fields count = %u", Count());
@@ -50,23 +50,25 @@ void HistoryOnHold::Execute()
 
 	if (Count() == 0)
 	{
-		return;
+		return true;
 	}
 
 	info = StringFormat("Success = %u Error = %u", successCount, errorCount);
 	m_log.ToPrint(info);
 
 	m_log.ToFile(ELogType::Info, info);
+
+	return (errorCount != 0 ? false :  true); 
 }
 
 bool HistoryOnHold::Insert(const Table &_field, std::string &_errorDescription)
 {
 	_errorDescription.clear();
 
-	// ïåðåä âñòàâêîé ïðîâåðèì åñòü ëè òàêàÿ çàïèñü â history_onhold ÷òîáû 2îé ðàç åå íå äîáàâëÿòü
+	// Ð¿ÐµÑ€ÐµÐ´ Ð²ÑÑ‚Ð°Ð²ÐºÐ¾Ð¹ Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ð¼ ÐµÑÑ‚ÑŒ Ð»Ð¸ Ñ‚Ð°ÐºÐ°Ñ Ð·Ð°Ð¿Ð¸ÑÑŒ Ð² history_onhold Ñ‡Ñ‚Ð¾Ð±Ñ‹ 2Ð¾Ð¹ Ñ€Ð°Ð· ÐµÐµ Ð½Ðµ Ð´Ð¾Ð±Ð°Ð²Ð»ÑÑ‚ÑŒ
 	if (CheckInsert(_field.id))
 	{
-		// çàïèñü â history_logging åñòü çíà÷èò åå óäàëÿåì èç òàáëèöû ivr
+		// Ð·Ð°Ð¿Ð¸ÑÑŒ Ð² history_logging ÐµÑÑ‚ÑŒ Ð·Ð½Ð°Ñ‡Ð¸Ñ‚ ÐµÐµ ÑƒÐ´Ð°Ð»ÑÐµÐ¼ Ð¸Ð· Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹ ivr
 		_errorDescription = StringFormat("operators_ohhold %d is exist in table history_onhold %d %s %s",
 																								_field.id,
 																								_field.sip,
@@ -88,7 +90,7 @@ bool HistoryOnHold::Insert(const Table &_field, std::string &_errorDescription)
 
 	if (!m_sql->Request(query, _errorDescription))
 	{
-		_errorDescription += METHOD_NAME + StringFormat("query -> %s", query.c_str());
+		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, _errorDescription);
 
 		m_sql->Disconnect();
@@ -120,7 +122,7 @@ void HistoryOnHold::Delete(int _id, ECheckInsert _check)
 	std::string error;
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
+		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 	}
 
@@ -136,14 +138,14 @@ bool HistoryOnHold::Get()
 	std::string error;
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
+		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();
 		return false;
 	}
 
-	// ðåçóëüòàò
+	// Ñ€ÐµÐ·ÑƒÐ»ÑŒÑ‚Ð°Ñ‚
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 	MYSQL_ROW row;
 
@@ -185,15 +187,15 @@ bool HistoryOnHold::CheckInsert(int _id)
 
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
+		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();
-		// îøèáêà ñ÷èòàåì ÷òî íåò çàïèñè
+		// Ð¾ÑˆÐ¸Ð±ÐºÐ° ÑÑ‡Ð¸Ñ‚Ð°ÐµÐ¼ Ñ‡Ñ‚Ð¾ Ð½ÐµÑ‚ Ð·Ð°Ð¿Ð¸ÑÐ¸
 		return false;
 	}
 
-	// ðåçóëüòàò
+	// Ñ€ÐµÐ·ÑƒÐ»ÑŒÑ‚Ð°Ñ‚
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 	MYSQL_ROW row = mysql_fetch_row(result);
 

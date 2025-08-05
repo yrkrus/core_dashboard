@@ -7,6 +7,7 @@ using namespace utils;
 ClearingCurrentDay::ClearingCurrentDay()
 	: m_dispether("ClearingCurrentDay",CONSTANTS::TIMEOUT::CLEARING_CURRENT_DAY)
 	, m_day(string_to_unix_timeshtamp(GetCurrentStartDay()))
+	, is_error(false)
 {	
 }
 
@@ -22,16 +23,25 @@ bool ClearingCurrentDay::CheckNewDay()
 
 bool ClearingCurrentDay::Execute()
 {
-	if (!CheckNewDay())
+	// if (!is_error) 
+	// {
+	// 	if (!CheckNewDay()) 
+	// 	{
+	// 		return false;
+	// 	}
+	// }
+
+	if ((!is_error) && (!CheckNewDay()))
 	{
 		return false;
-	}
+	}	
 
-	m_ivr.Execute();
-	m_logging.Execute();
-	m_onHold.Execute();
-	m_queue.Execute();
-	m_sms.Execute();
+	// если в каком либо методе false считаем это за ошибку
+	is_error = !( m_ivr.Execute()
+				&& m_logging.Execute()
+				&& m_onHold.Execute()
+				&& m_queue.Execute()
+				&& m_sms.Execute());	
 
 	return true;
 }

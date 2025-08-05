@@ -23,7 +23,7 @@ public:
 	HistoryOnHold();
 	~HistoryOnHold() override;
 
-	virtual void Execute() override;
+	virtual bool Execute() override;
 
 private:
 	HistoryOnHoldTable		m_history;

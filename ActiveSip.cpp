@@ -268,7 +268,7 @@ bool active_sip::ActiveSession::IsExistOperatorsQueue()
 
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
+		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 		
 		m_sql->Disconnect();
@@ -297,7 +297,7 @@ bool active_sip::ActiveSession::IsExistOperatorsQueue(const std::string &_sip, c
 	std::string error;
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
+		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();
@@ -326,7 +326,7 @@ void active_sip::ActiveSession::ClearOperatorsQueue()
 
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
+		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();
@@ -410,7 +410,7 @@ bool active_sip::ActiveSession::GetActiveQueueOperators(OperatorList &_activeLis
 	
 	if (!m_sql->Request(query, _errorDescription))
 	{		
-		_errorDescription += METHOD_NAME + StringFormat("query -> %s", query.c_str());
+		_errorDescription += METHOD_NAME + StringFormat("query \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, _errorDescription);
 
 		m_sql->Disconnect();
@@ -450,7 +450,7 @@ void active_sip::ActiveSession::DeleteOperatorsQueue(const std::string &_sip, co
 	std::string error;
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
+		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 		
 		m_sql->Disconnect();
@@ -469,7 +469,7 @@ void active_sip::ActiveSession::DeleteOperatorsQueue(const std::string &_sip)
 	std::string error;
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
+		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();		
@@ -489,7 +489,7 @@ void active_sip::ActiveSession::InsertOperatorsQueue(const std::string &_sip, co
 	std::string error;
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
+		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();		
@@ -603,7 +603,7 @@ void active_sip::ActiveSession::UpdateTalkCallOperator()
 		std::string error;
 		if (!m_sql->Request(query, error))
 		{
-			error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
+			error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 			m_log.ToFile(ELogType::Error, error);
 
 			m_sql->Disconnect();
@@ -624,7 +624,7 @@ bool active_sip::ActiveSession::IsExistTalkCallOperator(const std::string &_phon
 	std::string error;
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
+		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 		
 		m_sql->Disconnect();
@@ -656,7 +656,7 @@ int active_sip::ActiveSession::GetLastTalkCallOperatorID(const std::string &_pho
 	std::string error;
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
+		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();
@@ -729,7 +729,7 @@ bool active_sip::ActiveSession::GetActiveOnHold(OnHoldList &_onHoldList, std::st
 
 	if (!m_sql->Request(query, _errorDescription))
 	{
-		_errorDescription += METHOD_NAME + StringFormat("query -> %s", query.c_str());
+		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, _errorDescription);
 
 		m_sql->Disconnect();	
@@ -792,7 +792,7 @@ bool active_sip::ActiveSession::DisableHold(const OnHold &_hold, std::string &_e
 
 	if (!m_sql->Request(query, _errorDescription))
 	{
-		_errorDescription += METHOD_NAME + StringFormat("query -> %s", query.c_str());
+		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, _errorDescription);
 
 		m_sql->Disconnect();
@@ -811,7 +811,7 @@ bool active_sip::ActiveSession::AddHold(const Operator &_sip, std::string &_erro
 	
 	if (!m_sql->Request(query, _errorDescription))
 	{
-		_errorDescription += METHOD_NAME + StringFormat("query -> %s", query.c_str());
+		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, _errorDescription);
 
 		m_sql->Disconnect();

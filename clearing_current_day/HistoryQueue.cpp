@@ -13,12 +13,12 @@ HistoryQueue::~HistoryQueue()
 {
 }
 
-void HistoryQueue::Execute()
+bool HistoryQueue::Execute()
 {
 	// получим данные
 	if (!Get() || !IsExistData())
 	{
-		return;
+		return true;
 	}
 
 	std::string info = StringFormat("Clear table queue. Fields count = %u", Count());
@@ -50,13 +50,15 @@ void HistoryQueue::Execute()
 
 	if (Count() == 0)
 	{
-		return;
+		return true;
 	}
 
 	info = StringFormat("Success = %u Error = %u", successCount, errorCount);
 	m_log.ToPrint(info);
 
 	m_log.ToFile(ELogType::Info, info);
+
+	return (errorCount != 0 ? false :  true); 
 }
 
 bool HistoryQueue::Insert(const Table &_field, std::string &_errorDescription)
@@ -109,7 +111,7 @@ bool HistoryQueue::Insert(const Table &_field, std::string &_errorDescription)
 
 	if (!m_sql->Request(query, _errorDescription))
 	{
-		_errorDescription += METHOD_NAME + StringFormat("query -> %s", query.c_str());
+		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, _errorDescription);
 
 		m_sql->Disconnect();
@@ -144,7 +146,7 @@ void HistoryQueue::Delete(int _id, ECheckInsert _check)
 	std::string error;
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
+		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 	}
 
@@ -160,7 +162,7 @@ bool HistoryQueue::Get()
 	std::string error;
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
+		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();
@@ -214,7 +216,7 @@ bool HistoryQueue::CheckInsert(int _id)
 
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
+		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log.ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();

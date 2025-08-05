@@ -14,12 +14,13 @@ class IClear
 {
 protected:	
 	SP_SQL		m_sql;	
+	
 
 public:
 	IClear();
 	virtual ~IClear();
 
-	virtual void Execute() = 0;	
+	virtual bool Execute() = 0;	
 
 	virtual bool Insert() { return true; }
 	virtual void Delete(int _id, ECheckInsert _check) = 0;

@@ -16,7 +16,7 @@ bool Log::GetCommandInfoUser(CommandSendInfoUser &_userInfo, unsigned int _id, s
 
 	if (!m_sql->Request(query, _errorDescription))
 	{
-		_errorDescription += METHOD_NAME + StringFormat("query -> %s", query.c_str());
+		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		ToFile(ELogType::Error, _errorDescription);
 
 		m_sql->Disconnect();		
@@ -124,7 +124,7 @@ void Log::ToBase(Command _command)
 																					   "','" + std::to_string(static_cast<int>(_command.command)) + "')";
 	if (!m_sql->Request(query, error))
 	{
-		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
+		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		ToFile(ELogType::Error, error);
 
 		m_sql->Disconnect();
