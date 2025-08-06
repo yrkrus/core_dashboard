@@ -17,8 +17,8 @@ namespace utils
 
 	// std::string getCurrentDateTimeAfter20hours();				// текущее время после 20:00
 
-	ECommand GetRemoteCommand(int _command); // преобразование текущей удаленной комады из int -> LOG::Log
-	int GetRemoteCommand(ECommand _command); // преобразование текущей удаленной комады из LOG::Log -> int
+	ecCommand GetRemoteCommand(int _command); // преобразование текущей удаленной комады из int -> LOG::Log
+	int GetRemoteCommand(ecCommand _command); // преобразование текущей удаленной комады из LOG::Log -> int
 	int GetStatusOperators(EStatus status);	 // преобразование текущей удаленной комады из REMOTE_COMMANDS::StatusOperators -> int
 
 	bool to_bool(const std::string &str);						// конвертер из std::string -> bool

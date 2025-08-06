@@ -17,7 +17,7 @@ bool Log::GetCommandInfoUser(CommandSendInfoUser &_userInfo, unsigned int _id, s
 	if (!m_sql->Request(query, _errorDescription))
 	{
 		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		ToFile(ELogType::Error, _errorDescription);
+		ToFile(ecLogType::Error, _errorDescription);
 
 		m_sql->Disconnect();		
 		return false;
@@ -111,8 +111,8 @@ void Log::ToBase(Command _command)
 	if (!GetCommandInfoUser(userInfo, _command.id, error))
 	{
 		error += METHOD_NAME;
-		error += StringFormat("not found field %u remote command %s", _command.id, EnumToString<ECommand>(_command.command).c_str());
-		ToFile(ELogType::Error, error);
+		error += StringFormat("not found field %u remote command %s", _command.id, EnumToString<ecCommand>(_command.command).c_str());
+		ToFile(ecLogType::Error, error);
 		return;
 	}	
 
@@ -125,7 +125,7 @@ void Log::ToBase(Command _command)
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		ToFile(ELogType::Error, error);
+		ToFile(ecLogType::Error, error);
 
 		m_sql->Disconnect();
 		return;
@@ -134,7 +134,7 @@ void Log::ToBase(Command _command)
 	m_sql->Disconnect();
 }
 
-void Log::ToFile(ELogType _type, const std::string &_message)
+void Log::ToFile(ecLogType _type, const std::string &_message)
 {
 	
 	if (!IsReady())
@@ -143,7 +143,7 @@ void Log::ToFile(ELogType _type, const std::string &_message)
 		return;
 	}
 	
-	std::string message = GetCurrentDateTime() + "\t" + EnumToString<ELogType>(_type) + "\t" + _message + "\n";		
+	std::string message = GetCurrentDateTime() + "\t" + EnumToString<ecLogType>(_type) + "\t" + _message + "\n";		
 		
 	std::lock_guard<std::mutex> lock(m_mutex);
 	m_file << message;

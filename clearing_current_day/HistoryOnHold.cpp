@@ -24,7 +24,7 @@ bool HistoryOnHold::Execute()
 	std::string info = StringFormat("Clear operators_ohhold. Fields count = %u", Count());
 
 	m_log.ToPrint(info);
-	m_log.ToFile(ELogType::Info, info);
+	m_log.ToFile(ecLogType::Info, info);
 
 	int errorCount = 0;
 	int successCount = 0;
@@ -41,7 +41,7 @@ bool HistoryOnHold::Execute()
 		else
 		{
 			errorCount++;
-			m_log.ToFile(ELogType::Error, error);
+			m_log.ToFile(ecLogType::Error, error);
 		}
 
 		// success or error
@@ -56,7 +56,7 @@ bool HistoryOnHold::Execute()
 	info = StringFormat("Success = %u Error = %u", successCount, errorCount);
 	m_log.ToPrint(info);
 
-	m_log.ToFile(ELogType::Info, info);
+	m_log.ToFile(ecLogType::Info, info);
 
 	return (errorCount != 0 ? false :  true); 
 }
@@ -91,7 +91,7 @@ bool HistoryOnHold::Insert(const Table &_field, std::string &_errorDescription)
 	if (!m_sql->Request(query, _errorDescription))
 	{
 		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ELogType::Error, _errorDescription);
+		m_log.ToFile(ecLogType::Error, _errorDescription);
 
 		m_sql->Disconnect();
 		return false;
@@ -123,7 +123,7 @@ void HistoryOnHold::Delete(int _id, ECheckInsert _check)
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ELogType::Error, error);
+		m_log.ToFile(ecLogType::Error, error);
 	}
 
 	m_sql->Disconnect();
@@ -139,7 +139,7 @@ bool HistoryOnHold::Get()
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ELogType::Error, error);
+		m_log.ToFile(ecLogType::Error, error);
 
 		m_sql->Disconnect();
 		return false;
@@ -188,7 +188,7 @@ bool HistoryOnHold::CheckInsert(int _id)
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ELogType::Error, error);
+		m_log.ToFile(ecLogType::Error, error);
 
 		m_sql->Disconnect();
 		// ошибка считаем что нет записи

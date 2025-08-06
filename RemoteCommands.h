@@ -21,7 +21,7 @@ using SP_SQL = std::shared_ptr<ISQLConnect>;
 
 
 // удаленные команды (ID команд такие же как и в БД)
-enum class ECommand
+enum class ecCommand
 {
 	Enter				= 0,         // Вход
 	Exit				= 1,         // Выход
@@ -46,7 +46,7 @@ enum class ECommand
 	Callback			= 20,        // callback
 };
 		
-enum class ECommandType
+enum class ecCommandType
 {
 	Unknown = -1,
 	Del,		// команда на добавление в очередь
@@ -73,7 +73,7 @@ struct Command
 {
 	int			id;			// id команды (для удобного поиска в запросе)
 	std::string sip;		// sip инициализировавший команду
-	ECommand	command;	// сама команда (int)
+	ecCommand	command;	// сама команда (int)
 	int			userId;		// id самого пользака
 	bool		delay;		// отложенная команда
 };
@@ -125,21 +125,21 @@ private:
 	bool GetCommand(std::string &_errorDesciption); // получение новых команд из БД
 
 	bool ExecuteCommand(const Command &_command, std::string &_errorDesciption); // выполнение команды
-	std::string CreateCommand(const Command &_command, const EQueueNumber _queue, const std::string &_rawCommand); // создвание команды
+	std::string CreateCommand(const Command &_command, const ecQueueNumber _queue, const std::string &_rawCommand); // создвание команды
 			
 	void DeleteCommand(const Command &_command);	// удаление выполненной команды 
 
 	void ExecuteCommandFail(const Command &_command, const std::string &_errorStr); // не удачное выполнение команды
 		
-	bool SendCommand(ECommandType commandType, std::string &_request, std::string &_errorDesciption);	// отправка команды на добавление\удаление из очереди
-	bool CheckSendingCommand(ECommandType _commandType, std::string &_errorDesciption); // проверка успешно ли выполнена команда
+	bool SendCommand(ecCommandType commandType, std::string &_request, std::string &_errorDesciption);	// отправка команды на добавление\удаление из очереди
+	bool CheckSendingCommand(ecCommandType _commandType, std::string &_errorDesciption); // проверка успешно ли выполнена команда
 
 	bool UpdateNewStatus(const Command &_command, std::string &_errorDesciption); // обновление нового статуса оператора
 
 	bool IsTalkOperator(const std::string &_sip, std::string &_errorDesciption); // разговаривает ли оператор или нет
 
-	ECommandType GetCommandType(const Command &_command); // поиск какая команда пришла
-	EQueueNumber GetQueueNumber(const ECommand &_command); // поиск номера очереди		
+	ecCommandType GetCommandType(const Command &_command); // поиск какая команда пришла
+	ecQueueNumber GetQueueNumber(const ecCommand &_command); // поиск номера очереди		
 };
 
 using SP_Status = std::shared_ptr<Status>;

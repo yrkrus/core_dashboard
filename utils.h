@@ -5,6 +5,7 @@
 #include "RemoteCommands.h"
 #include "Queue.h"
 #include "Log.h"
+#include "different_checks/Check_TrunkSip.h"
 
 template<typename T>
 T StringToEnum(const std::string&);
@@ -13,19 +14,25 @@ template<typename T>
 std::string EnumToString(T);
 
 template<>
-EQueueNumber StringToEnum<EQueueNumber>(const std::string&);
+ecQueueNumber StringToEnum<ecQueueNumber>(const std::string&);
 
 template<>
-std::string EnumToString<EQueueNumber>(EQueueNumber);
+std::string EnumToString<ecQueueNumber>(ecQueueNumber);
 
 template<>
-std::string EnumToString<ECommand>(ECommand);
+std::string EnumToString<ecCommand>(ecCommand);
 
 template<>
-std::string EnumToString<ECommandType>(ECommandType);
+std::string EnumToString<ecCommandType>(ecCommandType);
 
 template<>
-std::string EnumToString<ELogType>(ELogType);
+std::string EnumToString<ecLogType>(ecLogType);
+
+template<>
+ecTrunkState StringToEnum<ecTrunkState>(const std::string&);
+
+template<>
+std::string EnumToString<ecTrunkState>(ecTrunkState);
 
 
 #endif // UTILS_H 

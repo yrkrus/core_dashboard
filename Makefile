@@ -12,7 +12,8 @@ LDFLAGS   := -pthread $(shell mysql_config --libs) -lstdc++fs
 
 # исходники
 SRC_ROOT  := $(wildcard *.cpp)
-SRC_AST   := $(wildcard clearing_current_day/*.cpp)
+SRC_AST   := $(wildcard clearing_current_day/*.cpp different_checks/*.cpp)
+
 SOURCES   := $(SRC_ROOT) $(SRC_AST)
 OBJECTS   := $(SOURCES:.cpp=.o)
 TARGET    := core_dashboard

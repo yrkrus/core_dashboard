@@ -19,16 +19,18 @@ namespace CONSTANTS
 {   
     namespace TIMEOUT
     {
-        static const unsigned int IVR               = 1000;   // timeout для проверки новых данных для ivr
-        static const unsigned int QUEUE             = 1000;   // timeout для проверки новых данных для queue
-        static const unsigned int ACTIVE_SESSION    = 1000;   // timeout для проверки новых данных для активной сеcсии операторов
-        static const unsigned int OPERATOR_STATUS   = 100;    // timeout для проверки новых данных для смены статуса оператором
-        static const unsigned int CLEARING_CURRENT_DAY = 60000; // timeout для проверки нужно ли очищать текущий день таблицы history_*
+        static const uint32_t IVR               = 1000;   // timeout для проверки новых данных для ivr
+        static const uint32_t QUEUE             = 1000;   // timeout для проверки новых данных для queue
+        static const uint32_t ACTIVE_SESSION    = 1000;   // timeout для проверки новых данных для активной сеcсии операторов
+        static const uint32_t OPERATOR_STATUS   = 100;    // timeout для проверки новых данных для смены статуса оператором
+        static const uint32_t CLEARING_CURRENT_DAY = 60000; // timeout для проверки нужно ли очищать текущий день таблицы history_*
+        static const uint32_t CHECK_TRUNK_SIP = 5000;     // timeout для проверки активности trunk sip
+        static const uint32_t CHECK_INTERNAL = 10000;     // timeout для проверки внутренних проверок
     }
 
     namespace SERVER 
     {
-        static const unsigned int PORT = 12345;
+        static const uint16_t PORT = 12345;
        // static const unsigned int PORT = 12346;        
     }
 
@@ -45,7 +47,9 @@ namespace CONSTANTS
         static const std::string HISTORY_ONHOLD     = "history_onhold.log";
         static const std::string HISTORY_SMS        = "history_sms.log";
 
-        static const std::string REMOTE_COMMANDS    = "remote_commands.log";        
+        static const std::string REMOTE_COMMANDS    = "remote_commands.log";  
+        
+        static const std::string CHECK_TRUNK_SIP    = "check_trunk.log";
     }
     
     // версия ядра

@@ -13,8 +13,8 @@ static std::string SESSION_QUEUE_RESPONSE	= "asterisk -rx \"queue show %queue\""
 
 class Queue;
 using SP_Queue = std::shared_ptr<Queue>;
-enum class EQueueNumber;
-using QueueList = std::vector<EQueueNumber>;
+enum class ecQueueNumber;
+using QueueList = std::vector<ecQueueNumber>;
 
 
 namespace active_sip 
@@ -83,8 +83,8 @@ namespace active_sip
 		void CreateListActiveSessionOperators();			// активные операторы в линии
 		void CreateListActiveSessionCalls();				// активные звонки в линии
 
-		void CreateActiveOperators(const EQueueNumber _queue);	// найдем активных операторов в линии
-		void CreateOperator(const std::string &_lines, Operator &, EQueueNumber);	// создание структуры Operator					
+		void CreateActiveOperators(const ecQueueNumber _queue);	// найдем активных операторов в линии
+		void CreateOperator(const std::string &_lines, Operator &, ecQueueNumber);	// создание структуры Operator					
 		std::string FindSipNumber(const std::string &_lines);	// парсинг нахождения активного sip оператора
 		bool FindOnHoldStatus(const std::string &_lines);		// парсинг нахождения статуса onHold
 		

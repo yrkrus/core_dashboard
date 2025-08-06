@@ -1,6 +1,6 @@
 ﻿#include "PotokDispether.h"
 
-IPotokDispether::IPotokDispether(const std::string &_name,unsigned int _timer)
+IPotokDispether::IPotokDispether(const std::string &_name, uint32_t _timer)
 	: m_name(_name)
 	, m_timer(_timer)
 	, m_running(false)

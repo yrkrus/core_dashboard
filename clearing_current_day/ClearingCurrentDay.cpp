@@ -23,14 +23,6 @@ bool ClearingCurrentDay::CheckNewDay()
 
 bool ClearingCurrentDay::Execute()
 {
-	// if (!is_error) 
-	// {
-	// 	if (!CheckNewDay()) 
-	// 	{
-	// 		return false;
-	// 	}
-	// }
-
 	if ((!is_error) && (!CheckNewDay()))
 	{
 		return false;

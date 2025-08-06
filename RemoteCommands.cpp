@@ -38,7 +38,7 @@ bool Status::IsExistCommand()
 	return !m_commandList.empty() ? true : false;
 }
 
-// ��������� ����� ������ �� ��
+// получение новых команд из БД
 bool Status::GetCommand(std::string &_errorDesciption)
 {
 	_errorDesciption.clear();
@@ -55,7 +55,7 @@ bool Status::GetCommand(std::string &_errorDesciption)
 		return false;
 	}	
 
-	// ���������
+	// результат
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 	MYSQL_ROW row;
 
@@ -74,7 +74,7 @@ bool Status::GetCommand(std::string &_errorDesciption)
 			}				
 		}
 
-		// ������� ��������� �������
+		// добавим найденные команды
 		m_commandList.push_back(command);
 	}
 
@@ -84,47 +84,47 @@ bool Status::GetCommand(std::string &_errorDesciption)
 	return true;
 }
 
-// ���������� �������
+// выполнение команды
 bool Status::ExecuteCommand(const Command &_command, std::string &_errorDesciption)
 {	
-	// ������ ������� (add\del)
-	ECommandType commandType = GetCommandType(_command);
+	// найдем команду (add\del)
+	ecCommandType commandType = GetCommandType(_command);
 	
-	// ������ ���� �� ������ �� ��� ��
-	if (commandType == ECommandType::Unknown) 
+	// такого быть не должно но все же
+	if (commandType == ecCommandType::Unknown) 
 	{
-		_errorDesciption = StringFormat("remote command %s not support",EnumToString<ECommand>(_command.command).c_str());
+		_errorDesciption = StringFormat("remote command %s not support",EnumToString<ecCommand>(_command.command).c_str());
 		return false;
 	}
 	
-	std::string rawCommandStr;	// ������� �� ��������� �� ��������
+	std::string rawCommandStr;	// команда по умолчанию на отправку
 
 	switch (commandType)
 	{
-		case(ECommandType::Add): rawCommandStr = COMMAND_ADD_QUEUE;	break;
-		case(ECommandType::Del): rawCommandStr = COMMAND_DEL_QUEUE;	break;	
+		case(ecCommandType::Add): rawCommandStr = COMMAND_ADD_QUEUE;	break;
+		case(ecCommandType::Del): rawCommandStr = COMMAND_DEL_QUEUE;	break;	
 		default:		
 			return false;
 	}
 
-	// ������ �������
-	EQueueNumber queue = GetQueueNumber(_command.command);
+	// найдем очередь
+	ecQueueNumber queue = GetQueueNumber(_command.command);
 
-	// ������ �� ������ ���� �� ��� ��
-	if (queue == EQueueNumber::Unknown)
+	// такого не должно быть но все же
+	if (queue == ecQueueNumber::eUnknown)
 	{
-		// TODO � ��� �� ������ ������
+		// TODO в лог не забыть писать
 		return false;
 	}
 
 	std::string request;
 
-	// ��� ������� ������� ��� ��� ����� � ������ �� ��������� � �������� 
-	if (queue == EQueueNumber::e5000_e5050)
+	// для двойной очереди или для входа в статус не связанный с очередью 
+	if (queue == ecQueueNumber::e5000_e5050)
 	{
 		for (size_t i = 1; i < 3; ++i)
 		{
-			EQueueNumber queue = static_cast<EQueueNumber>(i);
+			ecQueueNumber queue = static_cast<ecQueueNumber>(i);
 
 			request = CreateCommand(_command, queue, rawCommandStr);
 
@@ -144,27 +144,27 @@ bool Status::ExecuteCommand(const Command &_command, std::string &_errorDescipti
 		}
 	}
 
-	// ������� � ��� ������
+	// добавим в лог запрос
 	m_log->ToBase(_command);
 
-	// ������� ������� ������ ���������
+	// обновим текущий статус оператора
 	if (!UpdateNewStatus(_command, _errorDesciption))
 	{
-		// TODO ������ � ��� ��� ���������, ��������� � ��� strErr � �� ���� �� ������ ����� �������� ��������
+		// TODO запись в лог что неуспешно, поставить в лог strErr в БД инфо об ошибки чтобы показать пользаку
 		return false;
 	}
 
 	return true;
 }
 
-std::string Status::CreateCommand(const Command &_command, const EQueueNumber _queue, const std::string &_rawCommand)
+std::string Status::CreateCommand(const Command &_command, const ecQueueNumber _queue, const std::string &_rawCommand)
 {
 	std::string request = _rawCommand;
 
-	// ���������� ������ (����� �������)
-	ReplaceResponseStatus(request, "%queue", EnumToString<EQueueNumber>(_queue));
+	// сформируем строку (номер очереди)
+	ReplaceResponseStatus(request, "%queue", EnumToString<ecQueueNumber>(_queue));
 
-	// ���������� ������ (sip �������)
+	// сформируем строку (sip очереди)
 	ReplaceResponseStatus(request, "%sip", _command.sip);	
 
 	return request;
@@ -180,13 +180,13 @@ void Status::DeleteCommand(const Command &_command)
 	if (!m_sql->Request(query, error)) 
 	{
 		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
-		m_log->ToFile(ELogType::Error, error);
+		m_log->ToFile(ecLogType::Error, error);
 	}
 
 	m_sql->Disconnect();	
 }
 
-// �� ������� ���������� �������
+// не удачное выполнение команды
 void Status::ExecuteCommandFail(const Command &_command, const std::string &_errorStr)
 {
 	std::string error;	
@@ -197,7 +197,7 @@ void Status::ExecuteCommandFail(const Command &_command, const std::string &_err
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
-		m_log->ToFile(ELogType::Error, error);
+		m_log->ToFile(ecLogType::Error, error);
 
 		m_sql->Disconnect();				
 	}
@@ -205,9 +205,9 @@ void Status::ExecuteCommandFail(const Command &_command, const std::string &_err
 	m_sql->Disconnect();	
 }
 
-bool Status::SendCommand(ECommandType commandType, std::string &_request, std::string &_errorDesciption)
+bool Status::SendCommand(ecCommandType commandType, std::string &_request, std::string &_errorDesciption)
 {
-	m_register.DeleteRawAll(); // ������� ��� ������� ������ 
+	m_register.DeleteRawAll(); // очистим все текущие данные 
 
 	if (!m_register.CreateData(_request, _errorDesciption))
 	{
@@ -217,12 +217,12 @@ bool Status::SendCommand(ECommandType commandType, std::string &_request, std::s
 	return CheckSendingCommand(commandType, _errorDesciption);
 }
 
-// �������� ������� �� ��������� �������
-bool Status::CheckSendingCommand(ECommandType _commandType, std::string &_errorDesciption)
+// проверка успешно ли выполнена команда
+bool Status::CheckSendingCommand(ecCommandType _commandType, std::string &_errorDesciption)
 {
 	bool status = false;
 
-	// �������� �����
+	// проверим ответ
 	if (!m_register.IsExistRaw())
 	{
 		_errorDesciption = "not respond asterisk command";
@@ -232,7 +232,7 @@ bool Status::CheckSendingCommand(ECommandType _commandType, std::string &_errorD
 	std::string rawLines = m_register.GetRawFirst();
 	if (rawLines.empty())
 	{
-		// TODO ��� ��������, ��� ������!
+		// TODO тут подумать, что делать!
 		return true;
 	}
 
@@ -243,16 +243,16 @@ bool Status::CheckSendingCommand(ECommandType _commandType, std::string &_errorD
 	{
 		switch (_commandType)
 		{
-		case ECommandType::Unknown:
-			_errorDesciption = StringFormat("command %s not found", EnumToString<ECommandType>(_commandType).c_str());
+		case ecCommandType::Unknown:
+			_errorDesciption = StringFormat("command %s not found", EnumToString<ecCommandType>(_commandType).c_str());
 			break;
-		case ECommandType::Del:
+		case ecCommandType::Del:
 			if ((line.find("Removed") != std::string::npos) || (line.find("Not there") != std::string::npos)) 
 			{
 				status = true;
 			}
 			break;
-		case ECommandType::Add:
+		case ecCommandType::Add:
 			if ((line.find("Added") != std::string::npos) || (line.find("Already there") != std::string::npos)) 
 			{
 				status = true;
@@ -260,7 +260,7 @@ bool Status::CheckSendingCommand(ECommandType _commandType, std::string &_errorD
 			break;
 		}
 	}
-	// �������
+	// очищаем
 	m_register.DeleteRawAll();
 
 	return status;
@@ -268,33 +268,33 @@ bool Status::CheckSendingCommand(ECommandType _commandType, std::string &_errorD
 
 bool Status::UpdateNewStatus(const Command &_command, std::string &_errorDesciption)
 {	
-	// ����� ������ ���������
+	// новый статус оператора
 	EStatus status;
 
 	switch (_command.command)
 	{	
-	case ECommand::AddQueue5000:
-	case ECommand::AddQueue5050:	
-	case ECommand::AddQueue5000_5050:		
+	case ecCommand::AddQueue5000:
+	case ecCommand::AddQueue5050:	
+	case ecCommand::AddQueue5000_5050:		
 		status = EStatus::Available;
 		break;
 
-	case ECommand::DelQueue5000:		
-	case ECommand::DelQueue5050:		
-	case ECommand::DelQueue5000_5050:
+	case ecCommand::DelQueue5000:		
+	case ecCommand::DelQueue5050:		
+	case ecCommand::DelQueue5000_5050:
 		status = EStatus::Unknown;
 		break;		
 	
-	case ECommand::Home:		status = EStatus::Home;		break;
-	case ECommand::Exodus:		status = EStatus::Exodus;	break;	
-	case ECommand::Break:		status = EStatus::Break;	break;
-	case ECommand::Dinner:		status = EStatus::Dinner;	break;
-	case ECommand::Postvyzov:	status = EStatus::Postvyzov; break;
-	case ECommand::Studies:		status = EStatus::Studies;	break;
-	case ECommand::IT:			status = EStatus::It;		break;
-	case ECommand::Transfer:	status = EStatus::Transfer; break;
-	case ECommand::Reserve:		status = EStatus::Reserve;	break;
-	case ECommand::Callback:	status = EStatus::Callback; break;
+	case ecCommand::Home:		status = EStatus::Home;		break;
+	case ecCommand::Exodus:		status = EStatus::Exodus;	break;	
+	case ecCommand::Break:		status = EStatus::Break;	break;
+	case ecCommand::Dinner:		status = EStatus::Dinner;	break;
+	case ecCommand::Postvyzov:	status = EStatus::Postvyzov; break;
+	case ecCommand::Studies:		status = EStatus::Studies;	break;
+	case ecCommand::IT:			status = EStatus::It;		break;
+	case ecCommand::Transfer:	status = EStatus::Transfer; break;
+	case ecCommand::Reserve:		status = EStatus::Reserve;	break;
+	case ecCommand::Callback:	status = EStatus::Callback; break;
 	
 	default:
 		status = EStatus::Unknown;
@@ -308,7 +308,7 @@ bool Status::UpdateNewStatus(const Command &_command, std::string &_errorDescipt
 	if (!m_sql->Request(query, _errorDesciption))
 	{
 		m_sql->Disconnect();
-		// TODO ��� ������ � ���
+		// TODO тут запись в лог
 		return false;
 	}
 
@@ -323,14 +323,14 @@ bool Status::IsTalkOperator(const std::string &_sip, std::string &_errorDescipti
 																	"' and sip = '" + _sip + "' and answered = '1' and hash is null limit 1";
 	if (!m_sql->Request(query, _errorDesciption))
 	{
-		// TODO � ���
+		// TODO в лог
 		printf("%s", _errorDesciption.c_str());
 		m_sql->Disconnect();
-		// ������ ������� ��� ��� ������
+		// ошибка считаем что нет запись
 		return false;
 	}
 
-	// ���������
+	// результат
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
 	MYSQL_ROW row = mysql_fetch_row(result);
 
@@ -343,74 +343,74 @@ bool Status::IsTalkOperator(const std::string &_sip, std::string &_errorDescipti
 	return exist;
 }
 
-// ����� ����� ������� ������
-ECommandType Status::GetCommandType(const Command &_command)
+// поиск какая команда пришла
+ecCommandType Status::GetCommandType(const Command &_command)
 {	
-	// TODO ����� � ������� ����� �� std::map � static ����������
+	// TODO может в будущем потом на std::map и static переделать
 	
 	switch (_command.command)
 	{
-		case ECommand::Enter:
-		case ECommand::Exit:
-		case ECommand::AuthError:
-		case ECommand::ExitForce: 
-						return ECommandType::Unknown;				
+		case ecCommand::Enter:
+		case ecCommand::Exit:
+		case ecCommand::AuthError:
+		case ecCommand::ExitForce: 
+						return ecCommandType::Unknown;				
 		
-		case ECommand::AddQueue5000:
-		case ECommand::AddQueue5050:
-		case ECommand::AddQueue5000_5050: 
-						return ECommandType::Add;
+		case ecCommand::AddQueue5000:
+		case ecCommand::AddQueue5050:
+		case ecCommand::AddQueue5000_5050: 
+						return ecCommandType::Add;
 		
-		case ECommand::DelQueue5000: 
-		case ECommand::DelQueue5050:
-		case ECommand::DelQueue5000_5050:	
-		case ECommand::Available:
-		case ECommand::Home: 
-		case ECommand::Exodus: 
-		case ECommand::Break:
-		case ECommand::Dinner: 
-		case ECommand::Postvyzov: 
-		case ECommand::Studies: 
-		case ECommand::IT: 
-		case ECommand::Transfer:
-		case ECommand::Reserve:
-		case ECommand::Callback: 
-						return ECommandType::Del;
+		case ecCommand::DelQueue5000: 
+		case ecCommand::DelQueue5050:
+		case ecCommand::DelQueue5000_5050:	
+		case ecCommand::Available:
+		case ecCommand::Home: 
+		case ecCommand::Exodus: 
+		case ecCommand::Break:
+		case ecCommand::Dinner: 
+		case ecCommand::Postvyzov: 
+		case ecCommand::Studies: 
+		case ecCommand::IT: 
+		case ecCommand::Transfer:
+		case ecCommand::Reserve:
+		case ecCommand::Callback: 
+						return ecCommandType::Del;
 	
 	default:
-		return ECommandType::Unknown;
+		return ecCommandType::Unknown;
 	}	
 }
 
-// ����� ������ �������
-EQueueNumber Status::GetQueueNumber(const ECommand &_command)
+// поиск номера очереди
+ecQueueNumber Status::GetQueueNumber(const ecCommand &_command)
 {
 	switch (_command)
 	{	
-		case ECommand::AddQueue5000:
-		case ECommand::DelQueue5000:
-			return EQueueNumber::e5000;
+		case ecCommand::AddQueue5000:
+		case ecCommand::DelQueue5000:
+			return ecQueueNumber::e5000;
 
-		case ECommand::AddQueue5050:
-		case ECommand::DelQueue5050:
-			return EQueueNumber::e5050;
+		case ecCommand::AddQueue5050:
+		case ecCommand::DelQueue5050:
+			return ecQueueNumber::e5050;
 
-		case ECommand::AddQueue5000_5050:
-		case ECommand::DelQueue5000_5050:		
-		case ECommand::Home:
-		case ECommand::Exodus:
-		case ECommand::Break:
-		case ECommand::Dinner:
-		case ECommand::Postvyzov:
-		case ECommand::Studies:
-		case ECommand::IT:
-		case ECommand::Transfer:
-		case ECommand::Reserve:
-		case ECommand::Callback:
-			return EQueueNumber::e5000_e5050;
+		case ecCommand::AddQueue5000_5050:
+		case ecCommand::DelQueue5000_5050:		
+		case ecCommand::Home:
+		case ecCommand::Exodus:
+		case ecCommand::Break:
+		case ecCommand::Dinner:
+		case ecCommand::Postvyzov:
+		case ecCommand::Studies:
+		case ecCommand::IT:
+		case ecCommand::Transfer:
+		case ecCommand::Reserve:
+		case ecCommand::Callback:
+			return ecQueueNumber::e5000_e5050;
 	
 	default:
-			return EQueueNumber::Unknown;
+			return ecQueueNumber::eUnknown;
 	}
 }
 
@@ -419,54 +419,54 @@ EQueueNumber Status::GetQueueNumber(const ECommand &_command)
 //	return EStatus();
 //}
 
-// ���������� ������
+// выполнение команд
 bool Status::Execute()
 {
 	std::string error;
 	if (!GetCommand(error)) 
 	{
-		// TODO � ��� ������� �� ��������
+		// TODO в лог наверно хз подумать
 		printf("%s", error.c_str());
 		return false;
 	}
 	
-	// ���������� ������
+	// выполнение команд
 	if (IsExistCommand()) 
 	{
 		for (const auto &command : m_commandList)
 		{
 			std::string error;
 
-			if (command.delay)	// ���������� ���������� �������
+			if (command.delay)	// отложенное выполнение команды
 			{
-				// �������� ������������� �� ��� �������� ��� ���
+				// проверим разговаривает ли еще оператор или нет
 				if (IsTalkOperator(command.sip, error)) 
 				{
-					// ���������� �������, �.�. �������� ��� �������������
+					// пропускаем команду, т.к. оператор еще разговаривает
 					continue;
 				}				
 			}
 						
 			if (!ExecuteCommand(command, error))
 			{
-				// TODO � ��� ������� �� ��������
+				// TODO в лог наверно хз подумать
 				printf("%s", error.c_str());
 
 				
-				// �� ������ ��������� �������, ����� ������� �� ����� �.�. � ��������� �� ����� ������� �� ������
+				// не удачно выполнили команду, нужно удалить ее сразу т.к. у пользвака не будет надписи об ошибке
 				if (command.delay) 
 				{
 					DeleteCommand(command);
 					continue;
 				}
 
-				// ���� � �� ��� �� ������� ��������� �������, ������ � gui ��� ������������ � ������������
+				// инфо в БД что не успешно выполнили команду, дальше в gui это отображается у пользователя
 				ExecuteCommandFail(command, error);
 				continue;
 			}
 			else
 			{
-				// ������� ������������ ������� ������� ��
+				// успешно отработанная команда удаляем ее
 				DeleteCommand(command);
 			}							
 		}

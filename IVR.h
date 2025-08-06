@@ -33,7 +33,7 @@ static std::string IVR_REQUEST		= "asterisk -rx \"core show channels verbose\" |
 																			   + " | grep -v \"" + IVR_COMMANDS_IK3 + "\" ";
 
 class IVR;
-using SP_IVR = std::shared_ptr<IVR> ;
+using SP_IVR = std::shared_ptr<IVR>;
 
 class IVR : public IAsteriskData			
 {

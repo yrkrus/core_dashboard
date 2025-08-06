@@ -12,11 +12,13 @@
 #include "ActiveSip.h"
 
 #include "clearing_current_day/ClearingCurrentDay.h"
+#include "different_checks/CheckInternal.h"
 
 // эти include потом убрать, они нужны для отладки только
 #include <stdio.h>
 #include <time.h>
 #include <chrono>
+
 
 using namespace utils;
 using namespace active_sip;
@@ -27,6 +29,7 @@ static SP_Queue queue = nullptr;
 static SP_ActiveSession activeSession = nullptr;
 static SP_Status changeStatus = nullptr;
 static SP_ClearingCurrentDay clearingCurrentDay = nullptr; // вставка в таблицы history
+static SP_CheckInternal checkInternal = nullptr;    // внутренние проверки
 
 static std::atomic<bool> g_running(true);
 
@@ -37,6 +40,7 @@ static void _Init()
     activeSession = std::make_shared<ActiveSession>(queue);
     changeStatus = std::make_shared<Status>();
     clearingCurrentDay = std::make_shared<ClearingCurrentDay>(); // встаква в таблицы history_*
+    checkInternal = std::make_shared<CheckInternal>();  // внутренние проверки  
 }
 
 static void _Run()
@@ -44,10 +48,9 @@ static void _Run()
     ivr->Start();
     queue->Start();
     activeSession->Start();
-
     changeStatus->Start(); // изменение статуса оператора
-
     clearingCurrentDay->Start(); // очистка текущего дня в таблицу history_*
+    checkInternal->Start();     
 }
 
 static void _Destroy()
@@ -55,9 +58,9 @@ static void _Destroy()
     ivr->Stop();
     queue->Stop();
     activeSession->Stop();
-
     changeStatus->Stop();
     clearingCurrentDay->Stop();
+    checkInternal->Stop();    
 }
 
 static void _sigint_handler(int)
@@ -65,8 +68,9 @@ static void _sigint_handler(int)
     g_running = false;
 }
 
+
 int main(int argc, char *argv[])
-{
+{   
     // bild
     printf("%s\n\n", CONSTANTS::VERSION::CORE.c_str());
     Sleep(2000);

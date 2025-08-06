@@ -3,26 +3,26 @@
 
 
 template<>
-EQueueNumber StringToEnum<EQueueNumber>(const std::string &_str)
+ecQueueNumber StringToEnum<ecQueueNumber>(const std::string &_str)
 {
-	if (_str.find("5000") != std::string::npos)				return EQueueNumber::e5000;
-	if (_str.find("5005") != std::string::npos)				return EQueueNumber::e5005;
-	if (_str.find("5050") != std::string::npos)				return EQueueNumber::e5050;
-	if (_str.find("5000 и 5050") != std::string::npos)		return EQueueNumber::e5000_e5050;
+	if (_str.find("5000") != std::string::npos)				return ecQueueNumber::e5000;
+	if (_str.find("5005") != std::string::npos)				return ecQueueNumber::e5005;
+	if (_str.find("5050") != std::string::npos)				return ecQueueNumber::e5050;
+	if (_str.find("5000 и 5050") != std::string::npos)		return ecQueueNumber::e5000_e5050;
 
-	return EQueueNumber::Unknown;
+	return ecQueueNumber::eUnknown;
 }
 
 template<>
-string EnumToString<EQueueNumber>(EQueueNumber _queue)
+string EnumToString<ecQueueNumber>(ecQueueNumber _queue)
 {
-	static std::map<EQueueNumber, string> queueNumber =
+	static std::map<ecQueueNumber, string> queueNumber =
 	{
-		{EQueueNumber::Unknown,		"Unknown"},
-		{EQueueNumber::e5000,		"5000"},
-		{EQueueNumber::e5005,		"5005"},
-		{EQueueNumber::e5050,		"5050"},
-		{EQueueNumber::e5000_e5050,	"5000 и 5050"},
+		{ecQueueNumber::eUnknown,	"Unknown"},
+		{ecQueueNumber::e5000,		"5000"},
+		{ecQueueNumber::e5005,		"5005"},
+		{ecQueueNumber::e5050,		"5050"},
+		{ecQueueNumber::e5000_e5050,	"5000 и 5050"},
 	};
 
 	auto it = queueNumber.find(_queue);	
@@ -31,31 +31,31 @@ string EnumToString<EQueueNumber>(EQueueNumber _queue)
 
 
 template<>
-string EnumToString<ECommand>(ECommand _command)
+string EnumToString<ecCommand>(ecCommand _command)
 {
-	static std::map<ECommand, string> command =
+	static std::map<ecCommand, string> command =
 	{
-		{ECommand::Enter,				"Enter"},				// Вход
-		{ECommand::Exit,				"Exit"},				// Выход
-		{ECommand::AuthError,			"AuthError"},			// не успешная авторизация
-		{ECommand::ExitForce,			"ExitForce"},			// Выход (через команду force_closed)
-		{ECommand::AddQueue5000,		"AddQueue5000"},        // добавление в очередь 5000
-		{ECommand::AddQueue5050,		"AddQueue5050"},        // добавление в очередь 5050
-		{ECommand::AddQueue5000_5050,	"AddQueue5000_5050"},	// добавление в очередь 5000 и 5050
-		{ECommand::DelQueue5000,		"DelQueue500"},         // удаление из очереди 5000
-		{ECommand::DelQueue5050,		"DelQueue5050"},        // удаление из очереди 5050
-		{ECommand::DelQueue5000_5050,	"DelQueue5000_5050"},   // удаление из очереди 5000 и 5050
-		{ECommand::Available,			"Available"},			// доступен
-		{ECommand::Home,				"Home"},				// домой        
-		{ECommand::Exodus,				"Exodus"},				// исход
-		{ECommand::Break,				"Break"},				// перерыв
-		{ECommand::Dinner,				"Dinner"},				// обед
-		{ECommand::Postvyzov,			"Postvyzov"},			// поствызов
-		{ECommand::Studies,				"Studies"},				// учеба
-		{ECommand::IT,					"IT"},					// ИТ
-		{ECommand::Transfer,			"Transfer"},			// переносы
-		{ECommand::Reserve,				"Reserve"},				// резерв
-		{ECommand::Callback,			"Callback"},			// callback
+		{ecCommand::Enter,				"Enter"},				// Вход
+		{ecCommand::Exit,				"Exit"},				// Выход
+		{ecCommand::AuthError,			"AuthError"},			// не успешная авторизация
+		{ecCommand::ExitForce,			"ExitForce"},			// Выход (через команду force_closed)
+		{ecCommand::AddQueue5000,		"AddQueue5000"},        // добавление в очередь 5000
+		{ecCommand::AddQueue5050,		"AddQueue5050"},        // добавление в очередь 5050
+		{ecCommand::AddQueue5000_5050,	"AddQueue5000_5050"},	// добавление в очередь 5000 и 5050
+		{ecCommand::DelQueue5000,		"DelQueue500"},         // удаление из очереди 5000
+		{ecCommand::DelQueue5050,		"DelQueue5050"},        // удаление из очереди 5050
+		{ecCommand::DelQueue5000_5050,	"DelQueue5000_5050"},   // удаление из очереди 5000 и 5050
+		{ecCommand::Available,			"Available"},			// доступен
+		{ecCommand::Home,				"Home"},				// домой        
+		{ecCommand::Exodus,				"Exodus"},				// исход
+		{ecCommand::Break,				"Break"},				// перерыв
+		{ecCommand::Dinner,				"Dinner"},				// обед
+		{ecCommand::Postvyzov,			"Postvyzov"},			// поствызов
+		{ecCommand::Studies,				"Studies"},				// учеба
+		{ecCommand::IT,					"IT"},					// ИТ
+		{ecCommand::Transfer,			"Transfer"},			// переносы
+		{ecCommand::Reserve,				"Reserve"},				// резерв
+		{ecCommand::Callback,			"Callback"},			// callback
 	};
 
 	auto it = command.find(_command);
@@ -63,13 +63,13 @@ string EnumToString<ECommand>(ECommand _command)
 }
 
 template<>
-string EnumToString<ECommandType>(ECommandType _command)
+string EnumToString<ecCommandType>(ecCommandType _command)
 {
-	static std::map<ECommandType, string> command =
+	static std::map<ecCommandType, string> command =
 	{
-		{ECommandType::Add,		"Add"},				
-		{ECommandType::Del,		"Del"},
-		{ECommandType::Unknown,	"Unknown"},		
+		{ecCommandType::Add,		"Add"},				
+		{ecCommandType::Del,		"Del"},
+		{ecCommandType::Unknown,	"Unknown"},		
 	};
 
 	auto it = command.find(_command);
@@ -77,16 +77,40 @@ string EnumToString<ECommandType>(ECommandType _command)
 }
 
 template<>
-string EnumToString<ELogType>(ELogType _type)
+string EnumToString<ecLogType>(ecLogType _type)
 {
-	static std::map<ELogType, string> type =
+	static std::map<ecLogType, string> type =
 	{
-		{ELogType::Debug,	"DEBUG"},
-		{ELogType::Error,	"ERROR"},
-		{ELogType::Info,	"INFO"},
+		{ecLogType::Debug,	"DEBUG"},
+		{ecLogType::Error,	"ERROR"},
+		{ecLogType::Info,	"INFO"},
 	};
 
 	auto it = type.find(_type);
 	return (it == type.end()) ? "Unknown" : it->second;
+}
+
+template<>
+ecTrunkState StringToEnum<ecTrunkState>(const std::string &_str)
+{
+	if (_str.find("Unknown") != std::string::npos)		return ecTrunkState::eUnknown;
+	if (_str.find("Registered") != std::string::npos)	return ecTrunkState::eRegistered;
+	if (_str.find("Request") != std::string::npos)		return ecTrunkState::eRequest;
+
+	return ecTrunkState::eUnknown;	
+}
+
+template<>
+std::string EnumToString<ecTrunkState>(ecTrunkState _state)
+{
+	static std::map<ecTrunkState, string> state =
+	{
+		{ecTrunkState::eUnknown,		"Unknown"},
+		{ecTrunkState::eRegistered,		"Registered"},
+		{ecTrunkState::eRequest,		"Request"},
+	};
+
+	auto it = state.find(_state);	
+	return (it == state.end()) ? "Unknown" : it->second;	
 }
 

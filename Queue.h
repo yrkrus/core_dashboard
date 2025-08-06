@@ -17,15 +17,15 @@ static std::string QUEUE_COMMANDS		= "Queue|to-atsaero5005";
 static std::string QUEUE_COMMANDS_EXT1	= "App";
 static std::string QUEUE_REQUEST		= "asterisk -rx \"core show channels verbose\" | grep -E \"" + QUEUE_COMMANDS + "\" " + " | grep -v \"" + QUEUE_COMMANDS_EXT1 + "\"";
 
-enum class EQueueNumber // ВАЖНО в методе bool Status::CreateCommand используется for 1..2 
+enum class ecQueueNumber // ВАЖНО в методе bool Status::CreateCommand используется for 1..2 
 {
-	Unknown = 0,
+	eUnknown = 0,
 	e5000,	
 	e5050,
 	e5000_e5050,	// сочетение 5000+5050 
 	e5005,			// очередь для бабы железной
 };
-using QueueList = std::vector<EQueueNumber>;
+using QueueList = std::vector<ecQueueNumber>;
 
 class Queue;
 using SP_Queue = std::shared_ptr<Queue>;
@@ -38,7 +38,7 @@ public:
 	{
 		std::string phone	= "null";					// текущий номер телефона который в очереди сейчас
 		std::string waiting = "null";					// время в (сек) которое сейчас в очереди находится
-		EQueueNumber queue	= EQueueNumber::Unknown;	// номер очереди
+		ecQueueNumber queue	= ecQueueNumber::eUnknown;	// номер очереди
 	
 		inline bool check() const noexcept
 		{
@@ -46,7 +46,7 @@ public:
 			// или callerID == Unknown — сразу false
 			if (phone.find("null")		!= std::string::npos ||
 				waiting.find("null")	!= std::string::npos ||
-				queue					== EQueueNumber::Unknown)
+				queue					== ecQueueNumber::eUnknown)
 			{				 
 				return false;
 			}
@@ -103,8 +103,8 @@ public:
 	void UpdateCallSuccessRealOperator(const QueueCallsList &_calls);	// разговор успешно состоялся реальный оператор
 	void UpdateCallSuccessVirtualOperator(const QueueCallsList &_calls);// разговор успешно состоялся виртуальный оператор
 	
-	bool IsExistCall(EQueueNumber _queue, const std::string &_phone);	// есть ли уже такой номер в БД
-	bool IsExistCallVirtualOperator(EQueueNumber _queue, const std::string &_phone);	// есть ли уже такой номер в БД (виртуальный оператор)
+	bool IsExistCall(ecQueueNumber _queue, const std::string &_phone);	// есть ли уже такой номер в БД
+	bool IsExistCallVirtualOperator(ecQueueNumber _queue, const std::string &_phone);	// есть ли уже такой номер в БД (виртуальный оператор)
 
 	int GetLastQueueCallId(const std::string &_phone);					// id записи по БД о звонке
 	int GetLastQueueVirtualOperatorCallId(const std::string &_phone);	// id записи по БД о звонке(виртуальный оператор)

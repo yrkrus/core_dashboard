@@ -114,13 +114,13 @@ bool Queue::CreateQueueCallers(const std::string &_lines, QueueCalls &_queueCall
 	{
 		_queueCaller.phone = utils::PhoneParsing(lines[7]);
 		_queueCaller.waiting = lines[8];
-		_queueCaller.queue = StringToEnum<EQueueNumber>(lines[2]);
+		_queueCaller.queue = StringToEnum<ecQueueNumber>(lines[2]);
 
 		// TODO тут в лог запись если не прошел по какой то причине 
 		if (!CheckCallers(_queueCaller))
 		{
 			std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
-			m_log.ToFile(ELogType::Error, error);
+			m_log.ToFile(ecLogType::Error, error);
 
 			return false;
 		}
@@ -145,7 +145,7 @@ void Queue::InsertQueueCalls()
 {	
 	for (const auto &list : m_listQueue) 
 	{	
-		list.queue != EQueueNumber::e5005	? InsertCall(list)						// для очереди из живых операторо											
+		list.queue != ecQueueNumber::e5005	? InsertCall(list)						// для очереди из живых операторо											
 											: InsertCallVirtualOperator(list);		// для виртуалной бабы				
 	}	
 }
@@ -192,7 +192,7 @@ void Queue::InsertCall(const QueueCalls &_call)
 		if (!m_sql->Request(query, error))
 		{
 			error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-			m_log.ToFile(ELogType::Error, error);
+			m_log.ToFile(ecLogType::Error, error);
 
 			m_sql->Disconnect();						
 		}
@@ -227,7 +227,7 @@ void Queue::InsertCallVirtualOperator(const QueueCalls &_call)
 		if (!m_sql->Request(query, error))
 		{
 			error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-			m_log.ToFile(ELogType::Error, error);
+			m_log.ToFile(ecLogType::Error, error);
 
 			m_sql->Disconnect();			
 		}
@@ -248,7 +248,7 @@ bool Queue::UpdateCall(int _id, const QueueCalls &_call, std::string &_errorDesc
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ELogType::Error, error);
+		m_log.ToFile(ecLogType::Error, error);
 
 		m_sql->Disconnect();		
 		return false;
@@ -271,7 +271,7 @@ bool Queue::UpdateCallVirualOperator(int _id, const QueueCalls &_call, std::stri
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ELogType::Error, error);
+		m_log.ToFile(ecLogType::Error, error);
 
 		m_sql->Disconnect();		
 		return false;
@@ -314,7 +314,7 @@ void Queue::UpdateCallFail(const QueueCallsList &_calls)
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ELogType::Error, error);
+		m_log.ToFile(ecLogType::Error, error);
 
 		m_sql->Disconnect();		
 		return;
@@ -358,7 +358,7 @@ void Queue::UpdateCallIvrToQueue(const QueueCallsList &_calls)
 
 	for (const auto &call : _calls)
 	{
-		if (call.queue != EQueueNumber::e5005) 
+		if (call.queue != ecQueueNumber::e5005) 
 		{
 			if (phoneTouch.empty())
 			{
@@ -381,7 +381,7 @@ void Queue::UpdateCallIvrToQueue(const QueueCallsList &_calls)
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ELogType::Error, error);
+		m_log.ToFile(ecLogType::Error, error);
 
 		m_sql->Disconnect();		
 		return;
@@ -398,7 +398,7 @@ void Queue::UpdateCallIvrToVirtualOperator(const QueueCallsList &_calls)
 
 	for (const auto &call : _calls)
 	{
-		if (call.queue == EQueueNumber::e5005) 
+		if (call.queue == ecQueueNumber::e5005) 
 		{
 			if (phoneTouch.empty())
 			{
@@ -421,7 +421,7 @@ void Queue::UpdateCallIvrToVirtualOperator(const QueueCallsList &_calls)
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ELogType::Error, error);
+		m_log.ToFile(ecLogType::Error, error);
 
 		m_sql->Disconnect();		
 		return;
@@ -462,7 +462,7 @@ void Queue::UpdateCallSuccessRealOperator(const QueueCallsList &_calls)
 		if (!m_sql->Request(query, error))
 		{
 			error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-			m_log.ToFile(ELogType::Error, error);
+			m_log.ToFile(ecLogType::Error, error);
 
 			m_sql->Disconnect();
 			continue;
@@ -495,7 +495,7 @@ void Queue::UpdateCallSuccessVirtualOperator(const QueueCallsList &_calls)
 		if (!m_sql->Request(query, error))
 		{
 			error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-			m_log.ToFile(ELogType::Error, error);
+			m_log.ToFile(ecLogType::Error, error);
 
 			m_sql->Disconnect();
 			continue;
@@ -517,7 +517,7 @@ void Queue::UpdateCallSuccess()
 	}	
 }
 
-bool Queue::IsExistCall(EQueueNumber _queue, const std::string &_phone)
+bool Queue::IsExistCall(ecQueueNumber _queue, const std::string &_phone)
 {
 	std::string error;
 	// правильней проверять сначало разговор	
@@ -529,7 +529,7 @@ bool Queue::IsExistCall(EQueueNumber _queue, const std::string &_phone)
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ELogType::Error, error);
+		m_log.ToFile(ecLogType::Error, error);
 
 		m_sql->Disconnect();		
 		// при ошибке считаем что запись есть
@@ -558,7 +558,7 @@ bool Queue::IsExistCall(EQueueNumber _queue, const std::string &_phone)
 		if (!m_sql->Request(query, error))
 		{
 			error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-			m_log.ToFile(ELogType::Error, error);
+			m_log.ToFile(ecLogType::Error, error);
 
 			m_sql->Disconnect();			
 			// при ошибке считаем что запись есть
@@ -588,7 +588,7 @@ bool Queue::IsExistCall(EQueueNumber _queue, const std::string &_phone)
 			if (!m_sql->Request(query, error))
 			{
 				error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-				m_log.ToFile(ELogType::Error, error);
+				m_log.ToFile(ecLogType::Error, error);
 
 				m_sql->Disconnect();				
 				// при ошибке считаем что запись есть
@@ -620,7 +620,7 @@ bool Queue::IsExistCall(EQueueNumber _queue, const std::string &_phone)
 				if (!m_sql->Request(query, error))
 				{
 					error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-					m_log.ToFile(ELogType::Error, error);
+					m_log.ToFile(ecLogType::Error, error);
 
 					m_sql->Disconnect();					
 					// при ошибке считаем что запись есть
@@ -647,7 +647,7 @@ bool Queue::IsExistCall(EQueueNumber _queue, const std::string &_phone)
 }
 
 // есть ли уже такой номер в БД (виртуальный оператор)
-bool Queue::IsExistCallVirtualOperator(EQueueNumber _queue, const std::string &_phone)
+bool Queue::IsExistCallVirtualOperator(ecQueueNumber _queue, const std::string &_phone)
 {
 	std::string error;
 	// правильней проверять сначало разговор	
@@ -659,7 +659,7 @@ bool Queue::IsExistCallVirtualOperator(EQueueNumber _queue, const std::string &_
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ELogType::Error, error);
+		m_log.ToFile(ecLogType::Error, error);
 
 		m_sql->Disconnect();		
 		// при ошибке считаем что запись есть
@@ -689,7 +689,7 @@ bool Queue::IsExistCallVirtualOperator(EQueueNumber _queue, const std::string &_
 		if (!m_sql->Request(query, error))
 		{
 			error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-			m_log.ToFile(ELogType::Error, error);
+			m_log.ToFile(ecLogType::Error, error);
 
 			m_sql->Disconnect();			
 			// при ошибке считаем что запись есть
@@ -719,7 +719,7 @@ bool Queue::IsExistCallVirtualOperator(EQueueNumber _queue, const std::string &_
 			if (!m_sql->Request(query, error))
 			{
 				error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-				m_log.ToFile(ELogType::Error, error);
+				m_log.ToFile(ecLogType::Error, error);
 
 				m_sql->Disconnect();				
 				// при ошибке считаем что запись есть
@@ -825,7 +825,7 @@ bool Queue::GetCallsInBase(CallsInBaseList &_vcalls, const QueueCallsList &_queu
 	if (!m_sql->Request(query, _errorDescription))
 	{
 		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ELogType::Error, _errorDescription);
+		m_log.ToFile(ecLogType::Error, _errorDescription);
 
 		m_sql->Disconnect();		
 		return false;
@@ -871,7 +871,7 @@ bool Queue::GetCallsInBase(CallsInBaseList &_vcalls, std::string &_errorDescript
 	if (!m_sql->Request(query, _errorDescription))
 	{
 		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ELogType::Error, _errorDescription);
+		m_log.ToFile(ecLogType::Error, _errorDescription);
 
 		m_sql->Disconnect();		
 		return false;
@@ -916,7 +916,7 @@ bool Queue::GetCallsInBaseVirtualOperator(CallsInBaseList &_vcalls, const QueueC
 
 	for (const auto &call : _queueCalls)
 	{
-		if (call.queue == EQueueNumber::e5005) 
+		if (call.queue == ecQueueNumber::e5005) 
 		{
 			if (phoneTouch.empty())
 			{
@@ -946,7 +946,7 @@ bool Queue::GetCallsInBaseVirtualOperator(CallsInBaseList &_vcalls, const QueueC
 	if (!m_sql->Request(query, _errorDescription))
 	{
 		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ELogType::Error, _errorDescription);
+		m_log.ToFile(ecLogType::Error, _errorDescription);
 
 		m_sql->Disconnect();		
 		return false;
@@ -993,7 +993,7 @@ bool Queue::GetCallsInBaseVirtualOperator(CallsInBaseList &_vcalls, std::string 
 	if (!m_sql->Request(query, _errorDescription))
 	{
 		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ELogType::Error, _errorDescription);
+		m_log.ToFile(ecLogType::Error, _errorDescription);
 
 		m_sql->Disconnect();
 		return false;
@@ -1072,7 +1072,7 @@ bool Queue::IsExistAnyAnsweredCall()
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ELogType::Error, error);
+		m_log.ToFile(ecLogType::Error, error);
 
 		m_sql->Disconnect();		
 		// ошибка считаем что есть запись
@@ -1114,7 +1114,7 @@ void Queue::UpdateAllAnyAnsweredCalls()
 		if (!m_sql->Request(query, error))
 		{
 			error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-			m_log.ToFile(ELogType::Error, error);
+			m_log.ToFile(ecLogType::Error, error);
 
 			m_sql->Disconnect();						
 			continue;

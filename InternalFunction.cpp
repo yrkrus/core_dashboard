@@ -249,13 +249,13 @@ std::string utils::GetCurrentDateTimeAfterMinutes(int minutes)
 //}
 
 // преобразование текущей удаленной комады из int -> REMOTE_COMMANDS::Command
-ECommand utils::GetRemoteCommand(int _command) // TODO переделать на template IntegerToEnum
+ecCommand utils::GetRemoteCommand(int _command) // TODO переделать на template IntegerToEnum
 {
-	return static_cast<ECommand>(_command);
+	return static_cast<ecCommand>(_command);
 }
 
 // преобразование текущей удаленной комады из LOG::Log -> int
-int utils::GetRemoteCommand(ECommand _command) // TODO переделать на template EnumToInteger
+int utils::GetRemoteCommand(ecCommand _command) // TODO переделать на template EnumToInteger
 {
 	return static_cast<int>(_command);
 }
