@@ -17,7 +17,7 @@ bool Log::GetCommandInfoUser(CommandSendInfoUser &_userInfo, unsigned int _id, s
 	if (!m_sql->Request(query, _errorDescription))
 	{
 		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		ToFile(ecLogType::Error, _errorDescription);
+		ToFile(ecLogType::eError, _errorDescription);
 
 		m_sql->Disconnect();		
 		return false;
@@ -112,7 +112,7 @@ void Log::ToBase(Command _command)
 	{
 		error += METHOD_NAME;
 		error += StringFormat("not found field %u remote command %s", _command.id, EnumToString<ecCommand>(_command.command).c_str());
-		ToFile(ecLogType::Error, error);
+		ToFile(ecLogType::eError, error);
 		return;
 	}	
 
@@ -125,7 +125,7 @@ void Log::ToBase(Command _command)
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		ToFile(ecLogType::Error, error);
+		ToFile(ecLogType::eError, error);
 
 		m_sql->Disconnect();
 		return;

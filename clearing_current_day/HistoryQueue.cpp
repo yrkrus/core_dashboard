@@ -24,7 +24,7 @@ bool HistoryQueue::Execute()
 	std::string info = StringFormat("Clear table queue. Fields count = %u", Count());
 
 	m_log.ToPrint(info);
-	m_log.ToFile(ecLogType::Info, info);
+	m_log.ToFile(ecLogType::eInfo, info);
 
 	int errorCount = 0;
 	int successCount = 0;
@@ -41,7 +41,7 @@ bool HistoryQueue::Execute()
 		else
 		{
 			errorCount++;
-			m_log.ToFile(ecLogType::Error, error);
+			m_log.ToFile(ecLogType::eError, error);
 		}
 
 		// success or error
@@ -56,7 +56,7 @@ bool HistoryQueue::Execute()
 	info = StringFormat("Success = %u Error = %u", successCount, errorCount);
 	m_log.ToPrint(info);
 
-	m_log.ToFile(ecLogType::Info, info);
+	m_log.ToFile(ecLogType::eInfo, info);
 
 	return (errorCount != 0 ? false :  true); 
 }
@@ -112,7 +112,7 @@ bool HistoryQueue::Insert(const Table &_field, std::string &_errorDescription)
 	if (!m_sql->Request(query, _errorDescription))
 	{
 		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::Error, _errorDescription);
+		m_log.ToFile(ecLogType::eError, _errorDescription);
 
 		m_sql->Disconnect();
 		return false;
@@ -147,7 +147,7 @@ void HistoryQueue::Delete(int _id, ECheckInsert _check)
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::Error, error);
+		m_log.ToFile(ecLogType::eError, error);
 	}
 
 	m_sql->Disconnect();	
@@ -163,7 +163,7 @@ bool HistoryQueue::Get()
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::Error, error);
+		m_log.ToFile(ecLogType::eError, error);
 
 		m_sql->Disconnect();
 		return false;
@@ -217,7 +217,7 @@ bool HistoryQueue::CheckInsert(int _id)
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::Error, error);
+		m_log.ToFile(ecLogType::eError, error);
 
 		m_sql->Disconnect();
 		// ошибка считаем что нет записи

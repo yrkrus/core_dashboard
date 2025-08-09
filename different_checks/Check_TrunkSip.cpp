@@ -60,7 +60,7 @@ void CheckTrunkSip::Parsing()
             std::string error;
             if (!UpdateTrunkStatus(trunk, error)) 
             {
-                m_log.ToFile(ecLogType::Error, error);
+                m_log.ToFile(ecLogType::eError, error);
             }
        }      
 
@@ -108,7 +108,7 @@ bool CheckTrunkSip::UpdateTrunkStatus(const Trunk &_trunk, std::string &_errorDe
 	if (!m_sql->Request(query, _errorDescription))
 	{
 		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::Error, _errorDescription);
+		m_log.ToFile(ecLogType::eError, _errorDescription);
 
 		m_sql->Disconnect();
 		return false;

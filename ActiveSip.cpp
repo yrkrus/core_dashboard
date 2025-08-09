@@ -269,7 +269,7 @@ bool active_sip::ActiveSession::IsExistOperatorsQueue()
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::Error, error);
+		m_log.ToFile(ecLogType::eError, error);
 		
 		m_sql->Disconnect();
 		// ошибка считаем что есть запись
@@ -298,7 +298,7 @@ bool active_sip::ActiveSession::IsExistOperatorsQueue(const std::string &_sip, c
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::Error, error);
+		m_log.ToFile(ecLogType::eError, error);
 
 		m_sql->Disconnect();
 		// ошибка считаем что есть запись
@@ -327,7 +327,7 @@ void active_sip::ActiveSession::ClearOperatorsQueue()
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::Error, error);
+		m_log.ToFile(ecLogType::eError, error);
 
 		m_sql->Disconnect();
 		return;
@@ -345,7 +345,7 @@ void active_sip::ActiveSession::CheckOperatorsQueue()
 	if (!GetActiveQueueOperators(listActiveOperatorsBase, error))
 	{
 		error += METHOD_NAME;
-		m_log.ToFile(ecLogType::Error, error);
+		m_log.ToFile(ecLogType::eError, error);
 
 		return;
 	}
@@ -411,7 +411,7 @@ bool active_sip::ActiveSession::GetActiveQueueOperators(OperatorList &_activeLis
 	if (!m_sql->Request(query, _errorDescription))
 	{		
 		_errorDescription += METHOD_NAME + StringFormat("query \t%s", query.c_str());
-		m_log.ToFile(ecLogType::Error, _errorDescription);
+		m_log.ToFile(ecLogType::eError, _errorDescription);
 
 		m_sql->Disconnect();
 		return false;
@@ -451,7 +451,7 @@ void active_sip::ActiveSession::DeleteOperatorsQueue(const std::string &_sip, co
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::Error, error);
+		m_log.ToFile(ecLogType::eError, error);
 		
 		m_sql->Disconnect();
 		
@@ -470,7 +470,7 @@ void active_sip::ActiveSession::DeleteOperatorsQueue(const std::string &_sip)
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::Error, error);
+		m_log.ToFile(ecLogType::eError, error);
 
 		m_sql->Disconnect();		
 		return;
@@ -490,7 +490,7 @@ void active_sip::ActiveSession::InsertOperatorsQueue(const std::string &_sip, co
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::Error, error);
+		m_log.ToFile(ecLogType::eError, error);
 
 		m_sql->Disconnect();		
 		return;
@@ -604,7 +604,7 @@ void active_sip::ActiveSession::UpdateTalkCallOperator()
 		if (!m_sql->Request(query, error))
 		{
 			error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-			m_log.ToFile(ecLogType::Error, error);
+			m_log.ToFile(ecLogType::eError, error);
 
 			m_sql->Disconnect();
 			
@@ -625,7 +625,7 @@ bool active_sip::ActiveSession::IsExistTalkCallOperator(const std::string &_phon
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::Error, error);
+		m_log.ToFile(ecLogType::eError, error);
 		
 		m_sql->Disconnect();
 		
@@ -657,7 +657,7 @@ int active_sip::ActiveSession::GetLastTalkCallOperatorID(const std::string &_pho
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::Error, error);
+		m_log.ToFile(ecLogType::eError, error);
 
 		m_sql->Disconnect();
 		
@@ -698,7 +698,7 @@ void active_sip::ActiveSession::UpdateOnHoldStatusOperator()
 	if (!GetActiveOnHold(onHoldList, error))
 	{
 		error += METHOD_NAME;
-		m_log.ToFile(ecLogType::Error, error);
+		m_log.ToFile(ecLogType::eError, error);
 
 		return;
 	}	
@@ -730,7 +730,7 @@ bool active_sip::ActiveSession::GetActiveOnHold(OnHoldList &_onHoldList, std::st
 	if (!m_sql->Request(query, _errorDescription))
 	{
 		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::Error, _errorDescription);
+		m_log.ToFile(ecLogType::eError, _errorDescription);
 
 		m_sql->Disconnect();	
 		return false;
@@ -775,7 +775,7 @@ void active_sip::ActiveSession::DisableOnHold(const OnHoldList &_onHoldList)
 		if (!DisableHold(hold, error))
 		{
 			error += METHOD_NAME;
-			m_log.ToFile(ecLogType::Error, error);
+			m_log.ToFile(ecLogType::eError, error);
 
 			continue;
 		}
@@ -793,7 +793,7 @@ bool active_sip::ActiveSession::DisableHold(const OnHold &_hold, std::string &_e
 	if (!m_sql->Request(query, _errorDescription))
 	{
 		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::Error, _errorDescription);
+		m_log.ToFile(ecLogType::eError, _errorDescription);
 
 		m_sql->Disconnect();
 		return false;
@@ -812,7 +812,7 @@ bool active_sip::ActiveSession::AddHold(const Operator &_sip, std::string &_erro
 	if (!m_sql->Request(query, _errorDescription))
 	{
 		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::Error, _errorDescription);
+		m_log.ToFile(ecLogType::eError, _errorDescription);
 
 		m_sql->Disconnect();
 		return false;
@@ -849,7 +849,7 @@ void active_sip::ActiveSession::CheckOnHold(OnHoldList &_onHoldList)
 			if (!DisableHold(hold, error))
 			{
 				error += METHOD_NAME;
-				m_log.ToFile(ecLogType::Error, error);
+				m_log.ToFile(ecLogType::eError, error);
 
 				return;
 			}
@@ -864,7 +864,7 @@ void active_sip::ActiveSession::CheckOnHold(OnHoldList &_onHoldList)
 		if (!GetActiveOnHold(_onHoldList, error))
 		{
 			error += METHOD_NAME;
-			m_log.ToFile(ecLogType::Error, error);
+			m_log.ToFile(ecLogType::eError, error);
 
 			return;
 		}
@@ -904,11 +904,20 @@ void active_sip::ActiveSession::CheckOnHold(OnHoldList &_onHoldList)
 		if (newHold) 
 		{
 			std::string error;
-			if (!AddHold(sip, error))
+			
+			if (sip.phoneOnHold != "null") 
 			{
-				error += METHOD_NAME;
-				m_log.ToFile(ecLogType::Error, error);
-			}
+				if (!AddHold(sip, error))
+				{
+					error += METHOD_NAME;
+					m_log.ToFile(ecLogType::eError, error);
+				}	
+			} 
+			else 
+			{
+				std::cout<<"Boo";
+			}			
+			
 		}
 	}
 }

@@ -47,9 +47,9 @@ namespace active_sip
 	
 		inline bool check() const noexcept
 		{
-			if (id == 0 ||
-				sip.find("null") != std::string::npos ||
-				phone.find("null") != std::string::npos)
+			if ((id == 0) ||
+				(sip.find("null") != std::string::npos) ||
+				(phone.find("null") != std::string::npos))
 			{				
 				return false;
 			}

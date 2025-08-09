@@ -111,7 +111,7 @@ bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 		if (lines.size() != MAX_IVR_PARSING_LINES) 
 		{
 			std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
-			m_log.ToFile(ecLogType::Error, error);			
+			m_log.ToFile(ecLogType::eError, error);			
 
 			return false;
 		}
@@ -123,7 +123,7 @@ bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 		if (!CheckCallers(_caller)) 
 		{
 			std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
-			m_log.ToFile(ecLogType::Error, error);
+			m_log.ToFile(ecLogType::eError, error);
 
 			return false;
 		}	
@@ -213,7 +213,7 @@ void IVR::InsertIvrCalls()
 			if (!m_sql->Request(query, _errorDescription))
 			{
 				_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-				m_log.ToFile(ecLogType::Error, _errorDescription);
+				m_log.ToFile(ecLogType::eError, _errorDescription);
 
 				m_sql->Disconnect();
 				
@@ -237,7 +237,7 @@ void IVR::UpdateIvrCalls(int _id, const IvrCalls &_caller)
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::Error, error);
+		m_log.ToFile(ecLogType::eError, error);
 
 		m_sql->Disconnect();
 		return;
@@ -257,7 +257,7 @@ bool IVR::IsExistIvrPhone(const IvrCalls &_caller, std::string &_errorDescriptio
 	if (!m_sql->Request(query, _errorDescription))
 	{	
 		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::Error, _errorDescription);
+		m_log.ToFile(ecLogType::eError, _errorDescription);
 
 		m_sql->Disconnect();
 		return true;

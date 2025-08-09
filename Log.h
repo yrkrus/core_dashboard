@@ -18,9 +18,9 @@ struct CommandSendInfoUser;
 
 enum class ecLogType
 {
-    Debug,
-    Info,
-    Error,
+    eDebug,
+    eInfo,
+    eError,
 };
 
 

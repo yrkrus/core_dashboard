@@ -51,10 +51,10 @@ string EnumToString<ecCommand>(ecCommand _command)
 		{ecCommand::Break,				"Break"},				// перерыв
 		{ecCommand::Dinner,				"Dinner"},				// обед
 		{ecCommand::Postvyzov,			"Postvyzov"},			// поствызов
-		{ecCommand::Studies,				"Studies"},				// учеба
+		{ecCommand::Studies,			"Studies"},				// учеба
 		{ecCommand::IT,					"IT"},					// ИТ
 		{ecCommand::Transfer,			"Transfer"},			// переносы
-		{ecCommand::Reserve,				"Reserve"},				// резерв
+		{ecCommand::Reserve,			"Reserve"},				// резерв
 		{ecCommand::Callback,			"Callback"},			// callback
 	};
 
@@ -81,9 +81,9 @@ string EnumToString<ecLogType>(ecLogType _type)
 {
 	static std::map<ecLogType, string> type =
 	{
-		{ecLogType::Debug,	"DEBUG"},
-		{ecLogType::Error,	"ERROR"},
-		{ecLogType::Info,	"INFO"},
+		{ecLogType::eDebug,	"DEBUG"},
+		{ecLogType::eError,	"ERROR"},
+		{ecLogType::eInfo,	"INFO"},
 	};
 
 	auto it = type.find(_type);

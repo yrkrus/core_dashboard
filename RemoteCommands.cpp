@@ -180,7 +180,7 @@ void Status::DeleteCommand(const Command &_command)
 	if (!m_sql->Request(query, error)) 
 	{
 		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
-		m_log->ToFile(ecLogType::Error, error);
+		m_log->ToFile(ecLogType::eError, error);
 	}
 
 	m_sql->Disconnect();	
@@ -197,7 +197,7 @@ void Status::ExecuteCommandFail(const Command &_command, const std::string &_err
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery -> %s", query.c_str());
-		m_log->ToFile(ecLogType::Error, error);
+		m_log->ToFile(ecLogType::eError, error);
 
 		m_sql->Disconnect();				
 	}
