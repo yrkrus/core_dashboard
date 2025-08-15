@@ -13,6 +13,7 @@
 
 #include "clearing_current_day/ClearingCurrentDay.h"
 #include "different_checks/CheckInternal.h"
+#include "CallInfo.h"
 
 // эти include потом убрать, они нужны для отладки только
 #include <stdio.h>
@@ -88,6 +89,12 @@ int main(int argc, char *argv[])
         return 1;
     }
     std::cout << StringFormat("Server is running on port %u. Press Ctrl+C to stop.\n", CONSTANTS::SERVER::PORT);
+
+    std::string body;
+    CallInfo call;
+    call.Execute();
+   
+
 
     _Init();
     _Run();

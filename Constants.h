@@ -30,16 +30,15 @@ namespace CONSTANTS
 
     namespace SERVER 
     {
-        static const uint16_t PORT = 12345;
-       // static const unsigned int PORT = 12346;        
+       // static const uint16_t PORT = 12345;
+        static const unsigned int PORT = 12346;        
     }
 
     namespace LOG 
     {
         static const std::string IVR                = "ivr.log";
         static const std::string QUEUE              = "queue.log";
-        static const std::string ACTIVE_SESSION     = "active_session.log";
-        
+        static const std::string ACTIVE_SESSION     = "active_session.log";        
         // to_history
         static const std::string HISTORY_IVR        = "history_ivr.log";
         static const std::string HISTORY_QUEUE      = "history_queue.log";
@@ -50,6 +49,8 @@ namespace CONSTANTS
         static const std::string REMOTE_COMMANDS    = "remote_commands.log";  
         
         static const std::string CHECK_TRUNK_SIP    = "check_trunk.log";
+        static const std::string HTTP_REQUEST       = "http_request.log";
+        static const std::string CALL_INFO          = "call_info.log";
     }
     
     // версия ядра

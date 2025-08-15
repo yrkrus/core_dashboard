@@ -3,9 +3,10 @@ CXX       := g++
 #CXXVERSION := $(shell g++ -dumpversion | sed -E 's/^([0-9]+)\..*/\1/')
 
 # флаги для компиляции
-CXXFLAGS  := -std=c++17 -Wall -Werror -fsanitize=address -g -Og -O0 \
+CXXFLAGS  := -std=c++17 -Wall -Werror -fsanitize=address -fdiagnostics-color=always -g -Og -O0 \
               -pthread $(shell mysql_config --cflags) \
-			  -L/usr/lib64/firebird -lfbclient
+			  -L/usr/lib64/firebird -lfbclient \
+			  -lcurl
 
 # флаги для линковки
 LDFLAGS   := -pthread $(shell mysql_config --libs) -lstdc++fs
