@@ -8,17 +8,22 @@
 
 static std::string HTTP_REQUEST = "https://num.voxlink.ru/get/?num=%phone";
 
+enum class ecCallInfoTable // в какую таблицу будем обновлять
+    {
+        eIVR,
+        eHistoryIvr
+    };
+
 class CallInfo : public IHTTPRequest 
 {
-public:
+public:   
+
     struct Info
     {
         int         id = 0;
         std::string phone;
         std::string phone_operator;
-        std::string region;
-
-        std::string date;
+        std::string region;        
 
         bool Check() const 
         {
@@ -28,14 +33,18 @@ public:
     using InfoCallList = std::vector<Info>;
 
      CallInfo();
+     CallInfo(ecCallInfoTable _table);
     ~CallInfo() override;
 
-    void Execute();     
+    bool Execute();     
 
 private:
     InfoCallList    m_listPhone;
     SP_SQL		    m_sql;
-	Log				m_log;
+	Log				m_log;    
+
+    ecCallInfoTable m_table;
+
 
     void CreateListPhone(); // создание списка с телефонами которые будем проверять
     bool GetInfoCallList(InfoCallList &_list, std::string &_errorDescription); // получение списка с телефонами

@@ -79,13 +79,29 @@ bool HistoryIvr::Insert(const Table &_field, std::string &_errorDescription)
 		return false;
 	}
 	
-	const std::string query = "insert into history_ivr (id,phone,waiting_time,date_time,trunk,to_queue,to_robot) values ('" + std::to_string(_field.id) +
+	std::string query;
+	if (!_field.phone_operator.empty() && !_field.region.empty()) 
+	{
+		const std::string query = "insert into history_ivr (id,phone,waiting_time,date_time,trunk,to_queue,to_robot,operator,region) values ('" + std::to_string(_field.id) +
+								"','" + _field.phone +
+								"','" + _field.waiting_time +
+								"','" + _field.date_time +
+								"','" + _field.trunk +
+								"','" + std::to_string(_field.to_queue) +
+								"','" + std::to_string(_field.to_robot) + 
+								"','" + _field.phone_operator +
+								"','" + _field.region +	"')";
+	} 
+	else 
+	{
+		const std::string query = "insert into history_ivr (id,phone,waiting_time,date_time,trunk,to_queue,to_robot) values ('" + std::to_string(_field.id) +
 								"','" + _field.phone +
 								"','" + _field.waiting_time +
 								"','" + _field.date_time +
 								"','" + _field.trunk +
 								"','" + std::to_string(_field.to_queue) +
 								"','" + std::to_string(_field.to_robot) + "')";
+	} 
 	
 
 	if (!m_sql->Request(query, _errorDescription))
@@ -164,7 +180,9 @@ bool HistoryIvr::Get()
 			case 3:	field.date_time = row[i];		break;	// date_time
 			case 4:	field.trunk = row[i];			break;	// trunk			
 			case 5:	field.to_queue = std::atoi(row[i]);	break;	// to_queue
-			case 6:	field.to_robot = std::atoi(row[i]);	break;	// to_robot			
+			case 6:	field.to_robot = std::atoi(row[i]);	break;	// to_robot
+			case 7: if (row[i]) field.phone_operator = row[i];		break;	// operator
+			case 8: if (row[i]) field.region = row[i];				break;	// region			
 			}
 		}
 

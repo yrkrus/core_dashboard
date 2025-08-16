@@ -114,3 +114,17 @@ std::string EnumToString<ecTrunkState>(ecTrunkState _state)
 	return (it == state.end()) ? "Unknown" : it->second;	
 }
 
+
+template<>
+std::string EnumToString<ecCallInfoTable>(ecCallInfoTable _table)
+{
+	static std::map<ecCallInfoTable, string> table =
+	{
+		{ecCallInfoTable::eIVR,			"ivr"},
+		{ecCallInfoTable::eHistoryIvr,	"history_ivr"},
+	};
+
+	auto it = table.find(_table);	
+	return (it == table.end()) ? "history_ivr" : it->second;		
+}
+

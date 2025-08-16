@@ -30,8 +30,8 @@ namespace CONSTANTS
 
     namespace SERVER 
     {
-       // static const uint16_t PORT = 12345;
-        static const unsigned int PORT = 12346;        
+        static const uint16_t PORT = 12345;
+      //  static const unsigned int PORT = 12346;        
     }
 
     namespace LOG 
@@ -56,7 +56,7 @@ namespace CONSTANTS
     // версия ядра
     namespace VERSION
     {          
-        static const std::string CORE = "CORE | version 3.0 " BUILD; 
+        static const std::string CORE = "CORE | version 3.1 " BUILD; 
     }
 
     

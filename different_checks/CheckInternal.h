@@ -4,12 +4,14 @@
 #include <memory>
 #include "Check_TrunkSip.h"
 #include "../PotokDispether.h"
+#include "../CallInfo.h"
 
 
 class CheckInternal
 {
 private:
     CheckTrunkSip m_trunkSip;
+    CallInfo      m_callInfo;
     IPotokDispether m_dispether;
 
     bool Execute();

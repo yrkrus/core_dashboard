@@ -19,6 +19,8 @@ public:
 		std::string trunk;
 		int			to_queue;
 		int			to_robot;
+		std::string phone_operator;
+		std::string region;
 	};
 	using HistoryIvrTable = std::vector<Table>;
 

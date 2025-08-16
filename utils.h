@@ -5,6 +5,7 @@
 #include "RemoteCommands.h"
 #include "Queue.h"
 #include "Log.h"
+#include "CallInfo.h"
 #include "different_checks/Check_TrunkSip.h"
 
 template<typename T>
@@ -34,5 +35,7 @@ ecTrunkState StringToEnum<ecTrunkState>(const std::string&);
 template<>
 std::string EnumToString<ecTrunkState>(ecTrunkState);
 
+template<>
+std::string EnumToString<ecCallInfoTable>(ecCallInfoTable);
 
 #endif // UTILS_H 

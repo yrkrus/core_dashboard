@@ -24,8 +24,8 @@ void CheckInternal::Stop()
 }
 
 bool CheckInternal::Execute()
-{
-   // TODO пока один return потом сделать по другому
-    return m_trunkSip.Execute();   
+{   
+    return ((!m_trunkSip.Execute()) || (!m_callInfo.Execute()));   
+  
 }
   
