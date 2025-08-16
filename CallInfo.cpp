@@ -1,9 +1,10 @@
 #include "CallInfo.h"
 #include "Constants.h"
 #include "InternalFunction.h"
-#include 
+#include <nlohmann/json.hpp>
 
 using namespace utils;
+using json = nlohmann::json;
 
 CallInfo::CallInfo()
 	: m_sql(std::make_shared<ISQLConnect>(false))
@@ -42,7 +43,8 @@ bool CallInfo::GetInfoCallList(InfoCallList &_list, std::string &_errorDescripti
     _list.clear();
     _errorDescription.clear();
 
-    const std::string query = "select phone from ivr where operator is NULL and region is NULL";
+    const std::string query = "select id,phone from ivr where operator is NULL and region is NULL";
+    //const std::string query = "select id,phone,date_time from history_ivr where operator is NULL and region is NULL";
 	
 	if (!m_sql->Request(query, _errorDescription))
 	{		
@@ -65,7 +67,9 @@ bool CallInfo::GetInfoCallList(InfoCallList &_list, std::string &_errorDescripti
 		{
 			switch (i)
 			{
-                case 0:	call.phone = row[i]; break;                
+                case 0:	call.id = std::atoi(row[i]); break; 
+                case 1:	call.phone = row[i]; break;
+                case 2:	call.date = row[i]; break;                
 			}
 		}
 		_list.push_back(call);
@@ -73,6 +77,8 @@ bool CallInfo::GetInfoCallList(InfoCallList &_list, std::string &_errorDescripti
 
 	mysql_free_result(result);
 	m_sql->Disconnect();
+
+    m_log.ToPrint(StringFormat("_list.size = %u",_list.size()));
 
 	return true;
 }
@@ -84,8 +90,9 @@ bool CallInfo::IsExistList()
 
 void CallInfo::FindInfoCall()
 {
-    for (const auto &call : m_listPhone) 
-    {
+       
+    for (auto &call : m_listPhone) 
+    {  
         std::string responce;
         std::string error;
 
@@ -98,10 +105,19 @@ void CallInfo::FindInfoCall()
         }
 
         // разберем что пришло в ответе
+        json j = json::parse(responce);
+        call.phone_operator = j["operator"];
+        call.region = j["region"];  
+        
+        if (!call.Check()) 
+        {
+            continue;
+        }
 
-        
-        
-        
+        // занесем в БД
+        UpdateToBaseInfoCall(call.id, call); 
+        Sleep(10);  
+
     }
 }
 
@@ -113,6 +129,34 @@ std::string CallInfo::GetLinkHttpRequest(const std::string &_phone)
 	replacment.replace(position, replacment.length(), _phone);
     
     return replacment;
+}
+
+void CallInfo::UpdateToBaseInfoCall(int _id, const Info &_call)
+{
+    std::string error;
+     const std::string query = "update ivr set operator  = '" + _call.phone_operator
+                                         + "' , region = '" + _call.region                                        
+                                         + "' where id = '" + std::to_string(_id) + "'";
+    //  const std::string query = "update history_ivr set operator  = '" + _call.phone_operator
+    //                                      + "' , region = '" + _call.region                                        
+    //                                      + "' where id = '" + std::to_string(_id) + "'";
+
+
+    
+
+
+	if (!m_sql->Request(query, error))
+	{
+		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
+		m_log.ToFile(ecLogType::eError, error);
+
+		m_sql->Disconnect();
+		return;
+	}    
+
+    m_log.ToPrint(StringFormat("%s | %s", _call.date.c_str(), query.c_str()));
+
+	m_sql->Disconnect();
 }
 
 bool CallInfo::Get(const std::string &_request, std::string &_responce, std::string &_errorDescription)

@@ -13,9 +13,17 @@ class CallInfo : public IHTTPRequest
 public:
     struct Info
     {
+        int         id = 0;
         std::string phone;
         std::string phone_operator;
         std::string region;
+
+        std::string date;
+
+        bool Check() const 
+        {
+            return ((!phone.empty()) && (!phone_operator.empty()) && (!region.empty()));        
+        };
     };
     using InfoCallList = std::vector<Info>;
 
@@ -37,6 +45,8 @@ private:
     void FindInfoCall();    // нахождение региона и оператора 
 
     std::string GetLinkHttpRequest(const std::string &_phone); // создание http запроса
+
+    void UpdateToBaseInfoCall(int _id, const Info &_call); // обновление записи в БД
 
     virtual bool Get(const std::string &_request, std::string &_responce, std::string &_errorDescription);
 };

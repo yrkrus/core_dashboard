@@ -369,3 +369,8 @@ FodyWeavers.xsd
 # exec
 core_dashboard
 
+#temp
+temp/
+
+#json
+json/
