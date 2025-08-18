@@ -82,7 +82,7 @@ bool HistoryIvr::Insert(const Table &_field, std::string &_errorDescription)
 	std::string query;
 	if (!_field.phone_operator.empty() && !_field.region.empty()) 
 	{
-		const std::string query = "insert into history_ivr (id,phone,waiting_time,date_time,trunk,to_queue,to_robot,operator,region) values ('" + std::to_string(_field.id) +
+		query = "insert into history_ivr (id,phone,waiting_time,date_time,trunk,to_queue,to_robot,operator,region) values ('" + std::to_string(_field.id) +
 								"','" + _field.phone +
 								"','" + _field.waiting_time +
 								"','" + _field.date_time +
@@ -94,7 +94,7 @@ bool HistoryIvr::Insert(const Table &_field, std::string &_errorDescription)
 	} 
 	else 
 	{
-		const std::string query = "insert into history_ivr (id,phone,waiting_time,date_time,trunk,to_queue,to_robot) values ('" + std::to_string(_field.id) +
+		query = "insert into history_ivr (id,phone,waiting_time,date_time,trunk,to_queue,to_robot) values ('" + std::to_string(_field.id) +
 								"','" + _field.phone +
 								"','" + _field.waiting_time +
 								"','" + _field.date_time +
@@ -106,7 +106,7 @@ bool HistoryIvr::Insert(const Table &_field, std::string &_errorDescription)
 
 	if (!m_sql->Request(query, _errorDescription))
 	{
-		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
+		_errorDescription = StringFormat("%s\tquery \t%s\t%s", METHOD_NAME, query.c_str(), _errorDescription.c_str());
 		m_log.ToFile(ecLogType::eError, _errorDescription);
 
 		m_sql->Disconnect();

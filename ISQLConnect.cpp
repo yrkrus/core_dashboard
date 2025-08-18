@@ -78,23 +78,30 @@ bool ISQLConnect::ConnectInternal(std::string &_errorDescription)
 
 bool ISQLConnect::Request(const std::string &_request, std::string &_errorDescription)
 {
-	_errorDescription.clear();
-	if (!m_connected)
-	{
-		if (!Connect(_errorDescription))
-		{
-			return false;
-		}
-	}
+    _errorDescription.clear();
+    if (!m_connected)
+    {
+        if (!Connect(_errorDescription))
+        {
+            return false;
+        }
+    }
 
-	if (mysql_query(&m_mysql, _request.c_str()) != 0)
-	{
-		_errorDescription = StringFormat("query(%s) error: %s",
-			                                _request.c_str(),
-			                                mysql_error(&m_mysql));
-		return false;
-	}
-	return true;
+    if (_request.empty())
+    {
+        _errorDescription = StringFormat("query empty");
+        return false;
+    }
+
+    if (mysql_query(&m_mysql, _request.c_str()) != 0)
+    {
+        _errorDescription = StringFormat("query(%s) error: %s",
+                                         _request.c_str(),
+                                         mysql_error(&m_mysql));
+        return false;
+    }
+    
+    return true;
 }
 
 bool ISQLConnect::Request(const std::string &_request)
