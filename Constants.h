@@ -17,6 +17,13 @@
 
 namespace CONSTANTS
 {   
+    // версия ядра
+    namespace VERSION
+    {          
+        static const std::string CORE = "CORE | version 3.2 " BUILD; 
+    }
+
+    
     namespace TIMEOUT
     {
         static const uint32_t IVR               = 1000;   // timeout для проверки новых данных для ivr
@@ -30,8 +37,8 @@ namespace CONSTANTS
 
     namespace SERVER 
     {
-      //  static const uint16_t PORT = 12345;
-        static const unsigned int PORT = 12346;        
+        static const uint16_t PORT = 12345;
+      //  static const unsigned int PORT = 12346;        
     }
 
     namespace LOG 
@@ -52,14 +59,7 @@ namespace CONSTANTS
         static const std::string HTTP_REQUEST       = "http_request.log";
         static const std::string CALL_INFO          = "call_info.log";
     }
-    
-    // версия ядра
-    namespace VERSION
-    {          
-        static const std::string CORE = "CORE | version 3.1 " BUILD; 
-    }
-
-    
+       
        
     // *v0@|48lg*se  
     

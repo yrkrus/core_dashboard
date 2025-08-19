@@ -74,7 +74,7 @@ int main(int argc, char *argv[])
 {   
     // bild
     printf("%s\n\n", CONSTANTS::VERSION::CORE.c_str());
-    Sleep(2000);
+    Sleep(3000);
 
     // Перехватываем Ctrl+C
     std::signal(SIGINT, _sigint_handler);

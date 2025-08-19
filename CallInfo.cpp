@@ -101,6 +101,12 @@ void CallInfo::FindInfoCall()
        
     for (auto &call : m_listPhone) 
     {  
+        // проверим что этого номера нет в списке с ошибками
+        if (m_listError.IsExistCall(call)) 
+        {
+            continue;
+        }        
+        
         std::string responce;
         std::string error;
 
@@ -109,6 +115,9 @@ void CallInfo::FindInfoCall()
         if (!Get(request, responce, error)) 
         {
             m_log.ToFile(ecLogType::eError,error);
+
+            // добавим в список чтобы больше не проверять этот номер
+            m_listError.Add(call);
             continue;
         }
 
@@ -166,4 +175,30 @@ bool CallInfo::Get(const std::string &_request, std::string &_responce, std::str
     }
 
     return true;
+}
+
+CallInfoError::CallInfoError()
+{
+}
+
+CallInfoError::~CallInfoError()
+{
+}
+
+bool CallInfoError::IsExistCall(const Info &_call)
+{
+    for (const auto &_err : m_list) 
+    {
+        if (_err.phone == _call.phone) 
+        {
+            return true;
+        } 
+    }
+
+    return false;
+}
+
+void CallInfoError::Add(const Info &_call)
+{
+    m_list.emplace_back(_call);
 }

@@ -14,23 +14,39 @@ enum class ecCallInfoTable // в какую таблицу будем обнов
         eHistoryIvr
     };
 
+struct Info
+{
+    int         id = 0;
+    std::string phone;
+    std::string phone_operator;
+    std::string region;        
+
+    bool Check() const 
+    {
+        return ((!phone.empty()) && (!phone_operator.empty()) && (!region.empty()));        
+    };
+};
+using InfoCallList = std::vector<Info>;
+
+
+// список с текущими ошибочными номерами по которым не удается найти инфо 
+class CallInfoError  
+{
+private:
+    InfoCallList m_list;
+
+public:
+    CallInfoError();
+    ~CallInfoError(); 
+    
+    bool IsExistCall(const Info &_call);
+    void Add(const Info &_call);
+};
+
+
 class CallInfo : public IHTTPRequest 
 {
-public:   
-
-    struct Info
-    {
-        int         id = 0;
-        std::string phone;
-        std::string phone_operator;
-        std::string region;        
-
-        bool Check() const 
-        {
-            return ((!phone.empty()) && (!phone_operator.empty()) && (!region.empty()));        
-        };
-    };
-    using InfoCallList = std::vector<Info>;
+public:      
 
      CallInfo();
      CallInfo(ecCallInfoTable _table);
@@ -45,6 +61,7 @@ private:
 
     ecCallInfoTable m_table;
 
+    CallInfoError m_listError;
 
     void CreateListPhone(); // создание списка с телефонами которые будем проверять
     bool GetInfoCallList(InfoCallList &_list, std::string &_errorDescription); // получение списка с телефонами
@@ -59,5 +76,6 @@ private:
 
     virtual bool Get(const std::string &_request, std::string &_responce, std::string &_errorDescription);
 };
+
 
 #endif //CALLINFO_H
