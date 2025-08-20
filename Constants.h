@@ -20,7 +20,7 @@ namespace CONSTANTS
     // версия ядра
     namespace VERSION
     {          
-        static const std::string CORE = "CORE | version 3.2 " BUILD; 
+        static const std::string CORE = "CORE | version 3.4 " BUILD; 
     }
 
     
@@ -71,10 +71,6 @@ namespace CONSTANTS
 
 
     //asterisk -rx "core show channels verbose" | grep to-atsaero5005  кто сейчас разговаривает с бабой железной
-
-    //// запуск gdbserver
-    //scl enable gcc-toolset-10 bash
-    //gdbserver :7777 ./core_dashboard start
 
     
 

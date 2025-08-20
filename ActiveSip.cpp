@@ -516,49 +516,71 @@ bool active_sip::ActiveSession::CreateActiveCall(const std::string &_lines, cons
 	}
 
 	std::vector<std::string> lines;
-	std::string current_str;
-
-	bool isNewLine = false;
-
-	for (size_t i = 0; i != _lines.length(); ++i)
+	
+	std::istringstream iss(_lines);
+    std::string token;
+    while (std::getline(iss, token, '!')) 
 	{
-		if (isNewLine)
+		if (token.empty())
 		{
-			if (!current_str.empty())
-			{
-				lines.push_back(current_str);
-				current_str.clear();
-			}
-		}
+			continue;
+		}		 
 
-		if (_lines[i] != '!') // ищем разделить (разделить !)
-		{
-			current_str += _lines[i];
-			isNewLine = false;
-		}
-		else
-		{
-			isNewLine = true;
-		}
+		lines.push_back(token);
 	}
-
-	if ((lines.empty()) || (lines.size() < 10)) 
+     
+	if ((lines.empty()) || (lines.size() < 11)) 
 	{
 		return false;
-	}
+	}	
 
 	_caller.sip = _sipNumber;
-	_caller.phone = PhoneParsing(lines[7]);
-	_caller.talkTime = lines[9];	
+	
+	try 
+	{
+		_caller.phone = PhoneParsing(lines.at(7));
+    }
+    catch (const std::out_of_range& e) 
+	{
+        auto msgErr = StringFormat("%s\t lines\t %s\t what=%s ", METHOD_NAME, _lines.c_str(), e.what());
+		m_log.ToFile(ecLogType::eError, msgErr);        
+		
+		return false;
+    }	
+	
+	try 
+	{
+		_caller.talkTime = lines.at(9);
+    }
+    catch (const std::out_of_range& e) 
+	{
+        auto msgErr = StringFormat("%s\t lines\t %s\t what=%s ", METHOD_NAME, _lines.c_str(), e.what());
+		m_log.ToFile(ecLogType::eError, msgErr);        
+		
+		return false;
+    }
+
+	try 
+	{
+		_caller.callID = lines.at(11);
+    }
+    catch (const std::out_of_range& e) 
+	{
+        auto msgErr = StringFormat("%s\t lines\t %s\t what=%s ", METHOD_NAME, _lines.c_str(), e.what());
+		m_log.ToFile(ecLogType::eError, msgErr);        
+		
+		return false;
+    }
 
 	return CheckActiveCall(_caller);	
 }
 
 bool active_sip::ActiveSession::CheckActiveCall(const ActiveCall &_caller)
 {
-	return !((_caller.phone == "null")	&&
-			 (_caller.sip == "null")	&&
-			 (_caller.talkTime == "null"));
+	return  !_caller.phone.empty() 	&&
+			 !_caller.sip.empty()	&&
+			 !_caller.talkTime.empty() &&
+			 !_caller.callID.empty();
 }
 
 // обновление текущих звонков операторов
@@ -596,6 +618,8 @@ void active_sip::ActiveSession::UpdateTalkCallOperator()
 		const std::string query = "update queue set sip = '"
 									+ call.sip + "', talk_time = '"
 									+ GetTalkTime(call.talkTime)
+									+"', call_id = '"
+									+ call.callID
 									+ "', answered ='1' where phone = '"
 									+ call.phone + "' and id ='"
 									+ id + "'";
@@ -608,7 +632,7 @@ void active_sip::ActiveSession::UpdateTalkCallOperator()
 
 			m_sql->Disconnect();
 			
-			return;
+			continue;
 		}
 
 		m_sql->Disconnect();		

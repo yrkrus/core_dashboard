@@ -85,7 +85,7 @@ bool HistoryQueue::Insert(const Table &_field, std::string &_errorDescription)
 
 	if (_field.sip != -1)
 	{	 // на случай если нет NULL полей		
-		query = "insert into history_queue (id,number_queue,phone,waiting_time,date_time,sip,talk_time,answered,fail,hash) values ('" + std::to_string(_field.id) +
+		query = "insert into history_queue (id,number_queue,phone,waiting_time,date_time,sip,talk_time,answered,fail,hash,call_id) values ('" + std::to_string(_field.id) +
 						"','" + std::to_string(_field.number_queue) +
 						"','" + _field.phone +
 						"','" + _field.waiting_time +
@@ -94,7 +94,8 @@ bool HistoryQueue::Insert(const Table &_field, std::string &_errorDescription)
 						"','" + _field.talk_time +
 						"','" + std::to_string(_field.answered) +
 						"','" + std::to_string(_field.fail) +
-						"','" + std::to_string(_field.hash) + "')";
+						"','" + std::to_string(_field.hash) + 
+						"','" + _field.call_id + "')";
 	}
 	else
 	{	 // на случай если есть NULL поля
@@ -111,7 +112,7 @@ bool HistoryQueue::Insert(const Table &_field, std::string &_errorDescription)
 
 	if (!m_sql->Request(query, _errorDescription))
 	{
-		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
+		_errorDescription += StringFormat("%s\tquery \t%s", METHOD_NAME, query.c_str());
 		m_log.ToFile(ecLogType::eError, _errorDescription);
 
 		m_sql->Disconnect();

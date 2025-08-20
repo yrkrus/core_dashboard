@@ -32,9 +32,10 @@ namespace active_sip
 	// структура текущего звонка
 	struct ActiveCall 
 	{
-		std::string phone = "null";			// текущий номер телфеона с которым ведется беседа
-		std::string sip = "null";			// внутренний sip который ведет беседу
-		std::string talkTime = "null";		// время развговора  //TODO потом в int переделать		
+		std::string phone;			// текущий номер телфеона с которым ведется беседа
+		std::string sip;			// внутренний sip который ведет беседу
+		std::string talkTime;		// время развговора  //TODO потом в int переделать	
+		std::string callID;		// id звонка	
 	};
 	using ActiveCallList = std::vector<ActiveCall>;
 
@@ -73,8 +74,8 @@ namespace active_sip
 	private:
 		SP_Queue	&m_queueSession;	// ссылка на очереди
 		
-		OperatorList	m_listOperators;	// TODO может лучше в shared_ptr потом обернуть
-		ActiveCallList	m_listCall;			// TODO может лучше в shared_ptr потом обернуть
+		OperatorList	m_listOperators;	
+		ActiveCallList	m_listCall;			
 		SP_SQL			m_sql;		
 		IFile			m_queue;			// запрос информации по текущим очередям
 		Log				m_log;
