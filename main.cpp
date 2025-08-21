@@ -69,12 +69,16 @@ static void _sigint_handler(int)
     g_running = false;
 }
 
+static void _core_info()
+{
+    printf("%s\tbase:%s\n",CONSTANTS::VERSION::CORE.c_str(), AUTH::MYSQL::BD.c_str());
+    Sleep(3000);
+}
 
 int main(int argc, char *argv[])
 {   
     // bild
-    printf("%s\n\n", CONSTANTS::VERSION::CORE.c_str());
-    Sleep(3000);
+    _core_info();   
 
     // Перехватываем Ctrl+C
     std::signal(SIGINT, _sigint_handler);

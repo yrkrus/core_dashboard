@@ -8,8 +8,18 @@
 #include "Queue.h"
 
 
-static std::string SESSION_SIP_RESPONSE		= "asterisk -rx \"core show channels concise\"";
-static std::string SESSION_QUEUE_RESPONSE	= "asterisk -rx \"queue show %queue\"";
+static std::string SIP_COMMANDS_EXT1		= "ivr-5";					// пропуск этой записи
+static std::string SIP_COMMANDS_EXT2		= "Ring";					// пропуск этой записи
+static std::string SIP_COMMANDS_EXT3		= "Down";					// пропуск этой записи
+static std::string SIP_COMMANDS_EXT4		= "Outgoing";					// пропуск этой записи
+
+static std::string SESSION_QUEUE_RESPONSE		= "asterisk -rx \"queue show %queue\"";
+static std::string SESSION_SIP_RESPONSE 	=	"asterisk -rx \"core show channels concise\"" " | grep -v \"" + SIP_COMMANDS_EXT1 + "\"" 
+																									" | grep -v \"" + SIP_COMMANDS_EXT2 + "\""
+																									" | grep -v \"" + SIP_COMMANDS_EXT3 + "\""
+																									" | grep -v \"" + SIP_COMMANDS_EXT4 + "\"";
+
+
 
 class Queue;
 using SP_Queue = std::shared_ptr<Queue>;
@@ -30,14 +40,14 @@ namespace active_sip
 	using OperatorList = std::vector<Operator>;
 	
 	// структура текущего звонка
-	struct ActiveCall 
+	struct ActiveTalkCall 
 	{
 		std::string phone;			// текущий номер телфеона с которым ведется беседа
 		std::string sip;			// внутренний sip который ведет беседу
 		std::string talkTime;		// время развговора  //TODO потом в int переделать	
-		std::string callID;		// id звонка	
+		std::string callID;			// id звонка	
 	};
-	using ActiveCallList = std::vector<ActiveCall>;
+	using ActiveTalkCallList = std::vector<ActiveTalkCall>;
 
 	// структура onHold
 	struct OnHold 
@@ -75,14 +85,14 @@ namespace active_sip
 		SP_Queue	&m_queueSession;	// ссылка на очереди
 		
 		OperatorList	m_listOperators;	
-		ActiveCallList	m_listCall;			
+		ActiveTalkCallList	m_listCall;			
 		SP_SQL			m_sql;		
 		IFile			m_queue;			// запрос информации по текущим очередям
 		Log				m_log;
-
+		IFile			m_rawDataTalkCall;
 
 		void CreateListActiveSessionOperators();			// активные операторы в линии
-		void CreateListActiveSessionCalls();				// активные звонки в линии
+		void CreateListActiveTalkCalls();				// активные звонки в линии
 
 		void CreateActiveOperators(const ecQueueNumber _queue);	// найдем активных операторов в линии
 		void CreateOperator(const std::string &_lines, Operator &, ecQueueNumber);	// создание структуры Operator					
@@ -92,7 +102,7 @@ namespace active_sip
 		void InsertAndUpdateQueueNumberOperators(); // добавление\обновление номена очереди оператора в БД
 		bool IsExistListOperators();		// есть ли данные в m_listOperators
 		bool IsExistListOperatorsOnHold();	// есть ли данные в m_listOperators.onHold
-		bool IsExistListCalls();			// есть ли данные в m_listCall
+		bool IsExistListActiveTalkCalls();	// есть ли данные в m_listCall (т.е. есть ли сейчас какие либо активные звонки по данным астреиска)
 
 		bool IsExistOperatorsQueue();	// существует ли хоть 1 запись в БД sip+очередь
 		bool IsExistOperatorsQueue(const std::string &_sip, const std::string &_queue);	// существует ли хоть запись в БД sip+очередь
@@ -103,10 +113,10 @@ namespace active_sip
 		void DeleteOperatorsQueue(const std::string &_sip);								// удаление очереди оператора из БД таблицы operators_queue весь sip
 		void InsertOperatorsQueue(const std::string &_sip, const std::string &_queue);	// добавление очереди оператору в БД таблицы operators_queue
 	
-		bool CreateActiveCall(const std::string &_lines, const std::string &_sipNumber, ActiveCall &_caller); // парсинг и нахождение активного звонка с которым разговаривает оператор
-		bool CheckActiveCall(const ActiveCall &_caller); // проверка корректности структуры звонка
+		bool CreateActiveCall(const std::string &_lines, const std::string &_sipNumber, ActiveTalkCall &_caller); // парсинг и нахождение активного звонка с которым разговаривает оператор
+		bool CheckActiveCall(const ActiveTalkCall &_caller); // проверка корректности структуры звонка
 
-		void UpdateActiveSessionCalls(); // обновление текущих звонков операторов
+		void UpdateActiveCurrentTalkCalls(); // обновление текущих звонков операторов
 		
 		void UpdateTalkCallOperator();								// обновление данных таблицы queue о том с кем сейчас разговаривает оператор
 		bool IsExistTalkCallOperator(const std::string &_phone);	// существует ли такой номер в таблице queue чтобы добавить sip оператора который с разговор ведет
@@ -122,6 +132,9 @@ namespace active_sip
 		bool AddHold(const Operator&, std::string &_errorDescription);	// добавление нового onHold в БД
 
 		void CheckOnHold(OnHoldList &_onHoldList);		// Основная проверка отключение\добавление onHold 
+
+		//доп проверка что нет никаких сейчас разговоров
+		bool IxExistManualCheckCurrentTalk(); 
 	};
 }
 using SP_ActiveSession = std::shared_ptr<active_sip::ActiveSession>;

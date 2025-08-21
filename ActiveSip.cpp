@@ -36,34 +36,44 @@ void active_sip::ActiveSession::Stop()
 
 void active_sip::ActiveSession::Parsing()
 {
-	// разбираем что же там по звонкам активным
-	m_listCall.clear(); // TODO тут пока обнуление, потом подумать чтобы не делать так а работать с памятью !!
-	CreateListActiveSessionCalls();
-	
-	m_listOperators.clear(); // TODO тут пока обнуление, потом подумать, чтобы так не делать а работать уже с памятью!!!	
+	// разбираем что же там по звонкам активным	
+	CreateListActiveTalkCalls();	
+		
 	// найдем активных операторов в линии(смотрим текущие статичные очереди)
-	CreateListActiveSessionOperators();
-	
+	CreateListActiveSessionOperators();	
 	
 	// что то есть нужно теперь в БД запихнуть
-	if (IsExistListCalls())
+	if (IsExistListActiveTalkCalls())
 	{
-		UpdateActiveSessionCalls();
+		UpdateActiveCurrentTalkCalls();
 	}
 	else
-	{
-		if (!IsExistListOperators())
-		{
-			// вдруг никого не осталось, тогда еще раз проверим очнереди
-			m_queueSession->UpdateCallSuccess();
-		}
+	{		
+		// TODO СДЕЛАТЬ!!! тут что тоне так с алгоритмом!!! 
+		
+		// if (!IsExistListOperators())  // активных операторов в очередях не осталось
+		// {
+			
+		// } 
+		// else 
+		// {
+			if (!IsExistListActiveTalkCalls()) // не осталось активных звонков по базе астериска
+			{
+				// TODO тут перед выполнением такой опасной процедуры запросить еще раз 
+				// напрямую из астера есть ли данные по активным звонкам
+				if (!IxExistManualCheckCurrentTalk()) 
+				{					
+					m_queueSession->UpdateCallSuccess();
+				}				
+			}
+		// }
 	}		
 }
 
 // активные операторы в линии
 void active_sip::ActiveSession::CreateListActiveSessionOperators()
 {
-	// INFO: прежде чем сюда попасть полностью очищается m_listOperators!
+	m_listOperators.clear(); 
 	
 	// без цикла очередей ecQueueNumber, просто берем нужные статичные очереди
 	static const std::vector<ecQueueNumber> queueList =
@@ -98,8 +108,10 @@ void active_sip::ActiveSession::CreateListActiveSessionOperators()
 	InsertAndUpdateQueueNumberOperators();
 }
 
-void active_sip::ActiveSession::CreateListActiveSessionCalls()
+void active_sip::ActiveSession::CreateListActiveTalkCalls()
 {
+	m_listCall.clear(); // очищаем текущий список с активными текущими разговорами по данным астериска
+
 	std::string rawLines = GetRawLastData();
 	if (rawLines.empty())
 	{
@@ -120,7 +132,7 @@ void active_sip::ActiveSession::CreateListActiveSessionCalls()
 	{
 		for (const auto &sip : m_listOperators) 
 		{
-			ActiveCall call;
+			ActiveTalkCall call;
 			if (CreateActiveCall(line, sip.sipNumber, call))
 			{
 				m_listCall.push_back(call);
@@ -241,7 +253,7 @@ void active_sip::ActiveSession::InsertAndUpdateQueueNumberOperators()
 
 bool active_sip::ActiveSession::IsExistListOperators()
 {
-	return (!m_listOperators.empty() ? true : false);
+	return !m_listOperators.empty();
 }
 
 // есть ли данные в m_listOperators.onHold
@@ -255,7 +267,7 @@ bool active_sip::ActiveSession::IsExistListOperatorsOnHold()
 	return false;
 }
 
-bool active_sip::ActiveSession::IsExistListCalls()
+bool active_sip::ActiveSession::IsExistListActiveTalkCalls()
 {
 	return (!m_listCall.empty() ? true : false);
 }
@@ -499,7 +511,7 @@ void active_sip::ActiveSession::InsertOperatorsQueue(const std::string &_sip, co
 	m_sql->Disconnect();
 }
 
-bool active_sip::ActiveSession::CreateActiveCall(const std::string &_lines, const std::string &_sipNumber, ActiveCall &_caller)
+bool active_sip::ActiveSession::CreateActiveCall(const std::string &_lines, const std::string &_sipNumber, ActiveTalkCall &_caller)
 {	
 	if (_lines.find("Local/" + _sipNumber) == std::string::npos)
 	{
@@ -575,7 +587,7 @@ bool active_sip::ActiveSession::CreateActiveCall(const std::string &_lines, cons
 	return CheckActiveCall(_caller);	
 }
 
-bool active_sip::ActiveSession::CheckActiveCall(const ActiveCall &_caller)
+bool active_sip::ActiveSession::CheckActiveCall(const ActiveTalkCall &_caller)
 {
 	return  !_caller.phone.empty() 	&&
 			 !_caller.sip.empty()	&&
@@ -584,7 +596,7 @@ bool active_sip::ActiveSession::CheckActiveCall(const ActiveCall &_caller)
 }
 
 // обновление текущих звонков операторов
-void active_sip::ActiveSession::UpdateActiveSessionCalls()
+void active_sip::ActiveSession::UpdateActiveCurrentTalkCalls()
 {
 	// обновление данных таблицы queue о том с кем сейчас разговаривает оператор
 	UpdateTalkCallOperator();
@@ -596,7 +608,7 @@ void active_sip::ActiveSession::UpdateActiveSessionCalls()
 // обновление данных таблицы queue о том с кем сейчас разговаривает оператор
 void active_sip::ActiveSession::UpdateTalkCallOperator()
 {
-	if (!IsExistListCalls()) 
+	if (!IsExistListActiveTalkCalls()) 
 	{
 		return;
 	}
@@ -946,4 +958,19 @@ void active_sip::ActiveSession::CheckOnHold(OnHoldList &_onHoldList)
 	}
 }
 
+bool active_sip::ActiveSession::IxExistManualCheckCurrentTalk()
+{
+    std::string error; 
+	m_rawDataTalkCall.DeleteRawAll();
 
+	if (!m_rawDataTalkCall.CreateData(SESSION_SIP_RESPONSE,error)) 
+	{
+		// TODO тут считаем что данные есть в случае какой либо ошибки!
+		m_log.ToFile(ecLogType::eError, error);
+		return false;
+	}
+
+	std::string rawLines = m_rawDataTalkCall.GetRawFirst();
+	
+	return !rawLines.empty();	
+}

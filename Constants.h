@@ -14,13 +14,12 @@
 #define BUILD __DATE__ " " __TIME__
 
 
-
 namespace CONSTANTS
 {   
     // версия ядра
     namespace VERSION
     {          
-        static const std::string CORE = "CORE | version 3.4 " BUILD; 
+        static const std::string CORE = "CORE | version 3.5 " BUILD; 
     }
 
     
@@ -63,7 +62,8 @@ namespace CONSTANTS
        
     // *v0@|48lg*se  
     
-    
+    // http://dashboard/lite/ потом куда нить перенести !? хз
+
     //valgrind --leak-check=full --show-leak-kinds=all --leak-resolution=med --log-file=./core.log ./core_dashboard start
     //valgrind --leak-check=full --leak-resolution=med --log-file=./core.log ./core_dashboard start
     //
