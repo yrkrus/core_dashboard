@@ -12,12 +12,52 @@
 
 static std::string COMMAND_ADD_QUEUE = "asterisk -rx \"queue add member Local/%sip@from-queue/n to %queue penalty 0 as %sip state_interface hint:%sip@ext-local\" ";
 static std::string COMMAND_DEL_QUEUE = "asterisk -rx \"queue remove member Local/%sip@from-queue/n from %queue\" ";
+static std::string COMMAND_PAUSE_QUEUE = "asterisk -rx \"queue pause member Local/%sip@from-queue/n\"";
+									//	  asterisk -rx "queue pause member Local/64197@from-queue/n"
 
 class Log;
 using SP_Log = std::shared_ptr<Log>;
 
 class ISQLConnect;
 using SP_SQL = std::shared_ptr<ISQLConnect>;
+
+
+/*
+
+Примерно так же, как вы добавляете/удаляете — только команда меняется на «queue pause» и «queue unpause» и вы добавляете к интерфейсу «@<queue>»:
+
+// Поставить в паузу
+
+
+// Снять с паузы
+static const std::string COMMAND_UNPAUSE_QUEUE =
+  "asterisk -rx \"queue unpause member Local/%sip@from-queue/n@%queue\"";
+
+
+Где
+• %sip  – ваш SIP-агент (1001, например)
+
+• from-queue – имя контекста, в котором вы создаёте Local/канал
+
+• %queue – имя очереди («support», «sales» и т.п.)
+
+Если вы хотите, чтобы пауза действовала сразу для всех очередей, в которых сидит агент, можно опустить @%queue:
+
+// Пауза во всех очередях
+
+
+
+И наоборот для снятия:
+
+// Снять паузу во всех очередях
+static const std::string CMD_UNPAUSE_ALL =
+  "asterisk -rx \"queue unpause member Local/%sip@from-queue/n\"";
+
+
+После выполнения этих команд агент останется в очереди, но на него не будут идти новые звонки, пока вы не снимете паузу.
+
+
+*/
 
 
 // удаленные команды (ID команд такие же как и в БД)
@@ -50,7 +90,8 @@ enum class ecCommandType
 {
 	Unknown = -1,
 	Del,		// команда на добавление в очередь
-	Add			// команда на удаление из очереди
+	Add,		// команда на удаление из очереди
+	Pause,		// команда на паузу в очереди чтобы звонки новые не поступали
 };
 	
 enum class EStatus
@@ -76,6 +117,7 @@ struct Command
 	ecCommand	command;	// сама команда (int)
 	int			userId;		// id самого пользака
 	bool		delay;		// отложенная команда
+	bool 		pause;		// есть ли паузу на прием новых звонков
 };
 using CommandList = std::vector<Command>;
 
@@ -125,8 +167,10 @@ private:
 	bool GetCommand(std::string &_errorDesciption); // получение новых команд из БД
 
 	bool ExecuteCommand(const Command &_command, std::string &_errorDesciption); // выполнение команды
+	bool ExecuteCommandPause(const Command &_command, std::string &_errorDesciption); // выполнение команды Pause
 	std::string CreateCommand(const Command &_command, const ecQueueNumber _queue, const std::string &_rawCommand); // создвание команды
-			
+	std::string CreateCommand(const Command &_command, const std::string &_rawCommand); // создание команды	
+	
 	void DeleteCommand(const Command &_command);	// удаление выполненной команды 
 
 	void ExecuteCommandFail(const Command &_command, const std::string &_errorStr); // не удачное выполнение команды
@@ -137,6 +181,7 @@ private:
 	bool UpdateNewStatus(const Command &_command, std::string &_errorDesciption); // обновление нового статуса оператора
 
 	bool IsTalkOperator(const std::string &_sip, std::string &_errorDesciption); // разговаривает ли оператор или нет
+	void CreatePauseQueue(const Command &_command, std::string &_errorDesciption); // ставим на пузу все последующме звонки
 
 	ecCommandType GetCommandType(const Command &_command); // поиск какая команда пришла
 	ecQueueNumber GetQueueNumber(const ecCommand &_command); // поиск номера очереди		

@@ -192,6 +192,7 @@ bool HistoryQueue::Get()
 				case 7:	field.answered		= std::atoi(row[i]);	break;	// answered
 				case 8:	field.fail			= std::atoi(row[i]);	break;	// fail
 				case 9:	if (row[i]) field.hash = string_to_size_t(row[i]);	break;	// hash
+				case 10:if (row[i]) field.call_id = row[i];			break;	// call_id
 			}
 		}
 		

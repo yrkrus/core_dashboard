@@ -47,7 +47,7 @@ bool Status::GetCommand(std::string &_errorDesciption)
 		m_commandList.clear();
 	}
 	
-	const std::string query = "select id,sip,command,user_id,delay from remote_commands where error = '0' ";
+	const std::string query = "select id,sip,command,user_id,delay,pause from remote_commands where error = '0' ";
 
 	if (!m_sql->Request(query, _errorDesciption))
 	{
@@ -71,6 +71,7 @@ bool Status::GetCommand(std::string &_errorDesciption)
 				case 2: command.command = GetRemoteCommand(std::stoi(row[i]));		break;
 				case 3: command.userId = std::stoi(row[i]);							break;
 				case 4: command.delay  = (std::stoi(row[i]) == 1 ? true : false);	break;
+				case 5: command.pause  = (std::stoi(row[i]) == 1 ? true : false);	break;
 			}				
 		}
 
@@ -87,9 +88,12 @@ bool Status::GetCommand(std::string &_errorDesciption)
 // выполнение команды
 bool Status::ExecuteCommand(const Command &_command, std::string &_errorDesciption)
 {	
-	// найдем команду (add\del)
-	ecCommandType commandType = GetCommandType(_command);
-	
+	// найдем команду (add\del\pause)
+	ecCommandType commandType;
+
+	commandType = (_command.delay && !_command.pause) ? ecCommandType::Pause
+													  : GetCommandType(_command);
+
 	// такого быть не должно но все же
 	if (commandType == ecCommandType::Unknown) 
 	{
@@ -103,10 +107,15 @@ bool Status::ExecuteCommand(const Command &_command, std::string &_errorDescipti
 	{
 		case(ecCommandType::Add): rawCommandStr = COMMAND_ADD_QUEUE;	break;
 		case(ecCommandType::Del): rawCommandStr = COMMAND_DEL_QUEUE;	break;	
+		case(ecCommandType::Pause): 
+		{
+			// выполнение команды на добавление в pause на все очереди
+			return ExecuteCommandPause(_command, _errorDesciption);		
+		}
 		default:		
 			return false;
-	}
-
+	}	
+	
 	// найдем очередь
 	ecQueueNumber queue = GetQueueNumber(_command.command);
 
@@ -142,7 +151,7 @@ bool Status::ExecuteCommand(const Command &_command, std::string &_errorDescipti
 		{
 			return false;
 		}
-	}
+	}	
 
 	// добавим в лог запрос
 	m_log->ToBase(_command);
@@ -150,7 +159,22 @@ bool Status::ExecuteCommand(const Command &_command, std::string &_errorDescipti
 	// обновим текущий статус оператора
 	if (!UpdateNewStatus(_command, _errorDesciption))
 	{
-		// TODO запись в лог что неуспешно, поставить в лог strErr в БД инфо об ошибки чтобы показать пользаку
+		_errorDesciption = StringFormat("%s\t%s",METHOD_NAME, _errorDesciption.c_str());
+		m_log->ToFile(ecLogType::eError, _errorDesciption);
+
+		return false;
+	}
+
+	return true;
+}
+
+bool Status::ExecuteCommandPause(const Command &_command, std::string &_errorDesciption)
+{
+	std::string rawRequest = COMMAND_PAUSE_QUEUE;	
+	std::string request = CreateCommand(_command, rawRequest); 	 
+	
+	if (!SendCommand(ecCommandType::Pause, request, _errorDesciption))
+	{
 		return false;
 	}
 
@@ -163,6 +187,16 @@ std::string Status::CreateCommand(const Command &_command, const ecQueueNumber _
 
 	// сформируем строку (номер очереди)
 	ReplaceResponseStatus(request, "%queue", EnumToString<ecQueueNumber>(_queue));
+
+	// сформируем строку (sip очереди)
+	ReplaceResponseStatus(request, "%sip", _command.sip);	
+
+	return request;
+}
+
+std::string Status::CreateCommand(const Command &_command, const std::string &_rawCommand)
+{
+    std::string request = _rawCommand;
 
 	// сформируем строку (sip очереди)
 	ReplaceResponseStatus(request, "%sip", _command.sip);	
@@ -258,6 +292,12 @@ bool Status::CheckSendingCommand(ecCommandType _commandType, std::string &_error
 				status = true;
 			}
 			break;
+		case ecCommandType::Pause: 
+			if (line.find("paused") != std::string::npos) 
+			{
+				status = true;
+			}
+			break;
 		}
 	}
 	// очищаем
@@ -290,10 +330,10 @@ bool Status::UpdateNewStatus(const Command &_command, std::string &_errorDescipt
 	case ecCommand::Break:		status = EStatus::Break;	break;
 	case ecCommand::Dinner:		status = EStatus::Dinner;	break;
 	case ecCommand::Postvyzov:	status = EStatus::Postvyzov; break;
-	case ecCommand::Studies:		status = EStatus::Studies;	break;
+	case ecCommand::Studies:	status = EStatus::Studies;	break;
 	case ecCommand::IT:			status = EStatus::It;		break;
 	case ecCommand::Transfer:	status = EStatus::Transfer; break;
-	case ecCommand::Reserve:		status = EStatus::Reserve;	break;
+	case ecCommand::Reserve:	status = EStatus::Reserve;	break;
 	case ecCommand::Callback:	status = EStatus::Callback; break;
 	
 	default:
@@ -307,8 +347,8 @@ bool Status::UpdateNewStatus(const Command &_command, std::string &_errorDescipt
 	
 	if (!m_sql->Request(query, _errorDesciption))
 	{
-		m_sql->Disconnect();
-		// TODO тут запись в лог
+		m_sql->Disconnect();		
+		_errorDesciption = StringFormat("%s",query.c_str());
 		return false;
 	}
 
@@ -341,6 +381,26 @@ bool Status::IsTalkOperator(const std::string &_sip, std::string &_errorDescipti
 	m_sql->Disconnect();
 
 	return exist;
+}
+
+void Status::CreatePauseQueue(const Command &_command, std::string &_errorDesciption)
+{
+	if (!ExecuteCommand(_command, _errorDesciption))
+	{
+		m_log->ToFile(ecLogType::eError, _errorDesciption);
+		return;		
+	}
+	
+	// обновим параметр pause
+	const std::string query = "update remote_commands set pause = '1' where user_id = '" + std::to_string(_command.userId) + "'";
+	
+	if (!m_sql->Request(query, _errorDesciption))
+	{
+		m_sql->Disconnect();		
+		m_log->ToFile(ecLogType::eError, _errorDesciption);		
+	}
+
+	m_sql->Disconnect();
 }
 
 // поиск какая команда пришла
@@ -424,9 +484,8 @@ bool Status::Execute()
 {
 	std::string error;
 	if (!GetCommand(error)) 
-	{
-		// TODO в лог наверно хз подумать
-		printf("%s", error.c_str());
+	{		
+		m_log->ToFile(ecLogType::eError, error);		
 		return false;
 	}
 	
@@ -440,8 +499,15 @@ bool Status::Execute()
 			if (command.delay)	// отложенное выполнение команды
 			{
 				// проверим разговаривает ли еще оператор или нет
-				if (IsTalkOperator(command.sip, error)) 
+				if (IsTalkOperator(command.sip, error))  
 				{
+					// поставим на pause, что бы все будущие звонки не приходили
+					if (!command.pause)
+					{
+						// стаим на паузу новые звонки
+						CreatePauseQueue(command, error);
+					}					
+					
 					// пропускаем команду, т.к. оператор еще разговаривает
 					continue;
 				}				
@@ -449,10 +515,8 @@ bool Status::Execute()
 						
 			if (!ExecuteCommand(command, error))
 			{
-				// TODO в лог наверно хз подумать
-				printf("%s", error.c_str());
+				m_log->ToFile(ecLogType::eError, error);
 
-				
 				// не удачно выполнили команду, нужно удалить ее сразу т.к. у пользвака не будет надписи об ошибке
 				if (command.delay) 
 				{

@@ -69,6 +69,7 @@ string EnumToString<ecCommandType>(ecCommandType _command)
 	{
 		{ecCommandType::Add,		"Add"},				
 		{ecCommandType::Del,		"Del"},
+		{ecCommandType::Pause,		"Pause"},
 		{ecCommandType::Unknown,	"Unknown"},		
 	};
 
