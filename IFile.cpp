@@ -55,7 +55,7 @@ bool IFile::CreateData(string &_request, string &_errorDescription)
 {
 	if (_request.empty())
 	{
-		_errorDescription = StringFormat("%s request is empty\n", METHOD_NAME);
+		_errorDescription = StringFormat("request is empty");
 		return false;
 	}
 	

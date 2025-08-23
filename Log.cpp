@@ -106,13 +106,16 @@ Log::~Log()
 
 void Log::ToBase(Command _command)
 {
-	std::string error;
+	std::string errorDescription;
 	CommandSendInfoUser userInfo;
-	if (!GetCommandInfoUser(userInfo, _command.id, error))
+	if (!GetCommandInfoUser(userInfo, _command.id, errorDescription))
 	{
-		error += METHOD_NAME;
-		error += StringFormat("not found field %u remote command %s", _command.id, EnumToString<ecCommand>(_command.command).c_str());
-		ToFile(ecLogType::eError, error);
+		errorDescription = StringFormat("%s\tnot found field %u remote command %s", 
+										METHOD_NAME,							
+										_command.id, 
+										EnumToString<ecCommand>(_command.command).c_str());
+		
+		ToFile(ecLogType::eError, errorDescription);
 		return;
 	}	
 
@@ -122,10 +125,10 @@ void Log::ToBase(Command _command)
 																					   "','" + userInfo.user_login_pc +
 																					   "','" + userInfo.pc +
 																					   "','" + std::to_string(static_cast<int>(_command.command)) + "')";
-	if (!m_sql->Request(query, error))
+	if (!m_sql->Request(query, errorDescription))
 	{
-		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		ToFile(ecLogType::eError, error);
+		errorDescription = StringFormat("%s\tquery%s", METHOD_NAME, query.c_str());		
+		ToFile(ecLogType::eError, errorDescription);
 
 		m_sql->Disconnect();
 		return;

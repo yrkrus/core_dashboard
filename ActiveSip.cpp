@@ -353,11 +353,11 @@ void active_sip::ActiveSession::CheckOperatorsQueue()
 {
 	OperatorList listActiveOperatorsBase;
 
-	std::string error;
-	if (!GetActiveQueueOperators(listActiveOperatorsBase, error))
+	std::string errorDescription;
+	if (!GetActiveQueueOperators(listActiveOperatorsBase, errorDescription))
 	{
-		error += METHOD_NAME;
-		m_log.ToFile(ecLogType::eError, error);
+		errorDescription = StringFormat("%s\t%s", METHOD_NAME, errorDescription.c_str());
+		m_log.ToFile(ecLogType::eError, errorDescription);
 
 		return;
 	}
@@ -729,12 +729,12 @@ void active_sip::ActiveSession::UpdateOnHoldStatusOperator()
 {
 	OnHoldList onHoldList;
 
-	std::string error;
+	std::string errorDescription;
 	// найдем операторов которые по БД числяться в onHold
-	if (!GetActiveOnHold(onHoldList, error))
+	if (!GetActiveOnHold(onHoldList, errorDescription))
 	{
-		error += METHOD_NAME;
-		m_log.ToFile(ecLogType::eError, error);
+		errorDescription = StringFormat("%s\t%s", METHOD_NAME, errorDescription.c_str());
+		m_log.ToFile(ecLogType::eError, errorDescription);
 
 		return;
 	}	
@@ -807,11 +807,11 @@ void active_sip::ActiveSession::DisableOnHold(const OnHoldList &_onHoldList)
 {
 	for (const auto &hold : _onHoldList) 
 	{
-		std::string error;
-		if (!DisableHold(hold, error))
+		std::string errorDescription;
+		if (!DisableHold(hold, errorDescription))
 		{
-			error += METHOD_NAME;
-			m_log.ToFile(ecLogType::eError, error);
+			errorDescription = StringFormat("%s\t%s", METHOD_NAME, errorDescription.c_str());
+			m_log.ToFile(ecLogType::eError, errorDescription);
 
 			continue;
 		}
@@ -863,7 +863,7 @@ void active_sip::ActiveSession::CheckOnHold(OnHoldList &_onHoldList)
 {
 	// надо сначало существующие проверить
 	bool needNewHoldList = false; // флаг того что нужно пересчитать HoldList
-	std::string error;
+	std::string errorDescription;
 
 	for (const auto &hold : _onHoldList) 
 	{
@@ -882,10 +882,10 @@ void active_sip::ActiveSession::CheckOnHold(OnHoldList &_onHoldList)
 
 		if (!existHold) 
 		{			
-			if (!DisableHold(hold, error))
+			if (!DisableHold(hold, errorDescription))
 			{
-				error += METHOD_NAME;
-				m_log.ToFile(ecLogType::eError, error);
+				errorDescription = StringFormat("%s\t%s", METHOD_NAME, errorDescription.c_str());
+				m_log.ToFile(ecLogType::eError, errorDescription);
 
 				return;
 			}
@@ -897,10 +897,10 @@ void active_sip::ActiveSession::CheckOnHold(OnHoldList &_onHoldList)
 	// надо ли пересчитать HoldList
 	if (needNewHoldList) 
 	{
-		if (!GetActiveOnHold(_onHoldList, error))
+		if (!GetActiveOnHold(_onHoldList, errorDescription))
 		{
-			error += METHOD_NAME;
-			m_log.ToFile(ecLogType::eError, error);
+			errorDescription = StringFormat("%s\t%s", METHOD_NAME, errorDescription.c_str());
+			m_log.ToFile(ecLogType::eError, errorDescription);
 
 			return;
 		}
@@ -934,39 +934,39 @@ void active_sip::ActiveSession::CheckOnHold(OnHoldList &_onHoldList)
 					}
 				}
 			}
-		}		
+		}
 
 		// добавим новый hold
-		if (newHold) 
+		if (newHold)
 		{
-			std::string error;
-			
-			if (sip.phoneOnHold != "null") 
+			std::string errorDescription;
+
+			if (sip.phoneOnHold != "null")
 			{
-				if (!AddHold(sip, error))
+				if (!AddHold(sip, errorDescription))
 				{
-					error += METHOD_NAME;
-					m_log.ToFile(ecLogType::eError, error);
-				}	
-			} 
-			else 
-			{
-				std::cout<<"Boo";
-			}			
-			
+					errorDescription = StringFormat("%s\t%s", METHOD_NAME, errorDescription.c_str());
+					m_log.ToFile(ecLogType::eError, errorDescription);
+				}
+			}
 		}
 	}
 }
 
 bool active_sip::ActiveSession::IxExistManualCheckCurrentTalk()
 {
-    std::string error; 
+    std::string errorDescription; 
 	m_rawDataTalkCall.DeleteRawAll();
 
-	if (!m_rawDataTalkCall.CreateData(SESSION_SIP_RESPONSE,error)) 
+	if (!m_rawDataTalkCall.CreateData(SESSION_SIP_RESPONSE,errorDescription)) 
 	{
 		// TODO тут считаем что данные есть в случае какой либо ошибки!
-		m_log.ToFile(ecLogType::eError, error);
+		if (errorDescription.find("empty") == std::string::npos) 
+		{
+			errorDescription = StringFormat("%s\t%s",METHOD_NAME,errorDescription.c_str());
+			m_log.ToFile(ecLogType::eError, errorDescription);
+		}	
+		
 		return false;
 	}
 
