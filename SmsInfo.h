@@ -79,6 +79,7 @@ struct InfoSMS
 {
     int         id = 0;         // из базы
     size_t      sms_id = 0;     // из базы   
+    std::string date;           // из базы
     std::string phone;          // из базы
     ecSmsCode   code = ecSmsCode::eUnknown; // из http запроса    
     bool        close;          // из http запроса

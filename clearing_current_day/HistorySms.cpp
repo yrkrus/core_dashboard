@@ -6,6 +6,7 @@ using namespace utils;
 
 HistorySms::HistorySms()
 	: m_log(CONSTANTS::LOG::HISTORY_SMS)
+	, m_smsInfo(ecSmsInfoTable::eHistorySMS)
 {
 }
 
@@ -57,6 +58,9 @@ bool HistorySms::Execute()
 	m_log.ToPrint(info);
 
 	m_log.ToFile(ecLogType::eInfo, info);
+
+	// пробежимся по истории смс
+	m_smsInfo.Execute();
 
 	return (errorCount != 0 ? false :  true); 
 }

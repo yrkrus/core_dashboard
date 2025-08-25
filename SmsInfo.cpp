@@ -122,7 +122,7 @@ bool SMSInfo::GetInfoSMSList(InfoSMSList &_list, std::string &_errorDescription)
 	 _list.clear();
     _errorDescription.clear();
 
-    const std::string query = "select id,sms_id,phone from "+EnumToString<ecSmsInfoTable>(m_table)+" where status not IN ('3') order by date_time DESC";
+    const std::string query = "select id,sms_id,phone,date_time from "+EnumToString<ecSmsInfoTable>(m_table)+" where status not IN ('3') order by date_time DESC";
     	
 	if (!m_sql->Request(query, _errorDescription))
 	{		
@@ -147,7 +147,8 @@ bool SMSInfo::GetInfoSMSList(InfoSMSList &_list, std::string &_errorDescription)
 			{
                 case 0:	sms.id 		= std::atoi(row[i]); break; 
                 case 1:	sms.sms_id 	= string_to_size_t(row[i]); break;
-				case 2: sms.phone	= row[i]; break;               			                            
+				case 2: sms.phone	= row[i]; break;
+                case 3: sms.date	= row[i]; break;               			                            
 			}
 		}
 		_list.push_back(sms);
@@ -176,7 +177,9 @@ void SMSInfo::FindInfoSMS()
 
         if (!Get(request, responce, errorDescription)) 
         {
-            m_log.ToFile(ecLogType::eError,errorDescription);           
+            m_table == ecSmsInfoTable::eSMS ? m_log.ToFile(ecLogType::eError,errorDescription)
+                                            : m_log.ToPrint(errorDescription);           
+
             continue;
         }
 
@@ -189,9 +192,11 @@ void SMSInfo::FindInfoSMS()
         {
             if (!ParsingXML(xml, static_cast<ecXMLValue>(i), sms, errorDescription)) 
             {
-                errorDescription = StringFormat("phone %s empty XML. %s", sms.phone.c_str(), errorDescription.c_str());
-                m_log.ToFile(ecLogType::eError, errorDescription);                  
-               
+                errorDescription = StringFormat("phone %s empty XML. %s", sms.phone.c_str(), errorDescription.c_str()); 
+                                
+                m_table == ecSmsInfoTable::eSMS ? m_log.ToFile(ecLogType::eError, errorDescription)
+                                                : m_log.ToPrint(errorDescription);                   
+
                 smsChecked = false;
                 break;
             }
@@ -204,6 +209,11 @@ void SMSInfo::FindInfoSMS()
         }          
         
         UpdateToBaseInfoSMS(sms.id, sms);
+        if (m_table == ecSmsInfoTable::eHistorySMS) 
+        {
+            printf("\nUpdateToBaseInfoSMS: %s\t %s",sms.date.c_str(), sms.phone.c_str());
+        }
+        
         Sleep(10); 
     }
 }

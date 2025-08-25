@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include "IClear.h"
+#include "../SmsInfo.h"
 
 class HistorySms : public IClear
 {
@@ -36,7 +37,8 @@ public:
 
 private:
 	HistorySmsTable		m_history;
-	Log						m_log;
+	Log					m_log;
+	SMSInfo       		m_smsInfo;
 
 	virtual bool Insert(const Table &_field, std::string &_errorDescription);
 	virtual void Delete(int _id, ECheckInsert _check) override;
