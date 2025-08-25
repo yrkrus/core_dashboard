@@ -6,7 +6,7 @@
 #include "IHTTPRequest.h"
 #include "ISQLConnect.h"
 
-static std::string HTTP_REQUEST = "https://num.voxlink.ru/get/?num=%phone";
+static std::string HTTP_REQUEST_CALL = "https://num.voxlink.ru/get/?num=%phone";
 
 enum class ecCallInfoTable // в какую таблицу будем обновлять
     {
@@ -14,7 +14,7 @@ enum class ecCallInfoTable // в какую таблицу будем обнов
         eHistoryIvr
     };
 
-struct Info
+struct InfoCall
 {
     int         id = 0;
     std::string phone;
@@ -26,7 +26,7 @@ struct Info
         return ((!phone.empty()) && (!phone_operator.empty()) && (!region.empty()));        
     };
 };
-using InfoCallList = std::vector<Info>;
+using InfoCallList = std::vector<InfoCall>;
 
 
 // список с текущими ошибочными номерами по которым не удается найти инфо 
@@ -39,8 +39,8 @@ public:
     CallInfoError();
     ~CallInfoError(); 
     
-    bool IsExistCall(const Info &_call);
-    void Add(const Info &_call);
+    bool IsExistCall(const InfoCall &_call);
+    void Add(const InfoCall &_call);
 };
 
 
@@ -72,7 +72,7 @@ private:
 
     std::string GetLinkHttpRequest(const std::string &_phone); // создание http запроса
 
-    void UpdateToBaseInfoCall(int _id, const Info &_call); // обновление записи в БД
+    void UpdateToBaseInfoCall(int _id, const InfoCall &_call); // обновление записи в БД
 
     virtual bool Get(const std::string &_request, std::string &_responce, std::string &_errorDescription);
 };

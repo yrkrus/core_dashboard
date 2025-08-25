@@ -6,6 +6,7 @@
 #include "Queue.h"
 #include "Log.h"
 #include "CallInfo.h"
+#include "SmsInfo.h"
 #include "different_checks/Check_TrunkSip.h"
 
 template<typename T>
@@ -37,5 +38,11 @@ std::string EnumToString<ecTrunkState>(ecTrunkState);
 
 template<>
 std::string EnumToString<ecCallInfoTable>(ecCallInfoTable);
+
+template<>
+std::string EnumToString<ecSmsInfoTable>(ecSmsInfoTable);
+
+template<>
+ecSmsCode StringToEnum<ecSmsCode>(const std::string&);
 
 #endif // UTILS_H 

@@ -19,7 +19,7 @@ namespace CONSTANTS
     // версия ядра
     namespace VERSION
     {          
-        static const std::string CORE = "CORE | version 3.6 " BUILD; 
+        static const std::string CORE = "CORE | version 3.7 " BUILD; 
     }
 
     
@@ -57,6 +57,7 @@ namespace CONSTANTS
         static const std::string CHECK_TRUNK_SIP    = "check_trunk.log";
         static const std::string HTTP_REQUEST       = "http_request.log";
         static const std::string CALL_INFO          = "call_info.log";
+        static const std::string SMS_INFO           = "sms_info.log";
     }
        
        

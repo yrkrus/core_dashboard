@@ -326,4 +326,36 @@ void utils::ReplaceResponseStatus(std::string &_replacmentResponse, const std::s
 			position = _replacmentResponse.find(_find);
 		}
 	}
+
+	if (_find.find("%user") != std::string::npos)
+	{
+		size_t position = _replacmentResponse.find(_find);
+		_replacmentResponse.replace(position, _find.length(), _repl);
+	}
+
+	if (_find.find("%pass") != std::string::npos)
+	{
+		size_t position = _replacmentResponse.find(_find);
+		_replacmentResponse.replace(position, _find.length(), _repl);
+	}
+
+	if (_find.find("%sms_id") != std::string::npos)
+	{
+		size_t position = _replacmentResponse.find(_find);
+		while (position != std::string::npos)
+		{
+			_replacmentResponse.replace(position, _find.length(), _repl);
+			position = _replacmentResponse.find(_find);
+		}
+	}
+
+}
+
+boost::property_tree::ptree utils::CreateXML(const std::string &_rawXML)
+{
+    std::istringstream iss(_rawXML);
+	boost::property_tree::ptree xml;
+	boost::property_tree::read_xml(iss,xml);		
+	
+	return xml; 
 }

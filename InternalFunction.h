@@ -2,6 +2,10 @@
 #define INTERNALFUNCTION_H
 
 #include <string>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/xml_parser.hpp>
+#include <iostream>	
+#include <sstream>
 #include "RemoteCommands.h"
 
 namespace utils
@@ -32,6 +36,11 @@ namespace utils
 	//@param &_find - параметр который ищем
 	//@param &_repl - параметр НА которой будем заменять
 	void ReplaceResponseStatus(std::string &_replacmentResponse, const std::string &_find, const std::string &_repl);
+
+
+	// xml create
+	boost::property_tree::ptree CreateXML(const std::string &_rawXML);
+
 
 } // utils
 

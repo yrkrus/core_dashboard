@@ -298,6 +298,11 @@ bool Status::CheckSendingCommand(ecCommandType _commandType, std::string &_error
 				status = true;
 			}
 			break;
+		default: 
+			{
+				_errorDesciption = StringFormat("command %s not found", EnumToString<ecCommandType>(_commandType).c_str());
+				break;	
+			}
 		}
 	}
 	// очищаем

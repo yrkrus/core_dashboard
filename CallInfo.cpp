@@ -72,7 +72,7 @@ bool CallInfo::GetInfoCallList(InfoCallList &_list, std::string &_errorDescripti
 
 	while ((row = mysql_fetch_row(result)) != NULL)
 	{
-		Info call;
+		InfoCall call;
 
 		for (size_t i = 0; i < mysql_num_fields(result); ++i)
 		{
@@ -97,8 +97,7 @@ bool CallInfo::IsExistList()
 }
 
 void CallInfo::FindInfoCall()
-{
-       
+{       
     for (auto &call : m_listPhone) 
     {  
         // проверим что этого номера нет в списке с ошибками
@@ -139,7 +138,7 @@ void CallInfo::FindInfoCall()
 
 std::string CallInfo::GetLinkHttpRequest(const std::string &_phone)
 {
-    std::string replacment = HTTP_REQUEST;
+    std::string replacment = HTTP_REQUEST_CALL;
     
     size_t position = replacment.find("%phone");
 	replacment.replace(position, replacment.length(), _phone);
@@ -147,7 +146,7 @@ std::string CallInfo::GetLinkHttpRequest(const std::string &_phone)
     return replacment;
 }
 
-void CallInfo::UpdateToBaseInfoCall(int _id, const Info &_call)
+void CallInfo::UpdateToBaseInfoCall(int _id, const InfoCall &_call)
 {
     std::string error;
      const std::string query = "update " + EnumToString<ecCallInfoTable>(m_table) +" set operator  = '" + _call.phone_operator
@@ -170,7 +169,7 @@ bool CallInfo::Get(const std::string &_request, std::string &_responce, std::str
 {
     if (!IHTTPRequest::Get(_request, _responce))
     {
-        _errorDescription = METHOD_NAME + _responce;
+        _errorDescription = StringFormat("%s\t%s", METHOD_NAME, _responce.c_str());
         return false;
     }
 
@@ -185,7 +184,7 @@ CallInfoError::~CallInfoError()
 {
 }
 
-bool CallInfoError::IsExistCall(const Info &_call)
+bool CallInfoError::IsExistCall(const InfoCall &_call)
 {
     for (const auto &_err : m_list) 
     {
@@ -198,7 +197,7 @@ bool CallInfoError::IsExistCall(const Info &_call)
     return false;
 }
 
-void CallInfoError::Add(const Info &_call)
+void CallInfoError::Add(const InfoCall &_call)
 {
     m_list.emplace_back(_call);
 }

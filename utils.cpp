@@ -129,3 +129,56 @@ std::string EnumToString<ecCallInfoTable>(ecCallInfoTable _table)
 	return (it == table.end()) ? "history_ivr" : it->second;		
 }
 
+template<>
+std::string EnumToString<ecSmsInfoTable>(ecSmsInfoTable _table)
+{
+	static std::map<ecSmsInfoTable, string> table =
+	{
+		{ecSmsInfoTable::eSMS,			"sms_sending"},
+		{ecSmsInfoTable::eHistorySMS,	"history_sms_sending"},
+	};
+
+	auto it = table.find(_table);	
+	return (it == table.end()) ? "history_sms_sending" : it->second;		
+}
+
+
+template<>
+ecSmsCode StringToEnum<ecSmsCode>(const std::string &_str)
+{
+	if (_str.find("queued") != std::string::npos)		return ecSmsCode::eQueued;
+	if (_str.find("accepted") != std::string::npos)		return ecSmsCode::eAccepted;
+	if (_str.find("delivered") != std::string::npos)	return ecSmsCode::eDelivered;
+	if (_str.find("rejected") != std::string::npos)		return ecSmsCode::eRejected;
+	if (_str.find("undeliverable") != std::string::npos)	return ecSmsCode::eUndeliverable;
+	if (_str.find("error") != std::string::npos)		return ecSmsCode::eError;
+	if (_str.find("expired") != std::string::npos)		return ecSmsCode::eExpired;
+	if (_str.find("unknown") != std::string::npos)		return ecSmsCode::eUnknown;
+	if (_str.find("aborted") != std::string::npos)		return ecSmsCode::eAborted;
+	if (_str.find("20107") != std::string::npos)		return ecSmsCode::e20107;	
+	if (_str.find("20117") != std::string::npos)		return ecSmsCode::e20117;	
+	if (_str.find("20148") != std::string::npos)		return ecSmsCode::e20148;	
+	if (_str.find("20154") != std::string::npos)		return ecSmsCode::e20154;	
+	if (_str.find("20158") != std::string::npos)		return ecSmsCode::e20158;	
+	if (_str.find("20167") != std::string::npos)		return ecSmsCode::e20167;	
+	if (_str.find("20170") != std::string::npos)		return ecSmsCode::e20170;	
+	if (_str.find("20171") != std::string::npos)		return ecSmsCode::e20171;	
+	if (_str.find("20200") != std::string::npos)		return ecSmsCode::e20200;	
+	if (_str.find("20202") != std::string::npos)		return ecSmsCode::e20202;	
+	if (_str.find("20203") != std::string::npos)		return ecSmsCode::e20203;	
+	if (_str.find("20204") != std::string::npos)		return ecSmsCode::e20204;	
+	if (_str.find("20207") != std::string::npos)		return ecSmsCode::e20207;	
+	if (_str.find("20208") != std::string::npos)		return ecSmsCode::e20208;	
+	if (_str.find("20209") != std::string::npos)		return ecSmsCode::e20209;
+	if (_str.find("20211") != std::string::npos)		return ecSmsCode::e20211;
+	if (_str.find("20212") != std::string::npos)		return ecSmsCode::e20212;
+	if (_str.find("20213") != std::string::npos)		return ecSmsCode::e20213;
+	if (_str.find("20218") != std::string::npos)		return ecSmsCode::e20218;
+	if (_str.find("20230") != std::string::npos)		return ecSmsCode::e20230;
+	if (_str.find("20280") != std::string::npos)		return ecSmsCode::e20280;
+	if (_str.find("20281") != std::string::npos)		return ecSmsCode::e20281;
+
+	return ecSmsCode::eUnknown;	
+}
+
+

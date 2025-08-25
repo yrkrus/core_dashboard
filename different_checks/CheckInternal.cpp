@@ -25,7 +25,10 @@ void CheckInternal::Stop()
 
 bool CheckInternal::Execute()
 {   
-    return ((!m_trunkSip.Execute()) || (!m_callInfo.Execute()));   
+    return ((!m_trunkSip.Execute()) || 
+            (!m_callInfo.Execute()) ||
+            (!m_smsInfo.Execute())
+            );   
   
 }
   

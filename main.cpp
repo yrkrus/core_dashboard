@@ -14,7 +14,6 @@
 #include "clearing_current_day/ClearingCurrentDay.h"
 #include "different_checks/CheckInternal.h"
 
-
 // эти include потом убрать, они нужны для отладки только
 #include <stdio.h>
 #include <time.h>

@@ -83,7 +83,22 @@ bool HistorySms::Insert(const Table &_field, std::string &_errorDescription)
 	std::string query;
 
 	// устанавливаем данные в history_sms_sending
-	if (!_field.status.empty())
+	if (!_field.status_date.empty())
+	{
+		query = "insert into history_sms_sending (id,user_id,date_time,phone,message,sms_id,status,user_login_pc,count_real_sms,sms_type,status_date) values ('" +
+																				std::to_string(_field.id) +
+																				"','" + std::to_string(_field.user_id) +
+																				"','" + _field.date_time +
+																				"','" + _field.phone +
+																				"','" + _field.message +
+																				"','" + std::to_string(_field.sms_id) +
+																				"','" + std::to_string(_field.status) +
+																				"','" + _field.user_login_pc +
+																				"','" + std::to_string(_field.count_real_sms) +
+																				"','" + std::to_string(_field.sms_type) +
+																				"','" + _field.status_date + "')";
+	}
+	else  // есть null поле на status_date
 	{
 		query = "insert into history_sms_sending (id,user_id,date_time,phone,message,sms_id,status,user_login_pc,count_real_sms,sms_type) values ('" +
 																				std::to_string(_field.id) +
@@ -92,20 +107,7 @@ bool HistorySms::Insert(const Table &_field, std::string &_errorDescription)
 																				"','" + _field.phone +
 																				"','" + _field.message +
 																				"','" + std::to_string(_field.sms_id) +
-																				"','" + _field.status +
-																				"','" + _field.user_login_pc +
-																				"','" + std::to_string(_field.count_real_sms) +
-																				"','" + std::to_string(_field.sms_type) + "')";
-	}
-	else  // есть null поле на status
-	{
-		query = "insert into history_sms_sending (id,user_id,date_time,phone,message,sms_id,user_login_pc,count_real_sms,sms_type) values ('" +
-																				std::to_string(_field.id) +
-																				"','" + std::to_string(_field.user_id) +
-																				"','" + _field.date_time +
-																				"','" + _field.phone +
-																				"','" + _field.message +
-																				"','" + std::to_string(_field.sms_id) +
+																				"','" + std::to_string(_field.status) +
 																				"','" + _field.user_login_pc +
 																				"','" + std::to_string(_field.count_real_sms) +
 																				"','" + std::to_string(_field.sms_type) + "')";
@@ -188,10 +190,11 @@ bool HistorySms::Get()
 			case 3:	field.phone = row[i];				break;	// phone
 			case 4:	field.message = row[i];				break;	// message
 			case 5: field.sms_id = string_to_size_t(row[i]); break;	// sms_id
-			case 6:	if (row[i]) field.status = row[i];				break;	// status					
+			case 6:	field.status = std::atoi(row[i]);		break;	// status					
 			case 7:	field.user_login_pc = row[i];	break;	// user_login_pc
 			case 8:	field.count_real_sms = std::atoi(row[i]);	break;	// count_real_sms
 			case 9:	field.sms_type = std::atoi(row[i]);	break;	// sms_type
+			case 10: if (row[i]) field.status_date = row[i];	break;	// status_date	
 			}
 		}	
 		

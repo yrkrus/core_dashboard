@@ -5,6 +5,7 @@
 #include "Check_TrunkSip.h"
 #include "../PotokDispether.h"
 #include "../CallInfo.h"
+#include "../SmsInfo.h"
 
 
 class CheckInternal
@@ -12,6 +13,7 @@ class CheckInternal
 private:
     CheckTrunkSip m_trunkSip;
     CallInfo      m_callInfo;
+    SMSInfo       m_smsInfo;  
     IPotokDispether m_dispether;
 
     bool Execute();

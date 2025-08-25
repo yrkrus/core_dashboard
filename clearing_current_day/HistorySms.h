@@ -18,10 +18,11 @@ public:
 		std::string phone;
 		std::string message;
 		size_t		sms_id;
-		std::string status;
+		int 		status;
 		std::string user_login_pc;
 		int			count_real_sms;
 		int			sms_type;
+		std::string status_date;
 	};
 	using HistorySmsTable = std::vector<Table>;	
 	
