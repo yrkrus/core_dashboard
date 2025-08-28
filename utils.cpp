@@ -180,5 +180,3 @@ ecSmsCode StringToEnum<ecSmsCode>(const std::string &_str)
 
 	return ecSmsCode::eUnknown;	
 }
-
-

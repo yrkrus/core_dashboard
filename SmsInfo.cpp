@@ -53,6 +53,7 @@ bool SMSInfo::Execute()
     if (!m_auth.IsInit()) 
 	{
 		m_log.ToFile(ecLogType::eError, "InitAuthSMS() Error!");
+        return true;
 	}
 	
 	// найдем не обработанные смс 
@@ -122,7 +123,11 @@ bool SMSInfo::GetInfoSMSList(InfoSMSList &_list, std::string &_errorDescription)
 	 _list.clear();
     _errorDescription.clear();
 
-    const std::string query = "select id,sms_id,phone,date_time from "+EnumToString<ecSmsInfoTable>(m_table)+" where status not IN ('3') order by date_time DESC";
+    const std::string query = "select id,sms_id,phone,date_time from "+EnumToString<ecSmsInfoTable>(m_table)+" where status not IN ('" + std::to_string(static_cast<int>(ecSmsCode::eDelivered))+"','" 
+                                                                                                                                       + std::to_string(static_cast<int>(ecSmsCode::eRejected))+"','"
+                                                                                                                                       + std::to_string(static_cast<int>(ecSmsCode::eError))+"','"
+                                                                                                                                       + std::to_string(static_cast<int>(ecSmsCode::eAborted))+"','"
+                                                                                                                                       + std::to_string(static_cast<int>(ecSmsCode::eExpired))+"') order by date_time DESC";
     	
 	if (!m_sql->Request(query, _errorDescription))
 	{		
