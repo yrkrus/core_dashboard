@@ -50,7 +50,7 @@ void CallInfo::CreateListPhone()
     }
 }
 
-bool CallInfo::GetInfoCallList(InfoCallList &_list, std::string &_errorDescription)
+bool CallInfo::GetInfoCallList(InfoCallList_old &_list, std::string &_errorDescription)
 {
     _list.clear();
     _errorDescription.clear();
@@ -72,7 +72,7 @@ bool CallInfo::GetInfoCallList(InfoCallList &_list, std::string &_errorDescripti
 
 	while ((row = mysql_fetch_row(result)) != NULL)
 	{
-		InfoCall call;
+		InfoCall_old call;
 
 		for (size_t i = 0; i < mysql_num_fields(result); ++i)
 		{
@@ -146,7 +146,7 @@ std::string CallInfo::GetLinkHttpRequest(const std::string &_phone)
     return replacment;
 }
 
-void CallInfo::UpdateToBaseInfoCall(int _id, const InfoCall &_call)
+void CallInfo::UpdateToBaseInfoCall(int _id, const InfoCall_old &_call)
 {
     std::string error;
      const std::string query = "update " + EnumToString<ecCallInfoTable>(m_table) +" set operator  = '" + _call.phone_operator
@@ -184,7 +184,7 @@ CallInfoError::~CallInfoError()
 {
 }
 
-bool CallInfoError::IsExistCall(const InfoCall &_call)
+bool CallInfoError::IsExistCall(const InfoCall_old &_call)
 {
     for (const auto &_err : m_list) 
     {
@@ -197,7 +197,7 @@ bool CallInfoError::IsExistCall(const InfoCall &_call)
     return false;
 }
 
-void CallInfoError::Add(const InfoCall &_call)
+void CallInfoError::Add(const InfoCall_old &_call)
 {
     m_list.emplace_back(_call);
 }

@@ -19,15 +19,17 @@ namespace CONSTANTS
     // версия ядра
     namespace VERSION
     {          
-        static const std::string CORE = "CORE | version 3.7 " BUILD; 
+        static const std::string CORE = "CORE | version 3.8 " BUILD; 
     }
 
     
     namespace TIMEOUT
     {
         static const uint32_t IVR               = 1000;   // timeout для проверки новых данных для ivr
-        static const uint32_t QUEUE             = 1000;   // timeout для проверки новых данных для queue
-        static const uint32_t ACTIVE_SESSION    = 1000;   // timeout для проверки новых данных для активной сеcсии операторов
+        static const uint32_t QUEUE             = 1000;   // timeout для проверки новых данных для queue (входящие звонки)
+        static const uint32_t QUEUE_OUTGOING    = 1000;   // timeout для проверки новых данных для queue (исходящие звонки)
+        static const uint32_t ACTIVE_SESSION    = 1000;   // timeout для проверки новых данных для активной сеcсии операторов (входящие звонки)
+        static const uint32_t ACTIVE_SESSION_OUTGOING   = 1000;   // timeout для проверки новых данных для активной сеcсии операторов (исходящие звонки)
         static const uint32_t OPERATOR_STATUS   = 100;    // timeout для проверки новых данных для смены статуса оператором
         static const uint32_t CLEARING_CURRENT_DAY = 60000; // timeout для проверки нужно ли очищать текущий день таблицы history_*
         static const uint32_t CHECK_TRUNK_SIP = 5000;     // timeout для проверки активности trunk sip
@@ -36,15 +38,17 @@ namespace CONSTANTS
 
     namespace SERVER 
     {
-        static const uint16_t PORT = 12345;
-       // static const unsigned int PORT = 12346;        
+      //  static const uint16_t PORT = 12345;
+        static const unsigned int PORT = 12346;        
     }
 
     namespace LOG 
     {
         static const std::string IVR                = "ivr.log";
         static const std::string QUEUE              = "queue.log";
-        static const std::string ACTIVE_SESSION     = "active_session.log";        
+        static const std::string QUEUE_OUTGOING     = "queue_outgoing.log";
+        static const std::string ACTIVE_SESSION     = "active_session.log"; 
+        static const std::string ACTIVE_SESSION_OUTGOING    = "active_session_outgoing.log";        
         // to_history
         static const std::string HISTORY_IVR        = "history_ivr.log";
         static const std::string HISTORY_QUEUE      = "history_queue.log";

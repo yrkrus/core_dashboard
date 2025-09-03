@@ -1,3 +1,5 @@
+// Активные звонки ВХОДЯЩИЕ!
+
 #ifndef ACTIVESIP_H
 #define ACTIVESIP_H
 
@@ -11,13 +13,15 @@
 static std::string SIP_COMMANDS_EXT1		= "ivr-5";					// пропуск этой записи
 static std::string SIP_COMMANDS_EXT2		= "Ring";					// пропуск этой записи
 static std::string SIP_COMMANDS_EXT3		= "Down";					// пропуск этой записи
-static std::string SIP_COMMANDS_EXT4		= "Outgoing";					// пропуск этой записи
+static std::string SIP_COMMANDS_EXT4		= "Outgoing";				// пропуск этой записи
+static std::string SIP_COMMANDS_EXT5		= "FMPR";					// пропуск этой записи (эта запись на исходящий звонок)
 
-static std::string SESSION_QUEUE_RESPONSE		= "asterisk -rx \"queue show %queue\"";
-static std::string SESSION_SIP_RESPONSE 	=	"asterisk -rx \"core show channels concise\"" " | grep -v \"" + SIP_COMMANDS_EXT1 + "\"" 
-																									" | grep -v \"" + SIP_COMMANDS_EXT2 + "\""
-																									" | grep -v \"" + SIP_COMMANDS_EXT3 + "\""
-																									" | grep -v \"" + SIP_COMMANDS_EXT4 + "\"";
+static std::string SESSION_QUEUE_RESPONSE	= "asterisk -rx \"queue show %queue\"";
+static std::string SESSION_SIP_RESPONSE 	= "asterisk -rx \"core show channels concise\"" " | grep -v \"" + SIP_COMMANDS_EXT1 + "\"" 
+																							" | grep -v \"" + SIP_COMMANDS_EXT2 + "\""
+																							" | grep -v \"" + SIP_COMMANDS_EXT3 + "\""
+																							" | grep -v \"" + SIP_COMMANDS_EXT4 + "\""
+																							" | grep -v \"" + SIP_COMMANDS_EXT5 + "\"";
 
 
 

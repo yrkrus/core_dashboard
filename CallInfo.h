@@ -14,7 +14,7 @@ enum class ecCallInfoTable // в какую таблицу будем обнов
         eHistoryIvr
     };
 
-struct InfoCall
+struct InfoCall_old
 {
     int         id = 0;
     std::string phone;
@@ -26,21 +26,21 @@ struct InfoCall
         return ((!phone.empty()) && (!phone_operator.empty()) && (!region.empty()));        
     };
 };
-using InfoCallList = std::vector<InfoCall>;
+using InfoCallList_old = std::vector<InfoCall_old>;
 
 
 // список с текущими ошибочными номерами по которым не удается найти инфо 
 class CallInfoError  
 {
 private:
-    InfoCallList m_list;
+    InfoCallList_old m_list;
 
 public:
     CallInfoError();
     ~CallInfoError(); 
     
-    bool IsExistCall(const InfoCall &_call);
-    void Add(const InfoCall &_call);
+    bool IsExistCall(const InfoCall_old &_call);
+    void Add(const InfoCall_old &_call);
 };
 
 
@@ -55,7 +55,7 @@ public:
     bool Execute();     
 
 private:
-    InfoCallList    m_listPhone;
+    InfoCallList_old    m_listPhone;
     SP_SQL		    m_sql;
 	Log				m_log;    
 
@@ -64,7 +64,7 @@ private:
     CallInfoError m_listError;
 
     void CreateListPhone(); // создание списка с телефонами которые будем проверять
-    bool GetInfoCallList(InfoCallList &_list, std::string &_errorDescription); // получение списка с телефонами
+    bool GetInfoCallList(InfoCallList_old &_list, std::string &_errorDescription); // получение списка с телефонами
 
     bool IsExistList();     // есть ли список
 
@@ -72,7 +72,7 @@ private:
 
     std::string GetLinkHttpRequest(const std::string &_phone); // создание http запроса
 
-    void UpdateToBaseInfoCall(int _id, const InfoCall &_call); // обновление записи в БД
+    void UpdateToBaseInfoCall(int _id, const InfoCall_old &_call); // обновление записи в БД
 
     virtual bool Get(const std::string &_request, std::string &_responce, std::string &_errorDescription);
 };

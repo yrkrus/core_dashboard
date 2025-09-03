@@ -2,6 +2,12 @@
 #include <string>
 #include <thread>
 #include <csignal>
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <cstring>
+#include <cstdlib>
 
 #include "ISQLConnect.h"
 #include "Constants.h"
@@ -32,6 +38,69 @@ static SP_ClearingCurrentDay clearingCurrentDay = nullptr; // вставка в 
 static SP_CheckInternal checkInternal = nullptr;    // внутренние проверки
 
 static std::atomic<bool> g_running(true);
+
+void _daemonize()
+{
+    pid_t pid = fork();
+    if (pid < 0) {
+        // не смогли форкнуть
+        std::cerr << "First fork failed: " << std::strerror(errno) << "\n";
+        exit(EXIT_FAILURE);
+    }
+    if (pid > 0) 
+    {
+        // родитель выходит
+        exit(EXIT_SUCCESS);
+    }
+
+    // теперь мы в первом потомке
+    // создаём новый сеанс, отрываемся от контролирующего терминала
+    if (setsid() < 0) 
+    {
+        std::cerr << "setsid failed: " << std::strerror(errno) << "\n";
+        exit(EXIT_FAILURE);
+    }
+
+    // Принудительно игнорируем сигналы SIGHUP, SIGCHLD (опционально)
+    signal(SIGHUP,  SIG_IGN);
+    signal(SIGCHLD, SIG_IGN);
+
+    // Второй fork, чтобы гарантированно не стать лидером терминального сеанса
+    pid = fork();
+    if (pid < 0) 
+    {
+        std::cerr << "Second fork failed: " << std::strerror(errno) << "\n";
+        exit(EXIT_FAILURE);
+    }
+    if (pid > 0) 
+    {
+        // первый потомок уходит
+        exit(EXIT_SUCCESS);
+    }
+
+    // Устанавливаем рабочую папку (обычно корень)
+    if (chdir("/") < 0) {
+        std::cerr << "chdir failed: " << std::strerror(errno) << "\n";
+        // Не фатально, но желательно
+    }
+
+    // Сбрасываем маску прав
+    umask(0);
+
+    // Перенаправляем stdin/stdout/stderr в /dev/null
+    int fd = open("/dev/null", O_RDWR);
+    if (fd < 0) {
+        // не страшно, продолжим
+    } else {
+        dup2(fd, STDIN_FILENO);
+        dup2(fd, STDOUT_FILENO);
+        dup2(fd, STDERR_FILENO);
+        if (fd > STDERR_FILENO) close(fd);
+    }
+
+    // Теперь процесс — демон
+}
+
 
 static void _Init()
 {
@@ -68,16 +137,36 @@ static void _sigint_handler(int)
     g_running = false;
 }
 
-static void _core_info()
+static void _core_info(bool _isDaemonize)
 {
+    if (_isDaemonize) 
+    {
+        printf("\t\t=== RUN IS DAEMON === \n");    
+    }
     printf("%s\tbase:%s\n",CONSTANTS::VERSION::CORE.c_str(), AUTH::MYSQL::BD.c_str());
     Sleep(3000);
 }
 
 int main(int argc, char *argv[])
 {   
+    bool runAsDaemon = false;
+    for (int i = 1; i < argc; ++i) 
+    {
+        if (std::string(argv[i]) == "-d") 
+        {
+            runAsDaemon = true;
+            break;
+        }
+    }
+
+    if (runAsDaemon) 
+    {
+        _core_info(runAsDaemon); 
+        _daemonize();
+    }    
+    
     // bild
-    _core_info();   
+    _core_info(runAsDaemon);   
 
     // Перехватываем Ctrl+C
     std::signal(SIGINT, _sigint_handler);
