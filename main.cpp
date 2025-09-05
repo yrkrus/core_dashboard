@@ -78,10 +78,10 @@ void _daemonize()
         exit(EXIT_SUCCESS);
     }
 
-    // Устанавливаем рабочую папку (обычно корень)
-    if (chdir("/") < 0) {
+    // Устанавливаем рабочую папку
+    if (chdir("/root/core_dashboards/old_core/") < 0) 
+    {
         std::cerr << "chdir failed: " << std::strerror(errno) << "\n";
-        // Не фатально, но желательно
     }
 
     // Сбрасываем маску прав
@@ -97,8 +97,6 @@ void _daemonize()
         dup2(fd, STDERR_FILENO);
         if (fd > STDERR_FILENO) close(fd);
     }
-
-    // Теперь процесс — демон
 }
 
 
@@ -139,11 +137,10 @@ static void _sigint_handler(int)
 
 static void _core_info(bool _isDaemonize)
 {
-    if (_isDaemonize) 
-    {
-        printf("\t\t=== RUN IS DAEMON === \n");    
-    }
-    printf("%s\tbase:%s\n",CONSTANTS::VERSION::CORE.c_str(), AUTH::MYSQL::BD.c_str());
+    _isDaemonize ? printf("\t\t\t=== RUN IS DAEMON === \n")
+                 : printf("\t\t\t=== RUN IS APPLICATION === \n");    
+  
+    printf("%s\t | base:%s\t | TCP server PORT:%u\n",CONSTANTS::VERSION::CORE.c_str(), AUTH::MYSQL::BD.c_str(),CONSTANTS::SERVER::PORT);
     Sleep(3000);
 }
 
@@ -206,6 +203,8 @@ int main(int argc, char *argv[])
     _Destroy();
 
     server.stop();
-    std::cout << "\nServer stopped\n";
+    std::cout << "\nServer stopped\n";  
+    
+
     return 0;
 };

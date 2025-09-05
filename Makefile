@@ -1,41 +1,62 @@
 # компилятор
-CXX := g++
+CXX      := g++
+# по умолчанию – debug
+BUILD    ?= debug
 
-# BUILD может быть debug или release (по умолчанию debug)
-BUILD ?= debug
+# если в списке целей есть одна из release|debug|valgrind,
+# то перезапишем BUILD
+ifneq ($(filter release,$(MAKECMDGOALS)),)
+  BUILD := release
+endif
+ifneq ($(filter debug,$(MAKECMDGOALS)),)
+  BUILD := debug
+endif
+ifneq ($(filter valgrind,$(MAKECMDGOALS)),)
+  BUILD := valgrind
+endif
 
-# флаги для двух режимов
+# выставляем флаги в зависимости от BUILD
 ifeq ($(BUILD),release)
-  CXXFLAGS := -std=c++17 -O3 -DNDEBUG -Wall -Wextra \
+  CXXFLAGS := -std=c++17 -O2 -DNDEBUG -Wall -Wextra \
               -pthread $(shell mysql_config --cflags) \
               -L/usr/lib64/firebird -lfbclient -lcurl
   LDFLAGS  := -pthread $(shell mysql_config --libs) -lstdc++fs -s
-else
-  CXXFLAGS := -std=c++17 -Wall -Werror -fsanitize=address \
-              -fdiagnostics-color=always -g -Og -O0 \
+else ifeq ($(BUILD),valgrind)
+  CXXFLAGS := -std=c++17 -g -O0 -Wall \
               -pthread $(shell mysql_config --cflags) \
               -L/usr/lib64/firebird -lfbclient -lcurl
   LDFLAGS  := -pthread $(shell mysql_config --libs) -lstdc++fs
+else
+  # debug с ASan
+  CXXFLAGS := -std=c++17 -Wall -Werror -fsanitize=address \
+              -fdiagnostics-color=always -g -Og \
+              -pthread $(shell mysql_config --cflags) \
+              -L/usr/lib64/firebird -lfbclient -lcurl
+  LDFLAGS  := -pthread $(shell mysql_config --libs) -lstdc++fs -fsanitize=address
 endif
 
-# источники и объекты
+# источники
 SRC_ROOT := $(wildcard *.cpp)
 SRC_AST  := $(wildcard clearing_current_day/*.cpp different_checks/*.cpp)
 SOURCES  := $(SRC_ROOT) $(SRC_AST)
 OBJECTS  := $(SOURCES:.cpp=.o)
 TARGET   := core_dashboard
 
-.PHONY: all release clean
+.PHONY: all release debug valgrind clean
 
+# цель по умолчанию
 all: $(TARGET)
 
-release: BUILD := release
-release: clean all
-	@echo "Собран релиз: $(TARGET)"
+# когда вызываем make release/debug/valgrind,
+# сначала выполнится clean, затем сборка, затем echo
+release debug valgrind: clean all
+	@echo "Сборка -> $(BUILD): $(TARGET)"
 
+# линковка
 $(TARGET): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(OBJECTS) -o $@ $(LDFLAGS)
+	$(CXX) $(CXXFLAGS) $^ -o $@ $(LDFLAGS)
 
+# компиляция каждого .cpp
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 

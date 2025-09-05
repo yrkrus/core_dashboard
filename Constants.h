@@ -38,8 +38,8 @@ namespace CONSTANTS
 
     namespace SERVER 
     {
-      //  static const uint16_t PORT = 12345;
-        static const unsigned int PORT = 12346;        
+        static const uint16_t PORT = 12345;
+      //  static const unsigned int PORT = 12346;        
     }
 
     namespace LOG 
@@ -69,15 +69,18 @@ namespace CONSTANTS
     
     // http://dashboard/lite/ потом куда нить перенести !? хз
 
-    //valgrind --leak-check=full --show-leak-kinds=all --leak-resolution=med --log-file=./core.log ./core_dashboard start
-    //valgrind --leak-check=full --leak-resolution=med --log-file=./core.log ./core_dashboard start
-    //
+    // valgrind --leak-check=full --show-leak-kinds=all --gen-suppressions=all ./core_dashboard 
+    // и сохранить предложенные suppression-правила в файл valgrind.supp
+    // valgrind --leak-check=full --show-leak-kinds=all --suppressions=./valgrind.supp --leak-resolution=med --log-file=./core.log ./core_dashboard
+
+
     //mysqldump -uzabbix -pUFGq4kZMNIMwxTzV -h10.34.222.19 dashboard > /root/core_dashboards/backup_bd/dashboard_20250730.sql
 
 
     //asterisk -rx "core show channels verbose" | grep to-atsaero5005  кто сейчас разговаривает с бабой железной
 
-    
+    //iptables -I INPUT -p tcp --dport 12345 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
+   
 
     // при совершении звонка, в ivr добавить еще id_звонка из queue таблицы,
     // потом будет проще найти этот звонок + повторные звонки будут проще отслеживаться
