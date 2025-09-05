@@ -145,7 +145,7 @@ static void _core_info(bool _isDaemonize)
 }
 
 int main(int argc, char *argv[])
-{   
+{  
     bool runAsDaemon = false;
     for (int i = 1; i < argc; ++i) 
     {

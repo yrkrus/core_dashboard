@@ -2,11 +2,16 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "cmake",
-			"label": "CMake: test",
-			"command": "test",
-			"problemMatcher": [],
-			"detail": "CMake template test task"
-		}
+			"type": "shell",
+			"label": "KILL core_dashboard",			
+			"command": "pkill -9 -f core_dashboard",
+			"problemMatcher": []			
+		},
+		{
+			"type": "shell",
+			"label": "RUN DAEMON core_dashboard",			
+			"command": "core_dashboard -d",
+			"problemMatcher": []			
+		}		
 	]
 }

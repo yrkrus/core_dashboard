@@ -1,5 +1,6 @@
 ﻿#include <sys/types.h>
 #include <sys/socket.h>
+#include <pthread.h>
 #include <netinet/in.h>
 #include <unistd.h>
 #include <cstring>
@@ -95,6 +96,12 @@ void HeartbeatServer::set_on_ping(OnPingCallback cb)
 
 void HeartbeatServer::accept_loop()
 {
+    char name[16];
+    std::snprintf(name, sizeof(name), "tcp_server");
+
+    // получаем pthread_handle текущего потока и ставим имя
+    pthread_setname_np(pthread_self(), name);
+    
     while (is_running_)
     {
         int client_fd = ::accept(listen_fd_, nullptr, nullptr);

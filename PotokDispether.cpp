@@ -1,4 +1,8 @@
-﻿#include "PotokDispether.h"
+﻿#include <cassert>
+#include <cstring>
+#include "PotokDispether.h"
+
+#define MAX_NAME_THREAD 16
 
 IPotokDispether::IPotokDispether(const std::string &_name, uint32_t _timer)
 	: m_name(_name)
@@ -38,6 +42,13 @@ void IPotokDispether::Stop()
 
 void IPotokDispether::Run(std::function<bool()> func)
 {
+	char nameThread[MAX_NAME_THREAD]; // last is = \0
+	
+	std::string tmp = m_name.substr(0,MAX_NAME_THREAD);	
+	std::snprintf(nameThread, sizeof(nameThread), tmp.c_str());
+    // получаем pthread_handle текущего потока и ставим имя
+    pthread_setname_np(pthread_self(), nameThread);
+	
 	while (m_running.load())
 	{
 		func();
