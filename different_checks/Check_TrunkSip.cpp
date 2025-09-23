@@ -3,9 +3,12 @@
 #include "Check_TrunkSip.h"
 #include "../Constants.h"
 #include "../InternalFunction.h"
-#include "../utils.h"
+#include "../custom_cast.h"
 
 using namespace utils;
+using namespace custom_cast;
+
+
 
 void CheckTrunkSip::Start()
 {

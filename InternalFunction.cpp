@@ -359,3 +359,35 @@ boost::property_tree::ptree utils::CreateXML(const std::string &_rawXML)
 	
 	return xml; 
 }
+
+// разбор строки с разделителем
+bool utils::SplitDelimiterEntry(const std::string &_lines, std::vector<std::string> &_vLines, const char _delimiter, std::string &_errorDescription)
+{
+	_errorDescription.clear();
+
+	if (_lines.empty()) 
+	{
+		_errorDescription = "empty _lines";
+		return false;
+	}
+
+	_vLines.clear();
+
+	std::string field;
+	for (char c : _lines) 
+	{
+		if (c == _delimiter) 
+		{
+			_vLines.push_back(field);
+			field.clear();
+		}
+		else  
+		{
+			field.push_back(c);
+		}
+	}
+
+	_vLines.push_back(field);
+
+	return true;
+}

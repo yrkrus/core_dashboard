@@ -1,9 +1,11 @@
 #include "ActiveSip.h"
 #include "InternalFunction.h"
 #include "Constants.h"
-#include "utils.h"
+#include "custom_cast.h"
 
 using namespace utils;
+using namespace custom_cast;
+
 
 active_sip::ActiveSession::ActiveSession(SP_Queue &_queue)
 	: IAsteriskData("ActiveSession",CONSTANTS::TIMEOUT::ACTIVE_SESSION)

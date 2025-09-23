@@ -3,15 +3,22 @@
 	"tasks": [
 		{
 			"type": "shell",
-			"label": "KILL core_dashboard",			
+			"label": "1. KILL core_dashboard",			
 			"command": "pkill -9 -f core_dashboard",
 			"problemMatcher": []			
 		},
 		{
 			"type": "shell",
-			"label": "RUN DAEMON core_dashboard",			
+			"label": "2. RUN DAEMON core_dashboard",			
 			"command": "core_dashboard -d",
+			"problemMatcher": []			
+		},
+		{
+			"type": "shell",
+			"label": "3. Backup Base",			
+			"command": "mysqldump -uzabbix -pUFGq4kZMNIMwxTzV -h10.34.222.19 dashboard > /root/core_dashboards/backup_bd/dashboard.sql",
 			"problemMatcher": []			
 		}		
 	]
 }
+

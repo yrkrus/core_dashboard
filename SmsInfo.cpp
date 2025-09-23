@@ -3,9 +3,10 @@
 #include "SmsInfo.h"
 #include "Constants.h"
 #include "InternalFunction.h"
-#include "utils.h"
+#include "custom_cast.h"
 
 using namespace utils;
+using namespace custom_cast;
 
 static std::map<std::string, ecXMLValue> _SMS_XML_VALUE = 
 {

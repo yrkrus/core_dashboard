@@ -3,9 +3,10 @@
 #include "InternalFunction.h"
 #include "Constants.h"
 #include "Queue.h"
-#include "utils.h"
+#include "custom_cast.h"
 
 using namespace utils;
+using namespace custom_cast;
 
 
 Status::Status()

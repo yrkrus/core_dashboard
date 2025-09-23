@@ -3,9 +3,10 @@
 #include "Queue.h"
 #include "InternalFunction.h"
 #include "Constants.h"
-#include "utils.h"
+#include "custom_cast.h"
 
 using namespace utils;
+using namespace custom_cast;
 
 Queue::Queue()
 	: IAsteriskData("Queue",CONSTANTS::TIMEOUT::QUEUE)
@@ -605,7 +606,7 @@ bool Queue::IsExistCall(ecQueueNumber _queue, const std::string &_phone)
 
 			if (countPhone >= 1)
 			{
-				printf("Boooo!!\n");
+				printf("\nBoooo!!\n");
 				return false; // считаем как новый вызов!!!
 			}
 			else

@@ -38,8 +38,8 @@ namespace CONSTANTS
 
     namespace SERVER 
     {
-        static const uint16_t PORT = 12345;
-      //  static const unsigned int PORT = 12346;        
+      //  static const uint16_t PORT = 12345;
+        static const unsigned int PORT = 12346;        
     }
 
     namespace LOG 

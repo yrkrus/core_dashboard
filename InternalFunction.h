@@ -6,6 +6,7 @@
 #include <boost/property_tree/xml_parser.hpp>
 #include <iostream>	
 #include <sstream>
+#include <vector>
 #include "RemoteCommands.h"
 
 namespace utils
@@ -40,6 +41,9 @@ namespace utils
 
 	// xml create
 	boost::property_tree::ptree CreateXML(const std::string &_rawXML);
+
+	// разбор строки с разделителем
+	bool SplitDelimiterEntry(const std::string &_lines, std::vector<std::string> &_vLines, const char _delimiter, std::string &_errorDescription); 
 
 
 } // utils

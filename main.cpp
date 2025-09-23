@@ -140,7 +140,11 @@ static void _core_info(bool _isDaemonize)
     _isDaemonize ? printf("\t\t\t=== RUN IS DAEMON === \n")
                  : printf("\t\t\t=== RUN IS APPLICATION === \n");    
   
-    printf("%s\t | base:%s\t | TCP server PORT:%u\n",CONSTANTS::VERSION::CORE.c_str(), AUTH::MYSQL::BD.c_str(),CONSTANTS::SERVER::PORT);
+    printf("%s\t | base:%s\t | TCP server PORT:%u\n",
+            CONSTANTS::VERSION::CORE.c_str(), 
+            AUTH::MYSQL::BD.c_str(),
+            CONSTANTS::SERVER::PORT);
+            
     Sleep(3000);
 }
 

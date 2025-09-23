@@ -3,8 +3,11 @@
 #include "IVR.h"
 #include "InternalFunction.h"
 #include "Constants.h"
+#include "custom_cast.h"
 
-using namespace utils;
+using namespace custom_cast;
+using utils::StringFormat;
+
 
 IVR::IVR()
 	:IAsteriskData("IVR",CONSTANTS::TIMEOUT::IVR)
@@ -75,63 +78,72 @@ void IVR::Parsing()
 }
 
 bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
-{
-	bool status = false;
+{	
+	// предварительная проверка — ровно 13 (!) восклицательных знаков
+    size_t nCountDelims = std::count(_lines.begin(), _lines.end(), DELIMITER_CHANNELS_FIELDS);
+    std::string error;
+
+	if (nCountDelims != CHANNELS_FIELDS - 1)
+    {
+        std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
+		m_log.ToFile(ecLogType::eError, error);		
+	
+        return false;
+    }
 	
 	std::vector<std::string> lines;
-	std::string current_str;
-
-	bool isNewLine = false;	
+	if (!utils::SplitDelimiterEntry(_lines, lines, DELIMITER_CHANNELS_FIELDS, error)) 
+	{
+		error = StringFormat("%s \t %s", METHOD_NAME, error.c_str()); 
+		m_log.ToFile(ecLogType::eError, error);		
+		return false; 
+	}
 	
-	for (size_t i = 0; i != _lines.length(); ++i)
+	if (lines.size() != CHANNELS_FIELDS || lines.empty()) 
 	{
-		if (isNewLine)
-		{
-			if (!current_str.empty())
-			{
-				lines.push_back(current_str);
-				current_str.clear();
-			}
-		}
+		std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
+		m_log.ToFile(ecLogType::eError, error);		
+		return false;
+	}  
 
-		if (_lines[i] != ' ') // ищем разделить (разделить пустая строка)
-		{
-			current_str += _lines[i];
-			isNewLine = false;
-		}
-		else
-		{
-			isNewLine = true;
-		}
-	}
+	 for (size_t i=0; i<lines.size(); ++i) 
+	 {
+	 	printf("\n%zu. value = %s", i, lines[i].c_str());	
+	 }	
+	
+		_caller.channel = lines[0];         										// имя канала
+		_caller.context = lines[1];       											// диалплан‐контекст
+		_caller.extension = lines[2];      											// номер(или “s”)
+		_caller.priority = static_cast<uint16_t>(std::stoi(lines[3])); 	      		// приоритет
+		_caller.state = StringToEnum<ecAsteriskState>(lines[4]);					// статус
+		_caller.application = StringToEnum<ecAsteriskApp>(lines[5]);    			// текущее приложение(Dial, Playback, …)
+		_caller.data = lines[6];             										// параметры приложения
+		_caller.callerID = StringToEnum<ecCallerId>(lines[0]+" "+lines[6]);			// caller ID
+		_caller.phone = utils::PhoneParsing(lines[7]);								// номер телефона
+		_caller.AMAFlags = lines[8];      											// AMA флаги(другие флаги ведения учёта)
+		_caller.duration = !lines[9].empty() ? static_cast<uint16_t>(std::stoi(lines[9])) : 0; // время жизни канала в секундах
+		_caller.bridgedChannel = lines[10]; 										// имя “связного” канала, если есть(иначе пусто)
+		_caller.bridgedDuration = static_cast<uint16_t>(std::stoi(lines[11]));		//время “сращивания”(в секундах)
+		_caller.uniqueID = lines[12];         										//уникальный идентификатор сессии
+		_caller.call_id = lines[13];        										//идентификатор “корневого” звонка(call - trace)
 
-	if (!lines.empty())
-	{
-		// проверка на максимальное кол-во записей
-		if (lines.size() != MAX_IVR_PARSING_LINES) 
-		{
-			std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
-			m_log.ToFile(ecLogType::eError, error);			
-
-			return false;
-		}
 		
-		_caller.phone = utils::PhoneParsing(lines[7]);
-		_caller.waiting = lines[8];
-		_caller.callerID = StringToEnum(lines[0] + "," + lines[1]);
+	// 	_caller.phone = utils::PhoneParsing(lines[7]);
+	// 	_caller.waiting = lines[8];
+	// 	_caller.callerID = StringToEnum(lines[0] + "," + lines[1]);
 		
-		if (!CheckCallers(_caller)) 
-		{
-			std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
-			m_log.ToFile(ecLogType::eError, error);
+	// 	if (!CheckCallers(_caller)) 
+	// 	{
+	// 		std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
+	// 		m_log.ToFile(ecLogType::eError, error);
 
-			return false;
-		}	
+	// 		return false;
+	// 	}	
 		
-		status = true;
-	}
+	// 	status = true;
+	// }
 
-	return status;
+	 return false;
 }
 
 bool IVR::CheckCallers(const IvrCalls &_caller)
@@ -144,39 +156,7 @@ bool IVR::IsExistListIvr()
 	return !m_listIvr.empty() ? true : false;
 }
 
-IVR::ECallerId IVR::StringToEnum(const std::string &_str)
-{
-	if (_str.find("ivr-13") != std::string::npos)			return ECallerId::Domru_220000;	
-	if (_str.find("druOUT_220220") != std::string::npos)	return ECallerId::Domru_220220;	
-	if (_str.find("Dru_220000") != std::string::npos)		return ECallerId::Domru_220220;
-	if (_str.find("sts_") != std::string::npos)				return ECallerId::Sts;
-	if (_str.find("221122") != std::string::npos)			return ECallerId::Comagic;
-	if (_str.find("camaa") != std::string::npos)			return ECallerId::Comagic;
-	if (_str.find("BeeIn") != std::string::npos)			return ECallerId::BeelineMih;
-	
-	return ECallerId::Unknown;
-}
 
-std::string IVR::EnumToString(ECallerId _caller)
-{
-	static std::map<ECallerId, std::string> callers =
-	{
-		{ECallerId::Unknown,		"Unknown"},
-		{ECallerId::Domru_220220,	"220220"},
-		{ECallerId::Domru_220000,	"220000"},
-		{ECallerId::Sts,			"STS"},
-		{ECallerId::Comagic,		"COMAGIC"},
-		{ECallerId::BeelineMih,		"MIH" }
-	};
-
-	auto it = callers.find(_caller);
-	if (it != callers.end()) 
-	{
-		return it->second;
-	}
-
-	return "Unknown";
-}
 
 void IVR::InsertIvrCalls()
 {
@@ -205,10 +185,10 @@ void IVR::InsertIvrCalls()
 		else  
 		{ 
 			// номера такого нет нужно добавить в БД
-			const std::string query = "insert into ivr (phone,waiting_time,trunk) values ('" 
+			const std::string query = "insert into ivr (phone,call_time,trunk) values ('" 
 									+ list.phone + "','" 
-									+ list.waiting + "','" 
-									+ EnumToString(list.callerID) + "')";
+									+ std::to_string(list.bridgedDuration) + "','" 
+									+ EnumToString<ecCallerId>(list.callerID) + "')";
 
 			if (!m_sql->Request(query, _errorDescription))
 			{
@@ -228,8 +208,8 @@ void IVR::InsertIvrCalls()
 void IVR::UpdateIvrCalls(int _id, const IvrCalls &_caller)
 {
 	std::string error;
-	const std::string query = "update ivr set waiting_time = '" 
-										+ _caller.waiting 
+	const std::string query = "update ivr set call_time = '" 
+										+ std::to_string(_caller.bridgedDuration) 
 										+ "' where phone = '" 
 										+ _caller.phone 
 										+ "' and id ='" + std::to_string(_id) + "'";
@@ -252,7 +232,7 @@ bool IVR::IsExistIvrPhone(const IvrCalls &_caller, std::string &_errorDescriptio
 	
 	const std::string query = "select count(phone) from ivr where phone = '"
 								+ std::string(_caller.phone) + "' and  date_time > '"
-								+ GetCurrentDateTimeAfterMinutes(2) + "' and to_queue = '0' order by date_time desc";
+								+ utils::GetCurrentDateTimeAfterMinutes(2) + "' and to_queue = '0' order by date_time desc";
 
 	if (!m_sql->Request(query, _errorDescription))
 	{	
@@ -281,7 +261,7 @@ int IVR::GetPhoneIDIvr(const std::string &_phone)
 {
 	const std::string query = "select id from ivr where phone = "
 								+ _phone + " and date_time > '"
-								+ GetCurrentStartDay() + "' order by date_time desc limit 1";
+								+ utils::GetCurrentStartDay() + "' order by date_time desc limit 1";
 	
 	if (!m_sql->Request(query))
 	{

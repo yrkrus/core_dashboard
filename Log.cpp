@@ -4,9 +4,10 @@
 #include "Constants.h"
 #include "InternalFunction.h"
 #include "RemoteCommands.h"
-#include "utils.h"
+#include "custom_cast.h"
 
 using namespace utils;
+using namespace custom_cast;
 namespace fs = std::filesystem;
 
 bool Log::GetCommandInfoUser(CommandSendInfoUser &_userInfo, unsigned int _id, std::string &_errorDescription)
