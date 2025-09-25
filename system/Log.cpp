@@ -1,10 +1,11 @@
 #include <vector>
 #include <filesystem>
 #include "Log.h"
-#include "Constants.h"
-#include "InternalFunction.h"
-#include "RemoteCommands.h"
-#include "custom_cast.h"
+#include "../system/Constants.h"
+#include "../utils/InternalFunction.h"
+#include "../utils/custom_cast.h"
+#include "../core/RemoteCommands.h"
+
 
 using namespace utils;
 using namespace custom_cast;

@@ -1,13 +1,13 @@
 #ifndef ICLEAR_H
 #define ICLEAR_H
 
-#include "../ISQLConnect.h"
-#include "../Log.h"
+#include "../interfaces/ISQLConnect.h"
+#include "../system/Log.h"
 
 enum class ECheckInsert 
 {
 	No,		// не надо проверять вставку
-	Yes,	// надо проверять втсавку
+	Yes,	// надо проверять вставку
 };
 
 class IClear 

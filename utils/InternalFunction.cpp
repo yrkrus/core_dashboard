@@ -84,7 +84,8 @@ std::string utils::PhoneParsing(std::string &phone)
 		return phone;
 	}
 
-	return "null"; // всё остальное — «null»
+	phone.clear();	// всё остальное — «null»
+	return phone; 
 };
 
 // перевод общего кол-ва секунда в 00:00:00 формат

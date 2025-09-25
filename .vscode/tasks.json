@@ -15,7 +15,13 @@
 		},
 		{
 			"type": "shell",
-			"label": "3. Backup Base",			
+			"label": "3. KILL gdbserver",			
+			"command": "pkill -9 -f gdbserver",
+			"problemMatcher": []			
+		},
+		{
+			"type": "shell",
+			"label": "4. Backup Base",			
 			"command": "mysqldump -uzabbix -pUFGq4kZMNIMwxTzV -h10.34.222.19 dashboard > /root/core_dashboards/backup_bd/dashboard.sql",
 			"problemMatcher": []			
 		}		

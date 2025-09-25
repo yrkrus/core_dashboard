@@ -1,6 +1,6 @@
 #include "HistoryQueue.h"
-#include "../InternalFunction.h"
-#include "../Constants.h"
+#include "../utils/InternalFunction.h"
+#include "../system/Constants.h"
 
 using namespace utils;
 
@@ -85,7 +85,7 @@ bool HistoryQueue::Insert(const Table &_field, std::string &_errorDescription)
 
 	if (_field.sip != -1)
 	{	 // на случай если нет NULL полей		
-		query = "insert into history_queue (id,number_queue,phone,waiting_time,date_time,sip,talk_time,answered,fail,hash,call_id) values ('" + std::to_string(_field.id) +
+		query = "insert into history_queue (id,number_queue,phone,waiting_time,date_time,sip,talk_time,answered,fail,hash,call_id,id_ivr) values ('" + std::to_string(_field.id) +
 						"','" + std::to_string(_field.number_queue) +
 						"','" + _field.phone +
 						"','" + _field.waiting_time +
@@ -95,7 +95,8 @@ bool HistoryQueue::Insert(const Table &_field, std::string &_errorDescription)
 						"','" + std::to_string(_field.answered) +
 						"','" + std::to_string(_field.fail) +
 						"','" + std::to_string(_field.hash) + 
-						"','" + _field.call_id + "')";
+						"','" + _field.call_id + 
+						"','" + _field.id_ivr + "')";
 	}
 	else
 	{	 // на случай если есть NULL поля
@@ -192,7 +193,8 @@ bool HistoryQueue::Get()
 				case 7:	field.answered		= std::atoi(row[i]);	break;	// answered
 				case 8:	field.fail			= std::atoi(row[i]);	break;	// fail
 				case 9:	if (row[i]) field.hash = string_to_size_t(row[i]);	break;	// hash
-				case 10: if (row[i]) field.call_id = row[i];			break;	// call_id
+				case 10: if (row[i]) field.call_id = row[i];		break;	// call_id
+				case 11: if (row[i]) field.id_ivr = row[i];			break;	// id_ivr
 			}
 		}
 		

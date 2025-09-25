@@ -1,9 +1,9 @@
 #include <boost/property_tree/ptree.hpp>
 #include <map>
 #include "SmsInfo.h"
-#include "Constants.h"
-#include "InternalFunction.h"
-#include "custom_cast.h"
+#include "../system/Constants.h"
+#include "../utils/InternalFunction.h"
+#include "../utils/custom_cast.h"
 
 using namespace utils;
 using namespace custom_cast;
@@ -204,6 +204,10 @@ void SMSInfo::FindInfoSMS()
                                                 : m_log.ToPrint(errorDescription);                   
 
                 smsChecked = false;
+                // empty XML, значит и не дождемся ответа
+                sms.code = ecSmsCode::eExpired; // время ожидания истекло, больше не проверяем его
+                UpdateToBaseInfoSMS(sms.id, sms);               
+                
                 break;
             }
         }      

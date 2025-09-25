@@ -1,9 +1,10 @@
 #include "RemoteCommands.h"
-#include "Log.h"
-#include "InternalFunction.h"
-#include "Constants.h"
+#include "../system/Log.h"
+#include "../utils/InternalFunction.h"
+#include "../utils/custom_cast.h"
+#include "../system/Constants.h"
 #include "Queue.h"
-#include "custom_cast.h"
+
 
 using namespace utils;
 using namespace custom_cast;

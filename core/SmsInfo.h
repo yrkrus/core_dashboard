@@ -4,8 +4,8 @@
 #include <string>
 #include <vector>
 #include <boost/property_tree/ptree.hpp>
-#include "IHTTPRequest.h"
-#include "ISQLConnect.h"
+#include "../interfaces/IHTTPRequest.h"
+#include "../interfaces/ISQLConnect.h"
 
 static std::string HTTP_REQUEST_SMS = "https://a2p-sms-https.beeline.ru/proto/http/?gzip=none&user=%user&pass=%pass&action=status&sms_id=%sms_id";
 

@@ -2,7 +2,7 @@
 #define IFIREBIRD_CONNECT_H
 
 #include <ibase.h>
-#include "Constants.h"
+#include "../system/Constants.h"
 
 class IFirebirdConnect 
 {

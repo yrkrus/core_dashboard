@@ -1,9 +1,10 @@
 #include <vector>
 #include <string>
 #include "Queue.h"
-#include "InternalFunction.h"
-#include "Constants.h"
-#include "custom_cast.h"
+#include "../utils/InternalFunction.h"
+#include "../utils/custom_cast.h"
+#include "../system/Constants.h"
+
 
 using namespace utils;
 using namespace custom_cast;

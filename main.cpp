@@ -9,13 +9,13 @@
 #include <cstring>
 #include <cstdlib>
 
-#include "ISQLConnect.h"
-#include "Constants.h"
-#include "InternalFunction.h"
-#include "RemoteCommands.h"
-#include "TCPServer.h"
-#include "IVR.h"
-#include "ActiveSip.h"
+#include "interfaces/ISQLConnect.h"
+#include "system/Constants.h"
+#include "utils/InternalFunction.h"
+#include "core/RemoteCommands.h"
+#include "core/TCPServer.h"
+#include "core/IVR.h"
+#include "core/ActiveSip.h"
 
 #include "clearing_current_day/ClearingCurrentDay.h"
 #include "different_checks/CheckInternal.h"
@@ -143,8 +143,7 @@ static void _core_info(bool _isDaemonize)
     printf("%s\t | base:%s\t | TCP server PORT:%u\n",
             CONSTANTS::VERSION::CORE.c_str(), 
             AUTH::MYSQL::BD.c_str(),
-            CONSTANTS::SERVER::PORT);
-            
+            CONSTANTS::SERVER::PORT);      
     Sleep(3000);
 }
 

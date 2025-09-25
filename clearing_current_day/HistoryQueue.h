@@ -22,6 +22,7 @@ public:
 		int				fail;
 		size_t			hash;
 		std::string		call_id;
+		std::string		id_ivr;
 	};
 	using HistoryQueueTable = std::vector<Table>;
 	

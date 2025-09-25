@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 #include "IClear.h"
-#include "../SmsInfo.h"
+#include "../core/SmsInfo.h"
 
 class HistorySms : public IClear
 {

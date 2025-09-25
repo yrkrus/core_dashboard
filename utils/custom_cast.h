@@ -1,21 +1,20 @@
+/** 
+ *      @file custom_cast.h 
+ *      @brief разные преобразования типов 
+*/
+
 #ifndef UTILS_H
 #define UTILS_H
 
-/*
-
-    @file custom_cast.h 
-
-*/
-
 #include <string>
-#include "RemoteCommands.h"
-#include "Queue.h"
-#include "Log.h"
-#include "CallInfo.h"
-#include "SmsInfo.h"
-#include "IVR.h"
-#include "different_checks/Check_TrunkSip.h"
-#include "IAsteriskApplication.h"
+#include "../core/RemoteCommands.h"
+#include "../core/Queue.h"
+#include "../system/Log.h"
+#include "../CallInfo.h"
+#include "../core/SmsInfo.h"
+#include "../core/IVR.h"
+#include "../different_checks/Check_TrunkSip.h"
+#include "../interfaces/IAsteriskApplication.h"
 
 namespace custom_cast 
 {

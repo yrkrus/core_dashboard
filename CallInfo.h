@@ -3,8 +3,8 @@
 
 #include <string>
 #include <vector>
-#include "IHTTPRequest.h"
-#include "ISQLConnect.h"
+#include "interfaces/IHTTPRequest.h"
+#include "interfaces/ISQLConnect.h"
 
 static std::string HTTP_REQUEST_CALL = "https://num.voxlink.ru/get/?num=%phone";
 

@@ -8,7 +8,7 @@
 #include <mysql/mysql.h>
 #include <string>
 #include <memory>
-#include "AUTH.h"
+#include "../system/AUTH.h"
 
 #define HOST AUTH::MYSQL::HOST.c_str();
 #define BASE AUTH::MYSQL::BD.c_str();

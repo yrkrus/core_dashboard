@@ -3,20 +3,20 @@
 
 #include <string>
 #include <vector>
-#include "IAsteriskData.h"
-#include "IAsteriskApplication.h"
-#include "ISQLConnect.h"
-#include "Log.h"
+#include "../interfaces/IAsteriskData.h"
+#include "../interfaces/IAsteriskApplication.h"
+#include "../interfaces/ISQLConnect.h"
+#include "../system/Log.h"
+#include "Queue.h"
 
 
-#define MAX_IVR_PARSING_LINES 9		// максимальное значение при парсинге сырых данных IVR
 #define CHANNELS_FIELDS 14			// кол-во полей при разборе начинается разбор с 0 ! итого 14 получиться
 #define DELIMITER_CHANNELS_FIELDS '!' // разделитель 
 
 // static std::string IVR_COMMANDS			= "Playback|lukoil|ivr-3";	// ищем только эти слова при формировании IVR
 static std::string IVR_COMMANDS		=	"Playback";
 // static std::string IVR_COMMANDS_EXT1	= "IVREXT";					// пропуск этой записи
-// static std::string IVR_COMMANDS_EXT2	= "Spasibo";				// пропуск этой записи
+ static std::string IVR_COMMANDS_EXT2	= "Spasibo";				// пропуск этой записи
 // static std::string IVR_COMMANDS_EXT3	= "recOfficeOffline";		// пропуск этой записи
 // static std::string IVR_COMMANDS_EXT4	= "noservice";				// пропуск этой записи 
 // static std::string IVR_COMMANDS_EXT5	= "agent";					// пропуск этой записи 
@@ -37,7 +37,8 @@ static std::string IVR_COMMANDS		=	"Playback";
 // 																			   + " | grep -v \"" + IVR_COMMANDS_IK2 + "\" "
 // 																			   + " | grep -v \"" + IVR_COMMANDS_IK3 + "\" ";
 
-static std::string IVR_REQUEST = "asterisk -rx \"core show channels concise\" | grep -E \"" + IVR_COMMANDS + "\" ";
+static std::string IVR_REQUEST = "asterisk -rx \"core show channels concise\" | grep -E \"" + IVR_COMMANDS + "\" "
+																		  + " | grep -v \"" + IVR_COMMANDS_EXT2 + "\" ";
 
 class IVR;
 using SP_IVR = std::shared_ptr<IVR>;
@@ -49,8 +50,26 @@ enum class ecCallerId
 	Domru_220000,		// 220-000
 	Sts,				// STS
 	Comagic,			// COMAGIC
-	BeelineMih,			// MIH (михайловка)
+	BeelineMih,			// MIH (михайловка)`// TODO удалить не используется
 };
+
+// вспомогательный класс для времени в ivr
+class IVRTime
+{
+	private:
+	SP_SQL								m_sql;
+	std::map<ecQueueNumber, uint8_t> 	m_value; 
+	
+	void CreateMap(ecQueueNumber);	
+	uint16_t GetTime(ecQueueNumber);
+
+	public:
+	IVRTime();
+	~IVRTime();
+
+	uint16_t time(ecQueueNumber);
+};
+
 
 class IVR : public IAsteriskData			
 {
@@ -70,29 +89,19 @@ public:
 		std::string	AMAFlags;       // AMA флаги(другие флаги ведения учёта)
 		uint16_t duration;          // время жизни канала в секундах
 		std::string bridgedChannel; // имя “связного” канала, если есть(иначе пусто)
-		uint16_t bridgedDuration;	//время “сращивания”(в секундах)
-		std::string uniqueID;       //уникальный идентификатор сессии
-		std::string call_id;       //идентификатор “корневого” звонка(call - trace)
-
-		
-		//std::string phone;					// текущий номер телефона который в IVR слушает
-		//std::string waiting;						// время в (сек) которое он слушает	
-	//	ECallerId callerID = Unknown;	// откуда пришел звонок		
-		//std::string call_id;						// id звонка
+		uint16_t bridgedDuration;	// время “сращивания”(в секундах)
+		std::string uniqueID;       // уникальный идентификатор сессии
+		std::string call_id;        // идентификатор “корневого” звонка(call - trace)	id звонка
+		ecQueueNumber queue = ecQueueNumber::eUnknown; // в какую очередь зайдет звонок
 
 		inline bool check() const noexcept
 		{
-			// если в phone или waiting есть подстрока "null" 
-			// или callerID == Unknown — сразу false
-			// if (phone.empty()					||
-			// 	waiting.empty()					||
-			// 	callerID == ECallerId::Unknown 	||
-			// 	call_id.empty()
-			// )
-			// {
-			// 	return false;
-			// }
-			return true;
+			return ((application == ecAsteriskApp::Playback) &&
+					(callerID != ecCallerId::Unknown) &&
+					(!phone.empty()) &&
+					(!call_id.empty()) &&
+					(bridgedDuration > 0) &&
+					(queue != ecQueueNumber::eUnknown)); 
 		}
 	};
 	
@@ -108,16 +117,25 @@ private:
 	std::vector<IvrCalls>	m_listIvr;	
 	SP_SQL					m_sql;
 	Log						m_log;
+	IVRTime					m_time;
 
 	bool CreateCallers(const std::string&, IvrCalls&);
 	bool CheckCallers(const IvrCalls &);												// проверка корреткности стуктуры звонка
 	bool IsExistListIvr();	
-
 	void InsertIvrCalls();																// вставка в БД данных
-	void UpdateIvrCalls(int _id, const IvrCalls &_caller);								// обновдление звонка IVR по БД
-	bool IsExistIvrPhone(const IvrCalls &_caller, std::string &_errorDescription);		// есть ли такой номер в БД
-	int GetPhoneIDIvr(const std::string &_phone);										// id phone по БД
+	void UpdateIvrCalls(uint32_t _id, const IvrCalls &_caller);							// обновдление звонка IVR по БД
+	bool IsExistCallIvr(const IvrCalls &_caller, std::string &_errorDescription);		// есть ли такой номер в БД (ivr)
 
+	void IvrLoop(const IvrCalls &_caller); 		// звонок кидаем в ivr_loop (т.к. он повторный)
+	bool IsExistCallIvrLoop(const IvrCalls &_caller);// есть ли такой номер в БД (ivr_loop)	
+	void InsertIvrLoop(const IvrCalls &_caller);
+	void UpdateIvrLoop(const IvrCalls &_caller, int _id);
+	bool GetIDLoop(const std::string &_phone, const std::string &_call_id, uint32_t &_id);	// id phone по БД (ivr_loop)
+	
+
+	bool GetID(const std::string &_phone, const std::string &_call_id, uint32_t &_id);	// id phone по БД
+	
+	ecQueueNumber FindQueue(ecCallerId _caller);										// получить номер очереди из ecCallerId
 };
 
 #endif //IVR_H

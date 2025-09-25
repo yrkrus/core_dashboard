@@ -3,9 +3,9 @@
 
 #include <memory>
 #include "Check_TrunkSip.h"
-#include "../PotokDispether.h"
+#include "../system/PotokDispether.h"
 #include "../CallInfo.h"
-#include "../SmsInfo.h"
+#include "../core/SmsInfo.h"
 
 
 class CheckInternal

@@ -6,8 +6,8 @@
 #include <vector>
 #include <string>
 #include <memory>
-#include "IFile.h"
-#include "PotokDispether.h"
+#include "../interfaces/IFile.h"
+#include "../system/PotokDispether.h"
 #include "Queue.h"
 
 static std::string COMMAND_ADD_QUEUE = "asterisk -rx \"queue add member Local/%sip@from-queue/n to %queue penalty 0 as %sip state_interface hint:%sip@ext-local\" ";

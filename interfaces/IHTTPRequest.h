@@ -1,10 +1,9 @@
 #ifndef IHTTP_REQUEST_H
 #define IHTTP_REQUEST_H
 
-#include "Log.h"
 #include <curl/curl.h>
 #include <string>
-
+#include "../system/Log.h"
 
 class IHTTPRequest
 {

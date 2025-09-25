@@ -5,8 +5,8 @@
 
 #include <string>
 #include <vector>
-#include "IAsteriskData.h"
-#include "ISQLConnect.h"
+#include "../interfaces/IAsteriskData.h"
+#include "../interfaces/ISQLConnect.h"
 #include "Queue.h"
 
 
@@ -15,13 +15,18 @@ static std::string SIP_COMMANDS_EXT2		= "Ring";					// пропуск этой �
 static std::string SIP_COMMANDS_EXT3		= "Down";					// пропуск этой записи
 static std::string SIP_COMMANDS_EXT4		= "Outgoing";				// пропуск этой записи
 static std::string SIP_COMMANDS_EXT5		= "FMPR";					// пропуск этой записи (эта запись на исходящий звонок)
+static std::string SIP_COMMANDS_FND			= "func-apply-sipheaders|ext-queues";	// поиск по этой строке
 
 static std::string SESSION_QUEUE_RESPONSE	= "asterisk -rx \"queue show %queue\"";
-static std::string SESSION_SIP_RESPONSE 	= "asterisk -rx \"core show channels concise\"" " | grep -v \"" + SIP_COMMANDS_EXT1 + "\"" 
-																							" | grep -v \"" + SIP_COMMANDS_EXT2 + "\""
-																							" | grep -v \"" + SIP_COMMANDS_EXT3 + "\""
-																							" | grep -v \"" + SIP_COMMANDS_EXT4 + "\""
+// static std::string SESSION_SIP_RESPONSE 	= "asterisk -rx \"core show channels concise\"" " | grep -v \"" + SIP_COMMANDS_EXT1 + "\"" 
+// 																							" | grep -v \"" + SIP_COMMANDS_EXT2 + "\""
+// 																							" | grep -v \"" + SIP_COMMANDS_EXT3 + "\""
+// 																							" | grep -v \"" + SIP_COMMANDS_EXT4 + "\""
+// 																							" | grep -v \"" + SIP_COMMANDS_EXT5 + "\"";
+static std::string SESSION_SIP_RESPONSE 	= "asterisk -rx \"core show channels concise\"" " | grep -E \"" + SIP_COMMANDS_FND + "\""
 																							" | grep -v \"" + SIP_COMMANDS_EXT5 + "\"";
+
+
 
 
 
@@ -47,9 +52,11 @@ namespace active_sip
 	struct ActiveTalkCall 
 	{
 		std::string phone;			// текущий номер телфеона с которым ведется беседа
+		std::string phone_raw;		// текущий номер телфеона с которым ведется беседа (сырой как по aster проходит)
 		std::string sip;			// внутренний sip который ведет беседу
 		std::string talkTime;		// время развговора  //TODO потом в int переделать	
-		std::string callID;			// id звонка	
+		std::string callID;			// id звонка
+		std::string ivr_callID;		// id звонка в ivr	
 	};
 	using ActiveTalkCallList = std::vector<ActiveTalkCall>;
 
@@ -118,6 +125,7 @@ namespace active_sip
 		void InsertOperatorsQueue(const std::string &_sip, const std::string &_queue);	// добавление очереди оператору в БД таблицы operators_queue
 	
 		bool CreateActiveCall(const std::string &_lines, const std::string &_sipNumber, ActiveTalkCall &_caller); // парсинг и нахождение активного звонка с которым разговаривает оператор
+		bool FindActiveCallIvrID(const std::string &_lines, const std::string &_phone, ActiveTalkCall &_caller); // парсинг и нахожднение id_ivr
 		bool CheckActiveCall(const ActiveTalkCall &_caller); // проверка корректности структуры звонка
 
 		void UpdateActiveCurrentTalkCalls(); // обновление текущих звонков операторов

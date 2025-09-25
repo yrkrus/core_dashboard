@@ -1,6 +1,6 @@
 #include "HistoryIvr.h"
-#include "../InternalFunction.h"
-#include "../Constants.h"
+#include "../utils/InternalFunction.h"
+#include "../system/Constants.h"
 
 using namespace utils;
 
@@ -82,7 +82,7 @@ bool HistoryIvr::Insert(const Table &_field, std::string &_errorDescription)
 	std::string query;
 	if (!_field.phone_operator.empty() && !_field.region.empty()) 
 	{
-		query = "insert into history_ivr (id,phone,waiting_time,date_time,trunk,to_queue,to_robot,operator,region) values ('" + std::to_string(_field.id) +
+		query = "insert into history_ivr (id,phone,waiting_time,date_time,trunk,to_queue,to_robot,operator,region,call_id,call_time) values ('" + std::to_string(_field.id) +
 								"','" + _field.phone +
 								"','" + _field.waiting_time +
 								"','" + _field.date_time +
@@ -90,7 +90,9 @@ bool HistoryIvr::Insert(const Table &_field, std::string &_errorDescription)
 								"','" + std::to_string(_field.to_queue) +
 								"','" + std::to_string(_field.to_robot) + 
 								"','" + _field.phone_operator +
-								"','" + _field.region +	"')";
+								"','" + _field.region +	
+								"','" + _field.call_id +	
+								"','" + std::to_string(_field.call_time) + "')";
 	} 
 	else 
 	{
@@ -183,6 +185,8 @@ bool HistoryIvr::Get()
 			case 6:	field.to_robot = std::atoi(row[i]);	break;	// to_robot
 			case 7: if (row[i]) field.phone_operator = row[i];		break;	// operator
 			case 8: if (row[i]) field.region = row[i];				break;	// region			
+			case 9: if (row[i]) field.call_id = row[i];				break;	// call_id
+			case 10: if (row[i]) field.call_time = std::atoi(row[i]);	break;	// call_time
 			}
 		}
 

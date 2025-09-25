@@ -5,9 +5,9 @@
 #include <vector>
 
 #include "ICheck.h"
-#include "../Log.h"
-#include "../IAsteriskData.h"
-#include "../ISQLConnect.h"
+#include "../system/Log.h"
+#include "../interfaces/IAsteriskData.h"
+#include "../interfaces/ISQLConnect.h"
 
 static std::string TRUNK_SIP_COMMANDS_EXT1	= "Host";					// пропуск этой записи
 static std::string TRUNK_SIP_REQUEST = "asterisk -rx \"sip show registry\" | grep -v \""+TRUNK_SIP_COMMANDS_EXT1+ "\" ";

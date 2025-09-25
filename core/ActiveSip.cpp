@@ -1,7 +1,7 @@
 #include "ActiveSip.h"
-#include "InternalFunction.h"
-#include "Constants.h"
-#include "custom_cast.h"
+#include "../utils/InternalFunction.h"
+#include "../utils/custom_cast.h"
+#include "../system/Constants.h"
 
 using namespace utils;
 using namespace custom_cast;
@@ -137,6 +137,21 @@ void active_sip::ActiveSession::CreateListActiveTalkCalls()
 			ActiveTalkCall call;
 			if (CreateActiveCall(line, sip.sipNumber, call))
 			{
+				// поищем id_ivr из сырых данных
+				{
+					std::istringstream ss(rawLines);
+					std::string line;
+					while (std::getline(ss, line))
+					{					
+						if (!FindActiveCallIvrID(line, call.phone_raw, call)) 
+						{
+							continue;
+						}					
+						
+						//т.к нашли нет смысла дальше что то искать
+						break;
+					}
+				}			
 				m_listCall.push_back(call);
 				break; // нет смысла дальше т.к. нашли нужные данные
 			}
@@ -515,6 +530,15 @@ void active_sip::ActiveSession::InsertOperatorsQueue(const std::string &_sip, co
 
 bool active_sip::ActiveSession::CreateActiveCall(const std::string &_lines, const std::string &_sipNumber, ActiveTalkCall &_caller)
 {	
+	/*
+		ЧТОБЫ НЕ ЗАБЫТЬ КОГДА ДОБЕРУСЬ ДО СЮДА!!
+		разбор идет по 2ой строке!!
+	SIP/Dru_220000-0002b661!ext-queues!5000!54!Up!Queue!5000,tcc,,,50,,,,,!79275052333!!!3!276!0870397a-eedf-4c39-9e58-556f4e838e0e!1758655112.320303
+	Local/64197@from-queue-00011669;2!macro-dial-one!s!55!Up!Dial!sip/64197,,trM(auto-blkvm)Ib(func-apply-sipheaders^s^1)!79275052333!!!3!234!2f3f7fa2-a55f-45d4-8ffa-77abdd22cba4!1758655155.320311
+	[root@srvasterisk ~]# clear && asterisk -rx "core show channels concise" | grep -v "ivr-5" | grep -v "Ring" | grep -v "Down" | grep -v "FMPR" | grep -v "Outgoing"
+
+	*/
+	
 	if (_lines.find("Local/" + _sipNumber) == std::string::npos)
 	{
 		// нет нужной строки на выход
@@ -553,6 +577,7 @@ bool active_sip::ActiveSession::CreateActiveCall(const std::string &_lines, cons
 	try 
 	{
 		_caller.phone = PhoneParsing(lines.at(7));
+		_caller.phone_raw = lines.at(7);
     }
     catch (const std::out_of_range& e) 
 	{
@@ -587,6 +612,63 @@ bool active_sip::ActiveSession::CreateActiveCall(const std::string &_lines, cons
     }
 
 	return CheckActiveCall(_caller);	
+}
+
+bool active_sip::ActiveSession::FindActiveCallIvrID(const std::string &_lines, const std::string &_phone, ActiveTalkCall &_caller)
+{
+	if (_lines.find(_phone) == std::string::npos)
+	{
+		// нет нужной строки на выход
+		return false;
+	}
+	
+	if (_lines.find("Local/") != std::string::npos) 
+	{
+		if (_lines.find(_phone) == std::string::npos)
+		{
+			// нет нужной строки на выход
+			return false;
+		}		
+	}
+
+	std::vector<std::string> lines;
+	
+	std::istringstream iss(_lines);
+    std::string token;
+    while (std::getline(iss, token, '!')) 
+	{
+		if (token.empty())
+		{
+			continue;
+		}		 
+
+		lines.push_back(token);
+	}
+     
+	if ((lines.empty()) || (lines.size() < 11)) 
+	{
+		return false;
+	}	
+		
+	try 
+	{
+		// чтобы не звхватить id разговора
+		if (_caller.callID == lines.at(11)) 
+		{
+			return false;	
+		}
+
+		_caller.ivr_callID = lines.at(11);	
+    }
+    catch (const std::out_of_range& e) 
+	{
+        auto msgErr = StringFormat("%s\t lines\t %s\t what=%s ", METHOD_NAME, _lines.c_str(), e.what());
+		m_log.ToFile(ecLogType::eError, msgErr);        
+		
+		return false;
+    }
+
+	return true;
 }
 
 bool active_sip::ActiveSession::CheckActiveCall(const ActiveTalkCall &_caller)
@@ -629,14 +711,12 @@ void active_sip::ActiveSession::UpdateTalkCallOperator()
 			continue;
 		}
 
-		const std::string query = "update queue set sip = '"
-									+ call.sip + "', talk_time = '"
-									+ GetTalkTime(call.talkTime)
-									+"', call_id = '"
-									+ call.callID
-									+ "', answered ='1' where phone = '"
-									+ call.phone + "' and id ='"
-									+ id + "'";
+		const std::string query = "update queue set sip = '" + call.sip 
+															 + "', talk_time = '" + GetTalkTime(call.talkTime)
+															 +"', call_id = '" 	+ call.callID
+															 + "', id_ivr = '"+ call.ivr_callID
+															 + "', answered ='1' where phone = '" + call.phone + 
+															 "' and id ='" + id + "'";
 
 		std::string error;
 		if (!m_sql->Request(query, error))

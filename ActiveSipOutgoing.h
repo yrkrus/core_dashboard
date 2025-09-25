@@ -5,9 +5,9 @@
 
 #include <string>
 #include <vector>
-#include "IAsteriskData.h"
-#include "ISQLConnect.h"
-#include "Log.h"
+#include "interfaces/IAsteriskData.h"
+#include "interfaces/ISQLConnect.h"
+#include "system/Log.h"
 
 namespace active_sip_outgoing
 { 

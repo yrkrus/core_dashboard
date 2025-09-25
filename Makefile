@@ -27,17 +27,24 @@ else ifeq ($(BUILD),valgrind)
               -L/usr/lib64/firebird -lfbclient -lcurl
   LDFLAGS  := -pthread $(shell mysql_config --libs) -lstdc++fs
 else
-  # debug с ASan
-  CXXFLAGS := -std=c++17 -Wall -Werror -fsanitize=address \
-              -fdiagnostics-color=always -g -Og \
-              -pthread $(shell mysql_config --cflags) \
-              -L/usr/lib64/firebird -lfbclient -lcurl
-  LDFLAGS  := -pthread $(shell mysql_config --libs) -lstdc++fs -fsanitize=address
+#   # debug с ASan
+#   CXXFLAGS := -std=c++17 -Wall -Werror -fsanitize=address \
+#               -fdiagnostics-color=always -g -Og \
+#               -pthread $(shell mysql_config --cflags) \
+#               -L/usr/lib64/firebird -lfbclient -lcurl
+#   LDFLAGS  := -pthread $(shell mysql_config --libs) -lstdc++fs -fsanitize=address
+
+CXXFLAGS := -std=c++17 -Wall -Werror -g -O0                                     \
+            -fno-inline -fno-inline-functions -fno-optimize-sibling-calls       \
+            -fno-omit-frame-pointer  -fdiagnostics-color=always                 \
+            -pthread $(shell mysql_config --cflags)                             \
+            -L/usr/lib64/firebird -lfbclient -lcurl
+ LDFLAGS  := -pthread $(shell mysql_config --libs) -lstdc++fs
 endif
 
 # источники
 SRC_ROOT := $(wildcard *.cpp)
-SRC_AST  := $(wildcard clearing_current_day/*.cpp different_checks/*.cpp)
+SRC_AST  := $(wildcard clearing_current_day/*.cpp core/*.cpp different_checks/*.cpp interfaces/*.cpp system/*.cpp utils/*.cpp)
 SOURCES  := $(SRC_ROOT) $(SRC_AST)
 OBJECTS  := $(SOURCES:.cpp=.o)
 TARGET   := core_dashboard

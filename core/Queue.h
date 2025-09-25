@@ -7,9 +7,9 @@
 #include <vector>
 #include <sstream>
 #include <map>
-#include "Log.h"
-#include "IAsteriskData.h"
-#include "ISQLConnect.h"
+#include "../system/Log.h"
+#include "../interfaces/IAsteriskData.h"
+#include "../interfaces/ISQLConnect.h"
 
 
 static std::string QUEUE_COMMANDS		= "Queue|to-atsaero5005";
@@ -35,24 +35,17 @@ class Queue : public IAsteriskData
 public:	
 	struct QueueCalls
 	{
-		std::string phone	= "null";					// текущий номер телефона который в очереди сейчас
-		std::string waiting = "null";					// время в (сек) которое сейчас в очереди находится
+		std::string phone;								// текущий номер телефона который в очереди сейчас
+		std::string waiting;							// время в (сек) которое сейчас в очереди находится
 		ecQueueNumber queue	= ecQueueNumber::eUnknown;	// номер очереди
 	
 		inline bool check() const noexcept
 		{
-			// если в phone или waiting есть подстрока "null" 
-			// или callerID == Unknown — сразу false
-			if (phone.find("null")		!= std::string::npos ||
-				waiting.find("null")	!= std::string::npos ||
-				queue					== ecQueueNumber::eUnknown)
-			{				 
-				return false;
-			}
-
-			return true;
+			return ((!phone.empty()) 		&&
+					(!waiting.empty())		&&
+					(queue != ecQueueNumber::eUnknown));			
 		}
-	};
+	};	
 	using QueueCallsList = std::vector<QueueCalls>;
 	
 	struct CallsInBase	// структура из БД

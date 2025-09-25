@@ -7,7 +7,7 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
-#include "ISQLConnect.h"
+#include "../interfaces/ISQLConnect.h"
 
 
 #define LOG_NAME_DEFAULT "unnamed_log.log"

@@ -7,9 +7,9 @@
 #include <vector>
 #include <sstream>
 #include <map>
-#include "Log.h"
-#include "IAsteriskData.h"
-#include "ISQLConnect.h"
+#include "system/Log.h"
+#include "interfaces/IAsteriskData.h"
+#include "interfaces/ISQLConnect.h"
 
 //static std::string QUEUE_COMMANDS		= "Queue|to-atsaero5005";
 //static std::string QUEUE_COMMANDS_EXT1	= "App";

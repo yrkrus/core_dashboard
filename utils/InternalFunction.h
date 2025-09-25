@@ -7,7 +7,7 @@
 #include <iostream>	
 #include <sstream>
 #include <vector>
-#include "RemoteCommands.h"
+#include "../core/RemoteCommands.h"
 
 namespace utils
 {

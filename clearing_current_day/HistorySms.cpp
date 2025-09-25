@@ -1,6 +1,6 @@
 #include "HistorySms.h"
-#include "../InternalFunction.h"
-#include "../Constants.h"
+#include "../utils/InternalFunction.h"
+#include "../system/Constants.h"
 
 using namespace utils;
 

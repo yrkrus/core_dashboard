@@ -21,6 +21,9 @@ public:
 		int			to_robot;
 		std::string phone_operator;
 		std::string region;
+		std::string call_id;
+		int 		call_time;
+
 	};
 	using HistoryIvrTable = std::vector<Table>;
 
