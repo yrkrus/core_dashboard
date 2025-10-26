@@ -23,6 +23,7 @@ public:
 		std::string region;
 		std::string call_id;
 		int 		call_time;
+		int			number_queue;
 
 	};
 	using HistoryIvrTable = std::vector<Table>;

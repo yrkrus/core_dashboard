@@ -51,6 +51,7 @@ enum class ecCallerId
 	Sts,				// STS
 	Comagic,			// COMAGIC
 	BeelineMih,			// MIH (михайловка)`// TODO удалить не используется
+	InternalCaller,		// внутренний звонок // TODO для звонокв в очередь 5911 (техподдержка ИК)
 };
 
 // вспомогательный класс для времени в ivr
@@ -82,7 +83,7 @@ public:
 		std::string extension;      // номер(или “s”)											2
 		uint16_t priority;	       	// приоритет												3
 		ecAsteriskState state = ecAsteriskState::Unknown;		// текущее состояние канала (Up, Ring, Down и т.п.)		
-		ecAsteriskApp application = ecAsteriskApp::Unknown;   // текущее приложение(Dial, Playback, …)					5
+		ecAsteriskApp application = ecAsteriskApp::Unknown;   	// текущее приложение(Dial, Playback, …)					5
 		std::string	data;           // параметры приложения
 		ecCallerId	callerID = ecCallerId::Unknown;       // откуда звонок пришел
 		std::string phone;      	// номер телефона 

@@ -3,6 +3,8 @@
 #include "../utils/custom_cast.h"
 #include "../system/Constants.h"
 
+#define PHONE_SIZE_INTERNAL 5
+
 using namespace utils;
 using namespace custom_cast;
 
@@ -81,7 +83,8 @@ void active_sip::ActiveSession::CreateListActiveSessionOperators()
 	static const std::vector<ecQueueNumber> queueList =
 	{
 		ecQueueNumber::e5000,
-		ecQueueNumber::e5050,		
+		ecQueueNumber::e5050,
+		ecQueueNumber::e5911,		
 	};
 
 	for (const auto &queue : queueList) 
@@ -574,9 +577,18 @@ bool active_sip::ActiveSession::CreateActiveCall(const std::string &_lines, cons
 
 	_caller.sip = _sipNumber;
 	
+
+	// for (int i=0; i<8; ++i) 
+	// {
+	// 	printf("lines[%u] - %s\n", i, lines[i].c_str());
+	// } 
+
+
 	try 
 	{
-		_caller.phone = PhoneParsing(lines.at(7));
+		lines.at(7).size() != PHONE_SIZE_INTERNAL ? _caller.phone = PhoneParsing(lines.at(7))
+							    				  : _caller.phone = PhoneParsingInternal(lines.at(7)); // считаем что звонок внутренний для техподдержки ИК  
+		
 		_caller.phone_raw = lines.at(7);
     }
     catch (const std::out_of_range& e) 

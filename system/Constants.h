@@ -12,7 +12,7 @@
 #endif
 
 #define BUILD __DATE__ " " __TIME__
-
+#define LOG_DESTINATION "/root/core_dashboards/old_core/"
 
 namespace CONSTANTS
 {   
@@ -82,8 +82,6 @@ namespace CONSTANTS
     //iptables -I INPUT -p tcp --dport 12345 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT
    
 
-    // при совершении звонка, в ivr добавить еще id_звонка из queue таблицы,
-    // потом будет проще найти этот звонок + повторные звонки будут проще отслеживаться
 
     // бэкапы базы будут тут жить \\srvbak\G$\dashboard_backup_COV
 

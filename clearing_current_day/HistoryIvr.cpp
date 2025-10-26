@@ -82,7 +82,7 @@ bool HistoryIvr::Insert(const Table &_field, std::string &_errorDescription)
 	std::string query;
 	if (!_field.phone_operator.empty() && !_field.region.empty()) 
 	{
-		query = "insert into history_ivr (id,phone,waiting_time,date_time,trunk,to_queue,to_robot,operator,region,call_id,call_time) values ('" + std::to_string(_field.id) +
+		query = "insert into history_ivr (id,phone,waiting_time,date_time,trunk,to_queue,to_robot,operator,region,call_id,call_time,number_queue) values ('" + std::to_string(_field.id) +
 								"','" + _field.phone +
 								"','" + _field.waiting_time +
 								"','" + _field.date_time +
@@ -92,7 +92,8 @@ bool HistoryIvr::Insert(const Table &_field, std::string &_errorDescription)
 								"','" + _field.phone_operator +
 								"','" + _field.region +	
 								"','" + _field.call_id +	
-								"','" + std::to_string(_field.call_time) + "')";
+								"','" + std::to_string(_field.call_time) + 
+								"','" + std::to_string(_field.number_queue)	+ "')";
 	} 
 	else 
 	{
@@ -187,6 +188,7 @@ bool HistoryIvr::Get()
 			case 8: if (row[i]) field.region = row[i];				break;	// region			
 			case 9: if (row[i]) field.call_id = row[i];				break;	// call_id
 			case 10: if (row[i]) field.call_time = std::atoi(row[i]);	break;	// call_time
+			case 11: if (row[i]) field.number_queue = std::atoi(row[i]);	break;	// number_queue
 			}
 		}
 

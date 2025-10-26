@@ -75,6 +75,9 @@
         "valarray": "cpp",
         "unordered_set": "cpp",
         "complex": "cpp",
-        "typeindex": "cpp"
-    }
+        "typeindex": "cpp",
+        "strstream": "cpp",
+        "cfenv": "cpp"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }

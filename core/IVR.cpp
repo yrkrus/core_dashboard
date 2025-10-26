@@ -115,7 +115,10 @@ bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 		_caller.application = StringToEnum<ecAsteriskApp>(lines[5]);    			// текущее приложение(Dial, Playback, …)
 		_caller.data = lines[6];             										// параметры приложения
 		_caller.callerID = StringToEnum<ecCallerId>(lines[0]+" "+lines[6]);			// caller ID 
-		_caller.phone = utils::PhoneParsing(lines[7]);								// номер телефона
+		
+		_caller.callerID != ecCallerId::InternalCaller ? _caller.phone = utils::PhoneParsing(lines[7])			// номер телефона
+													   : _caller.phone = utils::PhoneParsingInternal(lines[7]); 
+
 		_caller.AMAFlags = lines[8];      											// AMA флаги(другие флаги ведения учёта)
 		_caller.duration = !lines[9].empty() ? static_cast<uint16_t>(std::stoi(lines[9])) : 0; // время жизни канала в секундах
 		_caller.bridgedChannel = lines[10]; 										// имя “связного” канала, если есть(иначе пусто)
@@ -164,12 +167,16 @@ void IVR::InsertIvrCalls()
 		std::string errorDescription;
 
 		// проверим не повторный ли это звонок (очередь -> лиза -> очередь и т.д.)
-		if (call.bridgedDuration > m_time.time(call.queue)) 
+		// для ИК техподдержки это не нужно
+		if (call.queue != ecQueueNumber::e5911) 
 		{
-			// повторный звонок, кидаем его в ivr_loop
-			IvrLoop(call);
-			continue;
-		}		
+			if (call.bridgedDuration > m_time.time(call.queue)) 
+			{
+				// повторный звонок, кидаем его в ivr_loop
+				IvrLoop(call);
+				continue;
+			}	
+		} 			
 		
 		// проверим есть ли такой номер в бд
 		if (IsExistCallIvr(call, errorDescription)) 
@@ -185,11 +192,12 @@ void IVR::InsertIvrCalls()
 		else  
 		{ 
 			// номера такого нет нужно добавить в БД
-			const std::string query = "insert into ivr (phone,call_time,trunk,call_id) values ('" 
+			const std::string query = "insert into ivr (phone,call_time,trunk,call_id,number_queue) values ('" 
 									+ call.phone + "','" 
 									+ std::to_string(call.bridgedDuration) + "','" 
 									+ EnumToString<ecCallerId>(call.callerID) + "','"
-									+ call.call_id+ "')";
+									+ call.call_id + "','"
+									+ EnumToString<ecQueueNumber>(call.queue) + "')";
 
 			if (!m_sql->Request(query, errorDescription))
 			{
@@ -392,6 +400,7 @@ ecQueueNumber IVR::FindQueue(ecCallerId _caller)
 		case ecCallerId::Comagic:
 		case ecCallerId::BeelineMih: return ecQueueNumber::e5000; break;
 		case ecCallerId::Domru_220000: return ecQueueNumber::e5050; break;
+		case ecCallerId::InternalCaller: return ecQueueNumber::e5911; break;
 		default:
 			return ecQueueNumber::eUnknown; break;
 
@@ -415,6 +424,7 @@ uint16_t IVRTime::GetTime(ecQueueNumber _queue)
 
 		case ecQueueNumber::e5000_e5050:	// не используется
 		case ecQueueNumber::e5005:			// не используется
+		case ecQueueNumber::e5911:	queue = "queue_5911_time"; break;			
 		case ecQueueNumber::eUnknown:		// не используется
 		return 0;		
 	}
@@ -444,6 +454,7 @@ IVRTime::IVRTime()
 {
 	CreateMap(ecQueueNumber::e5000);
 	CreateMap(ecQueueNumber::e5050);
+	CreateMap(ecQueueNumber::e5911);
 }
 
 IVRTime::~IVRTime()

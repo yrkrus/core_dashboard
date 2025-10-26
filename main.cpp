@@ -30,12 +30,12 @@ using namespace utils;
 using namespace active_sip;
 
 // Global Score
-static SP_IVR ivr = nullptr;
-static SP_Queue queue = nullptr;
-static SP_ActiveSession activeSession = nullptr;
-static SP_Status changeStatus = nullptr;
-static SP_ClearingCurrentDay clearingCurrentDay = nullptr; // вставка в таблицы history
-static SP_CheckInternal checkInternal = nullptr;    // внутренние проверки
+static SP_IVR ivr                               = nullptr;
+static SP_Queue queue                           = nullptr;
+static SP_ActiveSession activeSession           = nullptr;
+static SP_Status changeStatus                   = nullptr;
+static SP_ClearingCurrentDay clearingCurrentDay = nullptr;  // вставка в таблицы history
+static SP_CheckInternal checkInternal           = nullptr;  // внутренние проверки
 
 static std::atomic<bool> g_running(true);
 
@@ -79,7 +79,7 @@ void _daemonize()
     }
 
     // Устанавливаем рабочую папку
-    if (chdir("/root/core_dashboards/old_core/") < 0) 
+    if (chdir(LOG_DESTINATION) < 0) 
     {
         std::cerr << "chdir failed: " << std::strerror(errno) << "\n";
     }
@@ -102,12 +102,12 @@ void _daemonize()
 
 static void _Init()
 {
-    ivr = std::make_shared<IVR>();
-    queue = std::make_shared<Queue>();
-    activeSession = std::make_shared<ActiveSession>(queue);
-    changeStatus = std::make_shared<Status>();
-    clearingCurrentDay = std::make_shared<ClearingCurrentDay>(); // встаква в таблицы history_*
-    checkInternal = std::make_shared<CheckInternal>();  // внутренние проверки  
+    ivr                 = std::make_shared<IVR>();
+    queue               = std::make_shared<Queue>();
+    activeSession       = std::make_shared<ActiveSession>(queue);
+    changeStatus        = std::make_shared<Status>();
+    clearingCurrentDay  = std::make_shared<ClearingCurrentDay>(); // встаква в таблицы history_*
+    checkInternal       = std::make_shared<CheckInternal>();  // внутренние проверки  
 }
 
 static void _Run()
@@ -115,8 +115,8 @@ static void _Run()
     ivr->Start();
     queue->Start();
     activeSession->Start();
-    changeStatus->Start(); // изменение статуса оператора
-    clearingCurrentDay->Start(); // очистка текущего дня в таблицу history_*
+    changeStatus->Start();          // изменение статуса оператора
+    clearingCurrentDay->Start();    // очистка текущего дня в таблицу history_*
     checkInternal->Start();     
 }
 
@@ -206,8 +206,7 @@ int main(int argc, char *argv[])
     _Destroy();
 
     server.stop();
-    std::cout << "\nServer stopped\n";  
-    
+    std::cout << "\nServer stopped\n";    
 
     return 0;
 };

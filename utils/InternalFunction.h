@@ -13,6 +13,7 @@ namespace utils
 {
 	std::string StringFormat(const char *format, ...);
 	std::string PhoneParsing(std::string &phone); // парсинг номера телефона в нормальный вид
+	std::string PhoneParsingInternal(std::string &phone); // парсинг номера телефона в нормальный вид
 	std::string GetTalkTime(std::string talk);	  // перевод временни из сек -> 00:00:00
 
 	// функции работы со временем (формат год-месяц-день 00:00:00 )

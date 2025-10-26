@@ -114,9 +114,10 @@ bool Queue::CreateQueueCallers(const std::string &_lines, QueueCalls &_queueCall
 
 	if (!lines.empty())
 	{
-		_queueCaller.phone = utils::PhoneParsing(lines[7]);
-		_queueCaller.waiting = lines[8];
 		_queueCaller.queue = StringToEnum<ecQueueNumber>(lines[2]);
+		_queueCaller.queue != ecQueueNumber::e5911 ? _queueCaller.phone = utils::PhoneParsing(lines[7])	
+												   : _queueCaller.phone = utils::PhoneParsingInternal(lines[7]);
+		_queueCaller.waiting = lines[8];		
 
 		// TODO тут в лог запись если не прошел по какой то причине 
 		if (!CheckCallers(_queueCaller))

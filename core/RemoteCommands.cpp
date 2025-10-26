@@ -133,7 +133,7 @@ bool Status::ExecuteCommand(const Command &_command, std::string &_errorDescipti
 	// для двойной очереди или для входа в статус не связанный с очередью 
 	if (queue == ecQueueNumber::e5000_e5050)
 	{
-		for (size_t i = 1; i < 3; ++i)
+		for (size_t i = 1; i < 4; ++i)
 		{
 			ecQueueNumber queue = static_cast<ecQueueNumber>(i);
 
@@ -322,13 +322,15 @@ bool Status::UpdateNewStatus(const Command &_command, std::string &_errorDescipt
 	{	
 	case ecCommand::AddQueue5000:
 	case ecCommand::AddQueue5050:	
-	case ecCommand::AddQueue5000_5050:		
+	case ecCommand::AddQueue5000_5050:
+	case ecCommand::AddQueue5911:			
 		status = EStatus::Available;
 		break;
 
 	case ecCommand::DelQueue5000:		
 	case ecCommand::DelQueue5050:		
 	case ecCommand::DelQueue5000_5050:
+	case ecCommand::DelQueue5911:
 		status = EStatus::Unknown;
 		break;		
 	
@@ -426,11 +428,13 @@ ecCommandType Status::GetCommandType(const Command &_command)
 		case ecCommand::AddQueue5000:
 		case ecCommand::AddQueue5050:
 		case ecCommand::AddQueue5000_5050: 
+		case ecCommand::AddQueue5911:
 						return ecCommandType::Add;
 		
 		case ecCommand::DelQueue5000: 
 		case ecCommand::DelQueue5050:
-		case ecCommand::DelQueue5000_5050:	
+		case ecCommand::DelQueue5000_5050:
+		case ecCommand::DelQueue5911:	
 		case ecCommand::Available:
 		case ecCommand::Home: 
 		case ecCommand::Exodus: 
@@ -461,6 +465,10 @@ ecQueueNumber Status::GetQueueNumber(const ecCommand &_command)
 		case ecCommand::AddQueue5050:
 		case ecCommand::DelQueue5050:
 			return ecQueueNumber::e5050;
+
+		case ecCommand::AddQueue5911:
+		case ecCommand::DelQueue5911:
+			return ecQueueNumber::e5911;
 
 		case ecCommand::AddQueue5000_5050:
 		case ecCommand::DelQueue5000_5050:		

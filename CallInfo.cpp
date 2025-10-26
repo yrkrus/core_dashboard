@@ -56,7 +56,7 @@ bool CallInfo::GetInfoCallList(InfoCallList_old &_list, std::string &_errorDescr
     _list.clear();
     _errorDescription.clear();
 
-    const std::string query = "select id, phone from "+EnumToString<ecCallInfoTable>(m_table)+" where operator is NULL and region is NULL";
+    const std::string query = "select id, phone from "+EnumToString<ecCallInfoTable>(m_table)+" where operator is NULL and region is NULL and trunk not in ('"+EnumToString<ecCallerId>(ecCallerId::InternalCaller)+"')";
     	
 	if (!m_sql->Request(query, _errorDescription))
 	{		

@@ -86,7 +86,28 @@ std::string utils::PhoneParsing(std::string &phone)
 
 	phone.clear();	// всё остальное — «null»
 	return phone; 
-};
+}
+
+std::string utils::PhoneParsingInternal(std::string &phone)
+{
+	// // Ищем первое вхождение префикса "SIP/"
+	// size_t start_pos = phone.find("SIP/");
+
+	// if (start_pos != std::string::npos)
+	// { // Если нашли начало
+	// 	// Определяем позицию первого символа после префикса "SIP/"
+	// 	start_pos += strlen("SIP/"); // Длина "SIP/" равна 4
+
+	// 	// Извлекаем номер до следующего разделителя "-"
+	// 	size_t end_pos = phone.find("-", start_pos); // Ищем "-"
+
+	// 	return phone.substr(start_pos, end_pos - start_pos); // Возвращаем найденный номер
+	// }
+
+	if (phone.length() == 5) return phone;
+
+	return "";
+}	
 
 // перевод общего кол-ва секунда в 00:00:00 формат
 std::string utils::GetTalkTime(std::string talk)
@@ -230,24 +251,24 @@ std::string utils::GetCurrentDateTimeAfterMinutes(int minutes)
 	return year + "-" + mon + "-" + day + " " + hour + ":" + min + ":" + sec;
 }
 
-// текущее время после 20:00
-// std::string utils::getCurrentDateTimeAfter20hours()
-//{
-//	auto now = std::chrono::system_clock::now();
-//	std::time_t now_c = std::chrono::system_clock::to_time_t(now);
-//	struct std::tm *now_tm = std::localtime(&now_c);
-//
-//	//формат год-месяц-день 00:00:00
-//	std::string year = std::to_string((now_tm->tm_year + 1900));
-//
-//	std::string mon = std::to_string((now_tm->tm_mon + 1));
-//	if (mon.length() == 1) { mon = "0" + mon; }
-//
-//	std::string day = std::to_string(now_tm->tm_mday);
-//	if (day.length() == 1) { day = "0" + day; }
-//
-//	return year + "-" + mon + "-" + day + " 20:00:00";
-//}
+	// текущее время после 20:00
+	// std::string utils::getCurrentDateTimeAfter20hours()
+	//{
+	//	auto now = std::chrono::system_clock::now();
+	//	std::time_t now_c = std::chrono::system_clock::to_time_t(now);
+	//	struct std::tm *now_tm = std::localtime(&now_c);
+	//
+	//	//формат год-месяц-день 00:00:00
+	//	std::string year = std::to_string((now_tm->tm_year + 1900));
+	//
+	//	std::string mon = std::to_string((now_tm->tm_mon + 1));
+	//	if (mon.length() == 1) { mon = "0" + mon; }
+	//
+	//	std::string day = std::to_string(now_tm->tm_mday);
+	//	if (day.length() == 1) { day = "0" + day; }
+	//
+	//	return year + "-" + mon + "-" + day + " 20:00:00";
+	//}
 
 // преобразование текущей удаленной комады из int -> REMOTE_COMMANDS::Command
 ecCommand utils::GetRemoteCommand(int _command) // TODO переделать на template IntegerToEnum
@@ -308,7 +329,7 @@ void utils::Sleep(uint64_t _time)
 	std::this_thread::sleep_for(std::chrono::milliseconds(_time));
 }
 
-void utils::ReplaceResponseStatus(std::string &_replacmentResponse, const std::string &_find, const std::string &_repl)
+void utils::ReplaceResponseStatus(std::string & _replacmentResponse, const std::string &_find, const std::string &_repl)
 {
 	// замена для номера очереди
 	if (_find.find("%queue") != std::string::npos)
@@ -349,16 +370,15 @@ void utils::ReplaceResponseStatus(std::string &_replacmentResponse, const std::s
 			position = _replacmentResponse.find(_find);
 		}
 	}
-
 }
 
 boost::property_tree::ptree utils::CreateXML(const std::string &_rawXML)
 {
-    std::istringstream iss(_rawXML);
+	std::istringstream iss(_rawXML);
 	boost::property_tree::ptree xml;
-	boost::property_tree::read_xml(iss,xml);		
-	
-	return xml; 
+	boost::property_tree::read_xml(iss, xml);
+
+	return xml;
 }
 
 // разбор строки с разделителем
@@ -366,7 +386,7 @@ bool utils::SplitDelimiterEntry(const std::string &_lines, std::vector<std::stri
 {
 	_errorDescription.clear();
 
-	if (_lines.empty()) 
+	if (_lines.empty())
 	{
 		_errorDescription = "empty _lines";
 		return false;
@@ -375,14 +395,14 @@ bool utils::SplitDelimiterEntry(const std::string &_lines, std::vector<std::stri
 	_vLines.clear();
 
 	std::string field;
-	for (char c : _lines) 
+	for (char c : _lines)
 	{
-		if (c == _delimiter) 
+		if (c == _delimiter)
 		{
 			_vLines.push_back(field);
 			field.clear();
 		}
-		else  
+		else
 		{
 			field.push_back(c);
 		}

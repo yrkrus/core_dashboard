@@ -11,6 +11,7 @@ ecQueueNumber custom_cast::StringToEnum<ecQueueNumber>(const std::string &_str)
 	if (_str.find("5005") != std::string::npos)				return ecQueueNumber::e5005;
 	if (_str.find("5050") != std::string::npos)				return ecQueueNumber::e5050;
 	if (_str.find("5000 и 5050") != std::string::npos)		return ecQueueNumber::e5000_e5050;
+	if (_str.find("5911") != std::string::npos)				return ecQueueNumber::e5911;
 
 	return ecQueueNumber::eUnknown;
 }
@@ -25,6 +26,7 @@ string custom_cast::EnumToString<ecQueueNumber>(ecQueueNumber _queue)
 		{ecQueueNumber::e5005,		"5005"},
 		{ecQueueNumber::e5050,		"5050"},
 		{ecQueueNumber::e5000_e5050,	"5000 и 5050"},
+		{ecQueueNumber::e5911,		"5911"},
 	};
 
 	auto it = queueNumber.find(_queue);	
@@ -58,6 +60,11 @@ string custom_cast::EnumToString<ecCommand>(ecCommand _command)
 		{ecCommand::Transfer,			"Transfer"},			// переносы
 		{ecCommand::Reserve,			"Reserve"},				// резерв
 		{ecCommand::Callback,			"Callback"},			// callback
+		{ecCommand::AddNewUser,			"AddNewUser"},			// создание нового пользователя
+		{ecCommand::EditUser,			"EditUser"},			// редактирование пользователя
+		{ecCommand::AddQueue5911,		"AddQueue5911"},		// добавление в очередь 5911
+		{ecCommand::DelQueue5911,		"DelQueue5911"},		// удаление из очереди 5911
+
 	};
 
 	auto it = command.find(_command);
@@ -396,6 +403,9 @@ ecCallerId custom_cast::StringToEnum<ecCallerId>(const std::string &_str)
 	if (_str.find("camaa") != std::string::npos)			return ecCallerId::Comagic;
 	if (_str.find("BeeIn") != std::string::npos)			return ecCallerId::BeelineMih;
 	
+	// ничего не подошло возможно это внутренний звонок
+	if (_str.find("_IK_") != std::string::npos)				return ecCallerId::InternalCaller;
+
 	return ecCallerId::Unknown;
 }
 
@@ -410,7 +420,8 @@ std::string custom_cast::EnumToString<ecCallerId>(ecCallerId _caller)
 		{ecCallerId::Domru_220000,	"220000"},
 		{ecCallerId::Sts,			"STS"},
 		{ecCallerId::Comagic,		"COMAGIC"},
-		{ecCallerId::BeelineMih,	"MIH" }
+		{ecCallerId::BeelineMih,	"MIH" },
+		{ecCallerId::InternalCaller,"INTERNAL" }
 	};
 
 	auto it = callers.find(_caller);
