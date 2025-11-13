@@ -119,11 +119,10 @@ bool HistoryIvr::Insert(const Table &_field, std::string &_errorDescription)
 	m_sql->Disconnect();
 
 	
-	_errorDescription = StringFormat("ivr %d sucessfully inserted %s %s %s", 
+	_errorDescription = StringFormat("ivr %d sucessfully inserted %s %s", 
 																	_field.id, 
 																	_field.date_time.c_str(), 
-																	_field.phone.c_str(), 
-																	_field.waiting_time.c_str());
+																	_field.phone.c_str());
 	return true;
 }
 

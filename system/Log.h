@@ -55,6 +55,8 @@ public:
 
 };
 
+using SP_Log = std::shared_ptr<Log>;
+
 #endif // LOG_H
 
 

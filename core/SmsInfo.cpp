@@ -30,17 +30,19 @@ static std::string GetXMlValue(ecXMLValue _value)
 
 
 SMSInfo::SMSInfo()
-    : m_sql(std::make_shared<ISQLConnect>(false))
-	, m_log(CONSTANTS::LOG::SMS_INFO)
-    , m_table(ecSmsInfoTable::eSMS)  
+    : MobileOperatorInfo(ecMobileInfoTable::eHistorySmsSending, CONSTANTS::LOG::MOBILE_INFO_SMS)   
+    , m_sql(std::make_shared<ISQLConnect>(false))
+	, m_log(std::make_shared<Log>(CONSTANTS::LOG::SMS_INFO))
+    , m_table(ecSmsInfoTable::eSMS)   
 {
     InitAuthSMS();
 }
 
 SMSInfo::SMSInfo(ecSmsInfoTable _table)
-    : m_sql(std::make_shared<ISQLConnect>(false))
-	, m_log(CONSTANTS::LOG::SMS_INFO)
-    , m_table(_table)  
+    : MobileOperatorInfo(ecMobileInfoTable::eHistorySmsSending, CONSTANTS::LOG::MOBILE_INFO_SMS)  
+    , m_sql(std::make_shared<ISQLConnect>(false))
+	, m_log(std::make_shared<Log>(CONSTANTS::LOG::SMS_INFO))
+    , m_table(_table)     
 {
     InitAuthSMS();
 }
@@ -51,21 +53,33 @@ SMSInfo::~SMSInfo()
 
 bool SMSInfo::Execute()
 {
-    if (!m_auth.IsInit()) 
-	{
-		m_log.ToFile(ecLogType::eError, "InitAuthSMS() Error!");
+    if (!m_auth.IsInit())
+    {
+        m_log->ToFile(ecLogType::eError, "InitAuthSMS() Error!");
         return true;
-	}
-	
-	// найдем не обработанные смс 
+    }
+
+    // найдем не обработанные смс
     CreateListSMS();
 
-	if (IsExistList()) 
+    if (IsExistList())
     {
         FindInfoSMS();
     }
 
+    // поиск оператора и региона телефона
+    if (!ExecuteFindMobileOpeartorInfo())
+    {
+        m_log->ToFile(ecLogType::eError, "ExecuteFindMobileOpeartorInfo error");
+        return true;
+    }
+
     return true;
+}
+
+bool SMSInfo::ExecuteFindMobileOpeartorInfo()
+{
+    return MobileOperatorInfo::Execute();
 }
 
 void SMSInfo::InitAuthSMS()
@@ -78,7 +92,7 @@ void SMSInfo::InitAuthSMS()
 	{
 		m_sql->Disconnect();
 		errorDesciption = StringFormat("%s\tInitAuth SMS error\t%s",METHOD_NAME,errorDesciption.c_str());
-        m_log.ToFile(ecLogType::eError, errorDesciption);
+        m_log->ToFile(ecLogType::eError, errorDesciption);
         return;
 	}	
 
@@ -115,7 +129,7 @@ void SMSInfo::CreateListSMS()
 	std::string errorDescription;
     if (!GetInfoSMSList(m_listSMS, errorDescription)) 
     {
-        m_log.ToFile(ecLogType::eError, errorDescription);
+        m_log->ToFile(ecLogType::eError, errorDescription);
     }
 }
 
@@ -133,7 +147,7 @@ bool SMSInfo::GetInfoSMSList(InfoSMSList &_list, std::string &_errorDescription)
 	if (!m_sql->Request(query, _errorDescription))
 	{		
 		_errorDescription += METHOD_NAME + StringFormat("query \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, _errorDescription);
+		m_log->ToFile(ecLogType::eError, _errorDescription);
 
 		m_sql->Disconnect();
 		return false;
@@ -183,8 +197,8 @@ void SMSInfo::FindInfoSMS()
 
         if (!Get(request, responce, errorDescription)) 
         {
-            m_table == ecSmsInfoTable::eSMS ? m_log.ToFile(ecLogType::eError,errorDescription)
-                                            : m_log.ToPrint(errorDescription);           
+            m_table == ecSmsInfoTable::eSMS ? m_log->ToFile(ecLogType::eError,errorDescription)
+                                            : m_log->ToPrint(errorDescription);           
 
             continue;
         }
@@ -200,8 +214,8 @@ void SMSInfo::FindInfoSMS()
             {
                 errorDescription = StringFormat("phone %s empty XML. %s", sms.phone.c_str(), errorDescription.c_str()); 
                                 
-                m_table == ecSmsInfoTable::eSMS ? m_log.ToFile(ecLogType::eError, errorDescription)
-                                                : m_log.ToPrint(errorDescription);                   
+                m_table == ecSmsInfoTable::eSMS ? m_log->ToFile(ecLogType::eError, errorDescription)
+                                                : m_log->ToPrint(errorDescription);                   
 
                 smsChecked = false;
                 // empty XML, значит и не дождемся ответа
@@ -299,7 +313,7 @@ void SMSInfo::UpdateToBaseInfoSMS(int _id, const InfoSMS &_sms)
 	if (!m_sql->Request(query, errorDescription))
 	{
 		errorDescription = StringFormat("%s\tquery \t%s",METHOD_NAME, query.c_str());
-		m_log.ToFile(ecLogType::eError, errorDescription);
+		m_log->ToFile(ecLogType::eError, errorDescription);
 
 		m_sql->Disconnect();
 		return;
@@ -317,6 +331,54 @@ bool SMSInfo::Get(const std::string &_request, std::string &_responce, std::stri
     }
 
     return true;
+}
+
+bool SMSInfo::GetInfoMobileList(MobileInfoList &_list, std::string &_errorDescription)
+{
+     _list.clear();
+    _errorDescription.clear();
+
+    // const std::string query = "select id, phone from " + EnumToString<ecSmsInfoTable>(m_table) 
+    //                                                    + " where operator is NULL and region is NULL";
+
+    const std::string query = "select id, phone from history_sms_sending where operator is NULL and region is NULL";                                                   
+
+    if (!MobileOperatorInfo::GetSQL()->Request(query, _errorDescription))
+    {
+        _errorDescription += METHOD_NAME + StringFormat("query \t%s", query.c_str());
+        MobileOperatorInfo::GetLog()->ToFile(ecLogType::eError, _errorDescription);
+
+        MobileOperatorInfo::GetSQL()->Disconnect();
+        return false;
+    }
+
+    // результат
+    MYSQL_RES *result = mysql_store_result(MobileOperatorInfo::GetSQL()->Get());
+    MYSQL_ROW row;
+
+    while ((row = mysql_fetch_row(result)) != NULL)
+    {
+        MobileInfo info;
+
+        for (size_t i = 0; i < mysql_num_fields(result); ++i)
+        {
+            switch (i)
+            {
+            case 0:
+                info.id = std::atoi(row[i]);
+                break;
+            case 1:
+                info.phone = row[i];
+                break;
+            }
+        }
+        _list.push_back(info);
+    }  
+
+    mysql_free_result(result);
+    MobileOperatorInfo::GetSQL()->Disconnect();
+
+    return true;   
 }
 
 AuthSMS::AuthSMS(std::string _login, std::string _pwd)

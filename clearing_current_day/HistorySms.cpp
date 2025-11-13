@@ -89,7 +89,7 @@ bool HistorySms::Insert(const Table &_field, std::string &_errorDescription)
 	// устанавливаем данные в history_sms_sending
 	if (!_field.status_date.empty())
 	{
-		query = "insert into history_sms_sending (id,user_id,date_time,phone,message,sms_id,status,user_login_pc,count_real_sms,sms_type,status_date) values ('" +
+		query = "insert into history_sms_sending (id,user_id,date_time,phone,message,sms_id,status,user_login_pc,count_real_sms,sms_type,status_date,operator,region) values ('" +
 																				std::to_string(_field.id) +
 																				"','" + std::to_string(_field.user_id) +
 																				"','" + _field.date_time +
@@ -100,7 +100,10 @@ bool HistorySms::Insert(const Table &_field, std::string &_errorDescription)
 																				"','" + _field.user_login_pc +
 																				"','" + std::to_string(_field.count_real_sms) +
 																				"','" + std::to_string(_field.sms_type) +
-																				"','" + _field.status_date + "')";
+																				"','" + _field.status_date + 
+																				"','" + _field.nameOperator + 
+																				"','" + _field.nameRegion									
+																				+ "')";
 	}
 	else  // есть null поле на status_date
 	{
@@ -199,6 +202,8 @@ bool HistorySms::Get()
 			case 8:	field.count_real_sms = std::atoi(row[i]);	break;	// count_real_sms
 			case 9:	field.sms_type = std::atoi(row[i]);	break;	// sms_type
 			case 10: if (row[i]) field.status_date = row[i];	break;	// status_date	
+			case 11: if (row[i]) field.nameOperator = row[i];	break;	// operator
+			case 12: if (row[i]) field.nameRegion = row[i];	break;	// region			
 			}
 		}	
 		

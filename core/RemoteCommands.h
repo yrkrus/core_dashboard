@@ -16,7 +16,7 @@ static std::string COMMAND_PAUSE_QUEUE = "asterisk -rx \"queue pause member Loca
 									//	  asterisk -rx "queue pause member Local/64197@from-queue/n"
 
 class Log;
-using SP_Log = std::shared_ptr<Log>;
+//using SP_Log = std::shared_ptr<Log>;
 
 class ISQLConnect;
 using SP_SQL = std::shared_ptr<ISQLConnect>;

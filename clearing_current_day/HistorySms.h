@@ -24,6 +24,8 @@ public:
 		int			count_real_sms;
 		int			sms_type;
 		std::string status_date;
+		std::string nameOperator;
+		std::string nameRegion;
 	};
 	using HistorySmsTable = std::vector<Table>;	
 	

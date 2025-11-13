@@ -2,7 +2,8 @@
 #include "../system/Constants.h"
 
 CheckInternal::CheckInternal()
-    : m_dispether("CheckInternal",CONSTANTS::TIMEOUT::CHECK_INTERNAL)
+    : m_callInfo(ecMobileInfoTable::eIVR, CONSTANTS::LOG::MOBILE_INFO_CALL)
+    , m_dispether("CheckInternal",CONSTANTS::TIMEOUT::CHECK_INTERNAL)
 {
 }
 

@@ -19,21 +19,21 @@ namespace CONSTANTS
     // версия ядра
     namespace VERSION
     {          
-        static const std::string CORE = "CORE | version 4.0 " BUILD; 
+        static const std::string CORE = "CORE | version 4.2 " BUILD; 
     }
 
     
     namespace TIMEOUT
     {
-        static const uint32_t IVR               = 1000;   // timeout для проверки новых данных для ivr
-        static const uint32_t QUEUE             = 1000;   // timeout для проверки новых данных для queue (входящие звонки)
-        static const uint32_t QUEUE_OUTGOING    = 1000;   // timeout для проверки новых данных для queue (исходящие звонки)
-        static const uint32_t ACTIVE_SESSION    = 1000;   // timeout для проверки новых данных для активной сеcсии операторов (входящие звонки)
+        static const uint32_t IVR                       = 1000;   // timeout для проверки новых данных для ivr
+        static const uint32_t QUEUE                     = 1000;   // timeout для проверки новых данных для queue (входящие звонки)
+        static const uint32_t QUEUE_OUTGOING            = 1000;   // timeout для проверки новых данных для queue (исходящие звонки)
+        static const uint32_t ACTIVE_SESSION            = 1000;   // timeout для проверки новых данных для активной сеcсии операторов (входящие звонки)
         static const uint32_t ACTIVE_SESSION_OUTGOING   = 1000;   // timeout для проверки новых данных для активной сеcсии операторов (исходящие звонки)
-        static const uint32_t OPERATOR_STATUS   = 100;    // timeout для проверки новых данных для смены статуса оператором
-        static const uint32_t CLEARING_CURRENT_DAY = 60000; // timeout для проверки нужно ли очищать текущий день таблицы history_*
-        static const uint32_t CHECK_TRUNK_SIP = 5000;     // timeout для проверки активности trunk sip
-        static const uint32_t CHECK_INTERNAL = 10000;     // timeout для проверки внутренних проверок
+        static const uint32_t OPERATOR_STATUS           = 100;    // timeout для проверки новых данных для смены статуса оператором
+        static const uint32_t CLEARING_CURRENT_DAY      = 60000; // timeout для проверки нужно ли очищать текущий день таблицы history_*
+        static const uint32_t CHECK_TRUNK_SIP           = 5000;     // timeout для проверки активности trunk sip
+        static const uint32_t CHECK_INTERNAL            = 10000;     // timeout для проверки внутренних проверок
     }
 
     namespace SERVER 
@@ -60,8 +60,16 @@ namespace CONSTANTS
         
         static const std::string CHECK_TRUNK_SIP    = "check_trunk.log";
         static const std::string HTTP_REQUEST       = "http_request.log";
-        static const std::string CALL_INFO          = "call_info.log";
+        static const std::string MOBILE_INFO_CALL   = "mobile_info_IVR.log"; 
+        static const std::string MOBILE_INFO_SMS   = "mobile_info_SMS.log"; 
         static const std::string SMS_INFO           = "sms_info.log";
+    }
+
+    namespace PHONE 
+    {
+        static const std::string AUTH_LOGIN              = "admin";
+        static const std::string AUTH_PASSWORD           = "5000";
+        static const std::string PHONE_PASSWORD          = "159753";
     }
        
        

@@ -125,18 +125,34 @@ std::string custom_cast::EnumToString<ecTrunkState>(ecTrunkState _state)
 }
 
 
+// template<>
+// std::string custom_cast::EnumToString<ecCallInfoTable>(ecCallInfoTable _table)
+// {
+// 	static std::map<ecCallInfoTable, string> table =
+// 	{
+// 		{ecCallInfoTable::eIVR,			"ivr"},
+// 		{ecCallInfoTable::eHistoryIvr,	"history_ivr"},
+// 	};
+
+// 	auto it = table.find(_table);	
+// 	return (it == table.end()) ? "history_ivr" : it->second;		
+// }
+
 template<>
-std::string custom_cast::EnumToString<ecCallInfoTable>(ecCallInfoTable _table)
+std::string custom_cast::EnumToString<ecMobileInfoTable>(ecMobileInfoTable _table)
 {
-	static std::map<ecCallInfoTable, string> table =
+	static std::map<ecMobileInfoTable, string> table =
 	{
-		{ecCallInfoTable::eIVR,			"ivr"},
-		{ecCallInfoTable::eHistoryIvr,	"history_ivr"},
+		{ecMobileInfoTable::eIVR,				"ivr"},
+		{ecMobileInfoTable::eHistoryIvr,		"history_ivr"},
+		{ecMobileInfoTable::eSmsSending,		"sms_sending"},
+		{ecMobileInfoTable::eHistorySmsSending,	"history_sms_sending"},
 	};
 
 	auto it = table.find(_table);	
-	return (it == table.end()) ? "history_ivr" : it->second;		
+	return (it == table.end()) ? "Unknown" : it->second;		
 }
+
 
 template<>
 std::string custom_cast::EnumToString<ecSmsInfoTable>(ecSmsInfoTable _table)

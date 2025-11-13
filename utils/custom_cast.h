@@ -11,6 +11,7 @@
 #include "../core/Queue.h"
 #include "../system/Log.h"
 #include "../CallInfo.h"
+#include "../MobileOperatorInfo.h"
 #include "../core/SmsInfo.h"
 #include "../core/IVR.h"
 #include "../different_checks/Check_TrunkSip.h"
@@ -45,8 +46,11 @@ namespace custom_cast
     template<>
     std::string EnumToString<ecTrunkState>(ecTrunkState);
 
+    // template<>
+    // std::string EnumToString<ecCallInfoTable>(ecCallInfoTable);  
+
     template<>
-    std::string EnumToString<ecCallInfoTable>(ecCallInfoTable);
+    std::string EnumToString<ecMobileInfoTable>(ecMobileInfoTable);
 
     template<>
     std::string EnumToString<ecSmsInfoTable>(ecSmsInfoTable);

@@ -6,6 +6,7 @@
 #include <boost/property_tree/ptree.hpp>
 #include "../interfaces/IHTTPRequest.h"
 #include "../interfaces/ISQLConnect.h"
+#include "../MobileOperatorInfo.h"
 
 static std::string HTTP_REQUEST_SMS = "https://a2p-sms-https.beeline.ru/proto/http/?gzip=none&user=%user&pass=%pass&action=status&sms_id=%sms_id";
 
@@ -88,7 +89,8 @@ struct InfoSMS
 using InfoSMSList = std::vector<InfoSMS>;
 
 
-class SMSInfo : public IHTTPRequest 
+class SMSInfo : public virtual IHTTPRequest 
+              , public MobileOperatorInfo
 {
 public:      
 
@@ -96,14 +98,15 @@ public:
      SMSInfo(ecSmsInfoTable _table);
     ~SMSInfo() override;
 
-    bool Execute();     
+    bool Execute();
+    virtual bool ExecuteFindMobileOpeartorInfo();     
 
 private:
     InfoSMSList    m_listSMS;
     SP_SQL		   m_sql;
-	Log			   m_log; 
+	SP_Log		   m_log; 
     AuthSMS        m_auth;
-    ecSmsInfoTable m_table;
+    ecSmsInfoTable m_table;    
 
     void InitAuthSMS();                // авторизационные данные для смс
 
@@ -119,6 +122,9 @@ private:
     void UpdateToBaseInfoSMS(int _id, const InfoSMS &_sms);  // обновление записи в БД
 
     virtual bool Get(const std::string &_request, std::string &_responce, std::string &_errorDescription);
+
+    // override MobileOperatorInfo
+    virtual bool GetInfoMobileList(MobileInfoList &_list, std::string &_errorDescription) override;
 };
 
 
