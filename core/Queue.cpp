@@ -52,14 +52,14 @@ void Queue::Parsing()
 	}	
 
 	// удаляем из сырых данных
-	DeleteRawLastData();
+	IAsteriskData::DeleteRawLastData();
 }
 
 bool Queue::FindQueueCallers()
 {	
 	m_listQueue.clear(); // обнулим текущий список
 	
-	std::string rawLines = GetRawLastData();
+	std::string rawLines = IAsteriskData::GetRawLastData();
 	if (rawLines.empty())
 	{		
 		return false;

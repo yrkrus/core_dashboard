@@ -30,7 +30,7 @@ static std::string GetXMlValue(ecXMLValue _value)
 
 
 SMSInfo::SMSInfo()
-    : MobileOperatorInfo(ecMobileInfoTable::eHistorySmsSending, CONSTANTS::LOG::MOBILE_INFO_SMS)   
+    : MobileOperatorInfo(ecMobileInfoTable::eSmsSending, CONSTANTS::LOG::MOBILE_INFO_SMS)   
     , m_sql(std::make_shared<ISQLConnect>(false))
 	, m_log(std::make_shared<Log>(CONSTANTS::LOG::SMS_INFO))
     , m_table(ecSmsInfoTable::eSMS)   
@@ -39,7 +39,7 @@ SMSInfo::SMSInfo()
 }
 
 SMSInfo::SMSInfo(ecSmsInfoTable _table)
-    : MobileOperatorInfo(ecMobileInfoTable::eHistorySmsSending, CONSTANTS::LOG::MOBILE_INFO_SMS)  
+    : MobileOperatorInfo(ecMobileInfoTable::eSmsSending, CONSTANTS::LOG::MOBILE_INFO_SMS)  
     , m_sql(std::make_shared<ISQLConnect>(false))
 	, m_log(std::make_shared<Log>(CONSTANTS::LOG::SMS_INFO))
     , m_table(_table)     
@@ -338,10 +338,10 @@ bool SMSInfo::GetInfoMobileList(MobileInfoList &_list, std::string &_errorDescri
      _list.clear();
     _errorDescription.clear();
 
-    // const std::string query = "select id, phone from " + EnumToString<ecSmsInfoTable>(m_table) 
-    //                                                    + " where operator is NULL and region is NULL";
+     const std::string query = "select id, phone from " + EnumToString<ecSmsInfoTable>(m_table) 
+                                                        + " where operator is NULL and region is NULL";
 
-    const std::string query = "select id, phone from history_sms_sending where operator is NULL and region is NULL";                                                   
+    //const std::string query = "select id, phone from history_sms_sending where operator is NULL and region is NULL";                                                   
 
     if (!MobileOperatorInfo::GetSQL()->Request(query, _errorDescription))
     {

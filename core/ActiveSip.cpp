@@ -117,7 +117,7 @@ void active_sip::ActiveSession::CreateListActiveTalkCalls()
 {
 	m_listCall.clear(); // очищаем текущий список с активными текущими разговорами по данным астериска
 
-	std::string rawLines = GetRawLastData();
+	std::string rawLines = IAsteriskData::GetRawLastData();
 	if (rawLines.empty())
 	{
 		// TODO тут подумать, что делать!
@@ -126,7 +126,7 @@ void active_sip::ActiveSession::CreateListActiveTalkCalls()
 
 	if (!IsExistListOperators()) 
 	{
-		DeleteRawLastData(); // на всякий случай
+		IAsteriskData::DeleteRawLastData(); // на всякий случай
 		return;
 	}	
 	
@@ -161,7 +161,7 @@ void active_sip::ActiveSession::CreateListActiveTalkCalls()
 		}	
 	}
 
-	DeleteRawLastData(); // удаляем просмотренное
+	IAsteriskData::DeleteRawLastData(); // удаляем просмотренное
 }
 
 // найдем активных операторов в линии

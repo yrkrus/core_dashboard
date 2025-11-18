@@ -54,9 +54,10 @@ public:
 	QueueOutgoing();
 	~QueueOutgoing() override;
 
-	void Start() override;
-	void Stop() override;
-	void Parsing() override;							// разбор сырых данных
+	 // override IAsteriskData 
+	virtual void Start() override;
+	virtual void Stop() override;
+	virtual void Parsing() override;							// разбор сырых данных
 
 	//void UpdateCallSuccess();							// обновление данных когда нет активных операторов на линии
 	private:

@@ -5,9 +5,37 @@
 #include "../utils/custom_cast.h"
 #include "../system/Constants.h"
 
-
 using namespace custom_cast;
 using utils::StringFormat;
+
+
+
+// static std::string IVR_COMMANDS			= "Playback|lukoil|ivr-3";	// ищем только эти слова при формировании IVR
+static std::string IVR_COMMANDS		=	"Playback";
+// static std::string IVR_COMMANDS_EXT1	= "IVREXT";					// пропуск этой записи
+ static std::string IVR_COMMANDS_EXT2	= "Spasibo";				// пропуск этой записи
+// static std::string IVR_COMMANDS_EXT3	= "recOfficeOffline";		// пропуск этой записи
+// static std::string IVR_COMMANDS_EXT4	= "noservice";				// пропуск этой записи 
+// static std::string IVR_COMMANDS_EXT5	= "agent";					// пропуск этой записи 
+// static std::string IVR_COMMANDS_EXT6	= "from-internal-xfer";		// пропуск этой записи (перевод звонка)
+
+// static std::string IVR_COMMANDS_IK1 = "rec_IK_AllBusy";				// пропуск этой записи (IVR для ИК отдела)
+// static std::string IVR_COMMANDS_IK2 = "rec_IK_Welcome";				// пропуск этой записи (IVR для ИК отдела)
+// static std::string IVR_COMMANDS_IK3 = "rec_IK_WorkHours";			// пропуск этой записи (IVR для ИК отдела)
+
+// static std::string IVR_REQUEST		= "asterisk -rx \"core show channels verbose\" | grep -E \"" + IVR_COMMANDS + "\" " 
+// 																			   + " | grep -v \"" + IVR_COMMANDS_EXT1 + "\" " 
+// 																			   + " | grep -v \"" + IVR_COMMANDS_EXT2 + "\" "
+// 																			   + " | grep -v \"" + IVR_COMMANDS_EXT3 + "\" "
+// 																			   + " | grep -v \"" + IVR_COMMANDS_EXT4 + "\" "
+// 																			   + " | grep -v \"" + IVR_COMMANDS_EXT5 + "\" "
+// 																			   + " | grep -v \"" + IVR_COMMANDS_EXT6 + "\" "
+// 																			   + " | grep -v \"" + IVR_COMMANDS_IK1 + "\" "
+// 																			   + " | grep -v \"" + IVR_COMMANDS_IK2 + "\" "
+// 																			   + " | grep -v \"" + IVR_COMMANDS_IK3 + "\" ";
+
+static std::string IVR_REQUEST = "asterisk -rx \"core show channels concise\" | grep -E \"" + IVR_COMMANDS + "\" "
+																		  + " | grep -v \"" + IVR_COMMANDS_EXT2 + "\" ";
 
 
 IVR::IVR()
@@ -43,7 +71,7 @@ void IVR::Parsing()
 {
 	m_listIvr.clear(); // обнулим текущий список	
 	
-	std::string rawLines = GetRawLastData();
+	std::string rawLines = IAsteriskData::GetRawLastData();
 	if (rawLines.empty()) 
 	{
 		return;
@@ -63,7 +91,7 @@ void IVR::Parsing()
 		else 		
 		{
 			// удаляем из сырых данных
-			DeleteRawLastData();
+			IAsteriskData::DeleteRawLastData();
 			break;
 		}
 	}
@@ -74,7 +102,7 @@ void IVR::Parsing()
 		InsertIvrCalls();
 		
 		// удаляем из сырых данных
-		DeleteRawLastData();
+		IAsteriskData::DeleteRawLastData();
 	}
 }
 

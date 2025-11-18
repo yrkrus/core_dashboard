@@ -31,7 +31,7 @@ void CheckTrunkSip::Parsing()
 {
     m_listTrunk.clear(); // обнулим текущий список	
 	
-	std::string rawLines = GetRawLastData();
+	std::string rawLines = IAsteriskData::GetRawLastData();
 	if (rawLines.empty()) 
 	{
 		return;
@@ -50,7 +50,7 @@ void CheckTrunkSip::Parsing()
 		else 		
 		{
 			// удаляем из сырых данных
-			DeleteRawLastData();
+			IAsteriskData::DeleteRawLastData();
 			break;
 		}
 	}
@@ -68,7 +68,7 @@ void CheckTrunkSip::Parsing()
        }      
 
 		// удаляем из сырых данных
-		DeleteRawLastData();
+		IAsteriskData::DeleteRawLastData();
 	}
 }
 

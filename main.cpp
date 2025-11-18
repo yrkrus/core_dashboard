@@ -16,6 +16,7 @@
 #include "core/TCPServer.h"
 #include "core/IVR.h"
 #include "core/ActiveSip.h"
+#include "core/ActiveLisa.h"
 
 #include "clearing_current_day/ClearingCurrentDay.h"
 #include "different_checks/CheckInternal.h"
@@ -33,6 +34,7 @@ using namespace active_sip;
 static SP_IVR ivr                               = nullptr;
 static SP_Queue queue                           = nullptr;
 static SP_ActiveSession activeSession           = nullptr;
+static SP_ActiveLisa    activeLisa              = nullptr;
 static SP_Status changeStatus                   = nullptr;
 static SP_ClearingCurrentDay clearingCurrentDay = nullptr;  // вставка в таблицы history
 static SP_CheckInternal checkInternal           = nullptr;  // внутренние проверки
@@ -105,6 +107,7 @@ static void _Init()
     ivr                 = std::make_shared<IVR>();
     queue               = std::make_shared<Queue>();
     activeSession       = std::make_shared<ActiveSession>(queue);
+    activeLisa          = std::make_shared<ActiveLisa>();
     changeStatus        = std::make_shared<Status>();
     clearingCurrentDay  = std::make_shared<ClearingCurrentDay>(); // встаква в таблицы history_*
     checkInternal       = std::make_shared<CheckInternal>();  // внутренние проверки  
@@ -115,6 +118,7 @@ static void _Run()
     ivr->Start();
     queue->Start();
     activeSession->Start();
+    activeLisa->Start();
     changeStatus->Start();          // изменение статуса оператора
     clearingCurrentDay->Start();    // очистка текущего дня в таблицу history_*
     checkInternal->Start();     
@@ -125,6 +129,7 @@ static void _Destroy()
     ivr->Stop();
     queue->Stop();
     activeSession->Stop();
+    activeLisa->Stop();
     changeStatus->Stop();
     clearingCurrentDay->Stop();
     checkInternal->Stop();    
@@ -177,10 +182,10 @@ int main(int argc, char *argv[])
 
     if (!server.start())
     {
-        std::cerr << StringFormat("Server not started on port %u\n", CONSTANTS::SERVER::PORT);
+        std::cerr << StringFormat("\nServer not started on port %u\n", CONSTANTS::SERVER::PORT);
         return 1;
     }
-    std::cout << StringFormat("Server is running on port %u. Press Ctrl+C to stop.\n", CONSTANTS::SERVER::PORT);
+    std::cout << StringFormat("\nServer is running on port %u. Press Ctrl+C to stop.\n", CONSTANTS::SERVER::PORT);
 
     _Init();
     _Run();
@@ -192,6 +197,7 @@ int main(int argc, char *argv[])
         ivr->Parsing();
         queue->Parsing();
         activeSession->Parsing();
+        activeLisa->Parsing();
 
         auto stop = std::chrono::steady_clock::now();
         auto execute_ms = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);

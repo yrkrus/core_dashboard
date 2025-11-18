@@ -1,11 +1,15 @@
+/**
+ * @file IAsteriskApplication.h
+*/
+
+
 #ifndef IASTERISKAPPLICATION_H
 #define IASTERISKAPPLICATION_H
 
-/*
 
-    @file IAsteriskApplication.h
+#define CHANNELS_FIELDS 14			        // кол-во полей при разборе начинается разбор с 0 ! итого 14 получиться
+#define DELIMITER_CHANNELS_FIELDS '!'       // разделитель 
 
-*/
 
 /*
 *   Полный перечень приложений, запущенных на Asterisk:

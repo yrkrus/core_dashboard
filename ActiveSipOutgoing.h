@@ -17,6 +17,7 @@ namespace active_sip_outgoing
         ActiveSessionOutgoing();
         ~ActiveSessionOutgoing() override;
 
+         // override IAsteriskData 
         void Start() override;
         void Stop() override;
         void Parsing() override;				// разбор сырых данных

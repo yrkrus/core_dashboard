@@ -45,7 +45,7 @@ private:
     std::vector<Trunk>  m_listTrunk;
 
 
-    // IAsteriskData      
+    // override IAsteriskData      
     virtual void Start() override;	
 	virtual void Stop() override;  
 	virtual void Parsing() override;
