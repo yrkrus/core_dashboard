@@ -36,10 +36,11 @@ public:
         std::string user_name;          
         ecTrunkState state = ecTrunkState::eUnknown;
         std::string reg_time;          // время последнего коннекта        
+        uint16_t errCount;          // кол-во ошибок если статус отличен от ecTrunkState::eRegistered
     };
 
 private:    
-    Log                 m_log;
+    SP_Log                 m_log;
     bool                is_running;
     SP_SQL				m_sql;
     std::vector<Trunk>  m_listTrunk;
@@ -53,6 +54,7 @@ private:
     bool CreateTrunk(const std::string&, Trunk&);
     bool IsExistListTrunk() const;
     bool UpdateTrunkStatus(const Trunk &_trunk, std::string &_errorDescription);
+    void GetCountTrunkError(Trunk &_trunk);
 
 };
 

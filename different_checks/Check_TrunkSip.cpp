@@ -58,12 +58,23 @@ void CheckTrunkSip::Parsing()
 	// что то есть нужно теперь в БД запихнуть
 	if (IsExistListTrunk())
 	{		
-	   for (const auto trunk : m_listTrunk) 
-       {
+	   for (auto trunk : m_listTrunk) 
+       {            
+            // если ошибки на данный момент
+            if (trunk.state == ecTrunkState::eRegistered) 
+            {
+                trunk.errCount = 0;
+            }
+            else 
+            {
+                GetCountTrunkError(trunk);
+                trunk.errCount++;
+            }                    
+
             std::string error;
             if (!UpdateTrunkStatus(trunk, error)) 
             {
-                m_log.ToFile(ecLogType::eError, error);
+                m_log->ToFile(ecLogType::eError, error);
             }
        }      
 
@@ -104,14 +115,15 @@ bool CheckTrunkSip::UpdateTrunkStatus(const Trunk &_trunk, std::string &_errorDe
     
     const std::string query = "update sip_trunks set state = '" + EnumToString<ecTrunkState>(_trunk.state) 
                                             + "', date_time_update = '" + GetCurrentDateTime()                                           
-                                            + "' where username = '" + _trunk.user_name 
-                                            +"' and is_monitoring = '1'";
+                                            + "', is_error_count = '" + std::to_string(_trunk.errCount)
+                                            + "' where username = '" + _trunk.user_name                                            
+                                            + "' and is_monitoring = '1'";
                                             
 
 	if (!m_sql->Request(query, _errorDescription))
 	{
 		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, _errorDescription);
+		m_log->ToFile(ecLogType::eError, _errorDescription);
 
 		m_sql->Disconnect();
 		return false;
@@ -122,9 +134,54 @@ bool CheckTrunkSip::UpdateTrunkStatus(const Trunk &_trunk, std::string &_errorDe
     return true;
 }
 
+void CheckTrunkSip::GetCountTrunkError(Trunk &_trunk)
+{
+   const std::string query = "select is_error_count from sip_trunks where username = '" + _trunk.user_name + "'";
+
+	std::string errorDescription;
+	if (!m_sql->Request(query, errorDescription))
+	{	
+		errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
+		m_log->ToFile(ecLogType::eError, errorDescription);
+
+		m_sql->Disconnect();
+		
+        _trunk.errCount = 0;        
+        return;
+	}
+
+	// результат
+	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	if (result == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		
+        _trunk.errCount = 0;
+        return;
+	}
+
+	MYSQL_ROW row = mysql_fetch_row(result);
+	if (row == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		
+        _trunk.errCount = 0;
+        return;
+	}
+
+	_trunk.errCount = std::stoi(row[0]);	
+
+	mysql_free_result(result);
+	m_sql->Disconnect();	
+}
+
 CheckTrunkSip::CheckTrunkSip()
     : IAsteriskData("CheckTrunkSip",CONSTANTS::TIMEOUT::CHECK_TRUNK_SIP)
-    , m_log(CONSTANTS::LOG::CHECK_TRUNK_SIP)
+    , m_log(std::make_shared<Log>(CONSTANTS::LOG::CHECK_TRUNK_SIP))
     , is_running(false)
     , m_sql(std::make_shared<ISQLConnect>(false))
 {

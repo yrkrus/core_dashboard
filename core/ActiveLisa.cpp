@@ -369,8 +369,6 @@ void ActiveLisa::UpdateCallSuccess()
 
 bool ActiveLisa::GetCallInBase(ActiveLisaCallInBaseList &_callList, std::string &_errorDescription)
 {	
-	std::cout<<"\nbefore m_activeList.size() = "<<m_activeList.size()<<std::endl;
-	
 	_callList.clear();
 	
 	const std::string query = "select id,phone,date_time,call_id from queue_lisa where date_time > '"
@@ -414,8 +412,7 @@ bool ActiveLisa::GetCallInBase(ActiveLisaCallInBaseList &_callList, std::string 
 			}			
 		}
 
-		call.hash = std::hash<std::string>()(call.phone + "_" + call.date_time);
-		
+		call.hash = std::hash<std::string>()(call.phone + "_" + call.date_time);		
 		
 		// проверка вдруг разговаривает еще
 		if (!IsActiveTalk(call)) 
@@ -425,9 +422,9 @@ bool ActiveLisa::GetCallInBase(ActiveLisaCallInBaseList &_callList, std::string 
 	}
 
 	mysql_free_result(result);
-	m_sql->Disconnect();	
+	m_sql->Disconnect();
 
-	std::cout<<"after m_activeList.size() = "<<m_activeList.size()<<std::endl;
+
 	return true;	
 }
 
