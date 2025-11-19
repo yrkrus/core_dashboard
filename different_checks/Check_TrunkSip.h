@@ -27,7 +27,7 @@ public:
     CheckTrunkSip();
     virtual ~CheckTrunkSip() override;
     
-    // ICheck
+    // override ICheck
     virtual bool Execute() override;
 
     struct Trunk

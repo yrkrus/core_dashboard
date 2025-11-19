@@ -25,7 +25,11 @@ bool IFile::GetRequest(const char *_request, string &_response, string &_errorDe
 	// поток для хранения
 	std::ostringstream result;
 
+	static std::mutex s_cli_mutex;
+	s_cli_mutex.lock();
 	std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(_request, "r"), pclose);
+	s_cli_mutex.unlock();
+	
 	if (!pipe) 
 	{
 		_errorDescription = StringFormat("%s popen() failed\n", METHOD_NAME);

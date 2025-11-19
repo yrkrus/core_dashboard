@@ -68,10 +68,11 @@ public:
 	virtual void Parsing() override;							// разбор сырых данных
 
 	void UpdateCallSuccess();							// обновление данных когда нет активных операторов на линии
-	private:
+	
+private:
 	QueueCallsList		m_listQueue;
 	SP_SQL				m_sql;
-	Log					m_log;
+	SP_Log				m_log;
 	
 	void UpdateCalls(const QueueCallsList &_callList);  			// обновление звонков
 

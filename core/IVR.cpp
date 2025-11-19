@@ -41,7 +41,7 @@ static std::string IVR_REQUEST = "asterisk -rx \"core show channels concise\" | 
 IVR::IVR()
 	:IAsteriskData("IVR",CONSTANTS::TIMEOUT::IVR)
 	, m_sql(std::make_shared<ISQLConnect>(false))
-	, m_log(CONSTANTS::LOG::IVR)
+	, m_log(std::make_shared<Log>(CONSTANTS::LOG::IVR))
 {
 }
 
@@ -115,7 +115,7 @@ bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 	if (nCountDelims != CHANNELS_FIELDS - 1)
     {
         std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
-		m_log.ToFile(ecLogType::eError, error);		
+		m_log->ToFile(ecLogType::eError, error);		
 	
         return false;
     }
@@ -124,14 +124,14 @@ bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 	if (!utils::SplitDelimiterEntry(_lines, lines, DELIMITER_CHANNELS_FIELDS, error)) 
 	{
 		error = StringFormat("%s \t %s", METHOD_NAME, error.c_str()); 
-		m_log.ToFile(ecLogType::eError, error);		
+		m_log->ToFile(ecLogType::eError, error);		
 		return false; 
 	}
 	
 	if (lines.size() != CHANNELS_FIELDS || lines.empty()) 
 	{
 		std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
-		m_log.ToFile(ecLogType::eError, error);		
+		m_log->ToFile(ecLogType::eError, error);		
 		return false;
 	}  	
 	
@@ -158,7 +158,7 @@ bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 		if (!CheckCallers(_caller)) 
 		{
 			std::string errorDescription = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
-			m_log.ToFile(ecLogType::eError, errorDescription);
+			m_log->ToFile(ecLogType::eError, errorDescription);
 			return false;
 		}	
 
@@ -230,7 +230,7 @@ void IVR::InsertIvrCalls()
 			if (!m_sql->Request(query, errorDescription))
 			{
 				errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-				m_log.ToFile(ecLogType::eError, errorDescription);
+				m_log->ToFile(ecLogType::eError, errorDescription);
 
 				m_sql->Disconnect();
 				
@@ -254,7 +254,7 @@ void IVR::UpdateIvrCalls(uint32_t _id, const IvrCalls &_caller)
 	if (!m_sql->Request(query, errorDescription))
 	{
 		errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, errorDescription);
+		m_log->ToFile(ecLogType::eError, errorDescription);
 
 		m_sql->Disconnect();
 		return;
@@ -272,15 +272,33 @@ bool IVR::IsExistCallIvr(const IvrCalls &_caller, std::string &_errorDescription
 	if (!m_sql->Request(query, _errorDescription))
 	{	
 		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, _errorDescription);
+		m_log->ToFile(ecLogType::eError, _errorDescription);
 
 		m_sql->Disconnect();
+		// ошибка считаем  что есть запись
 		return true;
 	}
 
 	// результат
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	if (result == nullptr)
+	{
+		_errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, _errorDescription);
+		m_sql->Disconnect();
+		// ошибка считаем  что есть запись
+		return true;
+	}
+
 	MYSQL_ROW row = mysql_fetch_row(result);
+	if (row == nullptr)
+	{
+		_errorDescription = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, _errorDescription);
+		m_sql->Disconnect();
+		// ошибка считаем  что есть запись
+		return true;
+	}
 
 	bool existIvrPhone;
 	std::stoi(row[0]) == 0 ? existIvrPhone = false : existIvrPhone = true;
@@ -312,11 +330,11 @@ bool IVR::IsExistCallIvrLoop(const IvrCalls &_caller)
 	const std::string query = "select count(phone) from ivr_loop where phone = '" + std::string(_caller.phone) + 
 							  "' and call_id = '" + _caller.call_id + "'";
 
-	std::string _errorDescription;
-	if (!m_sql->Request(query, _errorDescription))
+	std::string errorDescription;
+	if (!m_sql->Request(query, errorDescription))
 	{	
-		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, _errorDescription);
+		errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
+		m_log->ToFile(ecLogType::eError, errorDescription);
 
 		m_sql->Disconnect();
 		return true;
@@ -324,7 +342,22 @@ bool IVR::IsExistCallIvrLoop(const IvrCalls &_caller)
 
 	// результат
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	if (result == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		return false;
+	}
+
 	MYSQL_ROW row = mysql_fetch_row(result);
+	if (row == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		return false;
+	}
 
 	bool existIvrPhone;
 	std::stoi(row[0]) == 0 ? existIvrPhone = false : existIvrPhone = true;
@@ -346,7 +379,7 @@ void IVR::InsertIvrLoop(const IvrCalls &_caller)
 	if (!m_sql->Request(query, _errorDescription))
 	{
 		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, _errorDescription);		
+		m_log->ToFile(ecLogType::eError, _errorDescription);		
 	}
 
 	m_sql->Disconnect();
@@ -364,7 +397,7 @@ void IVR::UpdateIvrLoop(const IvrCalls &_caller, int _id)
 	if (!m_sql->Request(query, errorDescription))
 	{
 		errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, errorDescription);
+		m_log->ToFile(ecLogType::eError, errorDescription);
 
 		m_sql->Disconnect();
 		return;
@@ -375,7 +408,8 @@ void IVR::UpdateIvrLoop(const IvrCalls &_caller, int _id)
 
 bool IVR::GetIDLoop(const std::string &_phone, const std::string &_call_id, uint32_t &_id)
 {
-   const std::string query = "select id from ivr_loop where phone = '" + _phone + 
+    std::string errorDescription;
+	const std::string query = "select id from ivr_loop where phone = '" + _phone + 
 							  "' and call_id = '" + _call_id + "'";
 	
 	if (!m_sql->Request(query))
@@ -386,9 +420,33 @@ bool IVR::GetIDLoop(const std::string &_phone, const std::string &_call_id, uint
 	}	
 
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
-	MYSQL_ROW row = mysql_fetch_row(result);
+	if (result == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		return false;
+	}
 
-	_id = std::stoi(row[0]);
+	MYSQL_ROW row = mysql_fetch_row(result);
+	if (row == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		return false;
+	}
+
+	try
+	{
+		_id = std::stoi(row[0]);	
+	}
+	catch(const std::exception& e)
+	{
+		std::string errorDescription = StringFormat("!!exception!! %s\t%s", METHOD_NAME, e.what());
+		m_log->ToFile(ecLogType::eError, errorDescription);		
+		return false;
+	}	
 
 	mysql_free_result(result);
 	m_sql->Disconnect();
@@ -398,6 +456,7 @@ bool IVR::GetIDLoop(const std::string &_phone, const std::string &_call_id, uint
 
 bool IVR::GetID(const std::string &_phone, const std::string &_call_id, uint32_t &_id)
 {
+	std::string errorDescription;
 	const std::string query = "select id from ivr where phone = '" + _phone + 
 							  "' and call_id = '" + _call_id + "'";
 	
@@ -409,9 +468,34 @@ bool IVR::GetID(const std::string &_phone, const std::string &_call_id, uint32_t
 	}	
 
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
-	MYSQL_ROW row = mysql_fetch_row(result);
+	if (result == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		return false;
+	}
 
-	_id = std::stoi(row[0]);
+	MYSQL_ROW row = mysql_fetch_row(result);
+	if (row == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		return false;
+	}
+
+	try
+	{
+		_id = std::stoi(row[0]);	
+	}
+	catch(const std::exception& e)
+	{
+		std::string errorDescription = StringFormat("!!exception!! %s\t%s", METHOD_NAME, e.what());
+		m_log->ToFile(ecLogType::eError, errorDescription);		
+		return false;
+	}	
+	
 
 	mysql_free_result(result);
 	m_sql->Disconnect();

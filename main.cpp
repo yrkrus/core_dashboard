@@ -16,10 +16,10 @@
 #include "core/TCPServer.h"
 #include "core/IVR.h"
 #include "core/ActiveSip.h"
-#include "core/ActiveLisa.h"
 
 #include "clearing_current_day/ClearingCurrentDay.h"
 #include "different_checks/CheckInternal.h"
+#include "different_checks/Check_ActiveLisaCalls.h"
 
 // эти include потом убрать, они нужны для отладки только
 #include <stdio.h>
@@ -38,6 +38,7 @@ static SP_ActiveLisa    activeLisa              = nullptr;
 static SP_Status changeStatus                   = nullptr;
 static SP_ClearingCurrentDay clearingCurrentDay = nullptr;  // вставка в таблицы history
 static SP_CheckInternal checkInternal           = nullptr;  // внутренние проверки
+static SP_CheckActiveLisaCalls checkLisaCalls   = nullptr;  // проверка звонков лизы
 
 static std::atomic<bool> g_running(true);
 
@@ -106,33 +107,33 @@ static void _Init()
 {
     ivr                 = std::make_shared<IVR>();
     queue               = std::make_shared<Queue>();
-    activeSession       = std::make_shared<ActiveSession>(queue);
-    activeLisa          = std::make_shared<ActiveLisa>();
+    activeSession       = std::make_shared<ActiveSession>(queue); 
     changeStatus        = std::make_shared<Status>();
     clearingCurrentDay  = std::make_shared<ClearingCurrentDay>(); // встаква в таблицы history_*
-    checkInternal       = std::make_shared<CheckInternal>();  // внутренние проверки  
+    checkInternal       = std::make_shared<CheckInternal>();  // внутренние проверки 
+    checkLisaCalls      = std::make_shared<CheckActiveLisaCalls>(); 
 }
 
 static void _Run()
 {
     ivr->Start();
     queue->Start();
-    activeSession->Start();
-    activeLisa->Start();
+    activeSession->Start();    
     changeStatus->Start();          // изменение статуса оператора
     clearingCurrentDay->Start();    // очистка текущего дня в таблицу history_*
-    checkInternal->Start();     
+    checkInternal->Start();  
+    checkLisaCalls->Start();   
 }
 
 static void _Destroy()
 {
     ivr->Stop();
     queue->Stop();
-    activeSession->Stop();
-    activeLisa->Stop();
+    activeSession->Stop();   
     changeStatus->Stop();
     clearingCurrentDay->Stop();
-    checkInternal->Stop();    
+    checkInternal->Stop();   
+    checkLisaCalls->Stop(); 
 }
 
 static void _sigint_handler(int)
@@ -196,8 +197,7 @@ int main(int argc, char *argv[])
 
         ivr->Parsing();
         queue->Parsing();
-        activeSession->Parsing();
-        activeLisa->Parsing();
+        activeSession->Parsing();       
 
         auto stop = std::chrono::steady_clock::now();
         auto execute_ms = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start);

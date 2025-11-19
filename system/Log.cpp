@@ -27,6 +27,14 @@ bool Log::GetCommandInfoUser(CommandSendInfoUser &_userInfo, unsigned int _id, s
   
 	// результат
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	if (result == nullptr)
+	{
+		_errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		ToFile(ecLogType::eError, _errorDescription);
+		m_sql->Disconnect();
+		return false;
+	}
+
 	MYSQL_ROW row;	
 
 	while ((row = mysql_fetch_row(result)) != NULL)

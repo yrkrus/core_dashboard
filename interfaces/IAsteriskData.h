@@ -9,7 +9,7 @@
 #include <string>
 
 #include "IFile.h"
-#include "../system/PotokDispether.h"
+#include "IPotokDispether.h"
 
 class IAsteriskData
 {

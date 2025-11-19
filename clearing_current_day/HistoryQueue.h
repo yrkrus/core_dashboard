@@ -35,7 +35,7 @@ public:
 private:
 
 	HistoryQueueTable	m_history;
-	Log					m_log;
+	SP_Log				m_log;
 
 	virtual bool Insert(const Table &_field, std::string &_errorDescription);
 	virtual void Delete(int _id, ECheckInsert _check) override;

@@ -39,7 +39,7 @@ public:
 
 private:
 	HistorySmsTable		m_history;
-	Log					m_log;
+	SP_Log				m_log;
 	SMSInfo       		m_smsInfo;
 
 	virtual bool Insert(const Table &_field, std::string &_errorDescription);

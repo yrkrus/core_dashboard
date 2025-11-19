@@ -3,7 +3,7 @@
 
 #include <memory>
 #include "Check_TrunkSip.h"
-#include "../system/PotokDispether.h"
+#include "../interfaces/IPotokDispether.h"
 #include "../CallInfo.h"
 #include "../core/SmsInfo.h"
 

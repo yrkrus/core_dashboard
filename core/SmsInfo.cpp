@@ -84,21 +84,29 @@ bool SMSInfo::ExecuteFindMobileOpeartorInfo()
 
 void SMSInfo::InitAuthSMS()
 {
-    std::string errorDesciption;	
+    std::string errorDescription;	
 	
 	const std::string query = "select sms_login,sms_pwd from sms_settings where id = '1' ";
 
-	if (!m_sql->Request(query, errorDesciption))
+	if (!m_sql->Request(query, errorDescription))
 	{
 		m_sql->Disconnect();
-		errorDesciption = StringFormat("%s\tInitAuth SMS error\t%s",METHOD_NAME,errorDesciption.c_str());
-        m_log->ToFile(ecLogType::eError, errorDesciption);
+		errorDescription = StringFormat("%s\tInitAuth SMS error\t%s", METHOD_NAME, errorDescription.c_str());
+        m_log->ToFile(ecLogType::eError, errorDescription);
         return;
 	}	
 
 	// результат
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
-	MYSQL_ROW row;
+    if (result == nullptr)
+    {
+        errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+        m_log->ToFile(ecLogType::eError, errorDescription);
+        m_sql->Disconnect();
+        return;
+    }
+
+    MYSQL_ROW row;
 
     std::string login;
     std::string pwd;
@@ -155,7 +163,15 @@ bool SMSInfo::GetInfoSMSList(InfoSMSList &_list, std::string &_errorDescription)
 
 	// результат
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
-	MYSQL_ROW row;
+    if (result == nullptr)
+    {
+        _errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+        m_log->ToFile(ecLogType::eError, _errorDescription);
+        m_sql->Disconnect();
+        return false;
+    }
+
+    MYSQL_ROW row;
 
 	while ((row = mysql_fetch_row(result)) != NULL)
 	{
@@ -354,6 +370,14 @@ bool SMSInfo::GetInfoMobileList(MobileInfoList &_list, std::string &_errorDescri
 
     // результат
     MYSQL_RES *result = mysql_store_result(MobileOperatorInfo::GetSQL()->Get());
+    if (result == nullptr)
+    {
+        _errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+        m_log->ToFile(ecLogType::eError, _errorDescription);
+        m_sql->Disconnect();
+        return false;
+    }
+
     MYSQL_ROW row;
 
     while ((row = mysql_fetch_row(result)) != NULL)

@@ -5,7 +5,7 @@
 using namespace utils;
 
 HistoryIvr::HistoryIvr()
-	: m_log(CONSTANTS::LOG::HISTORY_IVR)
+	: m_log(std::make_shared<Log>(CONSTANTS::LOG::HISTORY_IVR))
 {
 }
 
@@ -23,8 +23,8 @@ bool HistoryIvr::Execute()
 
 	 std::string info = StringFormat("Clear table ivr. Fields count = %u", Count());
 	
-	 m_log.ToPrint(info);
-	 m_log.ToFile(ecLogType::eInfo, info);
+	 m_log->ToPrint(info);
+	 m_log->ToFile(ecLogType::eInfo, info);
 
 	int errorCount = 0;
 	int successCount = 0;
@@ -41,11 +41,11 @@ bool HistoryIvr::Execute()
 	 	else 
 	 	{
 	 		errorCount++;
-	 		m_log.ToFile(ecLogType::eError, error);
+	 		m_log->ToFile(ecLogType::eError, error);
 	 	}
 
 	 	// success or error
-	 	m_log.ToPrint(error);
+	 	m_log->ToPrint(error);
 	}
 
 	 if (Count() == 0) 
@@ -54,9 +54,9 @@ bool HistoryIvr::Execute()
 	 }
 
 	 info = StringFormat("Success = %u Error = %u", successCount, errorCount);
-	 m_log.ToPrint(info);
+	 m_log->ToPrint(info);
 
-	 m_log.ToFile(ecLogType::eInfo, info);
+	 m_log->ToFile(ecLogType::eInfo, info);
 
 	return (errorCount != 0 ? false :  true); 
 }
@@ -110,7 +110,7 @@ bool HistoryIvr::Insert(const Table &_field, std::string &_errorDescription)
 	if (!m_sql->Request(query, _errorDescription))
 	{
 		_errorDescription = StringFormat("%s\tquery \t%s\t%s", METHOD_NAME, query.c_str(), _errorDescription.c_str());
-		m_log.ToFile(ecLogType::eError, _errorDescription);
+		m_log->ToFile(ecLogType::eError, _errorDescription);
 
 		m_sql->Disconnect();
 		return false;
@@ -142,7 +142,7 @@ void HistoryIvr::Delete(int _id, ECheckInsert _check)
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, error);
+		m_log->ToFile(ecLogType::eError, error);
 	}
 
 	m_sql->Disconnect();
@@ -150,6 +150,7 @@ void HistoryIvr::Delete(int _id, ECheckInsert _check)
 
 bool HistoryIvr::Get()
 {
+	std::string errorDescription;
 	m_history.clear();
 
 	const std::string query = "select * from ivr where date_time < '" + GetCurrentStartDay() + "'";
@@ -158,7 +159,7 @@ bool HistoryIvr::Get()
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, error);
+		m_log->ToFile(ecLogType::eError, error);
 
 		m_sql->Disconnect();
 		return false;
@@ -166,6 +167,14 @@ bool HistoryIvr::Get()
 
 	// результат
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	if (result == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		return false;
+	}
+
 	MYSQL_ROW row;
 
 	while ((row = mysql_fetch_row(result)) != NULL)
@@ -208,13 +217,13 @@ bool HistoryIvr::IsExistData()
 
 bool HistoryIvr::CheckInsert(int _id)
 {
-	std::string error;
+	std::string errorDescription;
 	const std::string query = "select count(id) from history_ivr where id = '" + std::to_string(_id) + "'";
 
-	if (!m_sql->Request(query, error))
+	if (!m_sql->Request(query, errorDescription))
 	{
-		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, error);
+		errorDescription = StringFormat("%s\tquery \t%s", METHOD_NAME,query.c_str());
+		m_log->ToFile(ecLogType::eError, errorDescription);
 
 		m_sql->Disconnect();
 		// ошибка считаем что нет записи
@@ -223,10 +232,36 @@ bool HistoryIvr::CheckInsert(int _id)
 
 	// результат
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
-	MYSQL_ROW row = mysql_fetch_row(result);
+	if (result == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		return false;
+	}
 
-	bool existField;
-	(std::stoi(row[0]) == 0 ? existField = false : existField = true);
+	MYSQL_ROW row = mysql_fetch_row(result);
+	if (row == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		return false;
+	}
+
+	bool existField = false;
+	try
+	{
+		existField = (std::stoi(row[0]) != 0);
+	}
+	catch (const std::exception &e)
+	{
+		errorDescription = StringFormat("!!exception!! %s\t%s", METHOD_NAME, e.what());
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		mysql_free_result(result); // Освобождаем результат
+		m_sql->Disconnect();
+		return false;
+	}
 
 	mysql_free_result(result);
 	m_sql->Disconnect();

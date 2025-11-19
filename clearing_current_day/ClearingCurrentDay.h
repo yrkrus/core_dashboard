@@ -6,7 +6,7 @@
 #include "HistoryOnHold.h"
 #include "HistoryQueue.h"
 #include "HistorySms.h"
-#include "../system/PotokDispether.h"
+#include "../interfaces/IPotokDispether.h"
 
 #define FULL_DAY 86400
 

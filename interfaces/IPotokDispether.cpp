@@ -1,6 +1,6 @@
 ﻿#include <cassert>
 #include <cstring>
-#include "PotokDispether.h"
+#include "IPotokDispether.h"
 
 #define MAX_NAME_THREAD 16
 

@@ -19,7 +19,7 @@ namespace CONSTANTS
     // версия ядра
     namespace VERSION
     {          
-        static const std::string CORE = "CORE | version 4.2 " BUILD; 
+        static const std::string CORE = "CORE | version 4.3 " BUILD; 
     }
 
     
@@ -29,7 +29,7 @@ namespace CONSTANTS
         static const uint32_t QUEUE                     = 1000;   // timeout для проверки новых данных для queue (входящие звонки)
         static const uint32_t QUEUE_OUTGOING            = 1000;   // timeout для проверки новых данных для queue (исходящие звонки)
         static const uint32_t ACTIVE_SESSION            = 1000;   // timeout для проверки новых данных для активной сеcсии операторов (входящие звонки)
-        static const uint32_t ACTIVE_LISA               = 1000;   // timeout для проверки новых данных для звонков Лизы
+        static const uint32_t ACTIVE_CALLS_LISA         = 1000;   // timeout для проверки новых данных для звонков Лизы
         static const uint32_t ACTIVE_SESSION_OUTGOING   = 1000;   // timeout для проверки новых данных для активной сеcсии операторов (исходящие звонки)
         static const uint32_t OPERATOR_STATUS           = 100;    // timeout для проверки новых данных для смены статуса оператором
         static const uint32_t CLEARING_CURRENT_DAY      = 60000; // timeout для проверки нужно ли очищать текущий день таблицы history_*
@@ -49,7 +49,7 @@ namespace CONSTANTS
         static const std::string QUEUE              = "queue.log";
         static const std::string QUEUE_OUTGOING     = "queue_outgoing.log";
         static const std::string ACTIVE_SESSION     = "active_session.log"; 
-        static const std::string ACTIVE_LISA        = "active_lisa.log"; 
+        static const std::string ACTIVE_CALLS_LISA  = "active_calls_lisa.log"; 
         static const std::string ACTIVE_SESSION_OUTGOING    = "active_session_outgoing.log";        
         // to_history
         static const std::string HISTORY_IVR        = "history_ivr.log";

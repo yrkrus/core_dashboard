@@ -88,7 +88,7 @@ public:
 private:
 	std::vector<IvrCalls>	m_listIvr;	
 	SP_SQL					m_sql;
-	Log						m_log;
+	SP_Log					m_log;
 	IVRTime					m_time;
 
 	bool CreateCallers(const std::string&, IvrCalls&);

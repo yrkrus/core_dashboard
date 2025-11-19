@@ -13,7 +13,7 @@ active_sip::ActiveSession::ActiveSession(SP_Queue &_queue)
 	: IAsteriskData("ActiveSession",CONSTANTS::TIMEOUT::ACTIVE_SESSION)
 	, m_queueSession(_queue)
 	, m_sql(std::make_shared<ISQLConnect>(false))
-	, m_log(CONSTANTS::LOG::ACTIVE_SESSION)
+	, m_log(std::make_shared<Log>(CONSTANTS::LOG::ACTIVE_SESSION))
 {
 }
 
@@ -295,13 +295,13 @@ bool active_sip::ActiveSession::IsExistListActiveTalkCalls()
 // существует ли хоть 1 запись в БД sip+очередь
 bool active_sip::ActiveSession::IsExistOperatorsQueue()
 {
-	std::string error;
+	std::string errorDescription;
 	const std::string query = "select count(id) from operators_queue";
 
-	if (!m_sql->Request(query, error))
+	if (!m_sql->Request(query, errorDescription))
 	{
-		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, error);
+		errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
+		m_log->ToFile(ecLogType::eError, errorDescription);
 		
 		m_sql->Disconnect();
 		// ошибка считаем что есть запись
@@ -310,7 +310,22 @@ bool active_sip::ActiveSession::IsExistOperatorsQueue()
 
 	// результат
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	if (result == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		return false;
+	}
+
 	MYSQL_ROW row = mysql_fetch_row(result);
+	if (row == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		return false;
+	}
 
 	bool existOperatorsQueue;
 	(std::stoi(row[0]) == 0 ? existOperatorsQueue = false : existOperatorsQueue = true);
@@ -326,11 +341,11 @@ bool active_sip::ActiveSession::IsExistOperatorsQueue(const std::string &_sip, c
 {
 	const std::string query = "select count(id) from operators_queue where sip = '" + _sip + "' and queue = '" + _queue + "'";
 
-	std::string error;
-	if (!m_sql->Request(query, error))
+	std::string errorDescription;
+	if (!m_sql->Request(query, errorDescription))
 	{
-		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, error);
+		errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
+		m_log->ToFile(ecLogType::eError, errorDescription);
 
 		m_sql->Disconnect();
 		// ошибка считаем что есть запись
@@ -339,7 +354,24 @@ bool active_sip::ActiveSession::IsExistOperatorsQueue(const std::string &_sip, c
 
 	// результат
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	if (result == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		// ошибка считаем что есть запись
+		return true;
+	}
+
 	MYSQL_ROW row = mysql_fetch_row(result);
+	if (row == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		// ошибка считаем что есть запись
+		return true;
+	}
 
 	bool exist;
 	std::stoi(row[0]) == 0 ? exist = false : exist = true;
@@ -359,7 +391,7 @@ void active_sip::ActiveSession::ClearOperatorsQueue()
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, error);
+		m_log->ToFile(ecLogType::eError, error);
 
 		m_sql->Disconnect();
 		return;
@@ -377,7 +409,7 @@ void active_sip::ActiveSession::CheckOperatorsQueue()
 	if (!GetActiveQueueOperators(listActiveOperatorsBase, errorDescription))
 	{
 		errorDescription = StringFormat("%s\t%s", METHOD_NAME, errorDescription.c_str());
-		m_log.ToFile(ecLogType::eError, errorDescription);
+		m_log->ToFile(ecLogType::eError, errorDescription);
 
 		return;
 	}
@@ -443,7 +475,7 @@ bool active_sip::ActiveSession::GetActiveQueueOperators(OperatorList &_activeLis
 	if (!m_sql->Request(query, _errorDescription))
 	{		
 		_errorDescription += METHOD_NAME + StringFormat("query \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, _errorDescription);
+		m_log->ToFile(ecLogType::eError, _errorDescription);
 
 		m_sql->Disconnect();
 		return false;
@@ -451,6 +483,14 @@ bool active_sip::ActiveSession::GetActiveQueueOperators(OperatorList &_activeLis
 
 	// результат
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	if (result == nullptr)
+	{
+		_errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, _errorDescription);
+		m_sql->Disconnect();
+		return false;
+	}
+
 	MYSQL_ROW row;
 
 	while ((row = mysql_fetch_row(result)) != NULL)
@@ -483,7 +523,7 @@ void active_sip::ActiveSession::DeleteOperatorsQueue(const std::string &_sip, co
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, error);
+		m_log->ToFile(ecLogType::eError, error);
 		
 		m_sql->Disconnect();
 		
@@ -502,7 +542,7 @@ void active_sip::ActiveSession::DeleteOperatorsQueue(const std::string &_sip)
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, error);
+		m_log->ToFile(ecLogType::eError, error);
 
 		m_sql->Disconnect();		
 		return;
@@ -522,7 +562,7 @@ void active_sip::ActiveSession::InsertOperatorsQueue(const std::string &_sip, co
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, error);
+		m_log->ToFile(ecLogType::eError, error);
 
 		m_sql->Disconnect();		
 		return;
@@ -594,7 +634,7 @@ bool active_sip::ActiveSession::CreateActiveCall(const std::string &_lines, cons
     catch (const std::out_of_range& e) 
 	{
         auto msgErr = StringFormat("%s\t lines\t %s\t what=%s ", METHOD_NAME, _lines.c_str(), e.what());
-		m_log.ToFile(ecLogType::eError, msgErr);        
+		m_log->ToFile(ecLogType::eError, msgErr);        
 		
 		return false;
     }	
@@ -606,7 +646,7 @@ bool active_sip::ActiveSession::CreateActiveCall(const std::string &_lines, cons
     catch (const std::out_of_range& e) 
 	{
         auto msgErr = StringFormat("%s\t lines\t %s\t what=%s ", METHOD_NAME, _lines.c_str(), e.what());
-		m_log.ToFile(ecLogType::eError, msgErr);        
+		m_log->ToFile(ecLogType::eError, msgErr);        
 		
 		return false;
     }
@@ -618,7 +658,7 @@ bool active_sip::ActiveSession::CreateActiveCall(const std::string &_lines, cons
     catch (const std::out_of_range& e) 
 	{
         auto msgErr = StringFormat("%s\t lines\t %s\t what=%s ", METHOD_NAME, _lines.c_str(), e.what());
-		m_log.ToFile(ecLogType::eError, msgErr);        
+		m_log->ToFile(ecLogType::eError, msgErr);        
 		
 		return false;
     }
@@ -675,7 +715,7 @@ bool active_sip::ActiveSession::FindActiveCallIvrID(const std::string &_lines, c
     catch (const std::out_of_range& e) 
 	{
         auto msgErr = StringFormat("%s\t lines\t %s\t what=%s ", METHOD_NAME, _lines.c_str(), e.what());
-		m_log.ToFile(ecLogType::eError, msgErr);        
+		m_log->ToFile(ecLogType::eError, msgErr);        
 		
 		return false;
     }
@@ -734,7 +774,7 @@ void active_sip::ActiveSession::UpdateTalkCallOperator()
 		if (!m_sql->Request(query, error))
 		{
 			error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-			m_log.ToFile(ecLogType::eError, error);
+			m_log->ToFile(ecLogType::eError, error);
 
 			m_sql->Disconnect();
 			
@@ -751,11 +791,11 @@ bool active_sip::ActiveSession::IsExistTalkCallOperator(const std::string &_phon
 								+ "' and date_time > '" + GetCurrentStartDay()
 								+ "' order by date_time desc limit 1";
 
-	std::string error;
-	if (!m_sql->Request(query, error))
+	std::string errorDescription;
+	if (!m_sql->Request(query, errorDescription))
 	{
-		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, error);
+		errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
+		m_log->ToFile(ecLogType::eError, errorDescription);
 		
 		m_sql->Disconnect();
 		
@@ -765,7 +805,24 @@ bool active_sip::ActiveSession::IsExistTalkCallOperator(const std::string &_phon
 
 	// результат
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	if (result == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		// ошибка считаем что есть запись	
+		return true;
+	}
+
 	MYSQL_ROW row = mysql_fetch_row(result);
+	if (row == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		// ошибка считаем что есть запись	
+		return true;
+	}
 
 	bool existQueueSip;
 	std::stoi(row[0]) == 0 ? existQueueSip = false : existQueueSip = true;
@@ -783,11 +840,11 @@ int active_sip::ActiveSession::GetLastTalkCallOperatorID(const std::string &_pho
 							+ _phone + " and date_time > '"
 							+ GetCurrentStartDay() + "' order by date_time desc limit 1";
 
-	std::string error;
-	if (!m_sql->Request(query, error))
+	std::string errorDescription;
+	if (!m_sql->Request(query, errorDescription))
 	{
-		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, error);
+		errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
+		m_log->ToFile(ecLogType::eError, errorDescription);
 
 		m_sql->Disconnect();
 		
@@ -796,7 +853,25 @@ int active_sip::ActiveSession::GetLastTalkCallOperatorID(const std::string &_pho
 	}	
 
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	if (result == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		// ошибка считаем что нет записи
+		return -1;
+	}
+
 	MYSQL_ROW row = mysql_fetch_row(result);
+	if (row == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		// ошибка считаем что нет записи
+		return -1;
+	}
+
 	int count = std::stoi(row[0]);
 
 	mysql_free_result(result);
@@ -828,7 +903,7 @@ void active_sip::ActiveSession::UpdateOnHoldStatusOperator()
 	if (!GetActiveOnHold(onHoldList, errorDescription))
 	{
 		errorDescription = StringFormat("%s\t%s", METHOD_NAME, errorDescription.c_str());
-		m_log.ToFile(ecLogType::eError, errorDescription);
+		m_log->ToFile(ecLogType::eError, errorDescription);
 
 		return;
 	}	
@@ -860,7 +935,7 @@ bool active_sip::ActiveSession::GetActiveOnHold(OnHoldList &_onHoldList, std::st
 	if (!m_sql->Request(query, _errorDescription))
 	{
 		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, _errorDescription);
+		m_log->ToFile(ecLogType::eError, _errorDescription);
 
 		m_sql->Disconnect();	
 		return false;
@@ -868,6 +943,14 @@ bool active_sip::ActiveSession::GetActiveOnHold(OnHoldList &_onHoldList, std::st
 
 	// результат
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	if (result == nullptr)
+	{
+		_errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, _errorDescription);
+		m_sql->Disconnect();
+		return false;
+	}
+
 	MYSQL_ROW row;
 
 	while ((row = mysql_fetch_row(result)) != NULL)
@@ -905,7 +988,7 @@ void active_sip::ActiveSession::DisableOnHold(const OnHoldList &_onHoldList)
 		if (!DisableHold(hold, errorDescription))
 		{
 			errorDescription = StringFormat("%s\t%s", METHOD_NAME, errorDescription.c_str());
-			m_log.ToFile(ecLogType::eError, errorDescription);
+			m_log->ToFile(ecLogType::eError, errorDescription);
 
 			continue;
 		}
@@ -923,7 +1006,7 @@ bool active_sip::ActiveSession::DisableHold(const OnHold &_hold, std::string &_e
 	if (!m_sql->Request(query, _errorDescription))
 	{
 		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, _errorDescription);
+		m_log->ToFile(ecLogType::eError, _errorDescription);
 
 		m_sql->Disconnect();
 		return false;
@@ -942,7 +1025,7 @@ bool active_sip::ActiveSession::AddHold(const Operator &_sip, std::string &_erro
 	if (!m_sql->Request(query, _errorDescription))
 	{
 		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, _errorDescription);
+		m_log->ToFile(ecLogType::eError, _errorDescription);
 
 		m_sql->Disconnect();
 		return false;
@@ -979,7 +1062,7 @@ void active_sip::ActiveSession::CheckOnHold(OnHoldList &_onHoldList)
 			if (!DisableHold(hold, errorDescription))
 			{
 				errorDescription = StringFormat("%s\t%s", METHOD_NAME, errorDescription.c_str());
-				m_log.ToFile(ecLogType::eError, errorDescription);
+				m_log->ToFile(ecLogType::eError, errorDescription);
 
 				return;
 			}
@@ -994,7 +1077,7 @@ void active_sip::ActiveSession::CheckOnHold(OnHoldList &_onHoldList)
 		if (!GetActiveOnHold(_onHoldList, errorDescription))
 		{
 			errorDescription = StringFormat("%s\t%s", METHOD_NAME, errorDescription.c_str());
-			m_log.ToFile(ecLogType::eError, errorDescription);
+			m_log->ToFile(ecLogType::eError, errorDescription);
 
 			return;
 		}
@@ -1040,7 +1123,7 @@ void active_sip::ActiveSession::CheckOnHold(OnHoldList &_onHoldList)
 				if (!AddHold(sip, errorDescription))
 				{
 					errorDescription = StringFormat("%s\t%s", METHOD_NAME, errorDescription.c_str());
-					m_log.ToFile(ecLogType::eError, errorDescription);
+					m_log->ToFile(ecLogType::eError, errorDescription);
 				}
 			}
 		}
@@ -1058,7 +1141,7 @@ bool active_sip::ActiveSession::IxExistManualCheckCurrentTalk()
 		if (errorDescription.find("empty") == std::string::npos) 
 		{
 			errorDescription = StringFormat("%s\t%s",METHOD_NAME,errorDescription.c_str());
-			m_log.ToFile(ecLogType::eError, errorDescription);
+			m_log->ToFile(ecLogType::eError, errorDescription);
 		}	
 		
 		return false;

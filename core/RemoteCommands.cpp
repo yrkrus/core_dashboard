@@ -59,6 +59,14 @@ bool Status::GetCommand(std::string &_errorDesciption)
 
 	// результат
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	if (result == nullptr)
+	{
+		_errorDesciption = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, _errorDesciption);
+		m_sql->Disconnect();
+		return false;
+	}
+
 	MYSQL_ROW row;
 
 	while ((row = mysql_fetch_row(result)) != NULL)
@@ -371,9 +379,8 @@ bool Status::IsTalkOperator(const std::string &_sip, std::string &_errorDescipti
 	const std::string query = "select count(phone) from queue where date_time > '" + GetCurrentStartDay() +
 																	"' and sip = '" + _sip + "' and answered = '1' and hash is null limit 1";
 	if (!m_sql->Request(query, _errorDesciption))
-	{
-		// TODO в лог
-		printf("%s", _errorDesciption.c_str());
+	{		
+		m_log->ToFile(ecLogType::eError, StringFormat("%s", _errorDesciption.c_str()));		
 		m_sql->Disconnect();
 		// ошибка считаем что нет запись
 		return false;
@@ -381,7 +388,22 @@ bool Status::IsTalkOperator(const std::string &_sip, std::string &_errorDescipti
 
 	// результат
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	if (result == nullptr)
+	{
+		_errorDesciption = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, _errorDesciption);
+		m_sql->Disconnect();
+		return false;
+	}
+
 	MYSQL_ROW row = mysql_fetch_row(result);
+	if (row == nullptr)
+	{
+		_errorDesciption = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, _errorDesciption);
+		m_sql->Disconnect();
+		return false;
+	}
 
 	bool exist;
 	std::stoi(row[0]) == 0 ? exist = false : exist = true;

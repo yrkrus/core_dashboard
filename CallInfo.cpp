@@ -42,6 +42,14 @@ bool CallInfo::GetInfoMobileList(MobileInfoList &_list, std::string &_errorDescr
 
     // результат
     MYSQL_RES *result = mysql_store_result(MobileOperatorInfo::GetSQL()->Get());
+    if (result == nullptr)
+    {
+        _errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+        MobileOperatorInfo::GetLog()->ToFile(ecLogType::eError, _errorDescription);
+        MobileOperatorInfo::GetSQL()->Disconnect();
+        return false;
+    }
+
     MYSQL_ROW row;
 
     while ((row = mysql_fetch_row(result)) != NULL)

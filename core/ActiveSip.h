@@ -100,7 +100,7 @@ namespace active_sip
 		ActiveTalkCallList	m_listCall;			
 		SP_SQL			m_sql;		
 		IFile			m_queue;			// запрос информации по текущим очередям
-		Log				m_log;
+		SP_Log				m_log;
 		IFile			m_rawDataTalkCall;
 
 		void CreateListActiveSessionOperators();			// активные операторы в линии

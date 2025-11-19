@@ -5,7 +5,7 @@
 using namespace utils;
 
 HistoryOnHold::HistoryOnHold()
-	: m_log(CONSTANTS::LOG::HISTORY_ONHOLD)
+	: m_log(std::make_shared<Log>(CONSTANTS::LOG::HISTORY_ONHOLD))
 {
 }
 
@@ -23,8 +23,8 @@ bool HistoryOnHold::Execute()
 
 	std::string info = StringFormat("Clear operators_ohhold. Fields count = %u", Count());
 
-	m_log.ToPrint(info);
-	m_log.ToFile(ecLogType::eInfo, info);
+	m_log->ToPrint(info);
+	m_log->ToFile(ecLogType::eInfo, info);
 
 	int errorCount = 0;
 	int successCount = 0;
@@ -41,11 +41,11 @@ bool HistoryOnHold::Execute()
 		else
 		{
 			errorCount++;
-			m_log.ToFile(ecLogType::eError, error);
+			m_log->ToFile(ecLogType::eError, error);
 		}
 
 		// success or error
-		m_log.ToPrint(error);
+		m_log->ToPrint(error);
 	}
 
 	if (Count() == 0)
@@ -54,9 +54,9 @@ bool HistoryOnHold::Execute()
 	}
 
 	info = StringFormat("Success = %u Error = %u", successCount, errorCount);
-	m_log.ToPrint(info);
+	m_log->ToPrint(info);
 
-	m_log.ToFile(ecLogType::eInfo, info);
+	m_log->ToFile(ecLogType::eInfo, info);
 
 	return (errorCount != 0 ? false :  true); 
 }
@@ -91,7 +91,7 @@ bool HistoryOnHold::Insert(const Table &_field, std::string &_errorDescription)
 	if (!m_sql->Request(query, _errorDescription))
 	{
 		_errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, _errorDescription);
+		m_log->ToFile(ecLogType::eError, _errorDescription);
 
 		m_sql->Disconnect();
 		return false;
@@ -123,7 +123,7 @@ void HistoryOnHold::Delete(int _id, ECheckInsert _check)
 	if (!m_sql->Request(query, error))
 	{
 		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, error);
+		m_log->ToFile(ecLogType::eError, error);
 	}
 
 	m_sql->Disconnect();
@@ -135,11 +135,11 @@ bool HistoryOnHold::Get()
 
 	const std::string query = "select * from operators_ohhold where date_time_start < '" + GetCurrentStartDay() + "'";
 
-	std::string error;
-	if (!m_sql->Request(query, error))
+	std::string errorDescription;
+	if (!m_sql->Request(query, errorDescription))
 	{
-		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, error);
+		errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
+		m_log->ToFile(ecLogType::eError, errorDescription);
 
 		m_sql->Disconnect();
 		return false;
@@ -147,6 +147,14 @@ bool HistoryOnHold::Get()
 
 	// результат
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	if (result == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		return false;
+	}
+
 	MYSQL_ROW row;
 
 	while ((row = mysql_fetch_row(result)) != NULL)
@@ -182,13 +190,13 @@ bool HistoryOnHold::IsExistData()
 
 bool HistoryOnHold::CheckInsert(int _id)
 {
-	std::string error;
+	std::string errorDescription;
 	const std::string query = "select count(id) from history_onhold where id = '" + std::to_string(_id) + "'";
 
-	if (!m_sql->Request(query, error))
+	if (!m_sql->Request(query, errorDescription))
 	{
-		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log.ToFile(ecLogType::eError, error);
+		errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
+		m_log->ToFile(ecLogType::eError, errorDescription);
 
 		m_sql->Disconnect();
 		// ошибка считаем что нет записи
@@ -197,7 +205,22 @@ bool HistoryOnHold::CheckInsert(int _id)
 
 	// результат
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	if (result == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		return false;
+	}
+
 	MYSQL_ROW row = mysql_fetch_row(result);
+	if (row == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		return false;
+	}
 
 	bool existField;
 	(std::stoi(row[0]) == 0 ? existField = false : existField = true);
