@@ -42,7 +42,7 @@ private:
 
     bool IsReady() const;  
     
-    void CreteFolderLog(const std::string &_name);  // проверка что есть папка с логами
+    void CreateFolderLog(const std::string &_name);  // проверка что есть папка с логами
 
 public:    
     Log() = delete;

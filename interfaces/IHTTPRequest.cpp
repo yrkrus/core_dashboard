@@ -16,7 +16,7 @@ size_t IHTTPRequest::WriteCallback(void *contents, size_t size, size_t nmemb, vo
 IHTTPRequest::IHTTPRequest()
     : m_curl(nullptr)
     , m_initialized(false)
-    , m_log(CONSTANTS::LOG::HTTP_REQUEST)
+    , m_log(std::make_shared<Log>(CONSTANTS::LOG::HTTP_REQUEST))
 {
     // Глобальная инициализация libcurl
     if (curl_global_init(CURL_GLOBAL_DEFAULT) == 0)
@@ -25,7 +25,7 @@ IHTTPRequest::IHTTPRequest()
         m_initialized = (m_curl != nullptr);
     } else 
     {
-        m_log.ToFile(ecLogType::eError, "Ошибка curl_global_init()");
+        m_log->ToFile(ecLogType::eError, "Ошибка curl_global_init()");
     }     
 }
 
@@ -51,8 +51,8 @@ bool IHTTPRequest::Get(const std::string &_url, std::string &_outBody)
 {
     if (!m_initialized)
     {        
-        _outBody = StringFormat("CURL не инициализирован"); 
-        m_log.ToFile(ecLogType::eError, _outBody);        
+        _outBody = StringFormat("%s\tCURL not init", METHOD_NAME); 
+        m_log->ToFile(ecLogType::eError, _outBody);        
         return false;
     }
 
@@ -76,8 +76,8 @@ bool IHTTPRequest::Get(const std::string &_url, std::string &_outBody)
     CURLcode res = curl_easy_perform(m_curl);
     if (res != CURLE_OK)
     {        
-        _outBody =  StringFormat("\tGet\t %s \t curl_easy_perform() error: %s", _url.c_str(), curl_easy_strerror(res)); 
-        m_log.ToFile(ecLogType::eError, _outBody);        
+        _outBody =  StringFormat("%s\tGet\t %s \t curl_easy_perform() error: %s", METHOD_NAME, _url.c_str(), curl_easy_strerror(res)); 
+        m_log->ToFile(ecLogType::eError, _outBody);        
         return false;
     }
 
@@ -86,8 +86,8 @@ bool IHTTPRequest::Get(const std::string &_url, std::string &_outBody)
     curl_easy_getinfo(m_curl, CURLINFO_RESPONSE_CODE, &http_code);
     if (http_code < 200 || http_code >= 300)
     {        
-        _outBody = StringFormat("\tGet \t %s \tCode %u",_url.c_str(), http_code);
-        m_log.ToFile(ecLogType::eError, _outBody);
+        _outBody = StringFormat("%s\tGet \t %s \tCode %u", METHOD_NAME, _url.c_str(), http_code);
+        m_log->ToFile(ecLogType::eError, _outBody);
         return false;
     }
 

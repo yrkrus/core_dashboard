@@ -5,9 +5,13 @@
 #include "../utils/custom_cast.h"
 #include "../system/Constants.h"
 
-
 using namespace utils;
 using namespace custom_cast;
+
+static std::string QUEUE_COMMANDS		= "Queue|to-atsaero5005";
+static std::string QUEUE_COMMANDS_EXT1	= "App";
+static std::string QUEUE_REQUEST		= "asterisk -rx \"core show channels verbose\" | grep -E \"" + QUEUE_COMMANDS + "\" " + " | grep -v \"" + QUEUE_COMMANDS_EXT1 + "\"";
+
 
 Queue::Queue()
 	: IAsteriskData("Queue",CONSTANTS::TIMEOUT::QUEUE)

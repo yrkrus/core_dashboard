@@ -57,7 +57,7 @@ all: $(TARGET)
 # когда вызываем make release/debug/valgrind,
 # сначала выполнится clean, затем сборка, затем echo
 release debug valgrind: clean all
-	@echo "Сборка -> $(BUILD): $(TARGET)"
+	@echo "============================== Сборка -> $(BUILD): $(TARGET) =============================="
 
 # линковка
 $(TARGET): $(OBJECTS)

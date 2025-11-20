@@ -11,11 +11,6 @@
 #include "../interfaces/IAsteriskData.h"
 #include "../interfaces/ISQLConnect.h"
 
-
-static std::string QUEUE_COMMANDS		= "Queue|to-atsaero5005";
-static std::string QUEUE_COMMANDS_EXT1	= "App";
-static std::string QUEUE_REQUEST		= "asterisk -rx \"core show channels verbose\" | grep -E \"" + QUEUE_COMMANDS + "\" " + " | grep -v \"" + QUEUE_COMMANDS_EXT1 + "\"";
-
 enum class ecQueueNumber // ВАЖНО в методе bool Status::ExecuteCommand используется for 1..3 
 {
 	eUnknown = 0,

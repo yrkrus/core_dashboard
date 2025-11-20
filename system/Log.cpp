@@ -89,7 +89,7 @@ bool Log::IsReady() const
 	return m_ready;
 }
 
-void Log::CreteFolderLog(const std::string &_name)
+void Log::CreateFolderLog(const std::string &_name)
 {
 	fs::path directory(LOG_FOLDER);
 	if (!fs::exists(directory)) 
@@ -105,7 +105,7 @@ Log::Log(const std::string &_name)
 	: m_sql(std::make_shared<ISQLConnect>(false))	
 	, m_ready(false)
 {	
-	CreteFolderLog(_name);
+	CreateFolderLog(_name);
 	OpenLogFile();
 }
 

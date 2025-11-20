@@ -1,4 +1,4 @@
-#include "IFirebirdConnect.h"
+#include "IFirebirdConnect_not_ready.h"
 
 IFirebirdConnect::IFirebirdConnect()
 {

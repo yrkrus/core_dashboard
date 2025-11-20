@@ -40,7 +40,7 @@ public:
     };
 
 private:    
-    SP_Log                 m_log;
+    SP_Log              m_log;
     bool                is_running;
     SP_SQL				m_sql;
     std::vector<Trunk>  m_listTrunk;

@@ -30,7 +30,8 @@ bool ActiveLisa::Execute()
 		//	m_log->ToFile(errorDescription);
 
 		// на всякий случай обновим вдруг есть данные
-		UpdateCallSuccess();
+		m_activeList.clear();
+		UpdateCallSuccess();		
 		return true;
 	}
 
