@@ -110,15 +110,15 @@ std::string utils::PhoneParsingInternal(std::string &phone)
 }	
 
 // перевод общего кол-ва секунда в 00:00:00 формат
-std::string utils::GetTalkTime(std::string talk)
+std::string utils::GetTalkTime(int talk)
 {
-	const unsigned int daysCount = 24 * 3600;
-	const unsigned short hourCount = 3600;
-	const unsigned short minCount = 60;
+	static const unsigned int daysCount = 24 * 3600;
+	static const unsigned short hourCount = 3600;
+	static const unsigned short minCount = 60;
 
 	std::string resultat;
 
-	int talk_time = std::stoi(talk);
+	int talk_time = talk;
 
 	int days, hour, min, sec;
 	std::string shour, smin, ssec;

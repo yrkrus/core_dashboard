@@ -34,7 +34,7 @@ namespace active_sip
 		std::string phone;			// текущий номер телфеона с которым ведется беседа
 		std::string phone_raw;		// текущий номер телфеона с которым ведется беседа (сырой как по aster проходит)
 		std::string sip;			// внутренний sip который ведет беседу
-		std::string talkTime;		// время развговора  //TODO потом в int переделать	
+		int talkTime;				// время развговора 
 		std::string callID;			// id звонка
 		std::string ivr_callID;		// id звонка в ivr	
 	};

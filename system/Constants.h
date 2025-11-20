@@ -19,7 +19,7 @@ namespace CONSTANTS
     // версия ядра
     namespace VERSION
     {          
-        static const std::string CORE = "CORE | version 4.3 " BUILD; 
+        static const std::string CORE = "CORE | version 4.4 " BUILD; 
     }
 
     

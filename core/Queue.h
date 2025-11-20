@@ -9,6 +9,7 @@
 #include <map>
 #include "../system/Log.h"
 #include "../interfaces/IAsteriskData.h"
+#include "../interfaces/IAsteriskApplication.h"
 #include "../interfaces/ISQLConnect.h"
 
 enum class ecQueueNumber // ВАЖНО в методе bool Status::ExecuteCommand используется for 1..3 
@@ -31,15 +32,22 @@ class Queue : public IAsteriskData
 public:	
 	struct QueueCalls
 	{
-		std::string phone;								// текущий номер телефона который в очереди сейчас
-		std::string waiting;							// время в (сек) которое сейчас в очереди находится
-		ecQueueNumber queue	= ecQueueNumber::eUnknown;	// номер очереди
-	
+		std::string phone;										// текущий номер телефона который в очереди сейчас
+		int waiting;											// время в (сек) которое сейчас в очереди находится
+		ecQueueNumber queue	= ecQueueNumber::eUnknown;			// номер очереди
+		ecAsteriskState state = ecAsteriskState::Unknown;		// текущее состояние канала (Up, Ring, Down и т.п.)		
+		ecAsteriskApp application = ecAsteriskApp::Unknown;   	// текущее приложение(Dial, Playback, …)	
+		std::string call_id;									// id звонка (ivr)
+
+
 		inline bool check() const noexcept
 		{
 			return ((!phone.empty()) 		&&
-					(!waiting.empty())		&&
-					(queue != ecQueueNumber::eUnknown));			
+					(waiting != 0)			&&
+					(!call_id.empty())		&&
+					(queue != ecQueueNumber::eUnknown) &&
+					(state == ecAsteriskState::Up) &&
+					(application == ecAsteriskApp::Queue));			
 		}
 	};	
 	using QueueCallsList = std::vector<QueueCalls>;
@@ -93,10 +101,10 @@ private:
 	void UpdateCallSuccessRealOperator(const QueueCallsList &_calls);	// разговор успешно состоялся реальный оператор
 	void UpdateCallSuccessVirtualOperator(const QueueCallsList &_calls);// разговор успешно состоялся виртуальный оператор
 	
-	bool IsExistCall(ecQueueNumber _queue, const std::string &_phone);	// есть ли уже такой номер в БД
+	bool IsExistCall(const QueueCalls&);	// есть ли уже такой номер в БД
 	bool IsExistCallVirtualOperator(ecQueueNumber _queue, const std::string &_phone);	// есть ли уже такой номер в БД (виртуальный оператор)
 
-	int GetLastQueueCallId(const std::string &_phone);					// id записи по БД о звонке
+	int GetLastQueueCallId(const std::string &_phone, const std::string &_call_id);		// id записи по БД о звонке
 	int GetLastQueueVirtualOperatorCallId(const std::string &_phone);	// id записи по БД о звонке(виртуальный оператор)
 
 	bool GetCallsInBase(CallsInBaseList &_vcalls, const QueueCallsList &_queueCalls, std::string &_errorDescription); // получение записей из БД 

@@ -8,21 +8,12 @@
 using namespace utils;
 using namespace custom_cast;
 
-static std::string SIP_COMMANDS_EXT1		= "ivr-5";					// пропуск этой записи
-static std::string SIP_COMMANDS_EXT2		= "Ring";					// пропуск этой записи
-static std::string SIP_COMMANDS_EXT3		= "Down";					// пропуск этой записи
-static std::string SIP_COMMANDS_EXT4		= "Outgoing";				// пропуск этой записи
-static std::string SIP_COMMANDS_EXT5		= "FMPR";					// пропуск этой записи (эта запись на исходящий звонок)
+static std::string SIP_COMMANDS_EXT1		= "FMPR";					// пропуск этой записи (эта запись на исходящий звонок)
 static std::string SIP_COMMANDS_FND			= "func-apply-sipheaders|ext-queues";	// поиск по этой строке
 
 static std::string SESSION_QUEUE_RESPONSE	= "asterisk -rx \"queue show %queue\"";
-// static std::string SESSION_SIP_RESPONSE 	= "asterisk -rx \"core show channels concise\"" " | grep -v \"" + SIP_COMMANDS_EXT1 + "\"" 
-// 																							" | grep -v \"" + SIP_COMMANDS_EXT2 + "\""
-// 																							" | grep -v \"" + SIP_COMMANDS_EXT3 + "\""
-// 																							" | grep -v \"" + SIP_COMMANDS_EXT4 + "\""
-// 																							" | grep -v \"" + SIP_COMMANDS_EXT5 + "\"";
 static std::string SESSION_SIP_RESPONSE 	= "asterisk -rx \"core show channels concise\"" " | grep -E \"" + SIP_COMMANDS_FND + "\""
-																							" | grep -v \"" + SIP_COMMANDS_EXT5 + "\"";
+																							" | grep -v \"" + SIP_COMMANDS_EXT1 + "\"";
 
 
 active_sip::ActiveSession::ActiveSession(SP_Queue &_queue)
@@ -657,11 +648,11 @@ bool active_sip::ActiveSession::CreateActiveCall(const std::string &_lines, cons
 	
 	try 
 	{
-		_caller.talkTime = lines.at(9);
+		_caller.talkTime = std::atoi(lines.at(9).c_str());
     }
     catch (const std::out_of_range& e) 
 	{
-        auto msgErr = StringFormat("%s\t lines\t %s\t what=%s ", METHOD_NAME, _lines.c_str(), e.what());
+        std::string msgErr = StringFormat("%s\t lines\t %s\t what=%s ", METHOD_NAME, _lines.c_str(), e.what());
 		m_log->ToFile(ecLogType::eError, msgErr);        
 		
 		return false;
@@ -741,10 +732,10 @@ bool active_sip::ActiveSession::FindActiveCallIvrID(const std::string &_lines, c
 
 bool active_sip::ActiveSession::CheckActiveCall(const ActiveTalkCall &_caller)
 {
-	return  !_caller.phone.empty() 	&&
-			 !_caller.sip.empty()	&&
-			 !_caller.talkTime.empty() &&
-			 !_caller.callID.empty();
+	return  ((!_caller.phone.empty()) 	&&
+			 (!_caller.sip.empty())	&&
+			 (_caller.talkTime != 0) &&
+			 (!_caller.callID.empty()) );
 }
 
 // обновление текущих звонков операторов
