@@ -758,12 +758,18 @@ void active_sip::ActiveSession::UpdateTalkCallOperator()
 
 	for (const auto &call : m_listCall)
 	{
+		bool errorConnectSQL = false;
 		// проверим есть ли такой номер
-		if (!IsExistTalkCallOperator(call.phone)) 
+		if (!IsExistTalkCallOperator(call.phone, errorConnectSQL)) 
 		{
 			continue;
 		}		
-		 
+		
+		if (errorConnectSQL) 
+		{
+			continue;
+		}
+		
 		std::string id = std::to_string(GetLastTalkCallOperatorID(call.phone));
 		if (id.find("-1") != std::string::npos)
 		{
@@ -792,7 +798,7 @@ void active_sip::ActiveSession::UpdateTalkCallOperator()
 	}	
 }
 
-bool active_sip::ActiveSession::IsExistTalkCallOperator(const std::string &_phone)
+bool active_sip::ActiveSession::IsExistTalkCallOperator(const std::string &_phone, bool &_errorConnectSQL)
 {
 	const std::string query = "select count(phone) from queue where phone = '" + _phone
 								+ "' and date_time > '" + GetCurrentStartDay()
@@ -807,6 +813,7 @@ bool active_sip::ActiveSession::IsExistTalkCallOperator(const std::string &_phon
 		m_sql->Disconnect();
 		
 		// ошибка считаем что есть запись	
+		_errorConnectSQL = true;
 		return true;
 	}
 
@@ -818,6 +825,7 @@ bool active_sip::ActiveSession::IsExistTalkCallOperator(const std::string &_phon
 		m_log->ToFile(ecLogType::eError, errorDescription);
 		m_sql->Disconnect();
 		// ошибка считаем что есть запись	
+		_errorConnectSQL = true;
 		return true;
 	}
 
@@ -828,6 +836,7 @@ bool active_sip::ActiveSession::IsExistTalkCallOperator(const std::string &_phon
 		m_log->ToFile(ecLogType::eError, errorDescription);
 		m_sql->Disconnect();
 		// ошибка считаем что есть запись	
+		_errorConnectSQL = true;
 		return true;
 	}
 

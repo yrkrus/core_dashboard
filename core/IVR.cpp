@@ -207,8 +207,14 @@ void IVR::InsertIvrCalls()
 		} 			
 		
 		// проверим есть ли такой номер в бд
-		if (IsExistCallIvr(call, errorDescription)) 
+		bool errorConnectSQL = false;
+		if (IsExistCallIvr(call, errorDescription, errorConnectSQL)) 
 		{
+			if (errorConnectSQL)
+			{
+				continue;
+			}
+			
 			uint32_t id;
 			if (!GetID(call.phone, call.call_id, id)) 
 			{
@@ -219,6 +225,11 @@ void IVR::InsertIvrCalls()
 		}
 		else  
 		{ 
+			if (errorConnectSQL) 
+			{
+				continue;
+			}
+			
 			// номера такого нет нужно добавить в БД
 			const std::string query = "insert into ivr (phone,call_time,trunk,call_id,number_queue) values ('" 
 									+ call.phone + "','" 
@@ -264,7 +275,7 @@ void IVR::UpdateIvrCalls(uint32_t _id, const IvrCalls &_caller)
 }
 
 
-bool IVR::IsExistCallIvr(const IvrCalls &_caller, std::string &_errorDescription)
+bool IVR::IsExistCallIvr(const IvrCalls &_caller, std::string &_errorDescription, bool &_errorConnectSQL)
 {	
 	const std::string query = "select count(phone) from ivr where phone = '" + std::string(_caller.phone) + 
 							  "' and call_id = '"+_caller.call_id+"'";
@@ -276,6 +287,7 @@ bool IVR::IsExistCallIvr(const IvrCalls &_caller, std::string &_errorDescription
 
 		m_sql->Disconnect();
 		// ошибка считаем  что есть запись
+		_errorConnectSQL = true;
 		return true;
 	}
 
@@ -287,6 +299,7 @@ bool IVR::IsExistCallIvr(const IvrCalls &_caller, std::string &_errorDescription
 		m_log->ToFile(ecLogType::eError, _errorDescription);
 		m_sql->Disconnect();
 		// ошибка считаем  что есть запись
+		_errorConnectSQL = true;
 		return true;
 	}
 
@@ -297,6 +310,7 @@ bool IVR::IsExistCallIvr(const IvrCalls &_caller, std::string &_errorDescription
 		m_log->ToFile(ecLogType::eError, _errorDescription);
 		m_sql->Disconnect();
 		// ошибка считаем  что есть запись
+		_errorConnectSQL = true;
 		return true;
 	}
 

@@ -182,10 +182,16 @@ void ActiveLisa::InsertLisaCalls()
 	for (const auto &call : m_activeList) 
 	{
 		std::string errorDescription;				
-		
+		bool errorConnectSQL = false;
+
 		// проверим есть ли такой номер в бд
-		if (IsExistCallLisa(call, errorDescription)) 
+		if (IsExistCallLisa(call, errorDescription, errorConnectSQL)) 
 		{
+			if (errorConnectSQL)
+			{
+				continue;
+			}
+			
 			uint32_t id;
 			if (!GetID(call.phone, call.call_id, id)) 
 			{
@@ -196,6 +202,11 @@ void ActiveLisa::InsertLisaCalls()
 		}
 		else  
 		{ 
+			if (errorConnectSQL) 
+			{
+				continue;
+			}
+			
 			// номера такого нет нужно добавить в БД
 			const std::string query = "insert into queue_lisa (phone, talk_time, call_id, answered) values ('" 
 											+ call.phone + "', '" 
@@ -219,7 +230,7 @@ void ActiveLisa::InsertLisaCalls()
 	}
 }
 
-bool ActiveLisa::IsExistCallLisa(const ActiveLisaCall &_caller, std::string &_errorDescription)
+bool ActiveLisa::IsExistCallLisa(const ActiveLisaCall &_caller, std::string &_errorDescription, bool &_errorConnectSQL)
 {
 	const std::string query = "select count(phone) from queue_lisa where phone = '" + std::string(_caller.phone) +
 							  "' and call_id = '" + _caller.call_id + "'";
@@ -230,7 +241,8 @@ bool ActiveLisa::IsExistCallLisa(const ActiveLisaCall &_caller, std::string &_er
 		m_log->ToFile(ecLogType::eError, _errorDescription);
 
 		m_sql->Disconnect();
-		return true;
+		_errorConnectSQL = true;
+		return false;
 	}
 
 	// результат
@@ -240,6 +252,8 @@ bool ActiveLisa::IsExistCallLisa(const ActiveLisaCall &_caller, std::string &_er
 		_errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
 		m_log->ToFile(ecLogType::eError, _errorDescription);
 		m_sql->Disconnect();
+		
+		_errorConnectSQL = true;
 		return false;
 	}
 
@@ -249,6 +263,8 @@ bool ActiveLisa::IsExistCallLisa(const ActiveLisaCall &_caller, std::string &_er
 		_errorDescription = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
 		m_log->ToFile(ecLogType::eError, _errorDescription);
 		m_sql->Disconnect();
+		
+		_errorConnectSQL = true;
 		return false;
 	}
 

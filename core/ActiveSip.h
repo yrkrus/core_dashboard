@@ -74,14 +74,14 @@ namespace active_sip
 		virtual void Parsing() override;				// разбор сырых данных
 		
 	private:
-		SP_Queue	&m_queueSession;	// ссылка на очереди
+		SP_Queue			&m_queueSession;	// ссылка на очереди
 		
-		OperatorList	m_listOperators;	
+		OperatorList		m_listOperators;	
 		ActiveTalkCallList	m_listCall;			
-		SP_SQL			m_sql;		
-		IFile			m_queue;			// запрос информации по текущим очередям
+		SP_SQL				m_sql;		
+		IFile				m_queue;			// запрос информации по текущим очередям
 		SP_Log				m_log;
-		IFile			m_rawDataTalkCall;
+		IFile				m_rawDataTalkCall;
 
 		void CreateListActiveSessionOperators();			// активные операторы в линии
 		void CreateListActiveTalkCalls();				// активные звонки в линии
@@ -112,7 +112,7 @@ namespace active_sip
 		void UpdateActiveCurrentTalkCalls(); // обновление текущих звонков операторов
 		
 		void UpdateTalkCallOperator();								// обновление данных таблицы queue о том с кем сейчас разговаривает оператор
-		bool IsExistTalkCallOperator(const std::string &_phone);	// существует ли такой номер в таблице queue чтобы добавить sip оператора который с разговор ведет
+		bool IsExistTalkCallOperator(const std::string &_phone, bool &_errorConnectSQL);	// существует ли такой номер в таблице queue чтобы добавить sip оператора который с разговор ведет
 		int  GetLastTalkCallOperatorID(const std::string &_phone);	// получение последнего ID актуального разговора текущего оператора в таблице queue
 	
 		// onHold 

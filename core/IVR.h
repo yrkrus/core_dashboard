@@ -96,7 +96,7 @@ private:
 	bool IsExistListIvr();	
 	void InsertIvrCalls();																// вставка в БД данных
 	void UpdateIvrCalls(uint32_t _id, const IvrCalls &_caller);							// обновдление звонка IVR по БД
-	bool IsExistCallIvr(const IvrCalls &_caller, std::string &_errorDescription);		// есть ли такой номер в БД (ivr)
+	bool IsExistCallIvr(const IvrCalls &_caller, std::string &_errorDescription, bool &_errorConnectSQL);		// есть ли такой номер в БД (ivr)
 
 	void IvrLoop(const IvrCalls &_caller); 		// звонок кидаем в ivr_loop (т.к. он повторный)
 	bool IsExistCallIvrLoop(const IvrCalls &_caller);// есть ли такой номер в БД (ivr_loop)	

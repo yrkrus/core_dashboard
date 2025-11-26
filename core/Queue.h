@@ -68,7 +68,7 @@ public:
 	 // override IAsteriskData 
 	virtual void Start() override;
 	virtual void Stop() override;
-	virtual void Parsing() override;							// разбор сырых данных
+	virtual void Parsing() override;					// разбор сырых данных
 
 	void UpdateCallSuccess();							// обновление данных когда нет активных операторов на линии
 	
@@ -77,7 +77,8 @@ private:
 	SP_SQL				m_sql;
 	SP_Log				m_log;
 	
-	void UpdateCalls(const QueueCallsList &_callList);  			// обновление звонков
+	
+	void UpdateCalls(const QueueCallsList &_callList);  		// обновление звонков
 
 	bool FindQueueCallers();									// поиск текущих активных звонков
 
@@ -87,8 +88,9 @@ private:
 	bool IsExistQueueCalls();									// есть ли звонки в памяти
 
 	void InsertQueueCalls();							// добавление данных в БД
-	void InsertCall(const QueueCalls &_call);			// добавление нового звонка
-	void InsertCallVirtualOperator(const QueueCalls &_call);	// добавление нового звонка (виртуальный оператор лиза)
+    void InsertCall(const QueueCalls &_call);           // добавление нового звонка
+    void NewFunction();
+    void InsertCallVirtualOperator(const QueueCalls &_call);	// добавление нового звонка (виртуальный оператор лиза)
 	bool UpdateCall(int _id, const QueueCalls &_call, std::string &_errorDescription); // обновление существующего звонка
 	bool UpdateCallVirualOperator(int _id, const QueueCalls &_call, std::string &_errorDescription); // обновление существующего звонка (виртуальный оператор)
 	void UpdateCallFail(const QueueCallsList &_calls);	// обновление данных если звонок был в очереди, но не дождался ответа от оператора
@@ -101,7 +103,13 @@ private:
 	void UpdateCallSuccessRealOperator(const QueueCallsList &_calls);	// разговор успешно состоялся реальный оператор
 	void UpdateCallSuccessVirtualOperator(const QueueCallsList &_calls);// разговор успешно состоялся виртуальный оператор
 	
-	bool IsExistCall(const QueueCalls&);	// есть ли уже такой номер в БД
+	bool IsExistCall(const QueueCalls&, bool &_errorConnectSQL);					// есть ли уже такой номер в БД
+	bool IsExixtCall_ActiveTalkCall(const QueueCalls&, bool &_errorConnectSQL); 	// активный разговор? 
+	bool IsExixtCall_ActiveTalkQueue(const QueueCalls&, bool &_errorConnectSQL); 	//  в очереди активный разговор?
+	bool IsExixtCall_ActiveTalkRepeat(const QueueCalls&, bool &_errorConnectSQL); 	//  повторный разговор?
+	bool IsExixtCall_ActiveTalkRepeatTwo(const QueueCalls&, bool &_errorConnectSQL); 	//  повторный разговор 2 раз?
+	bool IsExixtCall_CallID(const QueueCalls&); 									// есть ли такой call_id_ivr 
+
 	bool IsExistCallVirtualOperator(ecQueueNumber _queue, const std::string &_phone);	// есть ли уже такой номер в БД (виртуальный оператор)
 
 	int GetLastQueueCallId(const std::string &_phone, const std::string &_call_id);		// id записи по БД о звонке

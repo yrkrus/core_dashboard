@@ -13,6 +13,21 @@ static std::string SIP_COMMANDS_FND			= "!Up!Queue!";	// поиск по это�
 static std::string SESSION_QUEUE_RESPONSE	= "asterisk -rx \"queue show %queue\"";
 static std::string QUEUE_REQUEST 			= "asterisk -rx \"core show channels concise\"" " | grep -E \"" + SIP_COMMANDS_FND + "\"";
 
+static std::string _extractedPart(const std::string	&_str) 
+{
+	size_t pos = _str.find('.');	
+
+	// Если точка найдена, извлекаем подстроку   
+    if (pos != std::string::npos) 
+	{
+        return 	_str.substr(0, pos + 1); // +1 для включения точки
+    } 
+	else 
+	{
+        return _str; 	// Если точки нет, берем всю строку
+    }
+}
+
 
 Queue::Queue()
 	: IAsteriskData("Queue",CONSTANTS::TIMEOUT::QUEUE)
@@ -115,10 +130,10 @@ bool Queue::CreateQueueCallers(const std::string &_lines, QueueCalls &_queueCall
 		return false;
 	}
 
-	//   for (const auto &it : lines)
-	//   {
-	//   	printf("%s\n",it.c_str());
-	//   }
+	// for (const auto &it : lines)
+	// {
+	// 	printf("%s\n", it.c_str());
+	// }
 
 	_queueCaller.queue = StringToEnum<ecQueueNumber>(lines[2]);										  // номер очереди
 	_queueCaller.state = StringToEnum<ecAsteriskState>(lines[4]);									  // текущее состояние канала (Up, Ring, Down и т.п.)
@@ -180,9 +195,16 @@ void Queue::UpdateCalls(const QueueCallsList &_callList)
 void Queue::InsertCall(const QueueCalls &_call)
 {
 	std::string errorDescription;
+	bool errorConnectSQL = false;
 
-	if (IsExistCall(_call)) 
+	if (IsExistCall(_call, errorConnectSQL)) 
 	{
+		// возникла ошибка при запросе к БД выходим
+		if (errorConnectSQL) 
+		{
+			return;
+		}
+		
 		// номер существует, обновляем данные
 		int id = GetLastQueueCallId(_call.phone, _call.call_id);
 		
@@ -194,6 +216,18 @@ void Queue::InsertCall(const QueueCalls &_call)
 	}
 	else 
 	{		
+		// возникла ошибка при запросе к БД выходим
+		if (errorConnectSQL) 
+		{
+			return;
+		}
+
+		// проверим на всякий случай нет ли уже такого значения id_ivr, т.к. оно уникальное!
+		if (IsExixtCall_CallID(_call)) 
+		{
+			return;
+		}
+		
 		// нет такого звонка добавляем
 		const std::string query = "insert into queue (number_queue,phone,waiting_time,id_ivr) values ('"
 									+ EnumToString(_call.queue) + "','"
@@ -250,11 +284,10 @@ void Queue::InsertCallVirtualOperator(const QueueCalls &_call)
 
 bool Queue::UpdateCall(int _id, const QueueCalls &_call, std::string &_errorDescription)
 {
-	const std::string query = "update queue set waiting_time = '" 
-								+  GetTalkTime(_call.waiting) 
-								+ "' where phone = '" 
-								+ _call.phone 
-								+ "' and id ='" + std::to_string(_id) + "'";;
+	const std::string query = "update queue set waiting_time = '" +  GetTalkTime(_call.waiting) 								
+								+ "' where phone = '" + _call.phone 
+								+ "' and id_ivr = '"+ _call.call_id
+								+ "' and id ='" + std::to_string(_id) + "'";
 	
 	if (!m_sql->Request(query, _errorDescription))
 	{
@@ -318,10 +351,8 @@ void Queue::UpdateCallFail(const QueueCallsList &_calls)
 	}	
 	
 	// обновляем данные	
-	const std::string query = "update queue set fail = '1' where date_time > '"
-										+ GetCurrentStartDay()
-										+ "' and answered = '0'"
-										+ " and sip = '-1' and phone not in (" + phoneDoNotTouch + ")";
+	const std::string query = std::string("update queue set fail = '1' where answered = '0'") +
+                            	std::string(" and sip = '-1' and phone not in (") + phoneDoNotTouch + ")";
 
 	std::string error;
 	if (!m_sql->Request(query, error))
@@ -470,7 +501,7 @@ void Queue::UpdateCallSuccessRealOperator(const QueueCallsList &_calls)
 		const std::string query = "update queue set hash = '" + std::to_string(call.hash)
 															+ "' where id ='" + call.id
 															+ "' and phone ='" + call.phone
-															+ "' and date_time = '" + call.date_time + "'";
+															+ "' and date_time = '" + call.date_time + "'";		
 
 		if (!m_sql->Request(query, error))
 		{
@@ -530,33 +561,136 @@ void Queue::UpdateCallSuccess()
 	}	
 }
 
-bool Queue::IsExistCall(const QueueCalls &_call)
+bool Queue::IsExistCall(const QueueCalls &_call, bool &_errorConnectSQL)
+{
+	// есть ли активный разговор
+	if (IsExixtCall_ActiveTalkCall(_call, _errorConnectSQL))
+	{
+		return true;
+	}
+
+	// вдруг в очереди сейчас находится звонок
+	if (IsExixtCall_ActiveTalkQueue(_call, _errorConnectSQL))
+	{
+		return true;
+	}
+
+	// нет разговора проверяем повтрность
+	if (IsExixtCall_ActiveTalkRepeat(_call, _errorConnectSQL))
+	{
+		return true;
+	}
+
+	// проверка на повторность, вдруг еще раз перезвонили после того как поговорили уже
+	if (IsExixtCall_ActiveTalkRepeatTwo(_call, _errorConnectSQL))
+	{
+		return true;
+	}
+
+	return false;
+}
+
+bool Queue::IsExixtCall_ActiveTalkCall(const QueueCalls &_call, bool &_errorConnectSQL)
 {
 	std::string errorDescription;
-	// правильней проверять сначало разговор	
-	const std::string query = "select count(phone) from queue where number_queue = '" +EnumToString<ecQueueNumber>(_call.queue)
-								+ "' and phone = '" + _call.phone + "'"							
-								+ " and answered ='1' and fail='0' and sip<>'-1' and hash is NULL "
-								+ " and id_ivr = '"+_call.call_id+"'";
 	
+	// проверяем разговор
+	const std::string query = "select count(phone) from queue where number_queue = '" + EnumToString<ecQueueNumber>(_call.queue) 
+																					  + "' and phone = '" + _call.phone + "'" 
+																					  + " and answered ='1' and fail='0' and sip<>'-1' and hash is NULL " 
+																					  + " and id_ivr = '" + _call.call_id + "'";
+
 	if (!m_sql->Request(query, errorDescription))
 	{
 		errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
 		m_log->ToFile(ecLogType::eError, errorDescription);
 
-		m_sql->Disconnect();		
+		m_sql->Disconnect();
+		
 		// при ошибке считаем что запись есть
+		_errorConnectSQL = true;
 		return true;
-	}	
+	}
 
 	// результат
 	MYSQL_RES *result = mysql_store_result(m_sql->Get());
-	if(result == nullptr)
+	if (result == nullptr)
 	{
 		errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
 		m_log->ToFile(ecLogType::eError, errorDescription);
 		m_sql->Disconnect();
 		// при ошибке считаем что запись есть
+		_errorConnectSQL = true;
+		return true;
+	}
+
+	MYSQL_ROW row = mysql_fetch_row(result);
+	if (row == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		
+		// при ошибке считаем что запись есть
+		_errorConnectSQL = true;
+		return true;
+	}
+
+	int countPhone = 0;
+	try
+	{
+		countPhone = std::stoi(row[0]);	
+	}
+	catch(const std::exception& e)
+	{
+		errorDescription = StringFormat("!!exception!! %s\t%s", METHOD_NAME, e.what());
+		m_log->ToFile(ecLogType::eError, errorDescription);		
+		// при ошибке считаем что запись есть
+		_errorConnectSQL = true;
+		
+		mysql_free_result(result);
+		m_sql->Disconnect();
+		
+		return true;
+	}		
+	
+	mysql_free_result(result);
+	m_sql->Disconnect();
+
+	return countPhone;	
+}
+
+bool Queue::IsExixtCall_ActiveTalkQueue(const QueueCalls &_call, bool &_errorConnectSQL)
+{
+	std::string errorDescription;
+	// const std::string query = "select count(phone) from queue where number_queue = '" + EnumToString<ecQueueNumber>(_call.queue) 
+	// 																				  + "' and phone = '" + _call.phone + "'" 
+	// 																				  + " and answered ='0' and fail='0' and sip='-1' and hash is NULL" 
+	// 																				  + " and id_ivr = '" + _call.call_id + "'";
+	const std::string query = "select count(phone) from queue where phone = '" 	+ _call.phone + "'" 
+																				+ " and answered ='0' and fail='0' and sip='-1' and hash is NULL" 
+																				+ " and id_ivr = '" + _call.call_id + "'";
+
+	if (!m_sql->Request(query, errorDescription))
+	{
+		errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
+		m_log->ToFile(ecLogType::eError, errorDescription);
+
+		m_sql->Disconnect();
+		// при ошибке считаем что запись есть
+		_errorConnectSQL = true;
+		return true;
+	}
+
+	// результат
+	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	if (result == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		// при ошибке считаем что запись есть
+		_errorConnectSQL = true;
 		return true;
 	}
 
@@ -567,166 +701,317 @@ bool Queue::IsExistCall(const QueueCalls &_call)
 		m_log->ToFile(ecLogType::eError, errorDescription);
 		m_sql->Disconnect();
 		// при ошибке считаем что запись есть
+		_errorConnectSQL = true;
 		return true;
 	}
 
-	unsigned int countPhone = std::stoi(row[0]);
-	mysql_free_result(result);
-	m_sql->Disconnect();
-
-	if (countPhone >= 1)
+	int countPhone = 0;
+	try
 	{
-		return true;
+		countPhone = std::stoi(row[0]);	
 	}
-	else
+	catch(const std::exception& e)
 	{
-		// проверяем вдруг в очереди сейчас находится звонок
-		const std::string query = "select count(phone) from queue where number_queue = '" +EnumToString <ecQueueNumber>(_call.queue)
-								+ "' and phone = '" + _call.phone + "'"
-								+ " and answered ='0' and fail='0' and sip='-1' and hash is NULL"
-								+ " and id_ivr = '"+_call.call_id+"'";
-
-		if (!m_sql->Request(query, errorDescription))
-		{
-			errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-			m_log->ToFile(ecLogType::eError, errorDescription);
-
-			m_sql->Disconnect();			
-			// при ошибке считаем что запись есть
-			return true;
-		}
-
-		// результат
-		MYSQL_RES *result = mysql_store_result(m_sql->Get());
-		if (result == nullptr)
-		{
-			errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
-			m_log->ToFile(ecLogType::eError, errorDescription);
-			m_sql->Disconnect();
-			// при ошибке считаем что запись есть
-			return true;
-		}
-
-		MYSQL_ROW row = mysql_fetch_row(result);
-		if(row == nullptr)
-		{
-			errorDescription = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
-			m_log->ToFile(ecLogType::eError, errorDescription);
-			m_sql->Disconnect();
-			// при ошибке считаем что запись есть
-			return true;
-		}
-
-		int countPhone = std::stoi(row[0]);
+		errorDescription = StringFormat("!!exception!! %s\t%s", METHOD_NAME, e.what());
+		m_log->ToFile(ecLogType::eError, errorDescription);		
+		// при ошибке считаем что запись есть
+		_errorConnectSQL = true;
 
 		mysql_free_result(result);
 		m_sql->Disconnect();
 
-		if (countPhone >= 1)
-		{
-			return true;
-		}
-		else
-		{
-			// нет разговора проверяем повтрность
-			const std::string query = "select count(phone) from queue where number_queue = '" + EnumToString<ecQueueNumber>(_call.queue)
-				+ "' and phone = '" + _call.phone + "'"			
-				+ " and answered ='0' and fail='1' and sip = '-1' and hash is NULL"
-				+ " and id_ivr = '"+_call.call_id+"'";
-		
-			if (!m_sql->Request(query, errorDescription))
-			{
-				errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-				m_log->ToFile(ecLogType::eError, errorDescription);
+		return true;
+	}		
+	
+	mysql_free_result(result);
+	m_sql->Disconnect();
 
-				m_sql->Disconnect();				
-				// при ошибке считаем что запись есть
-				return true;
-			}
+	return countPhone;	
+}
 
-			// результат
-			MYSQL_RES *result = mysql_store_result(m_sql->Get());
-			if (result == nullptr)
-			{
-				errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
-				m_log->ToFile(ecLogType::eError, errorDescription);
-				m_sql->Disconnect();
-				// при ошибке считаем что запись есть
-				return true;
-			}
+bool Queue::IsExixtCall_ActiveTalkRepeat(const QueueCalls &_call, bool &_errorConnectSQL)
+{
+	std::string errorDescription;
+	// const std::string query = "select count(phone) from queue where number_queue = '" + EnumToString<ecQueueNumber>(_call.queue)
+	// 			+ "' and phone = '" + _call.phone + "'"			
+	// 			+ " and answered ='0' and fail='1' and sip = '-1' and hash is NULL"
+	// 			+ " and id_ivr = '"+_call.call_id+"'";
 
-			MYSQL_ROW row = mysql_fetch_row(result);
-			if (row == nullptr)
-			{
-				errorDescription = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
-				m_log->ToFile(ecLogType::eError, errorDescription);
-				m_sql->Disconnect();
-				// при ошибке считаем что запись есть
-				return true;
-			}
+	const std::string query = "select count(phone) from queue where phone = '" 	+ _call.phone + "'"			
+																				+ " and answered ='0' and fail='1' and sip = '-1' and hash is NULL"
+																				+ " and id_ivr = '"+_call.call_id+"'";
 
-			int countPhone = std::stoi(row[0]);
+	if (!m_sql->Request(query, errorDescription))
+	{
+		errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
+		m_log->ToFile(ecLogType::eError, errorDescription);
 
-			mysql_free_result(result);
-			m_sql->Disconnect();
-
-			if (countPhone >= 1)
-			{				
-				return false; // считаем как новый вызов!!!
-			}
-			else
-			{
-				// проверка на повторность, вдруг еще раз перезвонили после того как поговорили уже	
-				const std::string query = "select count(phone) from queue where number_queue = '" + EnumToString<ecQueueNumber>(_call.queue)
-					+ "' and phone = '" + _call.phone + "'"				
-					+ " and answered = '1' and fail = '0' and sip <>'-1'"
-					+ " and hash is not NULL"
-					+ " and id_ivr = '" + _call.call_id + "'";				
-				
-				if (!m_sql->Request(query, errorDescription))
-				{
-					errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-					m_log->ToFile(ecLogType::eError, errorDescription);
-
-					m_sql->Disconnect();					
-					// при ошибке считаем что запись есть
-					return true;
-				}
-
-				// результат
-				MYSQL_RES *result = mysql_store_result(m_sql->Get());
-				if (result == nullptr)
-				{
-					errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
-					m_log->ToFile(ecLogType::eError, errorDescription);
-					m_sql->Disconnect();
-					// при ошибке считаем что запись есть
-					return true;
-				}
-
-				MYSQL_ROW row = mysql_fetch_row(result);
-				if (row == nullptr)
-				{
-					errorDescription = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
-					m_log->ToFile(ecLogType::eError, errorDescription);
-					m_sql->Disconnect();
-					// при ошибке считаем что запись есть
-					return true;
-				}
-
-				int countPhone = std::stoi(row[0]);
-				mysql_free_result(result);
-				m_sql->Disconnect();
-
-				if (countPhone >= 1)
-				{
-					return false;	// если есть запись, значит повторный звонок
-				}
-
-				return (countPhone == 0 ? false : true);
-			}
-		}
+		m_sql->Disconnect();
+		// при ошибке считаем что запись есть
+		_errorConnectSQL = true;
+		return true;
 	}
+
+	// результат
+	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	if (result == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		// при ошибке считаем что запись есть
+		_errorConnectSQL = true;
+		return true;
+	}
+
+	MYSQL_ROW row = mysql_fetch_row(result);
+	if (row == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		// при ошибке считаем что запись есть
+		_errorConnectSQL = true;
+		return true;
+	}
+
+	int countPhone = 0;
+	try
+	{
+		countPhone = std::stoi(row[0]);	
+	}
+	catch(const std::exception& e)
+	{
+		errorDescription = StringFormat("!!exception!! %s\t%s", METHOD_NAME, e.what());
+		m_log->ToFile(ecLogType::eError, errorDescription);		
+		// при ошибке считаем что запись есть
+		_errorConnectSQL = true;
+
+		mysql_free_result(result);
+		m_sql->Disconnect();
+
+		return true;
+	}		
+	
+	mysql_free_result(result);
+	m_sql->Disconnect();
+
+	return countPhone;	
+}
+
+bool Queue::IsExixtCall_ActiveTalkRepeatTwo(const QueueCalls &_call, bool &_errorConnectSQL)
+{
+	std::string errorDescription;
+	// const std::string query = "select count(phone) from queue where number_queue = '" + EnumToString<ecQueueNumber>(_call.queue)
+	// 							+ "' and phone = '" + _call.phone + "'"				
+	// 							+ " and answered = '1' and fail = '0' and sip <>'-1'"
+	// 							+ " and hash is not NULL"
+	// 							+ " and id_ivr = '" + _call.call_id + "'";	
+	const std::string query = "select count(phone) from queue where phone = '" 	+ _call.phone + "'"				
+																				+ " and answered = '1' and fail = '0' and sip <>'-1'"
+																				+ " and hash is not NULL"
+																				+ " and id_ivr = '" + _call.call_id + "'";	
+	
+	
+	if (!m_sql->Request(query, errorDescription))
+	{
+		errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
+		m_log->ToFile(ecLogType::eError, errorDescription);
+
+		m_sql->Disconnect();					
+		// при ошибке считаем что запись есть
+		_errorConnectSQL = true;
+		return true;
+	}
+
+	// результат
+	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	if (result == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		// при ошибке считаем что запись есть
+		_errorConnectSQL = true;
+		return true;
+	}
+
+	MYSQL_ROW row = mysql_fetch_row(result);
+	if (row == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		// при ошибке считаем что запись есть
+		_errorConnectSQL = true;
+		return true;
+	}
+
+	int countPhone = 0;
+	try
+	{
+		countPhone = std::stoi(row[0]);	
+	}
+	catch(const std::exception& e)
+	{
+		errorDescription = StringFormat("!!exception!! %s\t%s", METHOD_NAME, e.what());
+		m_log->ToFile(ecLogType::eError, errorDescription);		
+		// при ошибке считаем что запись есть
+		_errorConnectSQL = true;
+		
+		mysql_free_result(result);
+		m_sql->Disconnect();
+
+		return true;
+	}		
+	
+	mysql_free_result(result);
+	m_sql->Disconnect();
+
+	return countPhone;		
+}
+
+bool Queue::IsExixtCall_CallID(const QueueCalls &_call)
+{
+	// std::string errorDescription;	
+	// std::string query = "select count(phone) from queue where phone = '" 	+ _call.phone + "'"																				
+	// 																			+ " and (call_id = '" + _call.call_id + "' or id_ivr = '"+_call.call_id+"')" ;	
+	
+	
+	// if (!m_sql->Request(query, errorDescription))
+	// {
+	// 	errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
+	// 	m_log->ToFile(ecLogType::eError, errorDescription);
+
+	// 	m_sql->Disconnect();					
+	// 	// при ошибке считаем что запись есть	
+	// 	return true;
+	// }
+
+	// // результат
+	// MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	// if (result == nullptr)
+	// {
+	// 	errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+	// 	m_log->ToFile(ecLogType::eError, errorDescription);
+	// 	m_sql->Disconnect();
+	// 	// при ошибке считаем что запись есть		
+	// 	return true;
+	// }
+
+	// MYSQL_ROW row = mysql_fetch_row(result);
+	// if (row == nullptr)
+	// {
+	// 	errorDescription = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
+	// 	m_log->ToFile(ecLogType::eError, errorDescription);
+	// 	m_sql->Disconnect();
+	// 	// при ошибке считаем что запись есть		
+	// 	return true;
+	// }
+
+	// int countPhone = 0;
+	// try
+	// {
+	// 	countPhone = std::stoi(row[0]);	
+	// }
+	// catch(const std::exception& e)
+	// {
+	// 	errorDescription = StringFormat("!!exception!! %s\t%s", METHOD_NAME, e.what());
+	// 	m_log->ToFile(ecLogType::eError, errorDescription);		
+	// 	// при ошибке считаем что запись есть		
+		
+	// 	mysql_free_result(result);
+	// 	m_sql->Disconnect();
+
+	// 	return true;
+	// }		
+	
+	// mysql_free_result(result);
+	// m_sql->Disconnect();
+
+	// if (countPhone > 0) 
+	// {
+	// 	// TODO удалить потом
+	// 	errorDescription = StringFormat("%s\t phone = %s, call_id = %s, state = %s IS %s", METHOD_NAME,
+	// 																				_call.phone.c_str(),
+	// 																				_call.call_id.c_str(),
+	// 																				EnumToString<ecAsteriskState>(_call.state).c_str(),
+	// 																				(countPhone) ? "EXIST" : "NOT EXIST");
+	// 	m_log->ToFile(ecLogType::eInfo, errorDescription);
+		
+	// 	return true;
+	// }
+
+	// если не нашли значит поищем более тонкую настройку, т.е. будем искать только первуючасть id все что до "."
+	std::string errorDescription;	
+	std::string callLike = _extractedPart(_call.call_id);	
+		
+	std::string query = "select count(phone) from queue where phone = '" 	+ _call.phone + "'"																				
+																			+ " and (call_id like '" + callLike + "%' or id_ivr = '"+callLike+"%')" ;	
+	
+	
+	if (!m_sql->Request(query, errorDescription))
+	{
+		errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
+		m_log->ToFile(ecLogType::eError, errorDescription);
+
+		m_sql->Disconnect();					
+		// при ошибке считаем что запись есть	
+		return true;
+	}
+
+	// результат
+	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	if (result == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		// при ошибке считаем что запись есть		
+		return true;
+	}
+
+	MYSQL_ROW row = mysql_fetch_row(result);
+	if (row == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		// при ошибке считаем что запись есть		
+		return true;
+	}
+
+	int countPhone = 0;
+	try
+	{
+		countPhone = std::stoi(row[0]);	
+	}
+	catch(const std::exception& e)
+	{
+		errorDescription = StringFormat("!!exception!! %s\t%s", METHOD_NAME, e.what());
+		m_log->ToFile(ecLogType::eError, errorDescription);		
+		// при ошибке считаем что запись есть		
+		
+		mysql_free_result(result);
+		m_sql->Disconnect();
+
+		return true;
+	}		
+	
+	mysql_free_result(result);
+	m_sql->Disconnect();	
+
+	// // TODO удалить потом
+	// {
+	// 	errorDescription = StringFormat("%s\t !!LIKE!! phone = %s, call_id = %s, state = %s IS %s", METHOD_NAME,
+	// 																				_call.phone.c_str(),
+	// 																				_call.call_id.c_str(),
+	// 																				EnumToString<ecAsteriskState>(_call.state).c_str(),
+	// 																				(countPhone) ? "EXIST" : "NOT EXIST");
+	// 	m_log->ToFile(ecLogType::eInfo, errorDescription);
+	// }	
+
+	return countPhone;	
 }
 
 // есть ли уже такой номер в БД (виртуальный оператор)

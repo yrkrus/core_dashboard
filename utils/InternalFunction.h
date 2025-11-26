@@ -34,9 +34,11 @@ namespace utils
 
 	void Sleep(uint64_t _time);
 
-	//@param &_replacmentResponse - изменяемая строка
-	//@param &_find - параметр который ищем
-	//@param &_repl - параметр НА которой будем заменять
+	/**
+	  @param &_replacmentResponse изменяемая строка
+	  @param &_find параметр который ищем
+	  @param &_repl параметр НА которой будем заменять
+	*/	
 	void ReplaceResponseStatus(std::string &_replacmentResponse, const std::string &_find, const std::string &_repl);
 
 

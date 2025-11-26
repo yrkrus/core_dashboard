@@ -72,7 +72,7 @@ public:
 	
 	bool IsExistListLisa();
 	void InsertLisaCalls();	
-	bool IsExistCallLisa(const ActiveLisaCall &_caller, std::string &_errorDescription);		// есть ли такой номер в БД (queue_lisa)
+	bool IsExistCallLisa(const ActiveLisaCall &_caller, std::string &_errorDescription, bool &_errorConnectSQL);		// есть ли такой номер в БД (queue_lisa)
 	
 	bool GetID(const std::string &_phone, const std::string &_call_id, uint32_t &_id);		// id phone по БД
 	void UpdateLisaCalls(uint32_t _id, const ActiveLisaCall &_caller);							// обновдление звонка IVR по БД
