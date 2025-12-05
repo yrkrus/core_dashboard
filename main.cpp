@@ -110,7 +110,9 @@ static void _Init()
     activeSession       = std::make_shared<ActiveSession>(queue); 
     changeStatus        = std::make_shared<Status>();
     clearingCurrentDay  = std::make_shared<ClearingCurrentDay>(); // встаква в таблицы history_*
-    checkInternal       = std::make_shared<CheckInternal>();  // внутренние проверки 
+#ifdef RELEASE_VERSION
+    checkInternal       = std::make_shared<CheckInternal>();  // внутренние проверки
+#endif     
     checkLisaCalls      = std::make_shared<CheckActiveLisaCalls>(); 
 }
 
@@ -121,7 +123,9 @@ static void _Run()
     activeSession->Start();    
     changeStatus->Start();          // изменение статуса оператора
     clearingCurrentDay->Start();    // очистка текущего дня в таблицу history_*
-    checkInternal->Start();  
+#ifdef RELEASE_VERSION
+    checkInternal->Start();
+#endif      
     checkLisaCalls->Start();   
 }
 
@@ -132,7 +136,9 @@ static void _Destroy()
     activeSession->Stop();   
     changeStatus->Stop();
     clearingCurrentDay->Stop();
-    checkInternal->Stop();   
+#ifdef RELEASE_VERSION
+    checkInternal->Stop();  
+#endif    
     checkLisaCalls->Stop(); 
 }
 

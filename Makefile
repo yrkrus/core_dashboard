@@ -7,6 +7,10 @@ BUILD    ?= debug
 CREATE_LOG_DEBUG := 0
 export CREATE_LOG_DEBUG
 
+# внутренние проверки класса CheckInternal
+RELEASE_VERSION := 1
+export RELEASE_VERSION
+
 # если в списке целей есть одна из release|debug|valgrind,
 # то перезапишем BUILD
 ifneq ($(filter release,$(MAKECMDGOALS)),)
@@ -24,7 +28,14 @@ ifeq ($(BUILD),release)
   CXXFLAGS := -std=c++17 -O2 -DNDEBUG -Wall -Wextra \
               -pthread $(shell mysql_config --cflags) \
               -L/usr/lib64/firebird -lfbclient -lcurl
+  
+   # Внутренние проверки 
+  ifeq ($(RELEASE_VERSION),1)
+    CXXFLAGS += -DRELEASE_VERSION
+  endif
+  
   LDFLAGS  := -pthread $(shell mysql_config --libs) -lstdc++fs -s
+
 else ifeq ($(BUILD),valgrind)
   CXXFLAGS := -std=c++17 -g -O0 -Wall \
               -pthread $(shell mysql_config --cflags) \
@@ -45,7 +56,7 @@ CXXFLAGS := -std=c++17 -Wall -Werror -g -O0                                     
             -pthread $(shell mysql_config --cflags)                             \
             -L/usr/lib64/firebird -lfbclient -lcurl
 
-# Добавляем флаг для логирования, если он включен
+# флаг логирования (очень много лога будет)
   ifeq ($(CREATE_LOG_DEBUG),1)
     CXXFLAGS += -DCREATE_LOG_DEBUG
   endif
