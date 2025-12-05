@@ -33,6 +33,7 @@ bool ClearingCurrentDay::Execute()
 				&& m_logging.Execute()
 				&& m_onHold.Execute()
 				&& m_queue.Execute()
+				&& m_queueLisa.Execute()
 				&& m_sms.Execute());	
 
 	return true;

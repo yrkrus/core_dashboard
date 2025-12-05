@@ -3,6 +3,10 @@ CXX      := g++
 # по умолчанию – debug
 BUILD    ?= debug
 
+# все в лог!! очень много лога !!!
+CREATE_LOG_DEBUG := 0
+export CREATE_LOG_DEBUG
+
 # если в списке целей есть одна из release|debug|valgrind,
 # то перезапишем BUILD
 ifneq ($(filter release,$(MAKECMDGOALS)),)
@@ -24,6 +28,7 @@ ifeq ($(BUILD),release)
 else ifeq ($(BUILD),valgrind)
   CXXFLAGS := -std=c++17 -g -O0 -Wall \
               -pthread $(shell mysql_config --cflags) \
+              $(if $(CREATE_LOG_DEBUG))
               -L/usr/lib64/firebird -lfbclient -lcurl
   LDFLAGS  := -pthread $(shell mysql_config --libs) -lstdc++fs
 else
@@ -39,7 +44,13 @@ CXXFLAGS := -std=c++17 -Wall -Werror -g -O0                                     
             -fno-omit-frame-pointer  -fdiagnostics-color=always                 \
             -pthread $(shell mysql_config --cflags)                             \
             -L/usr/lib64/firebird -lfbclient -lcurl
- LDFLAGS  := -pthread $(shell mysql_config --libs) -lstdc++fs
+
+# Добавляем флаг для логирования, если он включен
+  ifeq ($(CREATE_LOG_DEBUG),1)
+    CXXFLAGS += -DCREATE_LOG_DEBUG
+  endif
+
+LDFLAGS  := -pthread $(shell mysql_config --libs) -lstdc++fs
 endif
 
 # источники

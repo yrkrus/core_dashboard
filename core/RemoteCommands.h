@@ -12,12 +12,9 @@
 
 static std::string COMMAND_ADD_QUEUE = "asterisk -rx \"queue add member Local/%sip@from-queue/n to %queue penalty 0 as %sip state_interface hint:%sip@ext-local\" ";
 static std::string COMMAND_DEL_QUEUE = "asterisk -rx \"queue remove member Local/%sip@from-queue/n from %queue\" ";
-static std::string COMMAND_PAUSE_QUEUE = "asterisk -rx \"queue pause member Local/%sip@from-queue/n\"";
-									//	  asterisk -rx "queue pause member Local/64197@from-queue/n"
+static std::string COMMAND_PAUSE_QUEUE = "asterisk -rx \"queue pause member Local/%sip@from-queue/n\"";									
 
 class Log;
-//using SP_Log = std::shared_ptr<Log>;
-
 class ISQLConnect;
 using SP_SQL = std::shared_ptr<ISQLConnect>;
 

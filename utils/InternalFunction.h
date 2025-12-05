@@ -48,7 +48,6 @@ namespace utils
 	// разбор строки с разделителем
 	bool SplitDelimiterEntry(const std::string &_lines, std::vector<std::string> &_vLines, const char _delimiter, std::string &_errorDescription); 
 
-
 } // utils
 
 #endif // INTERNALFUNCTION_H

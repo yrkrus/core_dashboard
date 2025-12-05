@@ -44,28 +44,6 @@ bool ActiveLisa::Execute()
 	return true;
 }
 
-// void ActiveLisa::Start()
-// {
-//     std::string error;
-// 	auto func = [this, error = std::move(error)]() mutable
-// 		{
-// 			return m_rawData.CreateData(SESSION_SIP_RESPONSE, error);
-// 		};
-
-// 	m_dispether.Start(func);	
-// }
-
-// void ActiveLisa::Stop()
-// {
-//     m_dispether.Stop();
-// 	printf("ActiveLisa stopped!\n");
-// }
-
-// void ActiveLisa::Parsing()
-// {
-
-// }
-
 bool ActiveLisa::CreateRawData(std::string &_errorDescription)
 {
     return m_rawData.CreateData(SESSION_SIP_RESPONSE,_errorDescription);
@@ -73,37 +51,12 @@ bool ActiveLisa::CreateRawData(std::string &_errorDescription)
 
 bool ActiveLisa::CreateCallers(const std::string &_lines, ActiveLisaCall &_caller)
 {
-    // предварительная проверка — ровно 13 (!) восклицательных знаков
-    size_t nCountDelims = std::count(_lines.begin(), _lines.end(), DELIMITER_CHANNELS_FIELDS);
-    std::string error;
-
-	if (nCountDelims != CHANNELS_FIELDS - 1)
-    {
-        std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
-		m_log->ToFile(ecLogType::eError, error);		
-	
-        return false;
-    }
-	
-	std::vector<std::string> lines;
-	if (!utils::SplitDelimiterEntry(_lines, lines, DELIMITER_CHANNELS_FIELDS, error)) 
+    std::vector<std::string> lines;
+	std::string errorDescription;
+	if (!utils::ParsingAsteriskRawDataRequest(lines, _lines, errorDescription))
 	{
-		error = StringFormat("%s \t %s", METHOD_NAME, error.c_str()); 
-		m_log->ToFile(ecLogType::eError, error);		
-		return false; 
-	}
-	
-	if (lines.size() != CHANNELS_FIELDS || lines.empty()) 
-	{
-		std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
-		m_log->ToFile(ecLogType::eError, error);		
 		return false;
-	}
-
-	//  for (const auto &it : lines)
-	//  {
-	//  	printf("%s\n",it.c_str());
-	//  }
+	}	
 
 	_caller.phone = utils::PhoneParsing(lines[7]);					// номер телефона
 	_caller.phone_raw = lines[7];									// текущий номер телфеона с которым ведется беседа (сырой как по aster проходит)
@@ -113,7 +66,7 @@ bool ActiveLisa::CreateCallers(const std::string &_lines, ActiveLisaCall &_calle
 
 	if (!CheckCallers(_caller))
 	{
-		std::string errorDescription = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
+		errorDescription = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
 		m_log->ToFile(ecLogType::eError, errorDescription);
 		return false;
 	}	

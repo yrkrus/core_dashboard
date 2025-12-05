@@ -2,14 +2,11 @@
  * @file IAsteriskApplication.h
 */
 
-
 #ifndef IASTERISKAPPLICATION_H
 #define IASTERISKAPPLICATION_H
 
-
-#define CHANNELS_FIELDS 14			        // кол-во полей при разборе начинается разбор с 0 ! итого 14 получиться
-#define DELIMITER_CHANNELS_FIELDS '!'       // разделитель 
-
+#include <vector>
+#include <string>
 
 /*
 *   Полный перечень приложений, запущенных на Asterisk:
@@ -18,15 +15,15 @@
 
 enum class ecAsteriskApp 
 {
-	Unknown = 0,		// неизвестный
-	AddQueueMember, 	//: Динамически добавляет участника в очередь.
-	ADSIProg,		 	//: Загружает Asterisk ADSI-скрипты в телефон.
-	AGI,				//: Выполняет приложение, совместимое с AGI.
-	Answer,				//: Отвечает на канал, если идёт звонок.
-	AttendedTransfer,	//: Контролируемый (attended) перевод на указанный внутренний и контекст TRANSFER_CONTEXT.
-	AudioSocket,		//: Передаёт и принимает аудио между каналом и TCP-сокетом.
-	Authenticate,		//: Аутентифицирует пользователя.
-	BackGround,			//: Воспроизводит аудиофайл, ожидая ввода цифр для перехода на внутренний.
+	Unknown = 0,		    // неизвестный
+	AddQueueMember, 	    //: Динамически добавляет участника в очередь.
+	ADSIProg,		 	    //: Загружает Asterisk ADSI-скрипты в телефон.
+	AGI,				    //: Выполняет приложение, совместимое с AGI.
+	Answer,				    //: Отвечает на канал, если идёт звонок.
+	AttendedTransfer,	    //: Контролируемый (attended) перевод на указанный внутренний и контекст TRANSFER_CONTEXT.
+	AudioSocket,		    //: Передаёт и принимает аудио между каналом и TCP-сокетом.
+	Authenticate,		    //: Аутентифицирует пользователя.
+	BackGround,			    //: Воспроизводит аудиофайл, ожидая ввода цифр для перехода на внутренний.
 	BackgroundDetect,		//: Фоновое воспроизведение файла с обнаружением речи.
 	BlindTransfer,			//: Слепой (blind) перевод канала(ов) на заданный внутренний и контекст.
 	Bridge,					//: Соединяет два канала в бридж.
@@ -230,5 +227,11 @@ enum class ecAsteriskState
     Busy,
     Unavailable
 };
+
+namespace utils
+{
+    bool ParsingAsteriskRawDataRequest(std::vector<std::string> &_lines, const std::string &_rawLines, std::string &_errorDescription);
+    void ShowVectorLines(const std::vector<std::string> &_lines);
+}
 
 #endif //IASTERISKAPPLICATION_H

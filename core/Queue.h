@@ -27,10 +27,7 @@ class Queue;
 using SP_Queue = std::shared_ptr<Queue>;
 
 
-class Queue : public IAsteriskData
-{
-public:	
-	struct QueueCalls
+struct QueueCalls
 	{
 		std::string phone;										// текущий номер телефона который в очереди сейчас
 		int waiting;											// время в (сек) которое сейчас в очереди находится
@@ -50,7 +47,11 @@ public:
 					(application == ecAsteriskApp::Queue));			
 		}
 	};	
-	using QueueCallsList = std::vector<QueueCalls>;
+using QueueCallsList = std::vector<QueueCalls>;
+
+class Queue : public IAsteriskData
+{
+public:	
 	
 	struct CallsInBase	// структура из БД
 	{
@@ -76,7 +77,10 @@ private:
 	QueueCallsList		m_listQueue;
 	SP_SQL				m_sql;
 	SP_Log				m_log;
-	
+
+#ifdef CREATE_LOG_DEBUG
+	SP_Log 				m_logRaw;
+#endif	
 	
 	void UpdateCalls(const QueueCallsList &_callList);  		// обновление звонков
 
@@ -89,12 +93,10 @@ private:
 
 	void InsertQueueCalls();							// добавление данных в БД
     void InsertCall(const QueueCalls &_call);           // добавление нового звонка
-    void NewFunction();
     void InsertCallVirtualOperator(const QueueCalls &_call);	// добавление нового звонка (виртуальный оператор лиза)
 	bool UpdateCall(int _id, const QueueCalls &_call, std::string &_errorDescription); // обновление существующего звонка
 	bool UpdateCallVirualOperator(int _id, const QueueCalls &_call, std::string &_errorDescription); // обновление существующего звонка (виртуальный оператор)
-	void UpdateCallFail(const QueueCallsList &_calls);	// обновление данных если звонок был в очереди, но не дождался ответа от оператора
-	//void UpdateCallFail();								// обновление данных если звонок был в очереди, но не дождался ответа от оператора
+	void UpdateCallFail(const QueueCallsList &_calls);	// обновление данных если звонок был в очереди, но не дождался ответа от оператора	
 	void UpdateCallIvr(const QueueCallsList &_calls);	// обновление данных когда у нас звонок из IVR попал в очередь или на виртуального оператора
 	void UpdateCallIvrToQueue(const QueueCallsList &_calls);	// звонок из IVR попал в очередь
 	void UpdateCallIvrToVirtualOperator (const QueueCallsList &_calls);	// звонок из IVR попал на виртуального оператора
@@ -108,6 +110,8 @@ private:
 	bool IsExixtCall_ActiveTalkQueue(const QueueCalls&, bool &_errorConnectSQL); 	//  в очереди активный разговор?
 	bool IsExixtCall_ActiveTalkRepeat(const QueueCalls&, bool &_errorConnectSQL); 	//  повторный разговор?
 	bool IsExixtCall_ActiveTalkRepeatTwo(const QueueCalls&, bool &_errorConnectSQL); 	//  повторный разговор 2 раз?
+	bool IsExixtCall_ReturnToLisa(const QueueCalls&, bool &_errorConnectSQL); 		//  повторный звонок по кругу гоняется пришел из лизы
+
 	bool IsExixtCall_CallID(const QueueCalls&); 									// есть ли такой call_id_ivr 
 
 	bool IsExistCallVirtualOperator(ecQueueNumber _queue, const std::string &_phone);	// есть ли уже такой номер в БД (виртуальный оператор)
@@ -124,6 +128,11 @@ private:
 	//void UpdateCallsAfter20hours();											// есть потеряшки которые звонили после 20:00, обновить их
 	bool IsExistAnyAnsweredCall();					// есть ли не про hash'нные номера, когда оператор уже закончил разговор и ушел из линии
 	void UpdateAllAnyAnsweredCalls();				// есть не про hash'нные номера обновляем их (ВСЕ!)
+
+	
+	void FindErroneousError();		// проверим есть ли ошибочные fail(я хз как они появляются)
+	bool IsExistErroneousError();	// есть ли ошибочные записи когда answered=1 и fail=1 и sip<>-1
+	void UpdateErroneousError();	// обновим ошибочные записи 
 
 };
 

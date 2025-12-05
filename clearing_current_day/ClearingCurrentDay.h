@@ -5,6 +5,7 @@
 #include "HistoryLogging.h"
 #include "HistoryOnHold.h"
 #include "HistoryQueue.h"
+#include "HistoryQueueLisa.h"
 #include "HistorySms.h"
 #include "../interfaces/IPotokDispether.h"
 
@@ -38,15 +39,16 @@ struct Day
 class ClearingCurrentDay
 {
 private:
-	HistoryIvr 		m_ivr;
-	HistoryLogging 	m_logging;
-	HistoryOnHold 	m_onHold;
-	HistoryQueue 	m_queue;
-	HistorySms 		m_sms;
-	IPotokDispether m_dispether;
+	HistoryIvr 			m_ivr;
+	HistoryLogging 		m_logging;
+	HistoryOnHold 		m_onHold;
+	HistoryQueue 		m_queue;
+	HistoryQueueLisa 	m_queueLisa;
+	HistorySms 			m_sms;
+	IPotokDispether 	m_dispether;
 	
-	Day 			m_day;
-	bool 			is_error;	// флаг того что была ли ошибка при выполнении
+	Day 				m_day;
+	bool 				is_error;	// флаг того что была ли ошибка при выполнении
 
 	bool CheckNewDay(); // проверка дня что нужно запустить очистку
 	bool Execute();

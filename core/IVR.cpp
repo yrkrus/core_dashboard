@@ -9,30 +9,8 @@ using namespace custom_cast;
 using utils::StringFormat;
 
 
-
-// static std::string IVR_COMMANDS			= "Playback|lukoil|ivr-3";	// ищем только эти слова при формировании IVR
-static std::string IVR_COMMANDS		=	"Playback";
-// static std::string IVR_COMMANDS_EXT1	= "IVREXT";					// пропуск этой записи
- static std::string IVR_COMMANDS_EXT2	= "Spasibo";				// пропуск этой записи
-// static std::string IVR_COMMANDS_EXT3	= "recOfficeOffline";		// пропуск этой записи
-// static std::string IVR_COMMANDS_EXT4	= "noservice";				// пропуск этой записи 
-// static std::string IVR_COMMANDS_EXT5	= "agent";					// пропуск этой записи 
-// static std::string IVR_COMMANDS_EXT6	= "from-internal-xfer";		// пропуск этой записи (перевод звонка)
-
-// static std::string IVR_COMMANDS_IK1 = "rec_IK_AllBusy";				// пропуск этой записи (IVR для ИК отдела)
-// static std::string IVR_COMMANDS_IK2 = "rec_IK_Welcome";				// пропуск этой записи (IVR для ИК отдела)
-// static std::string IVR_COMMANDS_IK3 = "rec_IK_WorkHours";			// пропуск этой записи (IVR для ИК отдела)
-
-// static std::string IVR_REQUEST		= "asterisk -rx \"core show channels verbose\" | grep -E \"" + IVR_COMMANDS + "\" " 
-// 																			   + " | grep -v \"" + IVR_COMMANDS_EXT1 + "\" " 
-// 																			   + " | grep -v \"" + IVR_COMMANDS_EXT2 + "\" "
-// 																			   + " | grep -v \"" + IVR_COMMANDS_EXT3 + "\" "
-// 																			   + " | grep -v \"" + IVR_COMMANDS_EXT4 + "\" "
-// 																			   + " | grep -v \"" + IVR_COMMANDS_EXT5 + "\" "
-// 																			   + " | grep -v \"" + IVR_COMMANDS_EXT6 + "\" "
-// 																			   + " | grep -v \"" + IVR_COMMANDS_IK1 + "\" "
-// 																			   + " | grep -v \"" + IVR_COMMANDS_IK2 + "\" "
-// 																			   + " | grep -v \"" + IVR_COMMANDS_IK3 + "\" ";
+static std::string IVR_COMMANDS			= "Playback";
+static std::string IVR_COMMANDS_EXT2	= "Spasibo";				// пропуск этой записи
 
 static std::string IVR_REQUEST = "asterisk -rx \"core show channels concise\" | grep -E \"" + IVR_COMMANDS + "\" "
 																		  + " | grep -v \"" + IVR_COMMANDS_EXT2 + "\" ";
@@ -108,64 +86,39 @@ void IVR::Parsing()
 
 bool IVR::CreateCallers(const std::string &_lines, IvrCalls &_caller)
 {	
-	// предварительная проверка — ровно 13 (!) восклицательных знаков
-    size_t nCountDelims = std::count(_lines.begin(), _lines.end(), DELIMITER_CHANNELS_FIELDS);
-    std::string error;
-
-	if (nCountDelims != CHANNELS_FIELDS - 1)
-    {
-        std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
-		m_log->ToFile(ecLogType::eError, error);		
-	
-        return false;
-    }
-	
 	std::vector<std::string> lines;
-	if (!utils::SplitDelimiterEntry(_lines, lines, DELIMITER_CHANNELS_FIELDS, error)) 
+	std::string errorDescription;
+	if (!utils::ParsingAsteriskRawDataRequest(lines,_lines,errorDescription)) 
 	{
-		error = StringFormat("%s \t %s", METHOD_NAME, error.c_str()); 
-		m_log->ToFile(ecLogType::eError, error);		
-		return false; 
-	}
-	
-	if (lines.size() != CHANNELS_FIELDS || lines.empty()) 
-	{
-		std::string error = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
-		m_log->ToFile(ecLogType::eError, error);		
 		return false;
-	}  	
+	}
+
+	_caller.channel = lines[0];         										// имя канала
+	_caller.context = lines[1];       											// диалплан‐контекст
+	_caller.extension = lines[2];      											// номер(или “s”)
+	_caller.priority = static_cast<uint16_t>(std::stoi(lines[3])); 	      		// приоритет
+	_caller.state = StringToEnum<ecAsteriskState>(lines[4]);					// статус
+	_caller.application = StringToEnum<ecAsteriskApp>(lines[5]);    			// текущее приложение(Dial, Playback, …)
+	_caller.data = lines[6];             										// параметры приложения
+	_caller.callerID = StringToEnum<ecCallerId>(lines[0]+" "+lines[6]);			// caller ID 
 	
-		_caller.channel = lines[0];         										// имя канала
-		_caller.context = lines[1];       											// диалплан‐контекст
-		_caller.extension = lines[2];      											// номер(или “s”)
-		_caller.priority = static_cast<uint16_t>(std::stoi(lines[3])); 	      		// приоритет
-		_caller.state = StringToEnum<ecAsteriskState>(lines[4]);					// статус
-		_caller.application = StringToEnum<ecAsteriskApp>(lines[5]);    			// текущее приложение(Dial, Playback, …)
-		_caller.data = lines[6];             										// параметры приложения
-		_caller.callerID = StringToEnum<ecCallerId>(lines[0]+" "+lines[6]);			// caller ID 
-		
-		_caller.callerID != ecCallerId::InternalCaller ? _caller.phone = utils::PhoneParsing(lines[7])			// номер телефона
-													   : _caller.phone = utils::PhoneParsingInternal(lines[7]); 
+	_caller.callerID != ecCallerId::InternalCaller ? _caller.phone = utils::PhoneParsing(lines[7])			// номер телефона
+												   : _caller.phone = utils::PhoneParsingInternal(lines[7]); 
 
-		_caller.AMAFlags = lines[8];      											// AMA флаги(другие флаги ведения учёта)
-		_caller.duration = !lines[9].empty() ? static_cast<uint16_t>(std::stoi(lines[9])) : 0; // время жизни канала в секундах
-		_caller.bridgedChannel = lines[10]; 										// имя “связного” канала, если есть(иначе пусто)
-		_caller.bridgedDuration = static_cast<uint16_t>(std::stoi(lines[11]));		//время “сращивания”(в секундах)
-		_caller.uniqueID = lines[12];         										//уникальный идентификатор сессии
-		_caller.call_id = lines[13];        										//идентификатор “корневого” звонка(call - trace)
-		_caller.queue = FindQueue(_caller.callerID);								// очередь в которую должен попасть звонок
-		
-		if (!CheckCallers(_caller)) 
-		{
-			std::string errorDescription = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
-			m_log->ToFile(ecLogType::eError, errorDescription);
-			return false;
-		}	
-
-		// if (_caller.bridgedDuration > 30) 
-		// {
-		// 	printf("\n%s\n",_lines.c_str());			
-		// } 
+	_caller.AMAFlags = lines[8];      											// AMA флаги(другие флаги ведения учёта)
+	_caller.duration = !lines[9].empty() ? static_cast<uint16_t>(std::stoi(lines[9])) : 0; // время жизни канала в секундах
+	_caller.bridgedChannel = lines[10]; 										// имя “связного” канала, если есть(иначе пусто)
+	_caller.bridgedDuration = static_cast<uint16_t>(std::stoi(lines[11]));		//время “сращивания”(в секундах)
+	_caller.uniqueID = lines[12];         										//уникальный идентификатор сессии
+	_caller.call_id = lines[13];        										//идентификатор “корневого” звонка(call - trace)
+	_caller.queue = FindQueue(_caller.callerID);								// очередь в которую должен попасть звонок
+	
+	if (!CheckCallers(_caller)) 
+	{
+		errorDescription = StringFormat("%s \t %s", METHOD_NAME, _lines.c_str());
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		return false;
+	}		
 
 	 return true;
 }

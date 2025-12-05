@@ -16,7 +16,7 @@ enum class ecQueueNumber;
 using QueueList = std::vector<ecQueueNumber>;
 
 
-namespace active_sip 
+namespace active_talk_sip 
 {
 	// структура оператора 
 	struct Operator 
@@ -28,15 +28,29 @@ namespace active_sip
 	};
 	using OperatorList = std::vector<Operator>;
 	
+
 	// структура текущего звонка
 	struct ActiveTalkCall 
 	{
 		std::string phone;			// текущий номер телфеона с которым ведется беседа
 		std::string phone_raw;		// текущий номер телфеона с которым ведется беседа (сырой как по aster проходит)
 		std::string sip;			// внутренний sip который ведет беседу
+		ecAsteriskState state = ecAsteriskState::Unknown;		// текущее состояние канала (Up, Ring, Down и т.п.)		
+		ecAsteriskApp application = ecAsteriskApp::Unknown;   	// текущее приложение(Dial, Playback, …)					
 		int talkTime;				// время развговора 
 		std::string callID;			// id звонка
-		std::string ivr_callID;		// id звонка в ivr	
+
+		
+		inline bool check() const noexcept
+		{
+			return ((!phone.empty()) &&
+					(!phone_raw.empty()) &&
+					(!sip.empty()) &&
+					(state == ecAsteriskState::Up) &&
+					(application == ecAsteriskApp::Dial) &&
+					(talkTime > 0) &&
+					(!callID.empty())); 
+		}
 	};
 	using ActiveTalkCallList = std::vector<ActiveTalkCall>;
 
@@ -61,75 +75,82 @@ namespace active_sip
 	};
 	using OnHoldList = std::vector<OnHold>;
 
+} // end namespace active_talk_sip 
 
-	class ActiveSession : public IAsteriskData	// класс в котором будет жить данные по активным сессиям операторов 
-	{
-	public:
-		ActiveSession(SP_Queue &_queue);
-		~ActiveSession() override;
+using namespace active_talk_sip;
 
-		 // override IAsteriskData 
-		virtual void Start() override;
-		virtual void Stop() override;
-		virtual void Parsing() override;				// разбор сырых данных
-		
-	private:
-		SP_Queue			&m_queueSession;	// ссылка на очереди
-		
-		OperatorList		m_listOperators;	
-		ActiveTalkCallList	m_listCall;			
-		SP_SQL				m_sql;		
-		IFile				m_queue;			// запрос информации по текущим очередям
-		SP_Log				m_log;
-		IFile				m_rawDataTalkCall;
+class ActiveSession : public IAsteriskData // класс в котором будет жить данные по активным сессиям операторов
+{
+public:
+	ActiveSession(SP_Queue &_queue);
+	~ActiveSession() override;
 
-		void CreateListActiveSessionOperators();			// активные операторы в линии
-		void CreateListActiveTalkCalls();				// активные звонки в линии
+	// override IAsteriskData
+	virtual void Start() override;
+	virtual void Stop() override;
+	virtual void Parsing() override; // разбор сырых данных
 
-		void CreateActiveOperators(const ecQueueNumber _queue);	// найдем активных операторов в линии
-		void CreateOperator(const std::string &_lines, Operator &, ecQueueNumber);	// создание структуры Operator					
-		std::string FindSipNumber(const std::string &_lines);	// парсинг нахождения активного sip оператора
-		bool FindOnHoldStatus(const std::string &_lines);		// парсинг нахождения статуса onHold
-		
-		void InsertAndUpdateQueueNumberOperators(); // добавление\обновление номена очереди оператора в БД
-		bool IsExistListOperators();		// есть ли данные в m_listOperators
-		bool IsExistListOperatorsOnHold();	// есть ли данные в m_listOperators.onHold
-		bool IsExistListActiveTalkCalls();	// есть ли данные в m_listCall (т.е. есть ли сейчас какие либо активные звонки по данным астреиска)
+private:
+	SP_Queue &m_queueSession; // ссылка на очереди
 
-		bool IsExistOperatorsQueue();	// существует ли хоть 1 запись в БД sip+очередь
-		bool IsExistOperatorsQueue(const std::string &_sip, const std::string &_queue);	// существует ли хоть запись в БД sip+очередь
-		void ClearOperatorsQueue();		// очистка таблицы operators_queue
-		void CheckOperatorsQueue();		// проверка есть ли оператор еще в очереди
-		bool GetActiveQueueOperators(OperatorList &_activeList, std::string &_errorDescription); // активные очереди операторов в БД
-		void DeleteOperatorsQueue(const std::string &_sip, const std::string &_queue);	// удаление очереди оператора из БД таблицы operators_queue
-		void DeleteOperatorsQueue(const std::string &_sip);								// удаление очереди оператора из БД таблицы operators_queue весь sip
-		void InsertOperatorsQueue(const std::string &_sip, const std::string &_queue);	// добавление очереди оператору в БД таблицы operators_queue
+	OperatorList 		m_listOperators;
+	ActiveTalkCallList 	m_listCall;
+	SP_SQL 				m_sql;
+	IFile 				m_queue; // запрос информации по текущим очередям
+	SP_Log 				m_log;
+	IFile 				m_rawDataTalkCall;
+#ifdef CREATE_LOG_DEBUG
+	SP_Log 				m_logRaw;
+#endif
 	
-		bool CreateActiveCall(const std::string &_lines, const std::string &_sipNumber, ActiveTalkCall &_caller); // парсинг и нахождение активного звонка с которым разговаривает оператор
-		bool FindActiveCallIvrID(const std::string &_lines, const std::string &_phone, ActiveTalkCall &_caller); // парсинг и нахожднение id_ivr
-		bool CheckActiveCall(const ActiveTalkCall &_caller); // проверка корректности структуры звонка
 
-		void UpdateActiveCurrentTalkCalls(); // обновление текущих звонков операторов
-		
-		void UpdateTalkCallOperator();								// обновление данных таблицы queue о том с кем сейчас разговаривает оператор
-		bool IsExistTalkCallOperator(const std::string &_phone, bool &_errorConnectSQL);	// существует ли такой номер в таблице queue чтобы добавить sip оператора который с разговор ведет
-		int  GetLastTalkCallOperatorID(const std::string &_phone);	// получение последнего ID актуального разговора текущего оператора в таблице queue
-	
-		// onHold 
-		void UpdateOnHoldStatusOperator();					// обновление статуса onHold
-		void AddPhoneOnHoldInOperator(Operator &); // добавление номера телефона который на onHold сейчас		
-		bool GetActiveOnHold(OnHoldList &_onHoldList, std::string &_errorDescription);	// получение всех onHold стаутсов которые есть в БД
-		
-		void DisableOnHold(const OnHoldList &_onHoldList);		// очистка всех операторов которые в статусе onHold по БД 
-		bool DisableHold(const OnHold &_hold, std::string &_errorDescription);	// отключение onHold в БД
-		bool AddHold(const Operator&, std::string &_errorDescription);	// добавление нового onHold в БД
+	void CreateListActiveSessionOperators(); // активные операторы в линии
+	void CreateListActiveTalkCalls();		 // активные звонки в линии
 
-		void CheckOnHold(OnHoldList &_onHoldList);		// Основная проверка отключение\добавление onHold 
+	void CreateActiveOperators(const ecQueueNumber _queue);					   // найдем активных операторов в линии
+	void CreateOperator(const std::string &_lines, Operator &, ecQueueNumber); // создание структуры Operator
+	std::string FindSipNumber(const std::string &_lines);					   // парсинг нахождения активного sip оператора
+	bool FindOnHoldStatus(const std::string &_lines);						   // парсинг нахождения статуса onHold
 
-		//доп проверка что нет никаких сейчас разговоров
-		bool IxExistManualCheckCurrentTalk(); 
-	};
-}
-using SP_ActiveSession = std::shared_ptr<active_sip::ActiveSession>;
+	void InsertAndUpdateQueueNumberOperators(); // добавление\обновление номена очереди оператора в БД
+	bool IsExistListOperators();				// есть ли данные в m_listOperators
+	bool IsExistListOperatorsOnHold();			// есть ли данные в m_listOperators.onHold
+	bool IsExistListActiveTalkCalls();			// есть ли данные в m_listCall (т.е. есть ли сейчас какие либо активные звонки по данным астреиска)
+
+	bool IsExistOperatorsQueue();															 // существует ли хоть 1 запись в БД sip+очередь
+	bool IsExistOperatorsQueue(const std::string &_sip, const std::string &_queue);			 // существует ли хоть запись в БД sip+очередь
+	void ClearOperatorsQueue();																 // очистка таблицы operators_queue
+	void CheckOperatorsQueue();																 // проверка есть ли оператор еще в очереди
+	bool GetActiveQueueOperators(OperatorList &_activeList, std::string &_errorDescription); // активные очереди операторов в БД
+	void DeleteOperatorsQueue(const std::string &_sip, const std::string &_queue);			 // удаление очереди оператора из БД таблицы operators_queue
+	void DeleteOperatorsQueue(const std::string &_sip);										 // удаление очереди оператора из БД таблицы operators_queue весь sip
+	void InsertOperatorsQueue(const std::string &_sip, const std::string &_queue);			 // добавление очереди оператору в БД таблицы operators_queue
+
+	bool CreateActiveCall(const std::string &_lines, const std::string &_sipNumber, ActiveTalkCall &_caller); // парсинг и нахождение активного звонка с которым разговаривает оператор
+	//bool FindActiveCallIvrID(const std::string &_lines, const std::string &_phone, ActiveTalkCall &_caller);  // парсинг и нахожднение id_ivr
+	bool CheckActiveCall(const ActiveTalkCall &_caller);													  // проверка корректности структуры звонка
+
+	void UpdateActiveCurrentTalkCalls(); // обновление текущих звонков операторов
+
+	void UpdateTalkCallOperator();													 // обновление данных таблицы queue о том с кем сейчас разговаривает оператор
+	bool IsExistTalkCallOperator(const std::string &_phone, bool &_errorConnectSQL); // существует ли такой номер в таблице queue чтобы добавить sip оператора который с разговор ведет
+	int GetLastTalkCallOperatorID(const std::string &_phone);						 // получение последнего ID актуального разговора текущего оператора в таблице queue
+
+	// onHold
+	void UpdateOnHoldStatusOperator();											   // обновление статуса onHold
+	void AddPhoneOnHoldInOperator(Operator &);									   // добавление номера телефона который на onHold сейчас
+	bool GetActiveOnHold(OnHoldList &_onHoldList, std::string &_errorDescription); // получение всех onHold стаутсов которые есть в БД
+
+	void DisableOnHold(const OnHoldList &_onHoldList);					   // очистка всех операторов которые в статусе onHold по БД
+	bool DisableHold(const OnHold &_hold, std::string &_errorDescription); // отключение onHold в БД
+	bool AddHold(const Operator &, std::string &_errorDescription);		   // добавление нового onHold в БД
+
+	void CheckOnHold(OnHoldList &_onHoldList); // Основная проверка отключение\добавление onHold
+
+	// доп проверка что нет никаких сейчас разговоров
+	bool IxExistManualCheckCurrentTalk();
+};
+
+using SP_ActiveSession = std::shared_ptr<ActiveSession>;
 
 #endif // ACTIVESIP_H

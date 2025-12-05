@@ -54,6 +54,7 @@ namespace CONSTANTS
         // to_history
         static const std::string HISTORY_IVR        = "history_ivr.log";
         static const std::string HISTORY_QUEUE      = "history_queue.log";
+        static const std::string HISTORY_QUEUE_LISA = "history_queue_lisa.log";
         static const std::string HISTORY_LOGGING    = "history_logging.log";
         static const std::string HISTORY_ONHOLD     = "history_onhold.log";
         static const std::string HISTORY_SMS        = "history_sms.log";

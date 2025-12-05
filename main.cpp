@@ -28,7 +28,7 @@
 
 
 using namespace utils;
-using namespace active_sip;
+using namespace active_talk_sip;
 
 // Global Score
 static SP_IVR ivr                               = nullptr;
