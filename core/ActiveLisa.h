@@ -22,11 +22,13 @@ struct ActiveLisaCall
 	std::string phone_raw; // текущий номер телфеона с которым ведется беседа (сырой как по aster проходит)
 	int talkTime;		   // время развговора
 	ecAsteriskState status = ecAsteriskState::Unknown;
+	ecAsteriskApp app = ecAsteriskApp::Unknown;
 	std::string call_id; // id звонка
 
 	inline bool check() const noexcept
 	{
 		return ((status != ecAsteriskState::Unknown) &&
+		 		(app == ecAsteriskApp::Dial) &&
 				(!phone.empty()) &&
 				(!phone_raw.empty()) &&
 				(!call_id.empty()));

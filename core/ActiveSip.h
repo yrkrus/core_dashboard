@@ -23,6 +23,7 @@ namespace active_talk_sip
 	{
 		std::string sipNumber = "null";		// номер sip орератора
 		QueueList	queueList;				// очереди в которых сидит орператор
+		bool isPaused = false;				// очереди на паузе (не принмает звонки)
 		bool isOnHold = false ;             // находится ли оператор в статусе OnHold
 		std::string phoneOnHold = "null";	// телефон с которым идет onHold		
 	};
@@ -108,7 +109,7 @@ private:
 	void CreateListActiveTalkCalls();		 // активные звонки в линии
 
 	void CreateActiveOperators(const ecQueueNumber _queue);					   // найдем активных операторов в линии
-	void CreateOperator(const std::string &_lines, Operator &, ecQueueNumber); // создание структуры Operator
+	void CreateOperator(const std::string &_lines, Operator &, ecQueueNumber, bool _paused); // создание структуры Operator
 	std::string FindSipNumber(const std::string &_lines);					   // парсинг нахождения активного sip оператора
 	bool FindOnHoldStatus(const std::string &_lines);						   // парсинг нахождения статуса onHold
 
@@ -124,7 +125,8 @@ private:
 	bool GetActiveQueueOperators(OperatorList &_activeList, std::string &_errorDescription); // активные очереди операторов в БД
 	void DeleteOperatorsQueue(const std::string &_sip, const std::string &_queue);			 // удаление очереди оператора из БД таблицы operators_queue
 	void DeleteOperatorsQueue(const std::string &_sip);										 // удаление очереди оператора из БД таблицы operators_queue весь sip
-	void InsertOperatorsQueue(const std::string &_sip, const std::string &_queue);			 // добавление очереди оператору в БД таблицы operators_queue
+	void InsertOperatorsQueue(const Operator &_sip, const std::string &_queue);				 // добавление очереди оператору в БД таблицы operators_queue
+	void UpdatePauseOperatorsQueue(const Operator &_sip, const std::string &_queue);		 // обновление статуса pause очереди оператору в БД таблицы operators_queue
 
 	bool CreateActiveCall(const std::string &_lines, const std::string &_sipNumber, ActiveTalkCall &_caller); // парсинг и нахождение активного звонка с которым разговаривает оператор
 	//bool FindActiveCallIvrID(const std::string &_lines, const std::string &_phone, ActiveTalkCall &_caller);  // парсинг и нахожднение id_ivr

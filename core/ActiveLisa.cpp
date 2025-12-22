@@ -46,7 +46,12 @@ bool ActiveLisa::Execute()
 
 bool ActiveLisa::CreateRawData(std::string &_errorDescription)
 {
-    return m_rawData.CreateData(SESSION_SIP_RESPONSE,_errorDescription);
+    
+	bool test =  m_rawData.CreateData(SESSION_SIP_RESPONSE,_errorDescription);
+//	m_log->ToFile(ecLogType::eInfo, StringFormat("m_raw = %s", m_rawData.GetRawLast().c_str()));
+	return test;
+
+//	return m_rawData.CreateData(SESSION_SIP_RESPONSE,_errorDescription);
 }
 
 bool ActiveLisa::CreateCallers(const std::string &_lines, ActiveLisaCall &_caller)
@@ -58,10 +63,13 @@ bool ActiveLisa::CreateCallers(const std::string &_lines, ActiveLisaCall &_calle
 		return false;
 	}	
 
+	//utils::ShowVectorLines(lines);
+
 	_caller.phone = utils::PhoneParsing(lines[7]);					// номер телефона
 	_caller.phone_raw = lines[7];									// текущий номер телфеона с которым ведется беседа (сырой как по aster проходит)
 	_caller.talkTime = static_cast<uint16_t>(std::stoi(lines[11])); // время развговора
 	_caller.status = StringToEnum<ecAsteriskState>(lines[4]);		// статус
+	_caller.app	= StringToEnum<ecAsteriskApp>(lines[5]);			// статус прложения звонка
 	_caller.call_id = lines[13];									// id звонка
 
 	if (!CheckCallers(_caller))
@@ -83,7 +91,7 @@ void ActiveLisa::FindNewCall()
 {
 	m_activeList.clear(); // обнулим текущий список
 
-    std::string rawLines = m_rawData.GetRawLast(); 
+    std::string rawLines = m_rawData.GetRawFirst(); 
     if (rawLines.empty())
     {
         return;
@@ -94,7 +102,8 @@ void ActiveLisa::FindNewCall()
 
     while (std::getline(ss, line))
     {
-         ActiveLisaCall caller;
+      //  m_log->ToFile(ecLogType::eInfo, line);  // TODO удалить потом
+		ActiveLisaCall caller;
 
         if (CreateCallers(line, caller))
         {

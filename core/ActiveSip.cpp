@@ -159,10 +159,28 @@ void ActiveSession::CreateListActiveTalkCalls()
 		{
 			if (CheckActiveCall(call))
 			{
+				
+#ifdef CREATE_LOG_DEBUG
+				m_logRaw->ToFile(ecLogType::eInfo, StringFormat("[%u] CheckActiveCall(call) == TRUE!! sip = %s \t%s", id, sip.sipNumber.c_str(), line.c_str()));
+#endif
 				m_listCall.push_back(call);
 				break; // нет смысла дальше т.к. нашли нужные данные
 			}
+			else 
+			{
+#ifdef CREATE_LOG_DEBUG
+				m_logRaw->ToFile(ecLogType::eInfo, StringFormat("[%u] CheckActiveCall(call) == FALSE!! sip = %s \t%s", id, sip.sipNumber.c_str(), line.c_str()));
+#endif
+			}
 		}
+		else 
+		{
+
+#ifdef CREATE_LOG_DEBUG
+			m_logRaw->ToFile(ecLogType::eInfo, StringFormat("[%u] CreateActiveCall(line, sip.sipNumber, call) == FALSE!! sip = %s \t%s", id, sip.sipNumber.c_str(), line.c_str()));
+#endif
+		}
+
 	}
 	}
 	++id;
@@ -193,17 +211,21 @@ void ActiveSession::CreateActiveOperators(const ecQueueNumber _queue)
 		// проверим есть ли активный sip
 		if (line.find("Local/") != std::string::npos)
 		{
+			// в паузе находится или нет
+			bool paused = ((line.find("paused") != std::string::npos) ? true : false);			
+			
 			// найдем активный sip
 			Operator sip;
-			CreateOperator(line, sip, _queue);			
+			CreateOperator(line, sip, _queue, paused);			
 
-			// проверим есть ли уже такой sip чтобы добавить ему только очередь
+			// проверим есть ли уже такой sip чтобы добавить ему только очередь			
 			bool isExistOperator = false;
 			for (auto &listOperators : m_listOperators) 
-			{
+			{				
 				if (sip.sipNumber == listOperators.sipNumber) 
 				{
 					isExistOperator = true;
+					listOperators.isPaused = sip.isPaused;
 					listOperators.queueList.push_back(_queue); // т.к. находим именно эту очередь
 					break;
 				}
@@ -214,22 +236,21 @@ void ActiveSession::CreateActiveOperators(const ecQueueNumber _queue)
 				m_listOperators.push_back(sip);
 			}
 		}
-	}
-	
+	}	
 }
 
-void ActiveSession::CreateOperator(const std::string &_lines, Operator &_sip, ecQueueNumber _queue)
+void ActiveSession::CreateOperator(const std::string &_lines, Operator &_sip, ecQueueNumber _queue, bool _paused)
 {
 	_sip.sipNumber = FindSipNumber(_lines);
 	_sip.queueList.push_back(_queue);
-	_sip.isOnHold = FindOnHoldStatus(_lines);	
+	_sip.isOnHold = FindOnHoldStatus(_lines);
+	_sip.isPaused = _paused;	
 
 	// если onHold == true добавим номер с которым сейчас разговариет оператор
 	if (_sip.isOnHold) 
 	{
 		AddPhoneOnHoldInOperator(_sip);
 	}
-
 }
 
 // парсинг нахождения активного sip оператора
@@ -271,7 +292,12 @@ void ActiveSession::InsertAndUpdateQueueNumberOperators()
 			if (!IsExistOperatorsQueue(sip.sipNumber, EnumToString<ecQueueNumber>(sip.queueList[i]))) 
 			{
 				//записи нет добавляем
-				InsertOperatorsQueue(sip.sipNumber, EnumToString<ecQueueNumber>(sip.queueList[i]));
+				InsertOperatorsQueue(sip, EnumToString<ecQueueNumber>(sip.queueList[i]));
+			}
+			else 
+			{
+				// обновим статус pause
+				UpdatePauseOperatorsQueue(sip, EnumToString<ecQueueNumber>(sip.queueList[i]));
 			}
 		}
 	}	
@@ -333,8 +359,7 @@ bool ActiveSession::IsExistOperatorsQueue()
 		return false;
 	}
 
-	bool existOperatorsQueue;
-	(std::stoi(row[0]) == 0 ? existOperatorsQueue = false : existOperatorsQueue = true);
+	bool existOperatorsQueue = (std::stoi(row[0]) == 0 ? false : true);	
 
 	mysql_free_result(result);
 	m_sql->Disconnect();
@@ -379,8 +404,7 @@ bool ActiveSession::IsExistOperatorsQueue(const std::string &_sip, const std::st
 		return true;
 	}
 
-	bool exist;
-	std::stoi(row[0]) == 0 ? exist = false : exist = true;
+	bool exist = (std::stoi(row[0]) == 0 ? false : true); 	
 	
 	mysql_free_result(result);
 	m_sql->Disconnect();
@@ -525,11 +549,11 @@ void ActiveSession::DeleteOperatorsQueue(const std::string &_sip, const std::str
 {
 	const std::string query = "delete from operators_queue where sip = '" + _sip + "' and queue = '" + _queue + "'";
 
-	std::string error;
-	if (!m_sql->Request(query, error))
+	std::string errorDescription;
+	if (!m_sql->Request(query, errorDescription))
 	{
-		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log->ToFile(ecLogType::eError, error);
+		errorDescription = StringFormat("%s\tquery \t%s", METHOD_NAME, query.c_str());
+		m_log->ToFile(ecLogType::eError, errorDescription);
 		
 		m_sql->Disconnect();
 		
@@ -544,11 +568,11 @@ void ActiveSession::DeleteOperatorsQueue(const std::string &_sip)
 {
 	const std::string query = "delete from operators_queue where sip = '" + _sip + "'";
 
-	std::string error;
-	if (!m_sql->Request(query, error))
+	std::string errorDescription;
+	if (!m_sql->Request(query, errorDescription))
 	{
-		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log->ToFile(ecLogType::eError, error);
+		errorDescription = StringFormat("%s\tquery \t%s", METHOD_NAME, query.c_str());
+		m_log->ToFile(ecLogType::eError, errorDescription);
 
 		m_sql->Disconnect();		
 		return;
@@ -558,19 +582,39 @@ void ActiveSession::DeleteOperatorsQueue(const std::string &_sip)
 }
 
 // добавление очереди оператору в БД таблицы operators_queue
-void ActiveSession::InsertOperatorsQueue(const std::string &_sip, const std::string &_queue)
+void ActiveSession::InsertOperatorsQueue(const Operator &_sip, const std::string &_queue)
 {
-	const std::string query = "insert into operators_queue (sip,queue) values ('"
-								+ _sip + "','"
-								+ _queue + "')";
+	const std::string query = "insert into operators_queue (sip,queue,in_pause) values ('"
+								+ _sip.sipNumber + "','"
+								+ _queue + "','"
+								+ (_sip.isPaused ? "1" : "0") + "')";
 
-	std::string error;
-	if (!m_sql->Request(query, error))
+	std::string errorDescription;
+	if (!m_sql->Request(query, errorDescription))
 	{
-		error += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
-		m_log->ToFile(ecLogType::eError, error);
+		errorDescription = StringFormat("%s\tquery \t%s", METHOD_NAME, query.c_str());
+		m_log->ToFile(ecLogType::eError, errorDescription);
 
 		m_sql->Disconnect();		
+		return;
+	}
+
+	m_sql->Disconnect();
+}
+
+void ActiveSession::UpdatePauseOperatorsQueue(const Operator &_sip, const std::string &_queue)
+{
+	const std::string query = "update operators_queue set in_pause = '" + StringFormat(_sip.isPaused ? "1" : "0")
+																+ "' where sip = '" + _sip.sipNumber + 
+																"' and queue ='" + _queue + "'";
+
+	std::string errorDescription;
+	if (!m_sql->Request(query, errorDescription))
+	{
+		errorDescription = StringFormat("%s\tquery \t%s", METHOD_NAME, query.c_str());
+		m_log->ToFile(ecLogType::eError, errorDescription);
+
+		m_sql->Disconnect();
 		return;
 	}
 
@@ -605,63 +649,6 @@ bool ActiveSession::CreateActiveCall(const std::string &_lines, const std::strin
 
 	return true;	
 }
-
-// bool ActiveSession::FindActiveCallIvrID(const std::string &_lines, const std::string &_phone, ActiveTalkCall &_caller)
-// {	
-// 	if (_lines.find(_phone) == std::string::npos)
-// 	{
-// 		// нет нужной строки на выход
-// 		return false;
-// 	}
-	
-// 	if (_lines.find("Local/") != std::string::npos) 
-// 	{
-// 		if (_lines.find(_phone) == std::string::npos)
-// 		{
-// 			// нет нужной строки на выход
-// 			return false;
-// 		}		
-// 	}
-
-// 	std::vector<std::string> lines;
-	
-// 	std::istringstream iss(_lines);
-//     std::string token;
-//     while (std::getline(iss, token, '!')) 
-// 	{
-// 		if (token.empty())
-// 		{
-// 			continue;
-// 		}		 
-
-// 		lines.push_back(token);
-// 	}
-     
-// 	if ((lines.empty()) || (lines.size() < 11)) 
-// 	{
-// 		return false;
-// 	}	
-		
-// 	try 
-// 	{
-// 		// чтобы не звхватить id разговора
-// 		if (_caller.callID == lines.at(11)) 
-// 		{
-// 			return false;	
-// 		}
-
-// 		_caller.ivr_callID = lines.at(11);	
-//     }
-//     catch (const std::out_of_range& e) 
-// 	{
-//         auto msgErr = StringFormat("%s\t lines\t %s\t what=%s ", METHOD_NAME, _lines.c_str(), e.what());
-// 		m_log->ToFile(ecLogType::eError, msgErr);        
-		
-// 		return false;
-//     }
-
-// 	return true;
-// }
 
 bool ActiveSession::CheckActiveCall(const ActiveTalkCall &_caller)
 {

@@ -9,6 +9,11 @@
 using namespace utils;
 using namespace custom_cast;
 
+static std::string COMMAND_ADD_QUEUE 		= "asterisk -rx \"queue add member Local/%sip@from-queue/n to %queue penalty 0 as %sip state_interface hint:%sip@ext-local\" ";
+static std::string COMMAND_DEL_QUEUE 		= "asterisk -rx \"queue remove member Local/%sip@from-queue/n from %queue\" ";
+static std::string COMMAND_PAUSE_QUEUE 		= "asterisk -rx \"queue pause member Local/%sip@from-queue/n\"";	
+static std::string COMMAND_UNPAUSE_QUEUE 	= "asterisk -rx \"queue unpause member Local/%sip@from-queue/n\"";			
+
 
 Status::Status()
 	: m_sql(std::make_shared<ISQLConnect>(false))
@@ -98,12 +103,8 @@ bool Status::GetCommand(std::string &_errorDesciption)
 // выполнение команды
 bool Status::ExecuteCommand(const Command &_command, std::string &_errorDesciption)
 {	
-	// найдем команду (add\del\pause)
-	ecCommandType commandType;
-
-	commandType = (_command.delay && !_command.pause) ? ecCommandType::Pause
-													  : GetCommandType(_command);
-
+	// найдем команду (add\del\pause\unpause)
+	ecCommandType commandType = GetCommandType(_command);
 	// такого быть не должно но все же
 	if (commandType == ecCommandType::Unknown) 
 	{
@@ -115,53 +116,48 @@ bool Status::ExecuteCommand(const Command &_command, std::string &_errorDescipti
 
 	switch (commandType)
 	{
-		case(ecCommandType::Add): rawCommandStr = COMMAND_ADD_QUEUE;	break;
-		case(ecCommandType::Del): rawCommandStr = COMMAND_DEL_QUEUE;	break;	
+		case (ecCommandType::Add):
+		{
+			rawCommandStr = COMMAND_ADD_QUEUE;
+			if (!ExecuteCommandAddOrDel(_command, commandType, rawCommandStr, _errorDesciption))
+			{
+				return false;
+			}
+
+			break;
+		}
+		case (ecCommandType::Del):
+		{
+			rawCommandStr = COMMAND_DEL_QUEUE;
+			if (!ExecuteCommandAddOrDel(_command, commandType, rawCommandStr, _errorDesciption))
+			{
+				return false;
+			}			
+			
+			break;
+		} 				
 		case(ecCommandType::Pause): 
 		{
 			// выполнение команды на добавление в pause на все очереди
-			return ExecuteCommandPause(_command, _errorDesciption);		
+			if (!ExecuteCommandPause(_command, _errorDesciption))
+			{
+				return false;
+			}
+			break;		
+		}
+		case(ecCommandType::UnPause): 
+		{
+			// выполнение команды на выход из pause на все очереди
+			if (!ExecuteCommandUnPause(_command, _errorDesciption))
+			{
+				return false;
+			}
+			break;				
 		}
 		default:		
 			return false;
 	}	
-	
-	// найдем очередь
-	ecQueueNumber queue = GetQueueNumber(_command.command);
-
-	// такого не должно быть но все же
-	if (queue == ecQueueNumber::eUnknown)
-	{
-		// TODO в лог не забыть писать
-		return false;
-	}
-
-	std::string request;
-
-	// для двойной очереди или для входа в статус не связанный с очередью 
-	if (queue == ecQueueNumber::e5000_e5050)
-	{
-		for (size_t i = 1; i < 4; ++i)
-		{
-			ecQueueNumber queue = static_cast<ecQueueNumber>(i);
-
-			request = CreateCommand(_command, queue, rawCommandStr);
-
-			if (!SendCommand(commandType, request, _errorDesciption))
-			{
-				return false;
-			}
-		}
-	}
-	else
-	{
-		request = CreateCommand(_command, queue, rawCommandStr);
-
-		if (!SendCommand(commandType, request, _errorDesciption))
-		{
-			return false;
-		}
-	}	
+		
 
 	// добавим в лог запрос
 	m_log->ToBase(_command);
@@ -178,18 +174,69 @@ bool Status::ExecuteCommand(const Command &_command, std::string &_errorDescipti
 	return true;
 }
 
+bool Status::ExecuteCommandAddOrDel(const Command &_command, ecCommandType _commandType, std::string &_rawCommand, std::string &_errorDesciption)
+{
+	// найдем очередь
+	ecQueueNumber queue = GetQueueNumber(_command.command);
+
+	// такого не должно быть но все же
+	if (queue == ecQueueNumber::eUnknown)
+	{
+		// TODO в лог не забыть писать
+		return false;
+	}
+
+	std::string request;
+
+	// для двойной очереди или для входа в статус не связанный с очередью
+	if (queue == ecQueueNumber::e5000_e5050)
+	{
+		for (size_t i = 1; i < 4; ++i)
+		{
+			ecQueueNumber queue = static_cast<ecQueueNumber>(i);
+
+			request = CreateCommand(_command, queue, _rawCommand);
+
+			if (!SendCommand(_commandType, request, _errorDesciption))
+			{
+				return false;
+			}
+		}
+	}
+	else
+	{
+		request = CreateCommand(_command, queue, _rawCommand);
+
+		if (!SendCommand(_commandType, request, _errorDesciption))
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 bool Status::ExecuteCommandPause(const Command &_command, std::string &_errorDesciption)
 {
 	std::string rawRequest = COMMAND_PAUSE_QUEUE;	
 	std::string request = CreateCommand(_command, rawRequest); 	 
 	
-	if (!SendCommand(ecCommandType::Pause, request, _errorDesciption))
+	return SendCommand(ecCommandType::Pause, request, _errorDesciption);
+}
+
+bool Status::ExecuteCommandUnPause(const Command &_command, std::string &_errorDesciption)
+{
+	std::string rawRequest = COMMAND_UNPAUSE_QUEUE;	
+	std::string request = CreateCommand(_command, rawRequest); 	 
+	
+	if (!SendCommand(ecCommandType::UnPause, request, _errorDesciption))
 	{
 		return false;
 	}
 
 	return true;
 }
+
 
 std::string Status::CreateCommand(const Command &_command, const ecQueueNumber _queue, const std::string &_rawCommand)
 {
@@ -308,6 +355,12 @@ bool Status::CheckSendingCommand(ecCommandType _commandType, std::string &_error
 				status = true;
 			}
 			break;
+		case ecCommandType::UnPause:
+			if (line.find("unpaused") != std::string::npos)
+			{
+				status = true;
+			}
+			break;
 		default: 
 			{
 				_errorDesciption = StringFormat("command %s not found", EnumToString<ecCommandType>(_commandType).c_str());
@@ -331,7 +384,8 @@ bool Status::UpdateNewStatus(const Command &_command, std::string &_errorDescipt
 	case ecCommand::AddQueue5000:
 	case ecCommand::AddQueue5050:	
 	case ecCommand::AddQueue5000_5050:
-	case ecCommand::AddQueue5911:			
+	case ecCommand::AddQueue5911:
+	case ecCommand::Available:			
 		status = EStatus::Available;
 		break;
 
@@ -456,9 +510,10 @@ ecCommandType Status::GetCommandType(const Command &_command)
 		case ecCommand::DelQueue5000: 
 		case ecCommand::DelQueue5050:
 		case ecCommand::DelQueue5000_5050:
-		case ecCommand::DelQueue5911:	
-		case ecCommand::Available:
-		case ecCommand::Home: 
+		case ecCommand::DelQueue5911:		
+		case ecCommand::Home: 		
+						return ecCommandType::Del;
+
 		case ecCommand::Exodus: 
 		case ecCommand::Break:
 		case ecCommand::Dinner: 
@@ -467,8 +522,11 @@ ecCommandType Status::GetCommandType(const Command &_command)
 		case ecCommand::IT: 
 		case ecCommand::Transfer:
 		case ecCommand::Reserve:
-		case ecCommand::Callback: 
-						return ecCommandType::Del;
+		case ecCommand::Callback:
+						return ecCommandType::Pause; 
+
+		case ecCommand::Available:
+						return ecCommandType::UnPause;
 	
 	default:
 		return ecCommandType::Unknown;
@@ -510,11 +568,6 @@ ecQueueNumber Status::GetQueueNumber(const ecCommand &_command)
 			return ecQueueNumber::eUnknown;
 	}
 }
-
-//EStatus Status::GetStatus(const ECommand &_command)
-//{
-//	return EStatus();
-//}
 
 // выполнение команд
 bool Status::Execute()

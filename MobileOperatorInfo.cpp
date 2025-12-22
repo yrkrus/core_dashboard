@@ -98,7 +98,7 @@ void MobileOperatorInfo::FindInfoOperatorAndRegion()
 
         // занесем в БД
         UpdateToBaseInfo(info.id, info); 
-        Sleep(10); 
+        Sleep(500); 
     }
 }
 

@@ -10,10 +10,6 @@
 #include "../interfaces/IPotokDispether.h"
 #include "Queue.h"
 
-static std::string COMMAND_ADD_QUEUE = "asterisk -rx \"queue add member Local/%sip@from-queue/n to %queue penalty 0 as %sip state_interface hint:%sip@ext-local\" ";
-static std::string COMMAND_DEL_QUEUE = "asterisk -rx \"queue remove member Local/%sip@from-queue/n from %queue\" ";
-static std::string COMMAND_PAUSE_QUEUE = "asterisk -rx \"queue pause member Local/%sip@from-queue/n\"";									
-
 class Log;
 class ISQLConnect;
 using SP_SQL = std::shared_ptr<ISQLConnect>;
@@ -55,6 +51,7 @@ enum class ecCommandType
 	Del,		// команда на добавление в очередь
 	Add,		// команда на удаление из очереди
 	Pause,		// команда на паузу в очереди чтобы звонки новые не поступали
+	UnPause,	// команда снятия с паузы чтобы звонки новые стали поступать
 };
 	
 enum class EStatus
@@ -130,7 +127,12 @@ private:
 	bool GetCommand(std::string &_errorDesciption); // получение новых команд из БД
 
 	bool ExecuteCommand(const Command &_command, std::string &_errorDesciption); // выполнение команды
+	bool ExecuteCommandAddOrDel(const Command &_command, 
+								ecCommandType _commandType, 
+								std::string &_rawCommand,
+								std::string &_errorDesciption); // выполнение команды Add или Del
 	bool ExecuteCommandPause(const Command &_command, std::string &_errorDesciption); // выполнение команды Pause
+	bool ExecuteCommandUnPause(const Command &_command, std::string &_errorDesciption); // выполнение команды UnPause
 	std::string CreateCommand(const Command &_command, const ecQueueNumber _queue, const std::string &_rawCommand); // создвание команды
 	std::string CreateCommand(const Command &_command, const std::string &_rawCommand); // создание команды	
 	
