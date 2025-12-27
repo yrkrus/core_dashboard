@@ -488,6 +488,48 @@ void Status::CreatePauseQueue(const Command &_command, std::string &_errorDescip
 	m_sql->Disconnect();
 }
 
+bool Status::IsPausedStatus(const std::string &_sip)
+{
+	std::string errorDescription;
+	const std::string query = "select in_pause from operators_queue where sip = '" + _sip + "'";
+
+	if (!m_sql->Request(query, errorDescription))
+	{
+		errorDescription += METHOD_NAME + StringFormat("\tquery \t%s", query.c_str());
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		
+		m_sql->Disconnect();
+		// ошибка считаем что нет записи
+		return false;
+	}	
+
+	// результат
+	MYSQL_RES *result = mysql_store_result(m_sql->Get());
+	if (result == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_RES *result = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		return false;
+	}
+
+	MYSQL_ROW row = mysql_fetch_row(result);
+	if (row == nullptr)
+	{
+		errorDescription = StringFormat("%s\tMYSQL_ROW row = nullptr", METHOD_NAME);
+		m_log->ToFile(ecLogType::eError, errorDescription);
+		m_sql->Disconnect();
+		return false;
+	}
+
+	bool existPaused = (std::stoi(row[0]) == 0 ? false : true);	
+
+	mysql_free_result(result);
+	m_sql->Disconnect();
+
+	return existPaused;
+}
+
 // поиск какая команда пришла
 ecCommandType Status::GetCommandType(const Command &_command)
 {	
@@ -592,7 +634,7 @@ bool Status::Execute()
 				if (IsTalkOperator(command.sip, error))  
 				{
 					// поставим на pause, что бы все будущие звонки не приходили
-					if (!command.pause)
+					if (!IsPausedStatus(command.sip))
 					{
 						// стаим на паузу новые звонки
 						CreatePauseQueue(command, error);

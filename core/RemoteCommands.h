@@ -147,6 +147,7 @@ private:
 
 	bool IsTalkOperator(const std::string &_sip, std::string &_errorDesciption); // разговаривает ли оператор или нет
 	void CreatePauseQueue(const Command &_command, std::string &_errorDesciption); // ставим на пузу все последующме звонки
+	bool IsPausedStatus(const std::string &_sip); // оператор сейчас находится в паузе или нет
 
 	ecCommandType GetCommandType(const Command &_command); // поиск какая команда пришла
 	ecQueueNumber GetQueueNumber(const ecCommand &_command); // поиск номера очереди		
