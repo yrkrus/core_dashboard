@@ -19,7 +19,7 @@ namespace CONSTANTS
     // версия ядра
     namespace VERSION
     {          
-        static const std::string CORE = "CORE | version 4.6.1 " BUILD; 
+        static const std::string CORE = "CORE | version 4.7 " BUILD; 
     }
 
     
@@ -32,6 +32,7 @@ namespace CONSTANTS
         static const uint32_t ACTIVE_CALLS_LISA         = 1000;   // timeout для проверки новых данных для звонков Лизы
         static const uint32_t ACTIVE_SESSION_OUTGOING   = 1000;   // timeout для проверки новых данных для активной сеcсии операторов (исходящие звонки)
         static const uint32_t OPERATOR_STATUS           = 100;    // timeout для проверки новых данных для смены статуса оператором
+        static const uint32_t CALLBACKCALL              = 500;    // timeout для проверки новых данных для создания обратного вызова пропущенного звонка
         static const uint32_t CLEARING_CURRENT_DAY      = 60000;  // timeout для проверки нужно ли очищать текущий день таблицы history_*
         static const uint32_t CHECK_TRUNK_SIP           = 5000;   // timeout для проверки активности trunk sip
         static const uint32_t CHECK_INTERNAL            = 60000;  // timeout для проверки внутренних проверок
@@ -63,6 +64,7 @@ namespace CONSTANTS
         static const std::string HISTORY_SMS        = "history_sms.log";
 
         static const std::string REMOTE_COMMANDS    = "remote_commands.log";  
+        static const std::string CALLBACKCALL       = "callbackcall.log"; 
         
         static const std::string CHECK_TRUNK_SIP    = "check_trunk.log";
         static const std::string HTTP_REQUEST       = "http_request.log";
@@ -73,9 +75,9 @@ namespace CONSTANTS
 
     namespace PHONE 
     {
-        static const std::string AUTH_LOGIN              = "admin";
-        static const std::string AUTH_PASSWORD           = "5000";
-        static const std::string PHONE_PASSWORD          = "159753";
+        static const std::string AUTH_LOGIN          = "admin";
+        static const std::string AUTH_PASSWORD       = "5000";
+        static const std::string PHONE_PASSWORD      = "159753";
     }
        
        
@@ -99,25 +101,6 @@ namespace CONSTANTS
 
     // бэкапы базы будут тут жить \\srvbak\G$\dashboard_backup_COV
 
-// для будущей интеграции с телефонами!!!    
- //  
- //   // перезагрузка
- //   https://admin:asz741@10.34.42.47/servlet?key=Reboot
- //   // набор номера
- //   http://admin:asz741@10.34.42.47/servlet?key=number=xxx&outgoing_uri=y 	Набор номера xxx
- //   // завершить вызов
- //   http://admin:asz741@10.34.42.47/servlet?key=CALLEND 
- //   // скриншот
- //   https://admin:asz741@10.34.42.47/servlet?m=mod_action&command=screenshot
- //   // регистрация
- //   https://admin:asz741@10.34.42.47/servlet?phonecfg=set[&account.1.label=64197][&account.1.display_name=64197][&account.1.auth_name=64197][&account.1.user_name=64197][&account.1.password=1240]
- //	
-	//Лейбл 			 = &account.1.label=XXX
-	//Отображаемое имя = &account.1.display_name=XXX
-	//Имя регистрации  = &account.1.auth_name=XXX
-	//Имя пользователя = &account.1.user_name=XXX
-	//Пароль 			 = &account.1.password=XXX
- //  
 
 	///var/spool/asterisk/outgoung/*.call
 

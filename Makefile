@@ -8,7 +8,7 @@ CREATE_LOG_DEBUG := 0
 export CREATE_LOG_DEBUG
 
 # внутренние проверки класса CheckInternal
-RELEASE_VERSION := 1
+RELEASE_VERSION := 0
 export RELEASE_VERSION
 
 # если в списке целей есть одна из release|debug|valgrind,
