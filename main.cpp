@@ -16,6 +16,7 @@
 #include "core/TCPServer.h"
 #include "core/IVR.h"
 #include "core/ActiveSip.h"
+#include "core/CallbackCall.h"
 
 #include "clearing_current_day/ClearingCurrentDay.h"
 #include "different_checks/CheckInternal.h"
@@ -39,6 +40,7 @@ static SP_Status changeStatus                   = nullptr;
 static SP_ClearingCurrentDay clearingCurrentDay = nullptr;  // вставка в таблицы history
 static SP_CheckInternal checkInternal           = nullptr;  // внутренние проверки
 static SP_CheckActiveLisaCalls checkLisaCalls   = nullptr;  // проверка звонков лизы
+static SP_CallbackCall callbackCall             = nullptr;  // создание обратного вызова по пропущенному звонку
 
 static std::atomic<bool> g_running(true);
 
@@ -114,6 +116,7 @@ static void _Init()
     checkInternal       = std::make_shared<CheckInternal>();  // внутренние проверки
 #endif     
     checkLisaCalls      = std::make_shared<CheckActiveLisaCalls>(); 
+    callbackCall        = std::make_shared<CallbackCall>();
 }
 
 static void _Run()
@@ -126,7 +129,8 @@ static void _Run()
 #ifdef RELEASE_VERSION
     checkInternal->Start();
 #endif      
-    checkLisaCalls->Start();   
+    checkLisaCalls->Start(); 
+    callbackCall->Start();  
 }
 
 static void _Destroy()
@@ -140,6 +144,7 @@ static void _Destroy()
     checkInternal->Stop();  
 #endif    
     checkLisaCalls->Stop(); 
+    callbackCall->Stop();
 }
 
 static void _sigint_handler(int)
@@ -150,12 +155,12 @@ static void _sigint_handler(int)
 static void _core_info(bool _isDaemonize)
 {
     _isDaemonize ? printf("\t\t\t=== RUN IS DAEMON === \n")
-                 : printf("\t\t\t=== RUN IS APPLICATION === \n");    
-  
+                 : printf("\t\t\t=== RUN IS APPLICATION === \n");
+
     printf("%s\t | base:%s\t | TCP server PORT:%u\n",
-            CONSTANTS::VERSION::CORE.c_str(), 
-            AUTH::MYSQL::BD.c_str(),
-            CONSTANTS::SERVER::PORT);      
+           CONSTANTS::VERSION::CORE.c_str(),
+           AUTH::MYSQL::BD.c_str(),
+           CONSTANTS::SERVER::PORT);
     Sleep(3000);
 }
 
