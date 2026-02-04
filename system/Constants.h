@@ -32,7 +32,7 @@ namespace CONSTANTS
         static const uint32_t ACTIVE_CALLS_LISA         = 1000;   // timeout для проверки новых данных для звонков Лизы
         static const uint32_t ACTIVE_SESSION_OUTGOING   = 1000;   // timeout для проверки новых данных для активной сеcсии операторов (исходящие звонки)
         static const uint32_t OPERATOR_STATUS           = 100;    // timeout для проверки новых данных для смены статуса оператором
-        static const uint32_t CALLBACKCALL              = 500;    // timeout для проверки новых данных для создания обратного вызова пропущенного звонка
+        static const uint32_t CALLBACKCALL              = 1000;    // timeout для проверки новых данных для создания обратного вызова пропущенного звонка
         static const uint32_t CLEARING_CURRENT_DAY      = 60000;  // timeout для проверки нужно ли очищать текущий день таблицы history_*
         static const uint32_t CHECK_TRUNK_SIP           = 5000;   // timeout для проверки активности trunk sip
         static const uint32_t CHECK_INTERNAL            = 60000;  // timeout для проверки внутренних проверок
